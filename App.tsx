@@ -1,115 +1,45 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * Generated with the TypeScript template
- * https://github.com/react-native-community/react-native-template-typescript
- *
- * @format
- */
+import React from 'react'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { NavigationContainer } from '@react-navigation/native'
+import Home from './src/tabs/Home'
+import Applications from './src/tabs/Applications'
+import ClassSchedule from './src/tabs/ClassSchedule'
+import PersonalCenter from './src/tabs/PersonalCenter'
+import Icons from './src/utils/Icons'
 
-import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section: React.FC<{
-  title: string;
-}> = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+const Tab = createBottomTabNavigator()
+const HOME = 'Home'
+const CLASS_SCHEDULE = 'ClassSchedule'
+const APPLICATION = 'Applications'
+const PERSONAL_CENTER = 'PersonalCenter'
 
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: param => {
+            switch (route.name) {
+              case HOME:
+                return <Icons iconText="&#xe613;" {...param} />
+              case CLASS_SCHEDULE:
+                return <Icons iconText="&#xe62c;" {...param} />
+              case APPLICATION:
+                return <Icons iconText="&#xe603;" {...param} />
+              case PERSONAL_CENTER:
+                return <Icons iconText="&#xe608;" {...param} />
+              default:
+                throw new Error('unknown route name')
+            }
+          },
+        })}>
+        <Tab.Screen name={HOME} component={Home} />
+        <Tab.Screen name={CLASS_SCHEDULE} component={ClassSchedule} />
+        <Tab.Screen name={APPLICATION} component={Applications} />
+        <Tab.Screen name={PERSONAL_CENTER} component={PersonalCenter} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  )
+}
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
+export default App

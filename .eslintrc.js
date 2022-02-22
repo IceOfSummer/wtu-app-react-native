@@ -13,4 +13,15 @@ module.exports = {
       },
     },
   ],
-};
+  rules: {
+    'no-extra-semi': 'error',
+    semi: [2, 'never'],
+    'no-undef': 'off',
+    quotes: ['error', 'single'],
+    'vue/no-v-model-argument': 'off',
+    'object-curly-spacing': ['error', 'always'],
+    'template-curly-spacing': 'error',
+    'space-infix-ops': 'error',
+    'space-before-blocks': 'error',
+  },
+}

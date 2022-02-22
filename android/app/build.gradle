@@ -186,6 +186,12 @@ android {
 
         }
     }
+
+    sourceSets {
+        main {
+            assets.srcDirs = ['assets', '../../src/assets']
+        }
+    }
 }
 
 dependencies {
