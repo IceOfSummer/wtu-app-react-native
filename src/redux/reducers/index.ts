@@ -1,6 +1,10 @@
 import { combineReducers } from 'redux'
-import user from './user'
+import user, { UserState } from './user'
 
 export default combineReducers({
   user,
 })
+
+export type ReducerTypes = {
+  user: UserState
+}
