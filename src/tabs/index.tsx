@@ -6,6 +6,7 @@ import Applications from './Applications'
 import PersonalCenter from './PersonalCenter'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { useStore } from 'react-redux'
 
 const Tab = createBottomTabNavigator()
 const HOME = 'Home'
@@ -14,6 +15,8 @@ const APPLICATION = 'Applications'
 const PERSONAL_CENTER = 'PersonalCenter'
 
 const TabBar = () => {
+  const store = useStore()
+  console.log(store.getState())
   return (
     <NavigationContainer>
       <Tab.Navigator
