@@ -23,5 +23,6 @@ module.exports = {
     'template-curly-spacing': 'error',
     'space-infix-ops': 'error',
     'space-before-blocks': 'error',
+    'react-native/no-inline-styles': 'off',
   },
 }
