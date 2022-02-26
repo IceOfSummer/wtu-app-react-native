@@ -1,4 +1,4 @@
-import Icons from '../utils/Icons'
+import Icons from '../component/Icons'
 import HomeScreen from './HomeScreen'
 import ClassScheduleScreen from './ClassScheduleScreen'
 import ApplicationsScreen from './ApplicationsScreen'
@@ -16,8 +16,6 @@ import {
 const Tab = createBottomTabNavigator()
 
 const TabBar = () => {
-  const store = useStore()
-  console.log(store.getState())
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

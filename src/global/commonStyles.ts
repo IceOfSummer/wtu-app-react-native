@@ -3,6 +3,7 @@ const gStyles: GlobalStyleTypes = {
   $success_color: '#4cd964',
   $warning_color: '#f0ad4e',
   $error_color: '#dd524d',
+  $info_color: '#999',
   $text_color: '#333',
   $text_placeholder: '#808080',
   $text_disable: '#c0c0c0',

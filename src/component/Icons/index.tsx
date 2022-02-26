@@ -6,8 +6,9 @@ type Props = {
   color?: string
   size?: number
   iconText: string
+  onPress?: () => void
+  style?: object
 }
-interface BaseIcon extends React.FC<Props> {}
 
 const styles = StyleSheet.create({
   iconfont: {
@@ -15,10 +16,16 @@ const styles = StyleSheet.create({
   },
 })
 
-const Icons: BaseIcon = props => {
+const Icons: React.FC<Props> = props => {
   return (
     <Text
-      style={{ ...styles.iconfont, fontSize: props.size, color: props.color }}>
+      onPress={props.onPress}
+      style={{
+        ...styles.iconfont,
+        fontSize: props.size,
+        color: props.color,
+        ...props.style,
+      }}>
       {props.iconText}
     </Text>
   )

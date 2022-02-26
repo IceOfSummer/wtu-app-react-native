@@ -24,5 +24,6 @@ module.exports = {
     'space-infix-ops': 'error',
     'space-before-blocks': 'error',
     'react-native/no-inline-styles': 'off',
+    'react-hooks/exhaustive-deps': 'off',
   },
 }

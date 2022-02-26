@@ -3,6 +3,7 @@ interface GlobalStyleTypes {
   $success_color: string
   $warning_color: string
   $error_color: string
+  $info_color: string
   $text_color: string
   $text_placeholder: string
   $text_disable: string

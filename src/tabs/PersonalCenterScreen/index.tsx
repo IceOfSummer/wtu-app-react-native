@@ -1,29 +1,31 @@
 import React from 'react'
 import { Image, Text, View } from 'react-native'
 import { connect } from 'react-redux'
-import { saveUserInfo } from '../../redux/actions/user'
 import { ReducerTypes } from '../../redux/reducers'
-import Icons from '../../utils/Icons'
+import Icons from '../../component/Icons'
 import styles from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { RouterTypes, SCHOOL_AUTH } from '../../router'
+import { PERSONAL_INFO, RouterTypes, SCHOOL_AUTH } from '../../router'
 
 interface StoreProps {
   username?: string
-}
-interface StoreActions {
-  saveUserInfo: (...args: Parameters<typeof saveUserInfo>) => void
+  expired: boolean
 }
 
 interface PersonalCenterProps
   extends StoreProps,
-    StoreActions,
     NativeStackScreenProps<RouterTypes> {}
 
 const PersonalCenter: React.FC<PersonalCenterProps> = props => {
-  const t = () => {
-    props.navigation.navigate(SCHOOL_AUTH)
-    // props.navigation.push(SCHOOL_AUTH, {})
+  /**
+   * 头部账号区点击事件
+   */
+  const headerAccountTapCallback = () => {
+    if (props.expired) {
+      props.navigation.navigate(SCHOOL_AUTH)
+    } else {
+      props.navigation.navigate(PERSONAL_INFO)
+    }
   }
   return (
     <View>
@@ -33,7 +35,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
             source={require('../../assets/img/studyCenter.png')}
             style={{ width: 26, height: 26 }}
           />
-          <View onTouchStart={t}>
+          <View onTouchStart={headerAccountTapCallback}>
             <Text
               style={{
                 fontSize: global.styles.$font_size_lg,
@@ -54,9 +56,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
   )
 }
 
-export default connect<StoreProps, StoreActions, {}, ReducerTypes>(
-  initialState => ({
-    username: initialState.user.username,
-  }),
-  { saveUserInfo }
-)(PersonalCenter)
+export default connect<StoreProps, {}, {}, ReducerTypes>(initialState => ({
+  username: initialState.user.username,
+  expired: initialState.user.expired,
+}))(PersonalCenter)
