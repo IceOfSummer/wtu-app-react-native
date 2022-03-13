@@ -74,20 +74,16 @@ const BasicDialog: React.FC<BasicDialogProps> = props => {
    * 执行确认回调
    */
   const executeConfirmCallback = () => {
-    requestAnimationFrame(() => {
-      setVisible(false)
-      dialogConfig.onCancel?.()
-    })
+    setVisible(false)
+    dialogConfig.onConfirm?.()
   }
 
   /**
    * 执行取消回调
    */
   const executeCancelCallback = () => {
-    requestAnimationFrame(() => {
-      setVisible(false)
-      dialogConfig.onConfirm?.()
-    })
+    setVisible(false)
+    dialogConfig.onCancel?.()
   }
 
   const closeDialog = () => {

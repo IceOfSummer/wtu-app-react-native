@@ -12,6 +12,7 @@ import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 type navToastProps = {
   routerName: string
 }
+export const NAV_TOAST = 'NavToast'
 const NavToast: React.FC<
   ToastConfigParams<BaseToastProps & navToastProps>
 > = props => {
@@ -24,7 +25,7 @@ const NavToast: React.FC<
 }
 
 const MyToastConfig: ToastConfig = {
-  NavToast,
+  [NAV_TOAST]: NavToast,
 }
 
 const DiyToast: React.FC = () => {

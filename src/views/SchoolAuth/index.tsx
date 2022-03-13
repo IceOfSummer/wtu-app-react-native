@@ -33,8 +33,12 @@ type SchoolAuthProps = NativeStackScreenProps<RouterTypes> &
 
 const SchoolAuth: React.FC<SchoolAuthProps> = props => {
   const [captcha, setCaptcha] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [username, setUsername] = useState<string>('')
+  const [password, setPassword] = useState<string>(
+    props.password ? props.password : ''
+  )
+  const [username, setUsername] = useState<string>(
+    props.username ? props.username : ''
+  )
   const [loginParam, setLoginParam] = useState<InitLoginResponse>(null)
   const usernameInput = useRef<AniInputRefAttribute>(null)
   const passwordInput = useRef<AniInputRefAttribute>(null)
@@ -48,6 +52,10 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
         if (!data) {
           // 已经登录
           props.modifyLoginStatus(false)
+          Toast.show({
+            text1: '已经自动重新登录了!',
+          })
+          props.navigation.goBack()
           return
         }
         props.modifyLoginStatus(true)
@@ -71,7 +79,7 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
   const [captchaUrl, setCaptchaUrl] = useState<string | undefined>()
   // 加载验证码
   const loadCaptcha = () => {
-    setCaptchaUrl(`${CAPTCHA_URL}?ts=${Date.now().toString(2)}`)
+    setCaptchaUrl(`${CAPTCHA_URL}?ts=${Math.ceil(Math.random() * 300)}`)
   }
 
   const tryLogin = () => {
@@ -88,29 +96,31 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
     }
     // tryLogin
     const pwd = wtuEncrypt(password, loginParam.encryptSalt)
-    login(loginParam.lt, pwd, captcha, username).then(resp => {
-      const match = resp.match(/<span id="msg" class="auth_error".+</)
-      if (match == null) {
-        // success
+    login(loginParam.lt, pwd, captcha, username, loginParam.execution).then(
+      resp => {
         props.saveUserInfo(username, password)
-        Toast.show({
-          text1: '登录成功!',
-        })
-        props.modifyLoginStatus(false)
-        props.navigation.goBack()
-      } else {
-        let errMsg = match[0].replace(/<.+>/, '').replace('<', '')
-        dialog.current?.showDialog?.({
-          title: '登录失败',
-          content: errMsg,
-          hideCancel: true,
-          onConfirm() {
-            tryInit()
-          },
-          type: 'error',
-        })
+        const match = resp.match(/<span id="msg" class="auth_error".+</)
+        if (match == null) {
+          // success
+          Toast.show({
+            text1: '登录成功!',
+          })
+          props.modifyLoginStatus(false)
+          props.navigation.goBack()
+        } else {
+          let errMsg = match[0].replace(/<.+>/, '').replace('<', '')
+          dialog.current?.showDialog?.({
+            title: '登录失败',
+            content: errMsg,
+            hideCancel: true,
+            onConfirm() {
+              tryInit()
+            },
+            type: 'error',
+          })
+        }
       }
-    })
+    )
   }
 
   function isInvalidForm() {
@@ -158,12 +168,14 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
           placeholder="用户名"
           onTextInput={setUsername}
           ref={usernameInput}
+          value={username}
         />
         <AniInput
           placeholder="密码"
           password
           onTextInput={setPassword}
           ref={passwordInput}
+          value={password}
         />
         <View style={styles.captchaInputBlock}>
           <View style={styles.captchaInput}>

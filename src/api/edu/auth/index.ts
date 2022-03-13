@@ -1,11 +1,11 @@
 import { noRepeatAjax } from 'axios-simple-wrapper'
 import { getInputValue } from '../../../utils/htmlUtils'
 
+const AUTH_URL =
+  'https://auth.wtu.edu.cn/authserver/login?service=http%3A%2F%2Fjwglxt.wtu.edu.cn%2Fsso%2Fjziotlogin'
 export const initLogin = () =>
   new Promise<InitLoginResponse>((resolve, reject) => {
-    noRepeatAjax<string>(
-      'https://auth.wtu.edu.cn/authserver/login?service=http%3A%2F%2Fjwglxt.wtu.edu.cn%2Fsso%2Fjziotlogin'
-    )
+    noRepeatAjax<string>(AUTH_URL)
       .then(data => {
         const lt = getInputValue(data, 'lt')
         if (!lt) {
@@ -14,7 +14,7 @@ export const initLogin = () =>
           return
         }
         const match = data.match(/var pwdDefaultEncryptSalt = ".+"/)
-        if (!match) {
+        if (!match || !match[0]) {
           // 登录了
           resolve(null)
           return
@@ -48,18 +48,19 @@ export const login = (
   lt: string,
   password: string,
   captcha: string,
-  username: string
+  username: string,
+  execution: string
 ) =>
   noRepeatAjax<string>(
-    'https://auth.wtu.edu.cn/authserver/login?service=http%3A%2F%2Fjwglxt.wtu.edu.cn%2Fsso%2Fjziotlogin',
+    AUTH_URL,
     {
       username,
-      password,
+      password: encodeURIComponent(password),
       captchaResponse: captcha,
       rememberMe: 'on',
       lt,
       dllt: 'userNamePasswordLogin',
-      execution: 'e2s1',
+      execution: execution,
       _eventId: 'submit',
       rmShown: 1,
     },

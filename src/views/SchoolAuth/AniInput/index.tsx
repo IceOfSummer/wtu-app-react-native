@@ -10,6 +10,7 @@ interface AniInputProps {
   placeholder?: string
   password?: boolean
   onTextInput?: (text: string) => void
+  value?: string
 }
 interface AniInputRefProps {
   onRef?: ForwardedRef<any>
@@ -26,7 +27,7 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
   )
   const [isError, setErrorStatus] = useState(false)
   // 记录text
-  const [text, setText] = useState<string>('')
+  const [text, setText] = useState<string>(props.value ? props.value : '')
   const inputEvent = (t: string): void => {
     setText(t)
     setErrorStatus(false)

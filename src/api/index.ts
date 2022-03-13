@@ -1,33 +1,40 @@
 import { axios } from 'axios-simple-wrapper'
-import redux from '../redux/store'
-import { modifyLoginStatus } from '../redux/actions/user'
 import Toast from 'react-native-toast-message'
 import { SCHOOL_AUTH } from '../router'
+import { existInput } from '../utils/htmlUtils'
 
 const initInterceptors = () => {
   axios.interceptors.response.use(resp => {
-    const curUrl = resp.request.responseURL as string
-    const originUrl = resp.request._url as string
-    if (
-      !originUrl.startsWith('https://auth.wtu.edu.cn/authserver/login') &&
-      curUrl !== originUrl
-    ) {
-      // 重定向了, 说明登录过期
-      redux.store.dispatch(modifyLoginStatus(true))
-      Toast.show({
-        text1: '登录过期',
-        text2: '点击重新登录',
-        type: 'NavToast',
-        props: {
-          routerName: SCHOOL_AUTH,
-        },
-      })
-      throw new Error('登录过期')
+    console.log(resp.data)
+    console.log(typeof resp.data)
+    if (typeof resp.data === 'string') {
+      const usernameInput = existInput(resp.data, 'yhm')
+      const passwordInput = existInput(resp.data, 'mm')
+      if (usernameInput && passwordInput) {
+        // 登录失效
+        Toast.show({
+          text1: '登录过期',
+          text2: '点击重新登录',
+          type: 'NavToast',
+          props: {
+            routerName: SCHOOL_AUTH,
+          },
+        })
+        throw new Error('登录过期')
+      }
     }
     if (resp.data) {
       return resp.data
     }
     return {}
+  })
+  axios.interceptors.request.use(config => {
+    config.headers = {
+      ...config.headers,
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39',
+    }
+    return config
   })
 }
 export default initInterceptors

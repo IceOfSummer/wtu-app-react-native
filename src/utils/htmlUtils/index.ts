@@ -26,3 +26,13 @@ export const getInputValue = (
     .replace('value=', '')
     .replace(/\\/g, '')
 }
+
+/**
+ * 判断某个输入框是否存在
+ * @param html {string} html
+ * @param id {string} input的id
+ */
+export const existInput = (html: string, id: string): boolean => {
+  const intRegx = new RegExp('<input.* id="' + id + '".*>')
+  return !!html.match(intRegx)
+}
