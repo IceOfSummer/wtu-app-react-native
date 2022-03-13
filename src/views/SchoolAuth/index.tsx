@@ -47,12 +47,11 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
       .then(data => {
         if (!data) {
           // 已经登录
-          props.modifyLoginStatus(true)
+          props.modifyLoginStatus(false)
           return
         }
-        props.modifyLoginStatus(false)
+        props.modifyLoginStatus(true)
         // 需要重新登录
-        console.log(data)
         setLoginParam(data)
         loadCaptcha()
       })
@@ -89,13 +88,6 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
     }
     // tryLogin
     const pwd = wtuEncrypt(password, loginParam.encryptSalt)
-    console.log(
-      password,
-      loginParam.lt,
-      captcha,
-      username,
-      loginParam.execution
-    )
     login(loginParam.lt, pwd, captcha, username).then(resp => {
       const match = resp.match(/<span id="msg" class="auth_error".+</)
       if (match == null) {
@@ -198,7 +190,7 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
   )
 }
 
-export default connect<StoreProps, StoreActions, {}, ReducerTypes>(
+export default connect<StoreProps, StoreActions, SchoolAuthProps, ReducerTypes>(
   initialState => ({
     username: initialState.user.username,
     password: initialState.user.password,

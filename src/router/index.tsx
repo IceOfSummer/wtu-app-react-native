@@ -6,7 +6,8 @@ import {
 import TabBar from '../tabs'
 import { NavigationContainer, ParamListBase } from '@react-navigation/native'
 import SchoolAuth from '../views/SchoolAuth'
-import PersonalInfo from '../tabs/PersonalCenterScreen/PersonalInfo'
+import PersonalInfo from '../views/PersonalInfo'
+import DiyToast from '../component/DiyToast'
 
 const Stack = createNativeStackNavigator()
 
@@ -34,8 +35,7 @@ const hideHeaderOptions: NativeStackNavigationOptions = {
   header: () => null,
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const headerCommonOptionsWithTile = (
+const headerCommonOptionsWithTitle = (
   title: string
 ): NativeStackNavigationOptions => {
   return {
@@ -58,8 +58,16 @@ const Router: React.FC = () => {
           component={SchoolAuth}
           options={hideHeaderOptions}
         />
-        <Stack.Screen name={PERSONAL_INFO} component={PersonalInfo} />
+        <Stack.Screen
+          name={PERSONAL_INFO}
+          component={PersonalInfo}
+          options={{
+            ...headerCommonOptionsWithTitle('个人资料'),
+            headerShadowVisible: false,
+          }}
+        />
       </Stack.Navigator>
+      <DiyToast />
     </NavigationContainer>
   )
 }

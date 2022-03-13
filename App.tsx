@@ -1,17 +1,16 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import store from './src/redux/store'
+import redux from './src/redux/store'
 import { PersistGate } from 'redux-persist/lib/integration/react'
 import Router from './src/router'
-import Toast from 'react-native-toast-message'
+import initInterceptors from './src/api'
 
-const s = store()
+initInterceptors()
 const App = () => {
   return (
-    <Provider store={s.store}>
-      <PersistGate persistor={s.persistor}>
+    <Provider store={redux.store}>
+      <PersistGate persistor={redux.persistor}>
         <Router />
-        <Toast />
       </PersistGate>
     </Provider>
   )

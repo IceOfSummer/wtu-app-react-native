@@ -1,12 +1,5 @@
-import { noRepeatAjax, axios } from 'axios-simple-wrapper'
+import { noRepeatAjax } from 'axios-simple-wrapper'
 import { getInputValue } from '../../../utils/htmlUtils'
-
-axios.interceptors.response.use(resp => {
-  if (resp.data) {
-    return resp.data
-  }
-  return {}
-})
 
 export const initLogin = () =>
   new Promise<InitLoginResponse>((resolve, reject) => {

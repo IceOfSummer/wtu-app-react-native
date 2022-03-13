@@ -25,6 +25,5 @@ const gStyles: GlobalStyleTypes = {
   $spacing_row_base: 10,
   $spacing_row_lg: 15,
 }
-console.log('load')
 global.styles = gStyles
 export default {}

@@ -15,7 +15,7 @@ const userReducer: Reducer<UserState, UserActions> = (
   state = initState,
   action
 ) => {
-  console.log(action.data)
+  console.log(action)
   const curAction = action.type
   if (curAction === UserActionConstant.saveUserInfo) {
     const copyState: UserState = JSON.parse(JSON.stringify(state))

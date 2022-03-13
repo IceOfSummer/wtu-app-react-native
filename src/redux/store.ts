@@ -10,9 +10,9 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, reducer)
 
-export default () => {
+export default (() => {
   const store = createStore(persistedReducer)
   // @ts-ignore
   const persistor = persistStore(store)
   return { store, persistor }
-}
+})()
