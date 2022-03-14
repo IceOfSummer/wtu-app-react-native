@@ -5,8 +5,6 @@ import { existInput } from '../utils/htmlUtils'
 
 const initInterceptors = () => {
   axios.interceptors.response.use(resp => {
-    console.log(resp.data)
-    console.log(typeof resp.data)
     if (typeof resp.data === 'string') {
       const usernameInput = existInput(resp.data, 'yhm')
       const passwordInput = existInput(resp.data, 'mm')

@@ -5,36 +5,44 @@ import { UserActions } from '../actions/user'
 export type UserState = {
   username?: string
   password?: string
-  /**
-   * @deprecated 存在歧义, true为登录过期, 但在主观上会将true认作登录有效
-   * @see UserState#isLoginValid
-   */
-  expired: boolean
   isLoginValid: boolean
+  userInfo?: UserInfo
+}
+
+export type UserInfo = {
+  name: string
+  enrollmentDate: string
 }
 
 const initState: UserState = {
-  expired: true,
   isLoginValid: false,
 }
 const userReducer: Reducer<UserState, UserActions> = (
   state = initState,
   action
 ) => {
-  console.log(action)
   const curAction = action.type
-  if (curAction === UserActionConstant.saveUserInfo) {
-    const copyState: UserState = JSON.parse(JSON.stringify(state))
+  const copyState: UserState = JSON.parse(JSON.stringify(state))
+  console.log(action)
+
+  if (curAction === UserActionConstant.saveUserCredentials) {
     copyState.username = action.data.username
     copyState.password = action.data.password
     return copyState
   } else if (curAction === UserActionConstant.modifyLoginStatus) {
-    if (state.expired === action.data) {
+    if (state.isLoginValid === action.data) {
       return state
     }
-    const copyState: UserState = JSON.parse(JSON.stringify(state))
-    copyState.expired = action.data
-    copyState.isLoginValid = !action.data
+    copyState.isLoginValid = action.data
+    return copyState
+  } else if (curAction === UserActionConstant.markLogin) {
+    if (action.data) {
+      copyState.userInfo = action.data
+    }
+    copyState.isLoginValid = true
+    return copyState
+  } else if (curAction === UserActionConstant.saveUserInfo) {
+    copyState.userInfo = action.data
     return copyState
   }
   return state

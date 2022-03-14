@@ -58,5 +58,5 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
 
 export default connect<StoreProps, {}, {}, ReducerTypes>(initialState => ({
   username: initialState.user.username,
-  expired: initialState.user.expired,
+  expired: !initialState.user.isLoginValid,
 }))(PersonalCenter)

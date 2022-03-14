@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import { View, Text, Image } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RouterTypes } from '../../router'
-import { modifyLoginStatus, saveUserInfo } from '../../redux/actions/user'
+import {
+  markLogin,
+  markLoginExpired,
+  saveUserCredentials,
+} from '../../redux/actions/user'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import Icons from '../../component/Icons'
@@ -23,8 +27,9 @@ interface StoreProps {
 }
 
 interface StoreActions {
-  saveUserInfo: (...args: Parameters<typeof saveUserInfo>) => void
-  modifyLoginStatus: (...args: Parameters<typeof modifyLoginStatus>) => void
+  saveUserCredentials: (...args: Parameters<typeof saveUserCredentials>) => void
+  markLogin: (...args: Parameters<typeof markLogin>) => void
+  markLoginExpired: (...args: Parameters<typeof markLoginExpired>) => void
 }
 
 type SchoolAuthProps = NativeStackScreenProps<RouterTypes> &
@@ -51,14 +56,14 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
       .then(data => {
         if (!data) {
           // 已经登录
-          props.modifyLoginStatus(false)
+          props.markLogin()
           Toast.show({
             text1: '已经自动重新登录了!',
           })
           props.navigation.goBack()
           return
         }
-        props.modifyLoginStatus(true)
+        props.markLoginExpired()
         // 需要重新登录
         setLoginParam(data)
         loadCaptcha()
@@ -98,14 +103,14 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
     const pwd = wtuEncrypt(password, loginParam.encryptSalt)
     login(loginParam.lt, pwd, captcha, username, loginParam.execution).then(
       resp => {
-        props.saveUserInfo(username, password)
+        props.saveUserCredentials(username, password)
         const match = resp.match(/<span id="msg" class="auth_error".+</)
         if (match == null) {
           // success
           Toast.show({
             text1: '登录成功!',
           })
-          props.modifyLoginStatus(false)
+          props.markLogin()
           props.navigation.goBack()
         } else {
           let errMsg = match[0].replace(/<.+>/, '').replace('<', '')
@@ -206,10 +211,11 @@ export default connect<StoreProps, StoreActions, SchoolAuthProps, ReducerTypes>(
   initialState => ({
     username: initialState.user.username,
     password: initialState.user.password,
-    expired: initialState.user.expired,
+    expired: !initialState.user.isLoginValid,
   }),
   {
-    saveUserInfo,
-    modifyLoginStatus,
+    saveUserCredentials,
+    markLogin,
+    markLoginExpired,
   }
 )(SchoolAuth)

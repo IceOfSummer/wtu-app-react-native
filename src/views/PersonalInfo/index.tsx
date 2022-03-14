@@ -1,63 +1,62 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Text, View } from 'react-native'
-import { getUserInfo, UserInfo } from '../../api/edu/applications'
+import { getUserInfo } from '../../api/edu/applications'
 import { connect } from 'react-redux'
-import { modifyLoginStatus } from '../../redux/actions/user'
 import { ReducerTypes } from '../../redux/reducers'
-import Toast from 'react-native-toast-message'
-import { NAV_TOAST } from '../../component/DiyToast'
+import { UserInfo } from '../../redux/reducers/user'
+import BasicDialog, {
+  BasicDialogRefAttribute,
+} from '../../component/dialogs/BasicDialog'
+import { saveUserInfo } from '../../redux/actions/user'
 
 interface PersonalInfoProps {}
 
 const PersonalInfo: React.FC<
   PersonalInfoProps & StoreProps & StoreActions
 > = props => {
-  const [userInfo, setUserInfo] = useState<UserInfo>()
-
-  /**
-   * 检查登录状态, 返回true表示登录状态无效
-   */
-  const isInvalidState = (): boolean => {
-    if (props.expired) {
-      Toast.show({
-        type: NAV_TOAST,
-        text1: '登录过期',
-        text2: '点击重新登录',
-      })
-      return true
-    }
-    return false
-  }
-
+  const dialog = useRef<BasicDialogRefAttribute>(null)
   /**
    * 加载用户信息
    */
-  const loadUserInfo = () => {
-    if (isInvalidState()) {
-      // return
+  const checkUserInfo = () => {
+    if (!props.userInfo) {
+      // 加载失败了
+      dialog.current?.showDialog?.({
+        title: '加载资料失败',
+        type: 'error',
+        content: '是否重新加载',
+        onConfirm() {
+          getUserInfo().then(resp => {
+            props.saveUserInfo(resp)
+          })
+        },
+      })
     }
-    getUserInfo().then(resp => {
-      setUserInfo(resp)
-    })
   }
 
   useEffect(() => {
-    loadUserInfo()
+    checkUserInfo()
   }, [])
   return (
     <View>
-      {userInfo ? <Text>{userInfo.name}</Text> : <Text>请先登录</Text>}
+      <View>
+        {props.userInfo ? (
+          <Text>{props.userInfo.name}</Text>
+        ) : (
+          <Text>加载中</Text>
+        )}
+      </View>
+      <BasicDialog ref={dialog} />
     </View>
   )
 }
 
 interface StoreProps {
-  username?: string
-  expired: boolean
+  userInfo?: UserInfo
 }
 
 interface StoreActions {
-  modifyLoginStatus: (...args: Parameters<typeof modifyLoginStatus>) => void
+  saveUserInfo: (...args: Parameters<typeof saveUserInfo>) => void
 }
 
 export default connect<
@@ -67,10 +66,9 @@ export default connect<
   ReducerTypes
 >(
   initialState => ({
-    username: initialState.user.username,
-    expired: initialState.user.expired,
+    userInfo: initialState.user.userInfo,
   }),
   {
-    modifyLoginStatus,
+    saveUserInfo,
   }
 )(PersonalInfo)

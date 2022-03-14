@@ -5,7 +5,6 @@ import ApplicationsScreen from './ApplicationsScreen'
 import PersonalCenterScreen from './PersonalCenterScreen'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { useStore } from 'react-redux'
 import {
   APPLICATIONS_TABS,
   CLASS_SCHEDULE_TABS,

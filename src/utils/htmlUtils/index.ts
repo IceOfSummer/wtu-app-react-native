@@ -8,7 +8,7 @@ export const getInputValue = (
   html: string | undefined,
   inputName: string
 ): string | null => {
-  if (!html) {
+  if (!html || !html.match) {
     return null
   }
   //<input type="hidden" id="localeKey" name="localeKey" value="zh_CN" />

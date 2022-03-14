@@ -1,10 +1,17 @@
 import { Action } from 'redux'
 import { UserActionConstant } from '../constant'
+import { getUserInfo } from '../../api/edu/applications'
+import { UserInfo } from '../reducers/user'
+import { Dispatch } from 'react'
 
-export type UserActions = SaveUserInfoAction | ModifyLoginStatusAction
+export type UserActions =
+  | SaveUserCredentials
+  | ModifyLoginStatusAction
+  | MarkLoginAction
+  | SaveUserInfoAction
 
-export interface SaveUserInfoAction extends Action<UserActionConstant> {
-  type: UserActionConstant.saveUserInfo
+export interface SaveUserCredentials extends Action<UserActionConstant> {
+  type: UserActionConstant.saveUserCredentials
   data: {
     username: string
     password: string
@@ -16,27 +23,30 @@ export interface ModifyLoginStatusAction extends Action<UserActionConstant> {
   data: boolean
 }
 
-export const saveUserInfo = (
+export interface MarkLoginAction extends Action<UserActionConstant> {
+  type: UserActionConstant.markLogin
+  data?: UserInfo
+}
+
+export interface SaveUserInfoAction extends Action<UserActionConstant> {
+  type: UserActionConstant.saveUserInfo
+  data?: UserInfo
+}
+
+export const saveUserCredentials = (
   username: string,
   password: string
-): SaveUserInfoAction => ({
-  type: UserActionConstant.saveUserInfo,
+): SaveUserCredentials => ({
+  type: UserActionConstant.saveUserCredentials,
   data: {
     username,
     password,
   },
 })
 
-/**
- * @deprecated
- * @see markLogin 标记已经登录
- * @see markLoginExpired 标记登录过期
- */
-export const modifyLoginStatus = (
-  status: boolean
-): ModifyLoginStatusAction => ({
-  type: UserActionConstant.modifyLoginStatus,
-  data: status,
+export const saveUserInfo = (info: UserInfo): SaveUserInfoAction => ({
+  type: UserActionConstant.saveUserInfo,
+  data: info,
 })
 
 export const markLoginExpired = (): ModifyLoginStatusAction => ({
@@ -44,7 +54,21 @@ export const markLoginExpired = (): ModifyLoginStatusAction => ({
   data: false,
 })
 
-export const markLogin = (): ModifyLoginStatusAction => ({
-  type: UserActionConstant.modifyLoginStatus,
-  data: true,
-})
+export const markLogin = () => {
+  return (dispatch: Dispatch<MarkLoginAction>) => {
+    getUserInfo()
+      .then(resp => {
+        dispatch({
+          type: UserActionConstant.markLogin,
+          data: resp,
+        })
+      })
+      .catch(e => {
+        console.error(e)
+        dispatch({
+          type: UserActionConstant.markLogin,
+          data: undefined,
+        })
+      })
+  }
+}
