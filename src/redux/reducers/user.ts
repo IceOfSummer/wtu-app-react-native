@@ -5,11 +5,17 @@ import { UserActions } from '../actions/user'
 export type UserState = {
   username?: string
   password?: string
+  /**
+   * @deprecated 存在歧义, true为登录过期, 但在主观上会将true认作登录有效
+   * @see UserState#isLoginValid
+   */
   expired: boolean
+  isLoginValid: boolean
 }
 
 const initState: UserState = {
   expired: true,
+  isLoginValid: false,
 }
 const userReducer: Reducer<UserState, UserActions> = (
   state = initState,
@@ -28,6 +34,7 @@ const userReducer: Reducer<UserState, UserActions> = (
     }
     const copyState: UserState = JSON.parse(JSON.stringify(state))
     copyState.expired = action.data
+    copyState.isLoginValid = !action.data
     return copyState
   }
   return state

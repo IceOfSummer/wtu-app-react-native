@@ -27,9 +27,24 @@ export const saveUserInfo = (
   },
 })
 
+/**
+ * @deprecated
+ * @see markLogin 标记已经登录
+ * @see markLoginExpired 标记登录过期
+ */
 export const modifyLoginStatus = (
   status: boolean
 ): ModifyLoginStatusAction => ({
   type: UserActionConstant.modifyLoginStatus,
   data: status,
+})
+
+export const markLoginExpired = (): ModifyLoginStatusAction => ({
+  type: UserActionConstant.modifyLoginStatus,
+  data: false,
+})
+
+export const markLogin = (): ModifyLoginStatusAction => ({
+  type: UserActionConstant.modifyLoginStatus,
+  data: true,
 })
