@@ -1,10 +1,12 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Button, Text, View } from 'react-native'
+import Loading from '../../component/Loading'
 
 const Applications: React.FC = () => {
   return (
     <View>
-      <Text>应用</Text>
+      <Button title="show loading" onPress={() => Loading.showLoading()} />
+      <Text>应用1</Text>
     </View>
   )
 }
