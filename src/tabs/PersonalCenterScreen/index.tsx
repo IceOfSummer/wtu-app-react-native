@@ -43,6 +43,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
                 paddingStart: global.styles.$spacing_row_base,
               }}>
               {props.username ? props.username : '未登录'}
+              {props.username && props.expired ? '(登录已过期)' : ''}
             </Text>
           </View>
         </View>

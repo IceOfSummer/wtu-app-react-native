@@ -8,6 +8,7 @@ import { NavigationContainer, ParamListBase } from '@react-navigation/native'
 import SchoolAuth from '../views/SchoolAuth'
 import PersonalInfo from '../views/PersonalInfo'
 import DiyToast from '../component/DiyToast'
+import { StatusBar } from 'react-native'
 
 const Stack = createNativeStackNavigator()
 
@@ -30,6 +31,9 @@ export interface RouterTypes extends ParamListBase {
 const headerCommonOptions: NativeStackNavigationOptions = {
   headerBackImageSource: require('../assets/img/back.png'),
   headerTitleAlign: 'center',
+  headerTitleStyle: {
+    fontSize: global.styles.$font_size_lg,
+  },
 }
 const hideHeaderOptions: NativeStackNavigationOptions = {
   header: () => null,
@@ -47,7 +51,10 @@ const headerCommonOptionsWithTitle = (
 const Router: React.FC = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerTitleStyle: { fontSize: global.styles.$font_size_lg },
+        }}>
         <Stack.Screen
           name={HOME_TABS}
           component={TabBar}
@@ -68,6 +75,7 @@ const Router: React.FC = () => {
         />
       </Stack.Navigator>
       <DiyToast />
+      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
     </NavigationContainer>
   )
 }

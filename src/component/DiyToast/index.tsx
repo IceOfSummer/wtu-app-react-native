@@ -12,6 +12,10 @@ import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 type navToastProps = {
   routerName: string
 }
+/**
+ * NavToast, 点击Toast后跳转到指定的路由处
+ * 需要向props传递routerName属性
+ */
 export const NAV_TOAST = 'NavToast'
 const NavToast: React.FC<
   ToastConfigParams<BaseToastProps & navToastProps>
