@@ -18,7 +18,7 @@ const initInterceptors = () => {
             routerName: SCHOOL_AUTH,
           },
         })
-        throw new Error('登录过期')
+        return Promise.reject('登录过期')
       }
     }
     if (resp.data) {

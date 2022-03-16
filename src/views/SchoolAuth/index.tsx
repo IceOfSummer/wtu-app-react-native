@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, Keyboard } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RouterTypes } from '../../router'
 import {
@@ -16,9 +16,10 @@ import { initLogin, InitLoginResponse, login } from '../../api/edu/auth'
 import Button from 'react-native-button'
 import BasicDialog, {
   BasicDialogRefAttribute,
-} from '../../component/dialogs/BasicDialog'
+} from '../../component/BasicDialog'
 import { wtuEncrypt } from '../../utils/aesUtils'
 import Toast from 'react-native-toast-message'
+import Loading from '../../component/Loading'
 
 interface StoreProps {
   username?: string
@@ -91,6 +92,8 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
     if (isInvalidForm()) {
       return
     }
+    // 隐藏键盘
+    Keyboard.dismiss()
     if (!loginParam) {
       dialog.current?.showDialog?.({
         title: '初始化失败',
@@ -100,9 +103,10 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
       return
     }
     // tryLogin
+    Loading.showLoading()
     const pwd = wtuEncrypt(password, loginParam.encryptSalt)
-    login(loginParam.lt, pwd, captcha, username, loginParam.execution).then(
-      resp => {
+    login(loginParam.lt, pwd, captcha, username, loginParam.execution)
+      .then(resp => {
         props.saveUserCredentials(username, password)
         const match = resp.match(/<span id="msg" class="auth_error".+</)
         if (match == null) {
@@ -124,8 +128,10 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
             type: 'error',
           })
         }
-      }
-    )
+      })
+      .finally(() => {
+        Loading.hideLoading()
+      })
   }
 
   function isInvalidForm() {
@@ -185,6 +191,7 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
         <View style={styles.captchaInputBlock}>
           <View style={styles.captchaInput}>
             <AniInput
+              value={captcha}
               placeholder="验证码"
               onTextInput={setCaptcha}
               ref={captchaInput}

@@ -6,15 +6,16 @@ import { ReducerTypes } from '../../redux/reducers'
 import { UserInfo } from '../../redux/reducers/user'
 import BasicDialog, {
   BasicDialogRefAttribute,
-} from '../../component/dialogs/BasicDialog'
+} from '../../component/BasicDialog'
 import { markLoginExpired, saveUserInfo } from '../../redux/actions/user'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import styles from './styles'
 import CenterTextCard from '../../component/Cards/CenterTextCard'
-import { logout } from '../../api/edu/auth'
 import Toast from 'react-native-toast-message'
+import CookieManager from '@react-native-cookies/cookies'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RouterTypes } from '../../router'
+import Loading from '../../component/Loading'
 
 interface PersonalInfoProps {}
 
@@ -48,12 +49,24 @@ const PersonalInfo: React.FC<
    * 登出
    */
   const logOutEduAccount = (): void => {
-    logout().then(() => {
-      props.logOut()
-      Toast.show({
-        text1: '登出成功',
-      })
-      props.navigation.goBack()
+    dialog.current?.showDialog?.({
+      title: '注销登录',
+      content: '确定要注销登录吗',
+      type: 'warn',
+      onConfirm() {
+        Loading.showLoading()
+        CookieManager.clearAll()
+          .then(() => {
+            props.logOut()
+            Toast.show({
+              text1: '登出成功',
+            })
+            props.navigation.goBack()
+          })
+          .finally(() => {
+            Loading.hideLoading()
+          })
+      },
     })
   }
 

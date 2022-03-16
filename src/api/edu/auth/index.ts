@@ -67,5 +67,10 @@ export const login = (
     'POST'
   )
 
-export const logout = () =>
-  noRepeatAjax('https://auth.wtu.edu.cn/authserver/logout')
+/**
+ * 登出教务系统
+ */
+export const logoutEduSystem = () =>
+  noRepeatAjax(
+    'https://auth.wtu.edu.cn/authserver/logout?service=https%3A%2F%2Fauth.wtu.edu.cn%2Fauthserver%2Findex.do'
+  )

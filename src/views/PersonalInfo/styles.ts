@@ -6,6 +6,6 @@ export default StyleSheet.create({
     paddingHorizontal: global.styles.$spacing_row_base,
   },
   contentBlockHeaderText: {
-    fontSize: global.styles.$font_size_base,
+    fontSize: global.styles.$font_size_sm,
   },
 })

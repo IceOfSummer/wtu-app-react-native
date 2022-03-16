@@ -95,49 +95,53 @@ const BasicDialog: React.FC<BasicDialogProps> = props => {
     closeDialog,
   }))
 
-  return (
-    <Modal
-      isVisible={visible}
-      animationIn="fadeInUp"
-      animationOut="fadeOut"
-      backdropTransitionOutTiming={0}>
-      <View style={styles.dialogOuter}>
-        <View>
-          <Text
-            style={{
-              color: castColor(dialogConfig.type),
-              fontSize: 16,
-              textAlign: 'center',
-            }}>
-            {dialogConfig.title}
-          </Text>
-        </View>
-        <View style={{ height: 20 }} />
-        <View>
-          <Text
-            style={{ color: global.styles.$info_color, textAlign: 'center' }}>
-            {dialogConfig.content}
-          </Text>
-        </View>
-        <View style={styles.buttonGroup}>
-          <Button
-            style={styles.button}
-            containerStyle={styles.buttonContainer}
-            onPress={executeConfirmCallback}>
-            确定
-          </Button>
-          {dialogConfig.hideCancel ? null : (
+  if (visible) {
+    return (
+      <Modal
+        isVisible
+        animationIn="fadeInUp"
+        animationOut="fadeOut"
+        backdropTransitionOutTiming={0}>
+        <View style={styles.dialogOuter}>
+          <View>
+            <Text
+              style={{
+                color: castColor(dialogConfig.type),
+                fontSize: 16,
+                textAlign: 'center',
+              }}>
+              {dialogConfig.title}
+            </Text>
+          </View>
+          <View style={{ height: 20 }} />
+          <View>
+            <Text
+              style={{ color: global.styles.$info_color, textAlign: 'center' }}>
+              {dialogConfig.content}
+            </Text>
+          </View>
+          <View style={styles.buttonGroup}>
             <Button
-              onPress={executeCancelCallback}
-              style={{ ...styles.button, color: '#000' }}
-              containerStyle={styles.buttonContainer}>
-              取消
+              style={styles.button}
+              containerStyle={styles.buttonContainer}
+              onPress={executeConfirmCallback}>
+              确定
             </Button>
-          )}
+            {dialogConfig.hideCancel ? null : (
+              <Button
+                onPress={executeCancelCallback}
+                style={{ ...styles.button, color: '#000' }}
+                containerStyle={styles.buttonContainer}>
+                取消
+              </Button>
+            )}
+          </View>
         </View>
-      </View>
-    </Modal>
-  )
+      </Modal>
+    )
+  } else {
+    return null
+  }
 }
 
 export default React.forwardRef<BasicDialogRefAttribute, {}>((props, ref) => {

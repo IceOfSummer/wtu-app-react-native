@@ -1,5 +1,6 @@
 import React, {
   ForwardedRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -10,7 +11,7 @@ interface AniInputProps {
   placeholder?: string
   password?: boolean
   onTextInput?: (text: string) => void
-  value?: string
+  value: string
 }
 interface AniInputRefProps {
   onRef?: ForwardedRef<any>
@@ -26,12 +27,10 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
     props.placeholder ? props.placeholder : ''
   )
   const [isError, setErrorStatus] = useState(false)
-  // 记录text
-  const [text, setText] = useState<string>(props.value ? props.value : '')
+
   const inputEvent = (t: string): void => {
-    setText(t)
     setErrorStatus(false)
-    setPlaceholder(props.placeholder ? props.placeholder : '')
+    setPlaceholder(props.placeholder ? props.placeholder : 'input')
     props.onTextInput?.(t)
   }
 
@@ -74,7 +73,7 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
   }
 
   const resetAnimation = () => {
-    if (text && text.length !== 0) {
+    if (props.value && props.value.length !== 0) {
       // 有内容了 不重置
       return
     }
@@ -82,11 +81,18 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
     stopAniObj.start()
   }
 
+  useEffect(() => {
+    if (props.value && props.value.length !== 0) {
+      startAnimation()
+    }
+  }, [])
+
   // 设置错误文字
   const setErrorText = (msg: string): void => {
     setPlaceholder(`${props.placeholder}(${msg})`)
     setErrorStatus(true)
   }
+
   useImperativeHandle(props.onRef, () => ({ setErrorText }))
 
   return (
@@ -116,6 +122,7 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
         onBlur={resetAnimation}
         style={{ margin: 2, padding: 0 }}
         onChangeText={inputEvent}
+        value={props.value}
       />
     </View>
   )

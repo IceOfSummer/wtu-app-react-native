@@ -33,7 +33,7 @@ export default class Loading extends React.Component<any, LoadingStates> {
    * @param loadingText 提示文字
    */
   public static showLoading(loadingText: string = '加载中'): void {
-    StatusBar.setBackgroundColor('#00000040')
+    StatusBar.setBackgroundColor('#00000080')
     if (!Loading.curInstance) {
       console.warn(
         'No <Loading/> instance found, please create it on the root tag'
