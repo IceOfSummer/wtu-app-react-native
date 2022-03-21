@@ -4,11 +4,15 @@ import ClassScheduleScreen from './ClassScheduleScreen'
 import ApplicationsScreen from './ApplicationsScreen'
 import PersonalCenterScreen from './PersonalCenterScreen'
 import React from 'react'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import {
+  BottomTabNavigationOptions,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs'
 import {
   APPLICATIONS_TABS,
   CLASS_SCHEDULE_TABS,
   HOME_TABS,
+  LESSONS_TABLE_CONFIG_PAGE,
   PERSONAL_CENTER_TABS,
 } from '../router'
 
@@ -33,23 +37,43 @@ const TabBar = () => {
               return <Icons iconText="&#xe613;" {...param} />
           }
         },
-        header: () => {
-          return null
-        },
       })}>
       <Tab.Screen
         name="*"
         options={{ title: HOME_TABS }}
         component={HomeScreen}
       />
-      <Tab.Screen name={CLASS_SCHEDULE_TABS} component={ClassScheduleScreen} />
+      <Tab.Screen
+        name={CLASS_SCHEDULE_TABS}
+        component={ClassScheduleScreen}
+        options={classScheduleOptions}
+      />
       <Tab.Screen name={APPLICATIONS_TABS} component={ApplicationsScreen} />
       <Tab.Screen
         name={PERSONAL_CENTER_TABS}
         component={PersonalCenterScreen}
+        options={PERSONAL_CENTER_SCREEN_OPTIONS}
       />
     </Tab.Navigator>
   )
+}
+
+const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
+  headerTitle: '课程表',
+  headerTitleAlign: 'center',
+  headerRight: () => (
+    <Icons
+      iconText="&#xe600;"
+      size={20}
+      style={{ marginRight: 10 }}
+      onPress={() => {
+        nav.navigation.navigate(LESSONS_TABLE_CONFIG_PAGE)
+      }}
+    />
+  ),
+})
+const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
+  header: () => null,
 }
 
 export default TabBar

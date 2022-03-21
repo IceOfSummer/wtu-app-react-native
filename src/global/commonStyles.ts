@@ -14,7 +14,7 @@ const gStyles: GlobalStyleTypes = {
   $border_color: '#c8c7cc',
   $font_size_sm: 14,
   $font_size_base: 16,
-  $font_size_lg: 20,
+  $font_size_lg: 22,
   $font_size_title: 24,
   $font_size_subtitle: 22,
   $font_size_paragraph: 18,

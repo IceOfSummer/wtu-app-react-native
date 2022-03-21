@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { StyleProp, StyleSheet, Text, TextStyle } from 'react-native'
 
 type Props = {
   focused?: boolean
@@ -7,7 +7,7 @@ type Props = {
   size?: number
   iconText: string
   onPress?: () => void
-  style?: object
+  style?: StyleProp<TextStyle>
 }
 
 const styles = StyleSheet.create({
@@ -20,12 +20,11 @@ const Icons: React.FC<Props> = props => {
   return (
     <Text
       onPress={props.onPress}
-      style={{
-        ...styles.iconfont,
-        fontSize: props.size,
-        color: props.color,
-        ...props.style,
-      }}>
+      style={[
+        styles.iconfont,
+        props.style,
+        { fontSize: props.size, color: props.color },
+      ]}>
       {props.iconText}
     </Text>
   )

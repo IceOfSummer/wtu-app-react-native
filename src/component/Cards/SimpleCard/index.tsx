@@ -30,12 +30,18 @@ const SimpleCard: React.FC<SimpleCardProps> = props => {
   }
   return (
     <Cards {...props}>
-      <View>
+      <View style={{ flexGrow: 1 }}>
         {props.children}
         <Text style={{ ...styles.text, color: textColor }}>{props.title}</Text>
       </View>
-      <View>
-        <Text style={styles.text}>{props.rightContent}</Text>
+      <View style={{ flexGrow: 1 }}>
+        {props.right ? (
+          props.right
+        ) : (
+          <Text style={[styles.text, { textAlign: 'right' }]}>
+            {props.rightContent}
+          </Text>
+        )}
       </View>
     </Cards>
   )

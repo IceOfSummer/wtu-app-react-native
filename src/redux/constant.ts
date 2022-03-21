@@ -4,7 +4,7 @@ export enum UserActionConstant {
    */
   saveUserCredentials = 'userAction_saveUserCredentials',
   /**
-   * 更改登录状态, true为过期, false为有效
+   * 更改登录状态, true为有效, false为过期
    */
   modifyLoginStatus = 'userAction_modifyLoginStatus',
   /**
@@ -15,4 +15,15 @@ export enum UserActionConstant {
    * 保存用户信息
    */
   saveUserInfo = 'userAction_saveUserInfo',
+}
+
+export enum LessonsTableActionConstant {
+  /**
+   * 修改课程表设置
+   */
+  modifyOptions = 'lessonsTableAction_modifyOptions',
+  /**
+   * 保存课表信息
+   */
+  saveLessonsInfo = 'lessonsTableAction_saveLessonsInfo',
 }

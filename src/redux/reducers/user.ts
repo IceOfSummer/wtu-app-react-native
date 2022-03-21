@@ -23,7 +23,6 @@ const userReducer: Reducer<UserState, UserActions> = (
 ) => {
   const curAction = action.type
   const copyState: UserState = JSON.parse(JSON.stringify(state))
-  console.log(action)
 
   if (curAction === UserActionConstant.saveUserCredentials) {
     copyState.username = action.data.username
