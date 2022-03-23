@@ -193,11 +193,19 @@ android {
         }
     }
 }
+repositories {
+    maven {
+        url "https://maven.aliyun.com/nexus/content/groups/public"
+    }
+}
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation  'io.github.scwang90:refresh-layout-kernel:2.0.5'      //核心必须依赖
+    implementation  'io.github.scwang90:refresh-header-classics:2.0.5'   //经典刷新头
+    implementation  'io.github.scwang90:refresh-footer-classics:2.0.5'    //经典加载
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 

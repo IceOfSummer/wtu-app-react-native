@@ -1,16 +1,59 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Text } from 'react-native'
+import PullDownRefreshView from '../../native/component/PullDownRefreshView'
 
 const Applications: React.FC = () => {
   return (
-    <View>
-      <View>
-        <Text>content</Text>
-        <View>
-          <Text>Header</Text>
-        </View>
-      </View>
-    </View>
+    <PullDownRefreshView enableRefresh={true} enablePureScrollMode={true}>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+      <Text>hello</Text>
+    </PullDownRefreshView>
   )
 }
 
