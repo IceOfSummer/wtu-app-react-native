@@ -1,10 +1,11 @@
-import { RouterTypes } from '../../router'
+import { RouterTypes } from '../../../router'
 import React from 'react'
 import Toast, {
   BaseToastProps,
   ErrorToast,
   ToastConfig,
   ToastConfigParams,
+  ToastShowParams,
 } from 'react-native-toast-message'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
@@ -37,3 +38,16 @@ const DiyToast: React.FC = () => {
 }
 
 export default DiyToast
+
+/**
+ * 显示可以进行导航的Toast
+ */
+export const showNavigationToast = (
+  param: ToastShowParams & { routerName: keyof RouterTypes }
+) =>
+  Toast.show({
+    ...param,
+    props: {
+      routerName: param.routerName,
+    },
+  })

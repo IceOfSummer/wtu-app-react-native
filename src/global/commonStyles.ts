@@ -12,7 +12,7 @@ const gStyles: GlobalStyleTypes = {
   $bg_color_hover: '#f1f1f1',
   $bg_color_mask: 'rgba(0, 0, 0, 0.4)',
   $border_color: '#c8c7cc',
-  $font_size_sm: 14,
+  $font_size_sm: 12,
   $font_size_base: 16,
   $font_size_lg: 22,
   $font_size_title: 24,

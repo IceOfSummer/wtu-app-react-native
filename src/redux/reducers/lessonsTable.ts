@@ -29,6 +29,10 @@ export type LessonTableOptions = {
  */
 export type ClassInfo = {
   /**
+   * 课程号id
+   */
+  id: number
+  /**
    * 上课开始时间
    */
   beginTime: number
@@ -37,7 +41,7 @@ export type ClassInfo = {
    */
   duration: number
   /**
-   * 第几周的课
+   * 星期几的课
    */
   week: number
   /**
@@ -48,6 +52,14 @@ export type ClassInfo = {
    * 上课地点
    */
   location: string
+  /**
+   * 开始周
+   */
+  startWeek: number
+  /**
+   * 结束周
+   */
+  endWeek: number
 }
 
 const initState: LessonsTableStates = {
@@ -62,7 +74,6 @@ const lessonsTableReducer: Reducer<LessonsTableStates, LessonsTableActions> = (
   state = initState,
   action
 ) => {
-  console.log(action)
   const copyObj = JSON.parse(JSON.stringify(state)) as LessonsTableStates
   if (action.type === LessonsTableActionConstant.modifyOptions) {
     Object.assign(copyObj.options, action.data)

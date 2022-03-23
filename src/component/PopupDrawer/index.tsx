@@ -51,12 +51,12 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
     const distance = startY.current - nativeEvent.pageY
     if (isShowingLessons.current) {
       drawerPos.setValue(-(drawerAvailableHeight + distance))
-      const opacity = Math.abs(distance) / TOGGLE_DISTANCE
+      const opacity = Math.abs(distance) / TOGGLE_DISTANCE / 2
       contentOpacity.setValue(opacity > 1 ? 1 : opacity)
     } else {
       drawerPos.setValue(-distance)
       const opacity = 1 - Math.abs(distance) / TOGGLE_DISTANCE
-      contentOpacity.setValue(opacity > 1 ? 1 : opacity)
+      contentOpacity.setValue(opacity < 0 ? 0 : opacity)
     }
   }
 
@@ -78,10 +78,16 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   function showDrawer() {
     drawerPos.stopAnimation()
     isShowingLessons.current = true
-    Animated.timing(drawerPos, {
-      useNativeDriver: false,
-      toValue: -drawerAvailableHeight,
-    }).start()
+    Animated.parallel([
+      Animated.timing(drawerPos, {
+        useNativeDriver: false,
+        toValue: -drawerAvailableHeight,
+      }),
+      Animated.timing(contentOpacity, {
+        useNativeDriver: false,
+        toValue: 0,
+      }),
+    ]).start()
   }
 
   const onTouchEnd = ({ nativeEvent }: GestureResponderEvent) => {
@@ -141,7 +147,6 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
       <Animated.View
         style={{
           opacity: contentOpacity,
-          transform: [{ scale: contentOpacity }],
         }}
         onLayout={onDrawerLayout}>
         {props.children}

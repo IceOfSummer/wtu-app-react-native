@@ -7,7 +7,7 @@ import TabBar from '../tabs'
 import { NavigationContainer, ParamListBase } from '@react-navigation/native'
 import SchoolAuth from '../views/SchoolAuth'
 import PersonalInfo from '../views/PersonalInfo'
-import DiyToast from '../component/DiyToast'
+import DiyToast from '../component/DiyToast/NavToast'
 import { StatusBar } from 'react-native'
 import LessonsTableConfigPage from '../views/LessonsTableConfigPage'
 

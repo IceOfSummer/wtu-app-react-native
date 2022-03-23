@@ -6,7 +6,6 @@ export default StyleSheet.create({
     marginVertical: 5,
   },
   cardContainer: {
-    backgroundColor: '#a6a4ff',
     paddingHorizontal: 10,
     paddingTop: 15,
     paddingBottom: 20,

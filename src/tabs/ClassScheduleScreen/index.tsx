@@ -1,77 +1,70 @@
 import React, { useEffect, useRef, useState } from 'react'
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native'
-import styles, { PULL_DOWN_AREA_HEIGHT } from './styles'
+import { Text, View } from 'react-native'
+import styles from './styles'
 import LessonCard from './LessonCard'
 import LessonsTable from './LessonsTable'
 import { ClassInfo } from '../../redux/reducers/lessonsTable'
-import InitModal from '../../component/InitModal'
+import PopupDrawer from '../../component/PopupDrawer'
+import { connect } from 'react-redux'
+import { ReducerTypes } from '../../redux/reducers'
+import { showNavigationToast } from '../../component/DiyToast/NavToast'
+import { SCHOOL_AUTH } from '../../router'
+import { getLessons } from '../../api/edu/classes'
+import BasicDialog, {
+  BasicDialogRefAttribute,
+} from '../../component/BasicDialog'
+import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
 
-const MOCK_DATA: Array<ClassInfo> = [
-  {
-    className: 'abc',
-    beginTime: 1,
-    duration: 2,
-    location: 'xx',
-    week: 4,
-  },
-  {
-    className: 'ccc',
-    beginTime: 1,
-    duration: 2,
-    location: 'xxa',
-    week: 4,
-  },
-  {
-    className: 'abcde',
-    beginTime: 1,
-    duration: 2,
-    location: 'xxdd',
-    week: 4,
-  },
-  {
-    className: 'abc',
-    beginTime: 1,
-    duration: 2,
-    location: 'xx',
-    week: 4,
-  },
-]
+interface ClassScheduleProps {}
 
-const ClassSchedule: React.FC = () => {
+const ClassSchedule: React.FC<
+  ClassScheduleProps & StoreActions & StoreStates
+> = props => {
+  const dialog = useRef<BasicDialogRefAttribute>(null)
   const [todayLessons, setTodayLessons] = useState<Array<ClassInfo>>([])
-  // 屏幕可用高度(不包括tabs和header)
-  const [availableHeight, setAvailableHeight] = useState(0)
-  // 今日课程卡片高度
-  const [cardHeight, setCardHeight] = useState(0)
-  const scroll = useRef<ScrollView>(null)
-  // 在滚动条位置初始化完毕后再显示内容, 优化视觉体验
-  const [isLoadSuccess, setLoadSuccess] = useState(false)
 
   // 今天的星期
   const curDay = new Date().getDay()
 
   useEffect(() => {
-    // TODO 测试用, 后面删掉
-    setTodayLessons(splitTodayLessons(MOCK_DATA))
-    setTimeout(() => {
-      scroll.current?.scrollTo({ y: PULL_DOWN_AREA_HEIGHT, animated: true })
-      requestAnimationFrame(() => {
-        setLoadSuccess(true)
-      })
-    }, 100)
-    console.log('effect')
+    if (props.lessons) {
+      setTodayLessons(splitTodayLessons(props.lessons))
+    }
   }, [])
+
+  function loadData() {
+    if (!props.isLoginValid || !props.username) {
+      showNavigationToast({
+        type: 'error',
+        text1: '请先登录',
+        routerName: SCHOOL_AUTH,
+      })
+      return
+    }
+    // load
+    getLessons(props.username, props.year, props.term).then(resp => {
+      props.saveLessonsInfo(resp)
+      if (resp.length === 0) {
+        dialog.current?.showDialog?.({
+          title: '当前设置下没有课哦!',
+          content: '点击右上角设置可以具体配置相关设置',
+          hideCancel: true,
+        })
+        return
+      } else {
+        setTodayLessons(splitTodayLessons(resp))
+      }
+    })
+  }
 
   function splitTodayLessons(lessons: Array<ClassInfo>): Array<ClassInfo> {
     const arr: Array<ClassInfo> = []
     lessons.forEach(value => {
-      if (value.week === curDay) {
+      if (
+        value.week === curDay &&
+        value.startWeek <= props.week &&
+        props.week <= value.endWeek
+      ) {
         arr.push(value)
       }
     })
@@ -79,95 +72,80 @@ const ClassSchedule: React.FC = () => {
   }
 
   /**
-   * 标记是否可以开启下拉刷新
-   * 若要开启，需要在松开滑动时，位置在顶部，而不是靠滑动后的惯性触发刷新
+   * 计算并格式化当前时间
    */
-  const isRefresh = useRef(false)
-
-  const endDragEvent = ({
-    nativeEvent,
-  }: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (nativeEvent.contentOffset.y < PULL_DOWN_AREA_HEIGHT / 2) {
-      isRefresh.current = true
+  function getCurTime(): string {
+    const date = new Date()
+    const hour = date.getHours()
+    let curTime = ''
+    if (hour < 10) {
+      curTime += '0'
     }
-  }
-
-  const onScrollEndEvent = ({
-    nativeEvent,
-  }: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const curPos = nativeEvent.contentOffset.y
-    if (curPos < PULL_DOWN_AREA_HEIGHT) {
-      scroll.current?.scrollTo({ y: PULL_DOWN_AREA_HEIGHT })
-      if (curPos < PULL_DOWN_AREA_HEIGHT / 2 && isRefresh.current) {
-        isRefresh.current = false
-        // TODO 下拉刷新
-        console.log('refresh')
-      }
+    curTime += `${hour}:`
+    const minute = date.getMinutes()
+    if (minute < 10) {
+      curTime += '0'
     }
+    curTime += minute
+    return curTime
   }
+  const curTime = getCurTime()
 
   return (
-    <View
-      style={styles.classScheduleContainer}
-      onLayout={event => setAvailableHeight(event.nativeEvent.layout.height)}>
-      <ScrollView
-        ref={scroll}
-        snapToOffsets={[
-          PULL_DOWN_AREA_HEIGHT,
-          availableHeight + PULL_DOWN_AREA_HEIGHT,
-        ]}
-        snapToStart={true}
-        snapToEnd={false}
-        onScrollEndDrag={endDragEvent}
-        onMomentumScrollEnd={onScrollEndEvent}
-        showsVerticalScrollIndicator={false}
-        snapToInterval={0}>
-        <View>
-          {/* 此处用于下拉刷新, 高度固定为 styles.PULL_DOWN_AREA_HEIGHT */}
-          <View style={styles.pullDownArea}>
-            <Text
-              style={{
-                color: global.styles.$primary_color,
-                textAlign: 'center',
-              }}>
-              松开刷新
-            </Text>
-          </View>
-          <View
-            style={styles.cardOuter}
-            onLayout={event => setCardHeight(event.nativeEvent.layout.height)}>
-            <View style={styles.cardContainer}>
-              <View>
-                <Text style={styles.cardTitleText}>今日课程</Text>
-              </View>
-              <View>
-                {todayLessons.length === 0 ? (
-                  <Text style={{ textAlign: 'center', padding: 30 }}>
-                    今天没有课哦!
-                  </Text>
-                ) : (
-                  todayLessons.map((value, index) => (
-                    <LessonCard {...value} key={index} />
-                  ))
-                )}
-              </View>
+    <View style={styles.classScheduleContainer}>
+      <PopupDrawer drawer={<LessonsTable />} drawerTitle="课程一览">
+        <View style={styles.cardOuter}>
+          <View style={styles.cardContainer}>
+            <View>
+              <Text style={styles.cardTitleText}>今日课程</Text>
+            </View>
+            <View>
+              {todayLessons.length === 0 ? (
+                <Text style={{ textAlign: 'center', padding: 30 }}>
+                  今天没有课哦!
+                </Text>
+              ) : (
+                todayLessons.map((value, index) => (
+                  <LessonCard curTime={curTime} classInfo={value} key={index} />
+                ))
+              )}
             </View>
           </View>
-          {/* 避免元素突然闪一下 */}
-          {availableHeight === 0 ? null : (
-            <View
-              style={{
-                paddingTop: availableHeight - cardHeight - 60,
-                paddingBottom: 100,
-              }}>
-              <LessonsTable />
-            </View>
-          )}
         </View>
-      </ScrollView>
-      <InitModal showLoadingAnimation visible={!isLoadSuccess} />
+      </PopupDrawer>
+      <BasicDialog ref={dialog} />
     </View>
   )
 }
 
-export default ClassSchedule
+interface StoreStates {
+  username?: string
+  week: number
+  year: number
+  term: 3 | 12
+  isLoginValid: boolean
+  lessons?: Array<ClassInfo>
+}
+
+interface StoreActions {
+  saveLessonsInfo: (...args: Parameters<typeof saveLessonsInfo>) => void
+}
+
+export default connect<
+  StoreStates,
+  StoreActions,
+  ClassScheduleProps,
+  ReducerTypes
+>(
+  initialState => ({
+    username: initialState.user.username,
+    week: initialState.lessonsTable.options.week!,
+    year: initialState.lessonsTable.options.year!,
+    term: initialState.lessonsTable.options.term!,
+    isLoginValid: initialState.user.isLoginValid,
+    lessons: initialState.lessonsTable.lessons,
+  }),
+  {
+    saveLessonsInfo,
+  }
+)(ClassSchedule)

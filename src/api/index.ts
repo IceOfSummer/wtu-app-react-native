@@ -2,6 +2,8 @@ import { axios } from 'axios-simple-wrapper'
 import Toast from 'react-native-toast-message'
 import { SCHOOL_AUTH } from '../router'
 import { existInput } from '../utils/htmlUtils'
+import { store } from '../redux/store'
+import { markLoginExpired } from '../redux/actions/user'
 
 const initInterceptors = () => {
   axios.interceptors.response.use(resp => {
@@ -18,6 +20,7 @@ const initInterceptors = () => {
             routerName: SCHOOL_AUTH,
           },
         })
+        store.dispatch(markLoginExpired())
         return Promise.reject('登录过期')
       }
     }

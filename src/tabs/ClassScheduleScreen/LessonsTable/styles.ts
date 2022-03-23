@@ -1,40 +1,53 @@
 import { StyleSheet } from 'react-native'
 
+export const HEADER_HEIGHT = 20
+export const PER_CLASS_HEIGHT = 50
+
 export default StyleSheet.create({
   lessonsTableContainer: {
     backgroundColor: '#fff',
-    borderTopStartRadius: 15,
-    borderTopEndRadius: 15,
-    padding: 10,
     width: '100%',
+    height: '100%',
+    position: 'relative',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   headerText: {
-    flexGrow: 1,
     fontSize: 12,
     textAlign: 'center',
-    height: 20,
+    height: HEADER_HEIGHT,
   },
   sidebarText: {
     fontSize: 10,
     textAlign: 'center',
   },
   sidebar: {
-    marginTop: 20,
+    marginTop: HEADER_HEIGHT,
+    justifyContent: 'flex-start',
   },
   sidebarBlock: {
-    margin: 5,
-  },
-  lessonsTableTitle: {
-    textAlign: 'center',
-    color: global.styles.$primary_color,
-    height: 30,
+    height: PER_CLASS_HEIGHT,
+    justifyContent: 'center',
   },
   upIconsContainer: {
     height: 20,
     alignItems: 'center',
+  },
+  lessonItem: {
+    position: 'absolute',
+  },
+  lessonItemContainer: {
+    backgroundColor: 'skyblue',
+    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+    padding: 3,
+  },
+  lessonText: {
+    fontSize: global.styles.$font_size_sm,
+    color: '#fff',
+    textAlign: 'center',
   },
 })

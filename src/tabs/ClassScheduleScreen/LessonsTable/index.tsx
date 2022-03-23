@@ -1,19 +1,83 @@
-import React from 'react'
-import { Text, View } from 'react-native'
-import styles from './styles'
-import Icons from '../../../component/Icons'
+import React, { ReactNode } from 'react'
+import { Dimensions, Text, View } from 'react-native'
+import styles, { HEADER_HEIGHT, PER_CLASS_HEIGHT } from './styles'
+import { connect } from 'react-redux'
+import { ReducerTypes } from '../../../redux/reducers'
+import { ClassInfo } from '../../../redux/reducers/lessonsTable'
+import { Link } from '@react-navigation/native'
+import { SCHOOL_AUTH } from '../../../router'
 
-const LessonsTable: React.FC = () => {
+interface LessonsTableProps {}
+
+const LessonsTable: React.FC<
+  LessonsTableProps & StoreStates & StoreActions
+> = props => {
+  const deviceWidth = Dimensions.get('window').width
+  const perBlockWidth = deviceWidth / 8
+
+  const countLeftValue = (classInfo: ClassInfo) => {
+    return classInfo.week * perBlockWidth
+  }
+
+  const countTopValue = (classInfo: ClassInfo) => {
+    return classInfo.beginTime * PER_CLASS_HEIGHT + HEADER_HEIGHT
+  }
+
+  const countHeight = (classInfo: ClassInfo) => {
+    return classInfo.duration * PER_CLASS_HEIGHT
+  }
+
+  const renderLessons = (): ReactNode => {
+    if (!props.lessons) {
+      return (
+        <View>
+          <Link to={SCHOOL_AUTH}>登录后再查看课表哦!</Link>
+        </View>
+      )
+    } else if (props.lessons.length === 0) {
+      return (
+        <View>
+          <Text>当前设置下没有课程哦!</Text>
+          <Text>请检查当前设置信息</Text>
+        </View>
+      )
+    } else {
+      return (
+        <View>
+          {props.lessons.map((value, index) => (
+            <View
+              style={[
+                styles.lessonItem,
+                {
+                  left: countLeftValue(value),
+                  top: countTopValue(value),
+                },
+              ]}
+              key={index}>
+              <View
+                style={{
+                  height: countHeight(value),
+                  width: perBlockWidth,
+                  padding: 2,
+                }}>
+                <View style={[styles.lessonItemContainer]}>
+                  <Text style={styles.lessonText}>
+                    {value.className} @{value.location}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))}
+        </View>
+      )
+    }
+  }
+
   return (
     <View style={styles.lessonsTableContainer}>
-      <View>
-        <View style={styles.upIconsContainer}>
-          <Icons iconText="&#xec0b;" />
-        </View>
-        <Text style={styles.lessonsTableTitle}>课程一览</Text>
-      </View>
+      {renderLessons()}
       <View style={styles.header}>
-        <View style={styles.sidebar}>
+        <View style={[styles.sidebar, { width: perBlockWidth }]}>
           <View style={styles.sidebarBlock}>
             <Text style={styles.sidebarText}>1</Text>
             <Text style={styles.sidebarText}>08:00</Text>
@@ -75,17 +139,43 @@ const LessonsTable: React.FC = () => {
             <Text style={styles.sidebarText}>21:35</Text>
           </View>
         </View>
-        <Text style={styles.headerText}>星期一</Text>
-        <Text style={styles.headerText}>星期二</Text>
-        <Text style={styles.headerText}>星期三</Text>
-        <Text style={styles.headerText}>星期四</Text>
-        <Text style={styles.headerText}>星期五</Text>
-        <Text style={styles.headerText}>星期六</Text>
-        <Text style={styles.headerText}>星期日</Text>
+        <Text style={[styles.headerText, { width: perBlockWidth }]}>
+          星期一
+        </Text>
+        <Text style={[styles.headerText, { width: perBlockWidth }]}>
+          星期二
+        </Text>
+        <Text style={[styles.headerText, { width: perBlockWidth }]}>
+          星期三
+        </Text>
+        <Text style={[styles.headerText, { width: perBlockWidth }]}>
+          星期四
+        </Text>
+        <Text style={[styles.headerText, { width: perBlockWidth }]}>
+          星期五
+        </Text>
+        <Text style={[styles.headerText, { width: perBlockWidth }]}>
+          星期六
+        </Text>
+        <Text style={[styles.headerText, { width: perBlockWidth }]}>
+          星期日
+        </Text>
       </View>
-      <View />
     </View>
   )
 }
 
-export default LessonsTable
+interface StoreStates {
+  lessons?: Array<ClassInfo>
+}
+
+interface StoreActions {}
+
+export default connect<
+  StoreStates,
+  StoreActions,
+  LessonsTableProps,
+  ReducerTypes
+>(initialState => ({
+  lessons: initialState.lessonsTable.lessons,
+}))(LessonsTable)

@@ -21,7 +21,14 @@ export default StyleSheet.create({
   },
   pullDownArea: {
     height: PULL_DOWN_AREA_HEIGHT,
-    padding: 10,
-    backgroundColor: 'skyblue',
+    width: '100%',
+    backgroundColor: '#fff',
+    position: 'relative',
+    justifyContent: 'flex-end',
+  },
+  pullDownText: {
+    textAlign: 'center',
+    color: global.styles.$primary_color,
+    marginBottom: PULL_DOWN_AREA_HEIGHT / 4,
   },
 })
