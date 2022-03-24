@@ -3,4 +3,4 @@ import { MutableRefObject } from 'react'
 import { dispatchCommand } from 'react-native/Libraries/Renderer/shims/ReactNative'
 
 export const finishFresh = (ref: MutableRefObject<unknown>, status?: boolean) =>
-  dispatchCommand(ref.current, 'finishRefresh', status)
+  dispatchCommand(ref.current, 'finishRefresh', [status])

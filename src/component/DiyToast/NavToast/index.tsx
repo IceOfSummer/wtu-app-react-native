@@ -47,6 +47,7 @@ export const showNavigationToast = (
 ) =>
   Toast.show({
     ...param,
+    type: NAV_TOAST,
     props: {
       routerName: param.routerName,
     },

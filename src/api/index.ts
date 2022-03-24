@@ -6,29 +6,34 @@ import { store } from '../redux/store'
 import { markLoginExpired } from '../redux/actions/user'
 
 const initInterceptors = () => {
-  axios.interceptors.response.use(resp => {
-    if (typeof resp.data === 'string') {
-      const usernameInput = existInput(resp.data, 'yhm')
-      const passwordInput = existInput(resp.data, 'mm')
-      if (usernameInput && passwordInput) {
-        // 登录失效
-        Toast.show({
-          text1: '登录过期',
-          text2: '点击重新登录',
-          type: 'NavToast',
-          props: {
-            routerName: SCHOOL_AUTH,
-          },
-        })
-        store.dispatch(markLoginExpired())
-        return Promise.reject('登录过期')
+  axios.interceptors.response.use(
+    resp => {
+      if (typeof resp.data === 'string') {
+        const usernameInput = existInput(resp.data, 'yhm')
+        const passwordInput = existInput(resp.data, 'mm')
+        if (usernameInput && passwordInput) {
+          // 登录失效
+          Toast.show({
+            text1: '登录过期',
+            text2: '点击重新登录',
+            type: 'NavToast',
+            props: {
+              routerName: SCHOOL_AUTH,
+            },
+          })
+          store.dispatch(markLoginExpired())
+          return Promise.reject('登录过期')
+        }
       }
+      if (resp.data) {
+        return resp.data
+      }
+      return {}
+    },
+    error => {
+      console.log(error)
     }
-    if (resp.data) {
-      return resp.data
-    }
-    return {}
-  })
+  )
   axios.interceptors.request.use(config => {
     config.headers = {
       ...config.headers,

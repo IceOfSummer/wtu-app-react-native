@@ -14,6 +14,9 @@ import BasicDialog, {
   BasicDialogRefAttribute,
 } from '../../component/BasicDialog'
 import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
+import PullDownRefreshView, {
+  finishRefresh,
+} from '../../native/component/PullDownRefreshView'
 
 interface ClassScheduleProps {}
 
@@ -32,28 +35,37 @@ const ClassSchedule: React.FC<
     }
   }, [])
 
-  function loadData() {
-    if (!props.isLoginValid || !props.username) {
-      showNavigationToast({
-        type: 'error',
-        text1: '请先登录',
-        routerName: SCHOOL_AUTH,
-      })
-      return
-    }
-    // load
-    getLessons(props.username, props.year, props.term).then(resp => {
-      props.saveLessonsInfo(resp)
-      if (resp.length === 0) {
-        dialog.current?.showDialog?.({
-          title: '当前设置下没有课哦!',
-          content: '点击右上角设置可以具体配置相关设置',
-          hideCancel: true,
+  /**
+   * 自动加载数据, 返回true表示加载成功, false表示失败
+   */
+  async function loadData(): Promise<boolean> {
+    return new Promise(resolve => {
+      if (!props.isLoginValid || !props.username) {
+        showNavigationToast({
+          type: 'error',
+          text1: '请先登录',
+          routerName: SCHOOL_AUTH,
         })
+        resolve(false)
         return
-      } else {
-        setTodayLessons(splitTodayLessons(resp))
       }
+      // load
+      getLessons(props.username, props.year, props.term)
+        .then(resp => {
+          props.saveLessonsInfo(resp)
+          resolve(true)
+          if (resp.length === 0) {
+            dialog.current?.showDialog?.({
+              title: '当前设置下没有课哦!',
+              content: '点击右上角设置可以具体配置相关设置',
+              hideCancel: true,
+            })
+            return
+          } else {
+            setTodayLessons(splitTodayLessons(resp))
+          }
+        })
+        .catch(() => resolve(false))
     })
   }
 
@@ -91,27 +103,48 @@ const ClassSchedule: React.FC<
   }
   const curTime = getCurTime()
 
+  const onPullDownRefresh = (finish: finishRefresh) => {
+    loadData()
+      .then(result => {
+        console.log(result)
+        finish(result)
+      })
+      .catch(e => {
+        console.log(e)
+        finish(false)
+      })
+  }
+
   return (
     <View style={styles.classScheduleContainer}>
       <PopupDrawer drawer={<LessonsTable />} drawerTitle="课程一览">
-        <View style={styles.cardOuter}>
-          <View style={styles.cardContainer}>
-            <View>
-              <Text style={styles.cardTitleText}>今日课程</Text>
-            </View>
-            <View>
-              {todayLessons.length === 0 ? (
-                <Text style={{ textAlign: 'center', padding: 30 }}>
-                  今天没有课哦!
-                </Text>
-              ) : (
-                todayLessons.map((value, index) => (
-                  <LessonCard curTime={curTime} classInfo={value} key={index} />
-                ))
-              )}
+        <PullDownRefreshView
+          scrollConfig={{ style: { height: '100%' } }}
+          onRefresh={onPullDownRefresh}
+          enableRefresh>
+          <View style={styles.cardOuter}>
+            <View style={styles.cardContainer}>
+              <View>
+                <Text style={styles.cardTitleText}>今日课程</Text>
+              </View>
+              <View>
+                {todayLessons.length === 0 ? (
+                  <Text style={{ textAlign: 'center', padding: 30 }}>
+                    今天没有课哦!
+                  </Text>
+                ) : (
+                  todayLessons.map((value, index) => (
+                    <LessonCard
+                      curTime={curTime}
+                      classInfo={value}
+                      key={index}
+                    />
+                  ))
+                )}
+              </View>
             </View>
           </View>
-        </View>
+        </PullDownRefreshView>
       </PopupDrawer>
       <BasicDialog ref={dialog} />
     </View>
