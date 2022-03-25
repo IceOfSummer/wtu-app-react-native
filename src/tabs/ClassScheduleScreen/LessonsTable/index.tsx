@@ -4,8 +4,9 @@ import styles, { HEADER_HEIGHT, PER_CLASS_HEIGHT } from './styles'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../../redux/reducers'
 import { ClassInfo } from '../../../redux/reducers/lessonsTable'
-import { Link } from '@react-navigation/native'
-import { SCHOOL_AUTH } from '../../../router'
+import { Link, useNavigation } from '@react-navigation/native'
+import { LESSONS_DETAIL, RouterTypes, SCHOOL_AUTH } from '../../../router'
+import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 
 interface LessonsTableProps {}
 
@@ -14,6 +15,14 @@ const LessonsTable: React.FC<
 > = props => {
   const deviceWidth = Dimensions.get('window').width
   const perBlockWidth = deviceWidth / 8
+  const nav = useNavigation<NavigationProp<RouterTypes>>()
+
+  const seeLessonsDetail = (classInfo: ClassInfo) => {
+    nav.navigate(LESSONS_DETAIL, {
+      startTime: classInfo.beginTime,
+      week: classInfo.week,
+    })
+  }
 
   const countLeftValue = (classInfo: ClassInfo) => {
     return classInfo.week * perBlockWidth
@@ -44,7 +53,7 @@ const LessonsTable: React.FC<
     } else {
       return (
         <View>
-          {props.lessons.map((value, index) => (
+          {props.lessons.map(value => (
             <View
               style={[
                 styles.lessonItem,
@@ -53,7 +62,8 @@ const LessonsTable: React.FC<
                   top: countTopValue(value),
                 },
               ]}
-              key={index}>
+              key={value.id + value.week}
+              onTouchEnd={() => seeLessonsDetail(value)}>
               <View
                 style={{
                   height: countHeight(value),

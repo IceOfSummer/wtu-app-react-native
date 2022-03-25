@@ -31,7 +31,7 @@ export type ClassInfo = {
   /**
    * 课程号id
    */
-  id: number
+  id: string
   /**
    * 上课开始时间
    */
@@ -60,6 +60,22 @@ export type ClassInfo = {
    * 结束周
    */
   endWeek: number
+  /**
+   * 教师姓名
+   */
+  teacher: string
+  /**
+   * 课程组成: '讲课: xx, 实验: xx'
+   */
+  contains: string
+  /**
+   * 考试类型
+   */
+  examType: string
+  /**
+   * 课程类型
+   */
+  lessonsType: string
 }
 
 const initState: LessonsTableStates = {

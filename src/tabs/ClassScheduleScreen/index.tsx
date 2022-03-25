@@ -16,7 +16,7 @@ import BasicDialog, {
 import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
 import PullDownRefreshView, {
   finishRefresh,
-} from '../../native/component/PullDownRefreshView'
+} from '../../native/component/BounceScrollView'
 
 interface ClassScheduleProps {}
 

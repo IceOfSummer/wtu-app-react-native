@@ -2,7 +2,7 @@ import React from 'react'
 import { Text } from 'react-native'
 import PullDownRefreshView, {
   finishRefresh,
-} from '../../native/component/PullDownRefreshView'
+} from '../../native/component/BounceScrollView'
 
 const Index: React.FC = () => {
   const doRefresh = (finish: finishRefresh) => {

@@ -2,6 +2,9 @@ import React from 'react'
 import { View, Text, ColorValue } from 'react-native'
 import styles from './styles'
 import { ClassInfo } from '../../../redux/reducers/lessonsTable'
+import { useNavigation } from '@react-navigation/native'
+import { LESSONS_DETAIL, RouterTypes } from '../../../router'
+import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 
 interface LessonCardProps {
   classInfo: ClassInfo
@@ -41,6 +44,14 @@ const LessonCard: React.FC<LessonCardProps> = props => {
   const start = START_TIME_MAP[props.classInfo.beginTime]
   const end =
     END_TIME_MAP[props.classInfo.beginTime + props.classInfo.duration - 1]
+  const nav = useNavigation<NavigationProp<RouterTypes>>()
+
+  const seeLessonsDetail = () => {
+    nav.navigate(LESSONS_DETAIL, {
+      startTime: props.classInfo.beginTime,
+      week: props.classInfo.week,
+    })
+  }
 
   const getColor = (): ColorValue => {
     if (props.curTime > end) {
@@ -57,7 +68,9 @@ const LessonCard: React.FC<LessonCardProps> = props => {
 
   return (
     <View style={styles.cardOuter}>
-      <View style={[styles.cardContainer, { backgroundColor: getColor() }]}>
+      <View
+        style={[styles.cardContainer, { backgroundColor: getColor() }]}
+        onTouchEnd={seeLessonsDetail}>
         <Text style={styles.classNameTitle}>
           {props.classInfo.className}/@{props.classInfo.location}
         </Text>

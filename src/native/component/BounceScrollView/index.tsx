@@ -15,7 +15,7 @@ interface RCTPullDownRefreshViewProps {
 const RCTPullDownRefreshView =
   requireNativeComponent<RCTPullDownRefreshViewProps>('RCTPullDownRefreshView')
 
-interface PullDownRefreshViewProps {
+interface BounceScrollViewProps {
   onRefresh?: (finish: finishRefresh) => void
   /**
    * 开启纯滑动模式, 开启后将关闭下拉刷新
@@ -38,7 +38,7 @@ export interface finishRefresh {
   (status?: boolean): void
 }
 
-const PullDownRefreshView: React.FC<PullDownRefreshViewProps> = props => {
+const BounceScrollView: React.FC<BounceScrollViewProps> = props => {
   const refreshViewRef = useRef(null)
 
   const onRefreshEvent = () => {
@@ -63,4 +63,4 @@ const PullDownRefreshView: React.FC<PullDownRefreshViewProps> = props => {
   )
 }
 
-export default PullDownRefreshView
+export default BounceScrollView

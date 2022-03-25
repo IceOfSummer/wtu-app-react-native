@@ -28,8 +28,14 @@ export const getLessons = (
           const weekDuration = value.zcd.toString().replace('周').split('-')
           const startWeek = Number.parseInt(weekDuration[0], 10)
           const endWeek = Number.parseInt(weekDuration[1], 10)
+
+          const teacher = value.xm
+          const contains = value.kcxszc
+          const examType = value.khfsmc
+          const lessonsType = value.kcxz
+
           arr.push({
-            id: Number.parseInt(value.kch_id, 10),
+            id: value.kch_id,
             location: value.cdmc,
             week: Number.parseInt(value.xqj, 10),
             duration: end - start + 1,
@@ -37,6 +43,10 @@ export const getLessons = (
             className: value.kcmc,
             startWeek,
             endWeek,
+            teacher,
+            contains,
+            examType,
+            lessonsType,
           })
         })
         resolve(arr)

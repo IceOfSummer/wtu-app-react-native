@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from 'react-native'
-import PullDownRefreshView from '../../native/component/PullDownRefreshView'
+import PullDownRefreshView from '../../native/component/BounceScrollView'
 
 const Applications: React.FC = () => {
   return (

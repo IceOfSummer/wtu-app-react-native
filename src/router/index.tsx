@@ -10,6 +10,7 @@ import PersonalInfo from '../views/PersonalInfo'
 import DiyToast from '../component/DiyToast/NavToast'
 import { StatusBar } from 'react-native'
 import LessonsTableConfigPage from '../views/LessonsTableConfigPage'
+import LessonsDetail from '../views/LessonsDetail'
 
 const Stack = createNativeStackNavigator()
 
@@ -20,6 +21,7 @@ export const APPLICATIONS_TABS = 'Applications'
 export const SCHOOL_AUTH = 'SchoolAuth'
 export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
+export const LESSONS_DETAIL = 'lessonsDetail'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -29,6 +31,16 @@ export interface RouterTypes extends ParamListBase {
   [SCHOOL_AUTH]: undefined
   [PERSONAL_INFO]: undefined
   [LESSONS_TABLE_CONFIG_PAGE]: undefined
+  [LESSONS_DETAIL]: {
+    /**
+     * 第几周的课
+     */
+    week: number
+    /**
+     * 上课时间
+     */
+    startTime: number
+  }
 }
 
 const headerCommonOptions: NativeStackNavigationOptions = {
@@ -77,10 +89,12 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={LESSONS_TABLE_CONFIG_PAGE}
           component={LessonsTableConfigPage}
-          options={{
-            ...headerCommonOptionsWithTitle('课程表设置'),
-            headerShadowVisible: true,
-          }}
+          options={headerCommonOptionsWithTitle('课程表设置')}
+        />
+        <Stack.Screen
+          name={LESSONS_DETAIL}
+          component={LessonsDetail}
+          options={headerCommonOptionsWithTitle('课程详细')}
         />
       </Stack.Navigator>
       <DiyToast />
