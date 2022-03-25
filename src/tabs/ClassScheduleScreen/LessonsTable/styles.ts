@@ -46,8 +46,16 @@ export default StyleSheet.create({
     padding: 3,
   },
   lessonText: {
-    fontSize: global.styles.$font_size_sm,
+    fontSize: 10,
     color: '#fff',
+    textAlign: 'center',
+  },
+  linkText: {
+    textDecorationLine: 'underline',
+    color: global.styles.$primary_color,
+    textAlign: 'center',
+  },
+  tipText: {
     textAlign: 'center',
   },
 })
