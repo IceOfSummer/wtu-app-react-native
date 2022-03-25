@@ -5,6 +5,7 @@ import { ClassInfo } from '../../../redux/reducers/lessonsTable'
 import { useNavigation } from '@react-navigation/native'
 import { LESSONS_DETAIL, RouterTypes } from '../../../router'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
+import TappableView from '../../../component/TappableView'
 
 interface LessonCardProps {
   classInfo: ClassInfo
@@ -68,16 +69,16 @@ const LessonCard: React.FC<LessonCardProps> = props => {
 
   return (
     <View style={styles.cardOuter}>
-      <View
+      <TappableView
         style={[styles.cardContainer, { backgroundColor: getColor() }]}
-        onTouchEnd={seeLessonsDetail}>
+        onTap={seeLessonsDetail}>
         <Text style={styles.classNameTitle}>
           {props.classInfo.className}/@{props.classInfo.location}
         </Text>
         <Text style={styles.textContent}>
           {start}-{end}
         </Text>
-      </View>
+      </TappableView>
     </View>
   )
 }

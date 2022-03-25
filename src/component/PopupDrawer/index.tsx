@@ -90,7 +90,13 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
     ]).start()
   }
 
-  const onTouchEnd = ({ nativeEvent }: GestureResponderEvent) => {
+  const onTouchEnd = (event: GestureResponderEvent) => {
+    const { nativeEvent } = event
+    if (startY.current !== nativeEvent.pageY) {
+      // 滑动事件, 阻止事件传递防止出现bug
+      console.log('stop')
+      event.stopPropagation()
+    }
     const distance = startY.current - nativeEvent.pageY
 
     const duration = nativeEvent.timestamp - startTime.current
@@ -129,13 +135,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
     }
   }
 
-  // useEffect(() => {
-  //   console.log(`height: ${drawerAvailableHeight}`)
-  //
-  // }, [])
-
   const onDrawerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-    console.log('run')
     setDrawerAvailableHeight(nativeEvent.layout.height)
     Animated.timing(topPos, {
       toValue: nativeEvent.layout.height - DRAWER_BAR_HEIGHT,

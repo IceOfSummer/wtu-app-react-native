@@ -7,6 +7,7 @@ import { ClassInfo } from '../../../redux/reducers/lessonsTable'
 import { Link, useNavigation } from '@react-navigation/native'
 import { LESSONS_DETAIL, RouterTypes, SCHOOL_AUTH } from '../../../router'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
+import TappableView from '../../../component/TappableView'
 
 interface LessonsTableProps {}
 
@@ -24,18 +25,30 @@ const LessonsTable: React.FC<
     })
   }
 
+  /**
+   * 计算当前课程的left值
+   */
   const countLeftValue = (classInfo: ClassInfo) => {
     return classInfo.week * perBlockWidth
   }
 
+  /**
+   * 计算当前课程的top值
+   */
   const countTopValue = (classInfo: ClassInfo) => {
     return classInfo.beginTime * PER_CLASS_HEIGHT + HEADER_HEIGHT
   }
 
+  /**
+   * 计算当前课程应该显示的高度
+   */
   const countHeight = (classInfo: ClassInfo) => {
     return classInfo.duration * PER_CLASS_HEIGHT
   }
 
+  /**
+   * 渲染课程表, 一共有3种情况
+   */
   const renderLessons = (): ReactNode => {
     if (!props.lessons) {
       return (
@@ -54,7 +67,7 @@ const LessonsTable: React.FC<
       return (
         <View>
           {props.lessons.map(value => (
-            <View
+            <TappableView
               style={[
                 styles.lessonItem,
                 {
@@ -63,7 +76,7 @@ const LessonsTable: React.FC<
                 },
               ]}
               key={value.id + value.week}
-              onTouchEnd={() => seeLessonsDetail(value)}>
+              onTap={() => seeLessonsDetail(value)}>
               <View
                 style={{
                   height: countHeight(value),
@@ -76,7 +89,7 @@ const LessonsTable: React.FC<
                   </Text>
                 </View>
               </View>
-            </View>
+            </TappableView>
           ))}
         </View>
       )
