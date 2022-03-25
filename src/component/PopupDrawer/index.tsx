@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import {
   Animated,
   Dimensions,
-  GestureResponderEvent,
   LayoutChangeEvent,
+  PanResponder,
   StyleProp,
   Text,
   View,
@@ -19,46 +19,83 @@ interface PopupDrawerProps {
 }
 
 const PopupDrawer: React.FC<PopupDrawerProps> = props => {
-  const [drawerAvailableHeight, setDrawerAvailableHeight] = useState(0)
+  const drawerAvailableHeight = useRef(0)
   // 至少滑动多长切换页面
   const TOGGLE_DISTANCE = 350
   // 速度至少为多少切换页面
   const TOGGLE_SPEED = 1
-  // 用于还原drawer
+  // drawer的位置
   const drawerPos = useRef(new Animated.Value(0)).current
   const contentOpacity = useRef(new Animated.Value(1)).current
+  const bottomPadding = useRef(new Animated.Value(0)).current
+  // 动画切换事件
+  const DURATION = 300
   // drawer的定位初始化距离
   const topPos = useRef(
     new Animated.Value(Dimensions.get('window').height)
   ).current
-  // 触摸开始时的位置
-  const startY = useRef(0)
-  const startTime = useRef(0)
+
   // 是否正在显示课表
   const isShowingLessons = useRef(false)
 
-  /**
-   * 开始触摸, 记录触摸点
-   */
-  const onTouchStart = ({ nativeEvent }: GestureResponderEvent) => {
-    drawerPos.stopAnimation()
-    startY.current = nativeEvent.pageY
-    startTime.current = nativeEvent.timestamp
-  }
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => true,
+      onPanResponderMove: (event, state) => {
+        const distance = -state.dy
+        if (isShowingLessons.current) {
+          drawerPos.setValue(-(drawerAvailableHeight.current + distance))
+          const opacity = Math.abs(distance) / TOGGLE_DISTANCE / 2
+          contentOpacity.setValue(opacity > 1 ? 1 : opacity)
+          if (distance > 0) {
+            // 设置下内边距, 防止滑出内容区
+            bottomPadding.setValue(distance * 2)
+          }
+        } else {
+          drawerPos.setValue(-distance)
+          const opacity = 1 - Math.abs(distance) / TOGGLE_DISTANCE
+          contentOpacity.setValue(opacity < 0 ? 0 : opacity)
+        }
+      },
+      onPanResponderRelease: (event, state) => {
+        // 正数向下滑动
+        const distance = state.dy
+        const speed = state.vy
 
-  const onTouchMove = ({ nativeEvent }: GestureResponderEvent) => {
-    // 大于0为上滑, 小于0为下划
-    const distance = startY.current - nativeEvent.pageY
-    if (isShowingLessons.current) {
-      drawerPos.setValue(-(drawerAvailableHeight + distance))
-      const opacity = Math.abs(distance) / TOGGLE_DISTANCE / 2
-      contentOpacity.setValue(opacity > 1 ? 1 : opacity)
-    } else {
-      drawerPos.setValue(-distance)
-      const opacity = 1 - Math.abs(distance) / TOGGLE_DISTANCE
-      contentOpacity.setValue(opacity < 0 ? 0 : opacity)
-    }
-  }
+        if (speed > TOGGLE_SPEED) {
+          // 隐藏drawer
+          isShowingLessons.current = false
+          hideDrawer()
+          return
+        } else if (speed < -TOGGLE_SPEED) {
+          // 显示drawer
+          isShowingLessons.current = true
+          showDrawer()
+          return
+        }
+
+        if (Math.abs(distance) < TOGGLE_DISTANCE) {
+          if (isShowingLessons.current) {
+            showDrawer()
+          } else {
+            // 还原隐藏状态
+            hideDrawer()
+          }
+        } else {
+          if (isShowingLessons.current && distance > 0) {
+            // 隐藏drawer
+            isShowingLessons.current = false
+            hideDrawer()
+          } else {
+            // 显示drawer
+            isShowingLessons.current = true
+            showDrawer()
+          }
+        }
+      },
+    })
+  ).current
 
   function hideDrawer() {
     drawerPos.stopAnimation()
@@ -67,10 +104,12 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
       Animated.timing(drawerPos, {
         useNativeDriver: false,
         toValue: 0,
+        duration: DURATION,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,
         toValue: 1,
+        duration: DURATION,
       }),
     ]).start()
   }
@@ -81,66 +120,29 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
     Animated.parallel([
       Animated.timing(drawerPos, {
         useNativeDriver: false,
-        toValue: -drawerAvailableHeight,
+        toValue: -drawerAvailableHeight.current,
+        duration: DURATION,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,
         toValue: 0,
+        duration: DURATION,
+      }),
+      Animated.timing(bottomPadding, {
+        useNativeDriver: false,
+        toValue: 0,
+        duration: DURATION,
       }),
     ]).start()
   }
 
-  const onTouchEnd = (event: GestureResponderEvent) => {
-    const { nativeEvent } = event
-    if (startY.current !== nativeEvent.pageY) {
-      // 滑动事件, 阻止事件传递防止出现bug
-      console.log('stop')
-      event.stopPropagation()
-    }
-    const distance = startY.current - nativeEvent.pageY
-
-    const duration = nativeEvent.timestamp - startTime.current
-    const speed = distance / duration
-
-    if (speed < -TOGGLE_SPEED) {
-      // 隐藏drawer
-      isShowingLessons.current = false
-      hideDrawer()
-      return
-    } else if (speed > TOGGLE_SPEED) {
-      // 显示drawer
-      isShowingLessons.current = true
-      showDrawer()
-      return
-    }
-
-    if (Math.abs(distance) < TOGGLE_DISTANCE) {
-      if (isShowingLessons.current) {
-        // TODO
-        showDrawer()
-      } else {
-        // 还原隐藏状态
-        hideDrawer()
-      }
-    } else {
-      if (isShowingLessons.current) {
-        // 隐藏drawer
-        isShowingLessons.current = false
-        hideDrawer()
-      } else {
-        // 显示drawer
-        isShowingLessons.current = true
-        showDrawer()
-      }
-    }
-  }
-
   const onDrawerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-    setDrawerAvailableHeight(nativeEvent.layout.height)
+    drawerAvailableHeight.current = nativeEvent.layout.height
     Animated.timing(topPos, {
       toValue: nativeEvent.layout.height - DRAWER_BAR_HEIGHT,
       useNativeDriver: false,
     }).start()
+    console.log('onload', nativeEvent.layout.height)
   }
   return (
     <View style={styles.popupDrawerContainer}>
@@ -152,15 +154,14 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
         {props.children}
       </Animated.View>
       <Animated.View
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
+        {...panResponder.panHandlers}
         style={[
           styles.drawerContainerStyle,
           props.drawerContainerStyle,
           {
             top: topPos,
             transform: [{ translateY: drawerPos }],
+            paddingBottom: bottomPadding,
           },
         ]}>
         <View style={styles.drawerBar}>
