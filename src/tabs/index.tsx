@@ -48,7 +48,11 @@ const TabBar = () => {
         component={ClassScheduleScreen}
         options={classScheduleOptions}
       />
-      <Tab.Screen name={APPLICATIONS_TABS} component={ApplicationsScreen} />
+      <Tab.Screen
+        name={APPLICATIONS_TABS}
+        component={ApplicationsScreen}
+        options={APPLICATIONS_SCREEN_OPTIONS}
+      />
       <Tab.Screen
         name={PERSONAL_CENTER_TABS}
         component={PersonalCenterScreen}
@@ -74,6 +78,10 @@ const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
 })
 const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
   header: () => null,
+}
+const APPLICATIONS_SCREEN_OPTIONS: BottomTabNavigationOptions = {
+  headerTitle: '应用',
+  headerTitleAlign: 'center',
 }
 
 export default TabBar

@@ -2,6 +2,7 @@ import React, { useRef } from 'react'
 import {
   Animated,
   Dimensions,
+  Easing,
   LayoutChangeEvent,
   PanResponder,
   StyleProp,
@@ -29,7 +30,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   const contentOpacity = useRef(new Animated.Value(1)).current
   const bottomPadding = useRef(new Animated.Value(0)).current
   // 动画切换事件
-  const DURATION = 300
+  const DURATION = 200
   // drawer的定位初始化距离
   const topPos = useRef(
     new Animated.Value(Dimensions.get('window').height)
@@ -105,6 +106,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
         useNativeDriver: false,
         toValue: 0,
         duration: DURATION,
+        easing: Easing.linear,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,
@@ -122,6 +124,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
         useNativeDriver: false,
         toValue: -drawerAvailableHeight.current,
         duration: DURATION,
+        easing: Easing.linear,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,

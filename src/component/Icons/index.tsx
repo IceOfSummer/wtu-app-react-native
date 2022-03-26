@@ -8,6 +8,10 @@ type Props = {
   iconText: string
   onPress?: () => void
   style?: StyleProp<TextStyle>
+  /**
+   * 是否主动解析Unicode字符串
+   */
+  parseUnicode?: boolean
 }
 
 const styles = StyleSheet.create({
@@ -17,6 +21,11 @@ const styles = StyleSheet.create({
 })
 
 const Icons: React.FC<Props> = props => {
+  const unicodeToStr = (unicode: string) => {
+    const hexStr = unicode.replace('&#x', '').replace(';', '')
+    return String.fromCharCode(parseInt(hexStr, 16))
+  }
+
   return (
     <Text
       onPress={props.onPress}
@@ -25,7 +34,7 @@ const Icons: React.FC<Props> = props => {
         props.style,
         { fontSize: props.size, color: props.color },
       ]}>
-      {props.iconText}
+      {props.parseUnicode ? unicodeToStr(props.iconText) : props.iconText}
     </Text>
   )
 }

@@ -11,6 +11,7 @@ import DiyToast from '../component/DiyToast/NavToast'
 import { StatusBar } from 'react-native'
 import LessonsTableConfigPage from '../views/LessonsTableConfigPage'
 import LessonsDetail from '../views/LessonsDetail'
+import EmptyPage from '../views/EmptyPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -22,6 +23,7 @@ export const SCHOOL_AUTH = 'SchoolAuth'
 export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
 export const LESSONS_DETAIL = 'lessonsDetail'
+export const EMPTY_PAGE = 'emptyPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -41,6 +43,7 @@ export interface RouterTypes extends ParamListBase {
      */
     startTime: number
   }
+  [EMPTY_PAGE]: undefined
 }
 
 const headerCommonOptions: NativeStackNavigationOptions = {
@@ -95,6 +98,11 @@ const Router: React.FC = () => {
           name={LESSONS_DETAIL}
           component={LessonsDetail}
           options={headerCommonOptionsWithTitle('课程详细')}
+        />
+        <Stack.Screen
+          name={EMPTY_PAGE}
+          component={EmptyPage}
+          options={headerCommonOptionsWithTitle('应用正在开发中')}
         />
       </Stack.Navigator>
       <DiyToast />
