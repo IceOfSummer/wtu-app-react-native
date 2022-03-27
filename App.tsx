@@ -5,6 +5,7 @@ import { PersistGate } from 'redux-persist/lib/integration/react'
 import Router from './src/router'
 import initInterceptors from './src/api'
 import Loading from './src/component/Loading'
+import { simpleUpdate } from 'react-native-update'
 
 initInterceptors()
 const App = () => {
@@ -18,4 +19,4 @@ const App = () => {
   )
 }
 
-export default App
+export default simpleUpdate(App)
