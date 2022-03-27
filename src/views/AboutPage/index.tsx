@@ -14,7 +14,7 @@ const AboutPage: React.FC = () => {
           style={styles.iconImage}
           source={require('../../assets/img/icon.png')}
         />
-        <Text>纺大智联</Text>
+        <Text>武纺智联</Text>
         <Text>v{version}</Text>
       </View>
       <CardContainer>
