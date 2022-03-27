@@ -20,6 +20,7 @@
     "react-content-loader": "^6.2.0",
     "react-native": "0.67.2",
     "react-native-button": "^3.0.1",
+    "react-native-device-info": "^8.5.1",
     "react-native-modal": "^13.0.1",
     "react-native-picker": "^4.3.7",
     "react-native-pull-to-refresh-custom": "^1.0.3",

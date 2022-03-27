@@ -12,6 +12,9 @@ import { StatusBar } from 'react-native'
 import LessonsTableConfigPage from '../views/LessonsTableConfigPage'
 import LessonsDetail from '../views/LessonsDetail'
 import EmptyPage from '../views/EmptyPage'
+import SettingsPage from '../views/SettingsPage'
+import AboutPage from '../views/AboutPage'
+import defaultTheme from './Theme/defaultTheme'
 
 const Stack = createNativeStackNavigator()
 
@@ -24,6 +27,8 @@ export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
 export const LESSONS_DETAIL = 'lessonsDetail'
 export const EMPTY_PAGE = 'emptyPage'
+export const SETTINGS_PAGE = 'settingsPage'
+export const ABOUT_PAGE = 'aboutPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -44,6 +49,8 @@ export interface RouterTypes extends ParamListBase {
     startTime: number
   }
   [EMPTY_PAGE]: undefined
+  [SETTINGS_PAGE]: undefined
+  [ABOUT_PAGE]: undefined
 }
 
 const headerCommonOptions: NativeStackNavigationOptions = {
@@ -69,7 +76,7 @@ const headerCommonOptionsWithTitle = (
 
 const Router: React.FC = () => {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={defaultTheme}>
       <Stack.Navigator
         screenOptions={{
           headerTitleStyle: { fontSize: global.styles.$font_size_lg },
@@ -103,6 +110,16 @@ const Router: React.FC = () => {
           name={EMPTY_PAGE}
           component={EmptyPage}
           options={headerCommonOptionsWithTitle('应用正在开发中')}
+        />
+        <Stack.Screen
+          name={SETTINGS_PAGE}
+          component={SettingsPage}
+          options={headerCommonOptionsWithTitle('设置')}
+        />
+        <Stack.Screen
+          name={ABOUT_PAGE}
+          component={AboutPage}
+          options={headerCommonOptionsWithTitle('关于')}
         />
       </Stack.Navigator>
       <DiyToast />

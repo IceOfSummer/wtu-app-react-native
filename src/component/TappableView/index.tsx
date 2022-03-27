@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 
 interface TappableViewProps {
-  onTap: (event: GestureResponderEvent) => void
+  onTap?: (event: GestureResponderEvent) => void
 }
 
 /**

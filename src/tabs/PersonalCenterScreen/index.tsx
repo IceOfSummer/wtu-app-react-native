@@ -5,7 +5,13 @@ import { ReducerTypes } from '../../redux/reducers'
 import Icons from '../../component/Icons'
 import styles from './styles'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { PERSONAL_INFO, RouterTypes, SCHOOL_AUTH } from '../../router'
+import {
+  PERSONAL_INFO,
+  RouterTypes,
+  SCHOOL_AUTH,
+  SETTINGS_PAGE,
+} from '../../router'
+import TappableView from '../../component/TappableView'
 
 interface StoreProps {
   username?: string
@@ -35,7 +41,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
             source={require('../../assets/img/studyCenter.png')}
             style={{ width: 26, height: 26 }}
           />
-          <View onTouchStart={headerAccountTapCallback}>
+          <TappableView onTap={headerAccountTapCallback}>
             <Text
               style={{
                 fontSize: global.styles.$font_size_lg,
@@ -45,13 +51,15 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
               {props.username ? props.username : '未登录'}
               {props.username && props.expired ? '(登录已过期)' : ''}
             </Text>
-          </View>
+          </TappableView>
         </View>
-        <Icons
-          iconText="&#xe600;"
-          color={global.styles.$text_color}
-          size={global.styles.$font_size_lg}
-        />
+        <TappableView onTap={() => props.navigation.navigate(SETTINGS_PAGE)}>
+          <Icons
+            iconText="&#xe600;"
+            color={global.styles.$text_color}
+            size={global.styles.$font_size_lg}
+          />
+        </TappableView>
       </View>
     </View>
   )

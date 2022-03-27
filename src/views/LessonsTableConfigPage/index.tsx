@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import { modifyOptions } from '../../redux/actions/lessonsTable'
 import PullDownPicker from '../../component/PullDownPicker'
+import CardContainer from '../../component/Cards/CardContainer'
 
 interface LessonsTableConfigPageProps {}
 
@@ -42,7 +43,7 @@ const LessonsTableConfigPage: React.FC<
       term: index === 0 ? 3 : 12,
     })
   return (
-    <View>
+    <CardContainer>
       <SimpleCard
         title="当前周"
         right={
@@ -83,7 +84,7 @@ const LessonsTableConfigPage: React.FC<
           </View>
         }
       />
-    </View>
+    </CardContainer>
   )
 }
 
