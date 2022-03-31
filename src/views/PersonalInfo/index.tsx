@@ -94,7 +94,7 @@ const PersonalInfo: React.FC<
           title="注销登录"
           hideBorder
           type="error"
-          onTouchEnd={logOutEduAccount}
+          onTap={logOutEduAccount}
         />
       </View>
       <BasicDialog ref={dialog} />

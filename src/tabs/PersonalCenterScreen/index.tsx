@@ -23,16 +23,6 @@ interface PersonalCenterProps
     NativeStackScreenProps<RouterTypes> {}
 
 const PersonalCenter: React.FC<PersonalCenterProps> = props => {
-  /**
-   * 头部账号区点击事件
-   */
-  const headerAccountTapCallback = () => {
-    if (props.expired) {
-      props.navigation.navigate(SCHOOL_AUTH)
-    } else {
-      props.navigation.navigate(PERSONAL_INFO)
-    }
-  }
   return (
     <View>
       <View style={{ ...styles.header }}>
@@ -41,17 +31,33 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
             source={require('../../assets/img/studyCenter.png')}
             style={{ width: 26, height: 26 }}
           />
-          <TappableView onTap={headerAccountTapCallback}>
-            <Text
-              style={{
-                fontSize: global.styles.$font_size_lg,
-                color: global.styles.$text_color,
-                paddingStart: global.styles.$spacing_row_base,
-              }}>
-              {props.username ? props.username : '未登录'}
-              {props.username && props.expired ? '(登录已过期)' : ''}
-            </Text>
-          </TappableView>
+          {props.expired ? (
+            <TappableView
+              onTap={() => props.navigation.navigate(SCHOOL_AUTH)}
+              key={SCHOOL_AUTH}>
+              <Text
+                style={{
+                  fontSize: global.styles.$font_size_lg,
+                  color: global.styles.$text_color,
+                  paddingStart: global.styles.$spacing_row_base,
+                }}>
+                {props.username ? `${props.username}(已过期)` : '未登录'}
+              </Text>
+            </TappableView>
+          ) : (
+            <TappableView
+              onTap={() => props.navigation.navigate(PERSONAL_INFO)}
+              key={PERSONAL_INFO}>
+              <Text
+                style={{
+                  fontSize: global.styles.$font_size_lg,
+                  color: global.styles.$text_color,
+                  paddingStart: global.styles.$spacing_row_base,
+                }}>
+                {props.username}
+              </Text>
+            </TappableView>
+          )}
         </View>
         <TappableView onTap={() => props.navigation.navigate(SETTINGS_PAGE)}>
           <Icons

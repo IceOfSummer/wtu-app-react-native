@@ -16,3 +16,23 @@
 - [ ] 跳蚤市场: 提供一个平台方便大家交易二手商品(不收取任何费用, 也不采用线上交易, 需要自己线下付款，毕竟电商不是一般人能把持住的)
 - [ ] ...
 
+
+## 其它
+### 打包时报错的解决方法
+若打包出现`Android resource linking failed`, 请打开`node_modules`下的`react-native-picker`, 编辑`build.gradle`, 替换如下内容:
+```
+android {
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        
+        // ...   
+    }
+       
+}
+```
+
