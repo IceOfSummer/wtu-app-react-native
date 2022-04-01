@@ -1,5 +1,5 @@
 import { noRepeatAjax } from 'axios-simple-wrapper'
-import { ClassInfo } from '../../../redux/reducers/lessonsTable'
+import { ClassInfo, Term } from '../../../redux/reducers/lessonsTable'
 
 export const getLessons = (
   username: string,
@@ -50,6 +50,30 @@ export const getLessons = (
           })
         })
         resolve(arr)
+      })
+      .catch(reject)
+  })
+
+/**
+ * 从服务器获取当前周
+ * @param year 当前学年
+ * @param term 当前学期
+ */
+export const getCurWeekFromServer = (year: number, term: Term) =>
+  new Promise<number>((resolve, reject) => {
+    noRepeatAjax<any>(
+      `http://jwglxt.wtu.edu.cn/cdjy/cdjy_cxQtlb.html?xqh_id=2&xnm=${year}&xqm=${term}&gnmkdm=N2155`
+    )
+      .then(resp => {
+        if (!resp.dqzcxq) {
+          reject('查询失败')
+        } else {
+          if (resp.dqzcxq.DQZC) {
+            resolve(resp.dqzcxq.DQZC)
+          } else {
+            reject('查询失败! 请检查当前学期和学年')
+          }
+        }
       })
       .catch(reject)
   })

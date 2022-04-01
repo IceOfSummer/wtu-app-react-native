@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { View } from 'react-native'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import { connect } from 'react-redux'
@@ -6,6 +6,11 @@ import { ReducerTypes } from '../../redux/reducers'
 import { modifyOptions } from '../../redux/actions/lessonsTable'
 import PullDownPicker from '../../component/PullDownPicker'
 import CardContainer from '../../component/Cards/CardContainer'
+import { getCurWeekFromServer } from '../../api/edu/classes'
+import { Term } from '../../redux/reducers/lessonsTable'
+import BasicDialog, {
+  BasicDialogRefAttribute,
+} from '../../component/BasicDialog'
 
 interface LessonsTableConfigPageProps {}
 
@@ -28,6 +33,8 @@ const TERM_DATA = ['上学期', '下学期']
 const LessonsTableConfigPage: React.FC<
   LessonsTableConfigPageProps & StoreActions & StoreProps
 > = props => {
+  const dialog = useRef<BasicDialogRefAttribute>(null)
+
   const setCurWeek = (index: number) =>
     props.modifyOptions({
       week: CUR_WEEK_DATA[index],
@@ -42,6 +49,36 @@ const LessonsTableConfigPage: React.FC<
     props.modifyOptions({
       term: index === 0 ? 3 : 12,
     })
+
+  const adjustCurWeek = () => {
+    dialog.current?.showDialog({
+      title: '校准当前周',
+      content: '确定要校准当前周吗',
+      onConfirm() {
+        getCurWeekFromServer(props.year, props.term)
+          .then(week => {
+            dialog.current?.showDialog({
+              title: '校准成功',
+              content: `当前为第${week}周`,
+              type: 'primary',
+            })
+            props.modifyOptions({
+              week,
+            })
+          })
+          .catch(e => {
+            dialog.current?.showDialog({
+              title: '校准失败',
+              content: e.toString(),
+              type: 'error',
+            })
+          })
+      },
+    })
+  }
+
+  const termStr = props.term === 3 ? '上学期' : '下学期'
+
   return (
     <CardContainer>
       <SimpleCard
@@ -72,18 +109,24 @@ const LessonsTableConfigPage: React.FC<
       />
       <SimpleCard
         title="当前学期"
-        hideBorder
         right={
           <View>
             <PullDownPicker
               title="选择当前学期"
               data={TERM_DATA}
-              current={props.term}
+              current={termStr}
               onSelect={setCurTerm}
             />
           </View>
         }
       />
+      <SimpleCard
+        title="校准当前周"
+        hideBorder
+        onTap={adjustCurWeek}
+        type="primary"
+      />
+      <BasicDialog ref={dialog} />
     </CardContainer>
   )
 }
@@ -91,7 +134,7 @@ const LessonsTableConfigPage: React.FC<
 interface StoreProps {
   week: number
   year: number
-  term: '上学期' | '下学期'
+  term: Term
 }
 interface StoreActions {
   modifyOptions: (...args: Parameters<typeof modifyOptions>) => void
@@ -106,7 +149,7 @@ export default connect<
   initialState => ({
     week: initialState.lessonsTable.options.week!,
     year: initialState.lessonsTable.options.year!,
-    term: initialState.lessonsTable.options.term! === 3 ? '上学期' : '下学期',
+    term: initialState.lessonsTable.options.term!,
   }),
   {
     modifyOptions,

@@ -7,7 +7,7 @@ interface SimpleCardProps extends CardProps {
   right?: React.ReactNode
   title: string
   rightContent?: string
-  type?: 'default' | 'error'
+  type?: 'default' | 'error' | 'primary'
 }
 
 /**
@@ -24,6 +24,8 @@ const SimpleCard: React.FC<SimpleCardProps> = props => {
         return global.styles.$text_color
       case 'error':
         return global.styles.$error_color
+      case 'primary':
+        return global.styles.$primary_color
       default:
         return global.styles.$text_color
     }

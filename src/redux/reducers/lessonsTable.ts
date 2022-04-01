@@ -22,8 +22,17 @@ export type LessonTableOptions = {
   /**
    * 3: 上学期, 13: 下学期
    */
-  term?: 3 | 12
+  term?: Term
+  /**
+   * 当前周的上次更新时间戳, 用于自动更新当前周
+   */
+  curWeekLastUpdate?: number
 }
+
+/**
+ * 3: 上学期, 12: 下学期
+ */
+export type Term = 3 | 12
 /**
  * 课程信息
  */
@@ -83,6 +92,7 @@ const initState: LessonsTableStates = {
     week: 1,
     year: new Date().getFullYear(),
     term: 3,
+    curWeekLastUpdate: Date.now(),
   },
 }
 
@@ -90,9 +100,13 @@ const lessonsTableReducer: Reducer<LessonsTableStates, LessonsTableActions> = (
   state = initState,
   action
 ) => {
+  console.log(action)
   const copyObj = JSON.parse(JSON.stringify(state)) as LessonsTableStates
   if (action.type === LessonsTableActionConstant.modifyOptions) {
     Object.assign(copyObj.options, action.data)
+    if (action.data.week) {
+      copyObj.options.curWeekLastUpdate = Date.now()
+    }
     return copyObj
   } else if (action.type === LessonsTableActionConstant.saveLessonsInfo) {
     copyObj.lessons = action.data

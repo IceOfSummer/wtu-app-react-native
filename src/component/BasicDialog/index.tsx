@@ -21,7 +21,7 @@ type showDialogConfig = {
   onCancel?: () => void
 }
 
-type dialogTypes = 'warn' | 'info' | 'error' | undefined
+type dialogTypes = 'warn' | 'info' | 'error' | 'primary' | undefined
 
 const styles = StyleSheet.create({
   dialogOuter: {
@@ -65,6 +65,8 @@ const BasicDialog: React.FC<BasicDialogProps> = props => {
       return global.styles.$error_color
     } else if (type === 'warn') {
       return global.styles.$warning_color
+    } else if (type === 'primary') {
+      return global.styles.$primary_color
     } else {
       return '#000'
     }
