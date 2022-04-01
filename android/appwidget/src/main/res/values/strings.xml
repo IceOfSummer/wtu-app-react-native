@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">HBuilder-SimpleDemo-AS</string>
+    <string name="button">Button</string>
+    <string name="next_page">下一页</string>
+    <string name="last_page">上一页</string>
+    <string name="left_page">向左翻页</string>
+    <string name="right_page">向右翻页</string>
+    <string name="flush">刷新</string>
+    <string name="time">时间</string>
+    <string name="position">位置</string>
+    <string name="loading">加载中</string>
+</resources>
