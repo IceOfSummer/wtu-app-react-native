@@ -14,6 +14,8 @@ interface TappableViewProps {
  * 可点击的View
  *
  * 提供专属的onTap事件处理点击事件，可以避免滑动事件而造成的误判断
+ * @deprecated
+ * @see Pressable {@link https://reactnative.cn/docs/pressable#onpress}
  */
 const TappableView: React.FC<ViewProps & TappableViewProps> = props => {
   const panResponder = useRef(
