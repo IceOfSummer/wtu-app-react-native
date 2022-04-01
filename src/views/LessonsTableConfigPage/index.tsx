@@ -11,6 +11,7 @@ import { Term } from '../../redux/reducers/lessonsTable'
 import BasicDialog, {
   BasicDialogRefAttribute,
 } from '../../component/BasicDialog'
+import Loading from '../../component/Loading'
 
 interface LessonsTableConfigPageProps {}
 
@@ -55,6 +56,7 @@ const LessonsTableConfigPage: React.FC<
       title: '校准当前周',
       content: '确定要校准当前周吗',
       onConfirm() {
+        Loading.showLoading()
         getCurWeekFromServer(props.year, props.term)
           .then(week => {
             dialog.current?.showDialog({
@@ -73,6 +75,7 @@ const LessonsTableConfigPage: React.FC<
               type: 'error',
             })
           })
+          .finally(() => Loading.hideLoading())
       },
     })
   }

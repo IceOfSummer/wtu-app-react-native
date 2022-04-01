@@ -1,7 +1,6 @@
 import React from 'react'
-import { StatusBar, Text, View } from 'react-native'
+import { ActivityIndicator, StatusBar, Text, View } from 'react-native'
 import styles from './styles'
-import LoadingAnimation from './LoadingAnimation'
 
 interface LoadingStates {
   loadingText: string
@@ -66,7 +65,10 @@ export default class Loading extends React.Component<any, LoadingStates> {
     if (this.state.show) {
       return (
         <View style={styles.loadMask}>
-          <LoadingAnimation />
+          <ActivityIndicator
+            size="large"
+            color={global.styles.$primary_color}
+          />
           <Text style={styles.loadingText}>{this.state.loadingText}</Text>
         </View>
       )

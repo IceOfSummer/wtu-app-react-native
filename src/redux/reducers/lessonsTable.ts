@@ -100,7 +100,6 @@ const lessonsTableReducer: Reducer<LessonsTableStates, LessonsTableActions> = (
   state = initState,
   action
 ) => {
-  console.log(action)
   const copyObj = JSON.parse(JSON.stringify(state)) as LessonsTableStates
   if (action.type === LessonsTableActionConstant.modifyOptions) {
     Object.assign(copyObj.options, action.data)
