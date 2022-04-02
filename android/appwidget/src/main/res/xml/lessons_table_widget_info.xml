@@ -1,8 +1,7 @@
 <appwidget-provider xmlns:android = "http://schemas.android.com/apk/res/android"
         android:minWidth = "294dip"
-        android:minHeight = "125dp"
+        android:minHeight = "220dp"
         android:updatePeriodMillis = "7200000"
         android:initialLayout = "@layout/lessons_table_widget_layout"
-        android:widgetCategory="home_screen"
-        >
+        android:widgetCategory="home_screen">
 </appwidget-provider>

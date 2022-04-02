@@ -72,10 +72,6 @@ public interface LessonsTableManager {
      */
     List<Lesson> previousDay();
 
-    /**
-     * 强制重新刷新课程表
-     */
-    void forceReload();
 
     /**
      * 获取可用页数

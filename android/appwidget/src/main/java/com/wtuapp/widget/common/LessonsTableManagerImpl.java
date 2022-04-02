@@ -52,7 +52,6 @@ public class LessonsTableManagerImpl implements LessonsTableManager{
     private LessonsTableManagerImpl(LessonsService lessonsService) {
         this.lessonsService = lessonsService;
         reset();
-        forceReload();
     }
 
     private LessonsTableManagerImpl(Context context) {
@@ -149,8 +148,8 @@ public class LessonsTableManagerImpl implements LessonsTableManager{
         return getLessons();
     }
 
-    @Override
-    public void forceReload() {
+
+    public void reloadData() {
         lessons = lessonsService.getAllLessons();
         curLessons = lessonsService.splitLesson(lessons, curDay);
         curPage = 0;
@@ -191,5 +190,6 @@ public class LessonsTableManagerImpl implements LessonsTableManager{
     public void reset() {
         this.curDay = DateUtils.castDayToStanderType(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
         this.curPage = 0;
+        reloadData();
     }
 }

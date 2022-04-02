@@ -2,8 +2,10 @@ package com.wtuapp.widget.mapper.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -17,6 +19,7 @@ import com.wtuapp.widget.mapper.LessonsMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -40,7 +43,7 @@ public class LessonsMapperImpl implements LessonsMapper {
     @SuppressWarnings("unchecked")
     public ClassesTableInfo getClassesTableInfo() {
         try (SQLiteDatabase readableDatabase = helper.getReadableDatabase();
-            Cursor query = readableDatabase.query(TABLE_NAME, SELECT_VALUE_ONLY, "key = " + KEY_LESSONS, null, null, null, null)) {
+             Cursor query = readableDatabase.query(TABLE_NAME, SELECT_VALUE_ONLY, "key = " + KEY_LESSONS, null, null, null, null)) {
             if (query.moveToFirst()) {
                 Map<String, String> map = JSON.parseObject(query.getString(0), Map.class);
                 String lessonsStr = map.get("lessons");
@@ -63,7 +66,6 @@ public class LessonsMapperImpl implements LessonsMapper {
             return null;
         }
     }
-
 
 
 }

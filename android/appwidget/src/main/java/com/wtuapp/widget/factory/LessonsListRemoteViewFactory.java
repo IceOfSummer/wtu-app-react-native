@@ -9,6 +9,7 @@ import com.wtuapp.widget.R;
 import com.wtuapp.widget.bean.Lesson;
 import com.wtuapp.widget.common.LessonsTableManager;
 import com.wtuapp.widget.common.LessonsTableManagerImpl;
+import com.wtuapp.widget.util.StringUtils;
 
 /**
  * @author HuPeng
@@ -68,9 +69,9 @@ public class LessonsListRemoteViewFactory implements RemoteViewsService.RemoteVi
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.lesson_ltem);
 
         int begin = lesson.getBeginTime() + 1;
-        int end = begin + lesson.getDuration();
+        int end = begin + lesson.getDuration() - 1;
         remoteViews.setTextViewText(R.id.class_time, begin + "-" + end);
-        remoteViews.setTextViewText(R.id.class_name, lesson.getClassName());
+        remoteViews.setTextViewText(R.id.class_name, StringUtils.limitWords(lesson.getClassName(), 15));
         remoteViews.setTextViewText(R.id.class_location, lesson.getLocation());
         remoteViews.setTextViewText(R.id.class_real_time, lesson.getTimeDuration());
 

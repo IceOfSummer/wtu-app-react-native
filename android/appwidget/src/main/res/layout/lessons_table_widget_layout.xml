@@ -51,7 +51,7 @@
                     android:id="@+id/left_arrow"
                     android:gravity="end"
                     android:src="@drawable/left"
-                    android:padding="10dp"
+                    android:padding="7dp"
                     android:contentDescription="@string/left_page" />
 
             <TextView
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/right_arrow"
                     android:src="@drawable/right"
-                    android:padding="10dp"
+                    android:padding="7dp"
                     android:contentDescription="@string/right_page" />
         </LinearLayout>
 
@@ -103,8 +103,10 @@
     <ListView
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="180dp"
+            android:clipChildren="false"
             android:scrollbars="none"
+            android:divider="@null"
             android:overScrollMode="never"
             android:id="@+id/class_list_item" />
 

@@ -33,6 +33,8 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
 
     public static final String ACTION_UPDATE = "com.wtuapp.widget.UPDATE";
 
+    public static final String ACTION_DEFAULT_UPDATE = "android.appwidget.action.APPWIDGET_UPDATE";
+
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -45,7 +47,11 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         Intent intent = new Intent(context, TimelyUpdateService.class);
-        context.startService(intent);
+        try {
+            context.startService(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -78,7 +84,7 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
             lessonsTableManager.previousDay();
             onUpdate(context, manager, appWidgetIds);
             manager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.class_list_item);
-        } else if (ACTION_UPDATE.equals(action)) {
+        } else if (ACTION_UPDATE.equals(action) || ACTION_DEFAULT_UPDATE.equals(action)) {
             lessonsTableManager.reset();
             onUpdate(context, manager, appWidgetIds);
             manager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.class_list_item);
@@ -104,6 +110,7 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
 
         bindClickPendingIntent(remoteViews, R.id.left_arrow, ACTION_PREVIOUS_DAY, context);
         bindClickPendingIntent(remoteViews, R.id.right_arrow, ACTION_NEXT_DAY, context);
+        bindClickPendingIntent(remoteViews, R.id.subject_flush, ACTION_UPDATE, context);
 
         LessonsTableManager instance = LessonsTableManagerImpl.getInstance();
         // 设置当前星期
