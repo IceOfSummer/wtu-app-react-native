@@ -13,6 +13,7 @@ import android.widget.RemoteViews;
 import com.wtuapp.widget.common.LessonsTableManager;
 import com.wtuapp.widget.common.LessonsTableManagerImpl;
 import com.wtuapp.widget.service.impl.LessonsListRemoteViewServiceImpl;
+import com.wtuapp.widget.service.impl.TimelyUpdateService;
 
 /**
  * @author HuPeng
@@ -30,6 +31,8 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
 
     public static final String ACTION_PREVIOUS_DAY = "com.wtuapp.widget.PREVIOUS_DAY";
 
+    public static final String ACTION_UPDATE = "com.wtuapp.widget.UPDATE";
+
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -41,7 +44,8 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
-        Log.i(TAG, "init");
+        Intent intent = new Intent(context, TimelyUpdateService.class);
+        context.startService(intent);
     }
 
     @Override
@@ -74,6 +78,10 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
             lessonsTableManager.previousDay();
             onUpdate(context, manager, appWidgetIds);
             manager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.class_list_item);
+        } else if (ACTION_UPDATE.equals(action)) {
+            lessonsTableManager.reset();
+            onUpdate(context, manager, appWidgetIds);
+            manager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.class_list_item);
         }
 
     }
@@ -83,20 +91,6 @@ public class LessonsTableAppWidget extends AppWidgetProvider {
         intent.setAction(action);
         PendingIntent broadcast = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(id, broadcast);
-    }
-
-    private void disablePageBtn() {
-
-    }
-
-    private void enablePageBtn() {
-
-    }
-
-    private void updateCurDayText(Context context) {
-        AppWidgetManager manager = AppWidgetManager.getInstance(context);
-
-
     }
 
     private void updateWidget(Context context, int appWidgetId) {

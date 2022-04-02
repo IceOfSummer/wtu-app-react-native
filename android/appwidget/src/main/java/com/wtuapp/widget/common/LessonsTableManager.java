@@ -88,7 +88,17 @@ public interface LessonsTableManager {
      */
     int getCurDay();
 
+
+    /**
+     * 以字符串的形式获取当前星期
+     * @return 当前星期
+     */
     String getCurDayAsString();
+
+    /**
+     * 重置为当天的课程
+     */
+    void reset();
 
 
 

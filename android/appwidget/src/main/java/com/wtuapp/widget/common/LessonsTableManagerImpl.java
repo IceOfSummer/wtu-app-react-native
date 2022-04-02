@@ -51,7 +51,7 @@ public class LessonsTableManagerImpl implements LessonsTableManager{
 
     private LessonsTableManagerImpl(LessonsService lessonsService) {
         this.lessonsService = lessonsService;
-        this.curDay = DateUtils.castDayToStanderType(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+        reset();
         forceReload();
     }
 
@@ -185,5 +185,11 @@ public class LessonsTableManagerImpl implements LessonsTableManager{
     @Override
     public String getCurDayAsString() {
         return DAY_SCHEMA[curDay - 1];
+    }
+
+    @Override
+    public void reset() {
+        this.curDay = DateUtils.castDayToStanderType(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+        this.curPage = 0;
     }
 }

@@ -10,11 +10,13 @@
                 <action android:name="com.wtuapp.widget.PREVIOUS_PAGE"/>
                 <action android:name="com.wtuapp.widget.NEXT_DAY"/>
                 <action android:name="com.wtuapp.widget.PREVIOUS_DAY"/>
+                <action android:name="com.wtuapp.widget.UPDATE"/>
             </intent-filter>
             <meta-data android:name = "android.appwidget.provider"
                     android:resource = "@xml/lessons_table_widget_info" />
         </receiver>
         <service android:name=".service.impl.LessonsListRemoteViewServiceImpl" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+        <service android:name=".service.impl.TimelyUpdateService"/>
         <provider
                 android:authorities="@string/authorities"
                 android:name=".ContextProvider"
