@@ -6,9 +6,18 @@
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.wtuapp.widget.NEXT_PAGE"/>
+                <action android:name="com.wtuapp.widget.PREVIOUS_PAGE"/>
+                <action android:name="com.wtuapp.widget.NEXT_DAY"/>
+                <action android:name="com.wtuapp.widget.PREVIOUS_DAY"/>
             </intent-filter>
             <meta-data android:name = "android.appwidget.provider"
                     android:resource = "@xml/lessons_table_widget_info" />
         </receiver>
+        <service android:name=".service.impl.LessonsListRemoteViewServiceImpl" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+        <provider
+                android:authorities="@string/authorities"
+                android:name=".ContextProvider"
+                android:exported="false" />
     </application>
 </manifest>

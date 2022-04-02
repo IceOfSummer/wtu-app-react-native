@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HBuilder-SimpleDemo-AS</string>
+    <string name="app_name">AppWidget</string>
     <string name="button">Button</string>
     <string name="next_page">下一页</string>
     <string name="last_page">上一页</string>
@@ -9,4 +9,6 @@
     <string name="time">时间</string>
     <string name="position">位置</string>
     <string name="loading">加载中</string>
+    <string name="authorities">appwidget</string>
+    <string name="no_class_available">今天没课哦!</string>
 </resources>

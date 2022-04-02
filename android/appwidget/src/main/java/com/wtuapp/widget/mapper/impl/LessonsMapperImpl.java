@@ -5,8 +5,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.alibaba.fastjson.JSON;
+import com.wtuapp.widget.bean.ClassesTableInfo;
 import com.wtuapp.widget.bean.Lesson;
+import com.wtuapp.widget.bean.LessonOptions;
 import com.wtuapp.widget.data.SQLiteHelperImpl;
 import com.wtuapp.widget.mapper.LessonsMapper;
 
@@ -31,41 +35,35 @@ public class LessonsMapperImpl implements LessonsMapper {
         helper = new SQLiteHelperImpl(context, DATABASE_NAME, null, VERSION_CODE);
     }
 
-    @NonNull
+    @Nullable
     @Override
     @SuppressWarnings("unchecked")
-    public List<Lesson> getSubjects() {
+    public ClassesTableInfo getClassesTableInfo() {
         try (SQLiteDatabase readableDatabase = helper.getReadableDatabase();
             Cursor query = readableDatabase.query(TABLE_NAME, SELECT_VALUE_ONLY, "key = " + KEY_LESSONS, null, null, null, null)) {
             if (query.moveToFirst()) {
                 Map<String, String> map = JSON.parseObject(query.getString(0), Map.class);
-                String lessons = map.get("lessons");
-                if (lessons == null) {
-                    return Collections.emptyList();
+                String lessonsStr = map.get("lessons");
+                if (lessonsStr == null) {
+                    return null;
                 }
-                return JSON.parseArray(lessons, Lesson.class);
+                List<Lesson> lessonsList = JSON.parseArray(lessonsStr, Lesson.class);
+                String optionsStr = map.get("options");
+                if (optionsStr == null) {
+                    return null;
+                }
+                LessonOptions lessonOptions = JSON.parseObject(optionsStr, LessonOptions.class);
+                return new ClassesTableInfo(lessonsList, lessonOptions);
             } else {
                 // empty
-                return Collections.emptyList();
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return Collections.emptyList();
+            return null;
         }
     }
 
-    @NonNull
-    @Override
-    public List<Lesson> getSubjects(int day) {
-        List<Lesson> subjects = getSubjects();
-        // 一天最多5节课
-        List<Lesson> curWeekSubjects = new ArrayList<>(5);
-        for (Lesson lesson : subjects) {
-            if (lesson.getWeek() == day) {
-                curWeekSubjects.add(lesson);
-            }
-        }
 
-        return curWeekSubjects;
-    }
+
 }

@@ -1,9 +1,7 @@
 package com.wtuapp.widget.mapper;
 
-import androidx.annotation.NonNull;
-
-import com.wtuapp.widget.bean.Lesson;
-import java.util.List;
+import androidx.annotation.Nullable;
+import com.wtuapp.widget.bean.ClassesTableInfo;
 
 /**
  * @author HuPeng
@@ -27,16 +25,8 @@ public interface LessonsMapper {
      * 获取课程表
      * @return 课程表信息
      */
-    @NonNull
-    List<Lesson> getSubjects();
-
-    /**
-     * 获取某一个星期下的课程
-     * @param day 指定的星期
-     * @return 课程表信息
-     */
-    @NonNull
-    List<Lesson> getSubjects(int day);
+    @Nullable
+    ClassesTableInfo getClassesTableInfo();
 
 
 

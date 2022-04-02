@@ -23,10 +23,10 @@ public class Lesson {
     private String id;
 
     /**
-     * 上课开始时间
+     * 上课开始时间, <b>第一节课为0</b>
      * 如:
-     *  - 2 代表第二节课开始上课
-     *  - 10 代表第十节课开始上课
+     *  - 1 代表第一节课开始上课
+     *  - 10 代表第九节课开始上课
      */
     private int beginTime;
 
@@ -135,5 +135,11 @@ public class Lesson {
 
     public void setEndWeek(int endWeek) {
         this.endWeek = endWeek;
+    }
+
+    public String getTimeDuration() {
+        int start = beginTime;
+        int end = beginTime + duration - 1;
+        return CLASS_START_TIME[start] + "-" + CLASS_END_TIME[end];
     }
 }

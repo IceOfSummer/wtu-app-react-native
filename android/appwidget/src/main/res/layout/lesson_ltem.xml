@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:id="@+id/first_class"
+        android:gravity="center">
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/class_time"
+            android:gravity="start"
+            android:textSize="18sp"
+            android:paddingStart="18dp"
+            android:paddingEnd="0dp"
+            android:textColor="#020000"
+            android:layout_weight="1" />
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="2">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:id="@+id/class_name"
+                android:textColor="#020000" />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                tools:ignore="UseCompoundDrawables">
+            <ImageView
+                    android:layout_width="12sp"
+                    android:layout_height="12sp"
+                    android:src="@drawable/position"
+                    android:contentDescription="@string/position" />
+            <TextView
+                    android:layout_width="match_parent"
+                    android:paddingStart="5sp"
+                    android:paddingEnd="0sp"
+                    android:textSize="11sp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/class_location" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="end"
+            tools:ignore="UseCompoundDrawables">
+        <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/time"
+                android:contentDescription="@string/time" />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:paddingStart="10sp"
+                android:paddingEnd="20sp"
+                android:id="@+id/class_real_time" />
+    </LinearLayout>
+
+</LinearLayout>
