@@ -26,4 +26,8 @@ export enum LessonsTableActionConstant {
    * 保存课表信息
    */
   saveLessonsInfo = 'lessonsTableAction_saveLessonsInfo',
+  /**
+   * 更新当前周
+   */
+  updateCurWeek = 'lessonsTableAction_updateCurWeek',
 }

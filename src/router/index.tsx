@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
@@ -15,6 +15,8 @@ import EmptyPage from '../views/EmptyPage'
 import SettingsPage from '../views/SettingsPage'
 import AboutPage from '../views/AboutPage'
 import defaultTheme from './Theme/defaultTheme'
+import { useStore } from 'react-redux'
+import { updateCurWeek } from '../redux/actions/lessonsTable'
 
 const Stack = createNativeStackNavigator()
 
@@ -75,6 +77,11 @@ const headerCommonOptionsWithTitle = (
 }
 
 const Router: React.FC = () => {
+  const store = useStore()
+  useEffect(() => {
+    // 更新当前周
+    store.dispatch(updateCurWeek())
+  }, [])
   return (
     <NavigationContainer theme={defaultTheme}>
       <Stack.Navigator

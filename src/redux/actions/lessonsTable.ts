@@ -2,7 +2,10 @@ import { Action } from 'redux'
 import { LessonsTableActionConstant } from '../constant'
 import { ClassInfo, LessonTableOptions } from '../reducers/lessonsTable'
 
-export type LessonsTableActions = ModifyOptionsAction | SaveLessonsInfoAction
+export type LessonsTableActions =
+  | ModifyOptionsAction
+  | SaveLessonsInfoAction
+  | UpdateCurWeekAction
 
 /**
  * ====================================
@@ -33,4 +36,17 @@ export const saveLessonsInfo = (
 ): SaveLessonsInfoAction => ({
   type: LessonsTableActionConstant.saveLessonsInfo,
   data,
+})
+
+/**
+ * =====================================
+ * 更新当前周
+ */
+export interface UpdateCurWeekAction
+  extends Action<LessonsTableActionConstant> {
+  type: LessonsTableActionConstant.updateCurWeek
+}
+
+export const updateCurWeek = (): UpdateCurWeekAction => ({
+  type: LessonsTableActionConstant.updateCurWeek,
 })
