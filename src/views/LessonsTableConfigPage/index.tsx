@@ -1,15 +1,14 @@
 import React from 'react'
-import { View } from 'react-native'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import { modifyOptions } from '../../redux/actions/lessonsTable'
-import PullDownPicker from '../../component/PullDownPicker'
 import CardContainer from '../../component/Cards/CardContainer'
 import { getCurWeekFromServer } from '../../api/edu/classes'
 import { Term } from '../../redux/reducers/lessonsTable'
 import Loading from '../../component/Loading'
 import NativeDialog from '../../native/modules/NativeDialog'
+import PullDownPickerCard from '../../component/Cards/PullDownPickerCard'
 
 interface LessonsTableConfigPageProps {}
 
@@ -81,44 +80,26 @@ const LessonsTableConfigPage: React.FC<
 
   return (
     <CardContainer>
-      <SimpleCard
+      <PullDownPickerCard
         title="当前周"
-        right={
-          <View>
-            <PullDownPicker
-              title="选择当前周"
-              data={CUR_WEEK_DATA}
-              current={props.week}
-              onSelect={setCurWeek}
-            />
-          </View>
-        }
+        pickerTitle="选择当前周"
+        pickerData={CUR_WEEK_DATA}
+        pickerCurrent={props.week}
+        onSelect={setCurWeek}
       />
-      <SimpleCard
+      <PullDownPickerCard
         title="当前学年"
-        right={
-          <View>
-            <PullDownPicker
-              title="选择当前学年"
-              data={YEAR_DATA}
-              current={props.year}
-              onSelect={setCurYear}
-            />
-          </View>
-        }
+        pickerTitle="选择当前学年"
+        pickerData={YEAR_DATA}
+        pickerCurrent={props.year}
+        onSelect={setCurYear}
       />
-      <SimpleCard
+      <PullDownPickerCard
         title="当前学期"
-        right={
-          <View>
-            <PullDownPicker
-              title="选择当前学期"
-              data={TERM_DATA}
-              current={termStr}
-              onSelect={setCurTerm}
-            />
-          </View>
-        }
+        pickerTitle="选择当前学期"
+        pickerData={TERM_DATA}
+        pickerCurrent={termStr}
+        onSelect={setCurTerm}
       />
       <SimpleCard
         title="校准当前周"

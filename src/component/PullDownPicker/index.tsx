@@ -1,25 +1,36 @@
-import React, { useState } from 'react'
+import React, { ForwardedRef, useImperativeHandle, useState } from 'react'
 import Picker from 'react-native-picker'
-import { Modal, Text, View } from 'react-native'
+import { Modal, Pressable, Text, View } from 'react-native'
 
-interface PullDownPickerProps<T = string | number> {
+export interface PullDownPickerProps<T = string | number> {
   data: Array<T>
   current: T
   onSelect: (index: number, data: T) => void
   title?: string
 }
 
+interface PullDownPickerRefProps {
+  onRef?: ForwardedRef<any>
+}
+
 /**
  * 下拉选择器
  */
-const PullDownPicker: React.FC<PullDownPickerProps> = props => {
+const PullDownPicker: React.FC<
+  PullDownPickerProps & PullDownPickerRefProps
+> = props => {
   const DATA_TYPE = typeof props.data[0]
   const [visible, setVisible] = useState(false)
+
+  useImperativeHandle<unknown, PullDownPickerRefAttribute>(props.onRef, () => ({
+    open: () => setVisible(true),
+  }))
+
   return (
     <View>
-      <View onTouchEnd={() => setVisible(true)}>
+      <Pressable onPress={() => setVisible(true)}>
         <Text style={{ textAlign: 'right' }}>{props.current}</Text>
-      </View>
+      </Pressable>
       <Modal
         transparent={true}
         visible={visible}
@@ -75,4 +86,16 @@ const PullDownPicker: React.FC<PullDownPickerProps> = props => {
   )
 }
 
-export default PullDownPicker
+export interface PullDownPickerRefAttribute {
+  /**
+   * 打开picker
+   */
+  open: () => void
+}
+
+export default React.forwardRef<
+  PullDownPickerRefAttribute,
+  PullDownPickerProps
+>((props, ref) => {
+  return <PullDownPicker {...props} onRef={ref} />
+})

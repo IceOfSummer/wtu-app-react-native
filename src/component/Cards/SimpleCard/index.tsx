@@ -3,7 +3,7 @@ import styles from './styles'
 import { View, Text } from 'react-native'
 import Cards, { CardProps } from '../index'
 
-interface SimpleCardProps extends CardProps {
+export interface SimpleCardProps extends CardProps {
   right?: React.ReactNode
   title: string
   rightContent?: string
