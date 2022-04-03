@@ -171,7 +171,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             crunchPngs false
@@ -215,8 +215,10 @@ dependencies {
     implementation  'io.github.scwang90:refresh-footer-classics:2.0.5'    //经典加载
     implementation project(':react-native-update')
     implementation project(':appwidget')
+    def dialogx_version = "0.0.43"
+    implementation "com.github.kongzue.DialogX:DialogX:${dialogx_version}"
+    implementation "com.github.kongzue.DialogX:DialogXMIUIStyle:${dialogx_version}"
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

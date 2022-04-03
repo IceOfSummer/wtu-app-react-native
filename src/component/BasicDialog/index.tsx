@@ -46,6 +46,10 @@ const styles = StyleSheet.create({
   },
 })
 
+/**
+ * @deprecated
+ * @see NativeDialog 使用原生代码编写的对话框
+ */
 const BasicDialog: React.FC<BasicDialogProps> = props => {
   const [visible, setVisible] = useState<boolean>(false)
   const [dialogConfig, setDialogConfig] = useState<showDialogConfig>({
