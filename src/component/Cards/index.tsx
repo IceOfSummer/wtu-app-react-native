@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
-import { GestureResponderEvent, StyleSheet, View } from 'react-native'
+import {
+  GestureResponderEvent,
+  Pressable,
+  StyleSheet,
+  View,
+} from 'react-native'
 import styles from './styles'
-import TappableView from '../TappableView'
 
 export interface CardProps {
   hideBorder?: boolean
@@ -14,7 +18,7 @@ export interface CardProps {
 const Cards: React.FC<CardProps> = props => {
   const [isTouch, setTouch] = useState(false)
   return (
-    <TappableView
+    <Pressable
       onTouchStart={() => setTouch(true)}
       onTouchEnd={() => setTouch(false)}
       style={[
@@ -23,7 +27,7 @@ const Cards: React.FC<CardProps> = props => {
           backgroundColor: isTouch ? global.styles.$bg_color_hover : '#fff',
         },
       ]}
-      onTap={props.onTap}>
+      onPress={props.onTap}>
       <View
         style={{
           ...styles.cardContainer,
@@ -31,7 +35,7 @@ const Cards: React.FC<CardProps> = props => {
         }}>
         {props.children}
       </View>
-    </TappableView>
+    </Pressable>
   )
 }
 

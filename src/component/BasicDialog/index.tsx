@@ -151,5 +151,8 @@ const BasicDialog: React.FC<BasicDialogProps> = props => {
 }
 
 export default React.forwardRef<BasicDialogRefAttribute, {}>((props, ref) => {
+  console.warn(
+    'use deprecated component <BasicDialog/>, use NativeDialog instead!'
+  )
   return <BasicDialog onRef={ref} />
 })

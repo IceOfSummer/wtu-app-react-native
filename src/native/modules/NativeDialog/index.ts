@@ -12,7 +12,13 @@ type DialogConfig = {
   hideCancelBtn?: boolean
   onConfirm?: () => void
   onCancel?: () => void
+  /**
+   * TODO 对话框类型
+   */
+  type?: 'error' | 'primary' | 'warn'
 }
+
+const defaultCallback = () => null
 
 const NativeDialog: NativeDialogMethod = (function () {
   let dialog: NativeDialogMethod
@@ -58,8 +64,8 @@ const NativeDialog: NativeDialogMethod = (function () {
             config.message,
             config.confirmBtnText,
             config.cancelBtnText,
-            config.onConfirm,
-            config.onCancel
+            config.onConfirm ? config.onConfirm : defaultCallback,
+            config.onCancel ? config.onCancel : defaultCallback
           )
         }
       },

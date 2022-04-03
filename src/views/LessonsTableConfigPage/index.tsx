@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import { View } from 'react-native'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import { connect } from 'react-redux'
@@ -8,10 +8,8 @@ import PullDownPicker from '../../component/PullDownPicker'
 import CardContainer from '../../component/Cards/CardContainer'
 import { getCurWeekFromServer } from '../../api/edu/classes'
 import { Term } from '../../redux/reducers/lessonsTable'
-import BasicDialog, {
-  BasicDialogRefAttribute,
-} from '../../component/BasicDialog'
 import Loading from '../../component/Loading'
+import NativeDialog from '../../native/modules/NativeDialog'
 
 interface LessonsTableConfigPageProps {}
 
@@ -34,8 +32,6 @@ const TERM_DATA = ['上学期', '下学期']
 const LessonsTableConfigPage: React.FC<
   LessonsTableConfigPageProps & StoreActions & StoreProps
 > = props => {
-  const dialog = useRef<BasicDialogRefAttribute>(null)
-
   const setCurWeek = (index: number) =>
     props.modifyOptions({
       week: CUR_WEEK_DATA[index],
@@ -52,26 +48,27 @@ const LessonsTableConfigPage: React.FC<
     })
 
   const adjustCurWeek = () => {
-    dialog.current?.showDialog({
+    NativeDialog.showDialog({
       title: '校准当前周',
-      content: '确定要校准当前周吗',
+      message: '确定要校准当前周吗?',
       onConfirm() {
         Loading.showLoading()
         getCurWeekFromServer(props.year, props.term)
           .then(week => {
-            dialog.current?.showDialog({
+            NativeDialog.showDialog({
               title: '校准成功',
-              content: `当前为第${week}周`,
+              message: `当前为第${week}周`,
               type: 'primary',
+              hideCancelBtn: true,
             })
             props.modifyOptions({
               week,
             })
           })
           .catch(e => {
-            dialog.current?.showDialog({
+            NativeDialog.showDialog({
               title: '校准失败',
-              content: e.toString(),
+              message: e.toString(),
               type: 'error',
             })
           })
@@ -129,7 +126,6 @@ const LessonsTableConfigPage: React.FC<
         onTap={adjustCurWeek}
         type="primary"
       />
-      <BasicDialog ref={dialog} />
     </CardContainer>
   )
 }

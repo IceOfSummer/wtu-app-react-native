@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, View } from 'react-native'
 import styles from './styles'
 import LessonCard from './LessonCard'
@@ -10,20 +10,17 @@ import { ReducerTypes } from '../../redux/reducers'
 import { showNavigationToast } from '../../component/DiyToast/NavToast'
 import { SCHOOL_AUTH } from '../../router'
 import { getLessons } from '../../api/edu/classes'
-import BasicDialog, {
-  BasicDialogRefAttribute,
-} from '../../component/BasicDialog'
 import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
 import PullDownRefreshView, {
   finishRefresh,
 } from '../../native/component/BounceScrollView'
+import NativeDialog from '../../native/modules/NativeDialog'
 
 interface ClassScheduleProps {}
 
 const ClassSchedule: React.FC<
   ClassScheduleProps & StoreActions & StoreStates
 > = props => {
-  const dialog = useRef<BasicDialogRefAttribute>(null)
   const [todayLessons, setTodayLessons] = useState<Array<ClassInfo>>([])
 
   // 今天的星期
@@ -55,10 +52,10 @@ const ClassSchedule: React.FC<
           props.saveLessonsInfo(resp)
           resolve(true)
           if (resp.length === 0) {
-            dialog.current?.showDialog?.({
-              title: '当前设置下没有课哦!',
-              content: '点击右上角设置可以具体配置相关设置',
-              hideCancel: true,
+            NativeDialog.showDialog({
+              title: '当前设置下没有课哦',
+              message: '点击右上角设置可以具体配置相关设置',
+              hideCancelBtn: true,
             })
             return
           } else {
@@ -146,7 +143,6 @@ const ClassSchedule: React.FC<
           </View>
         </PullDownRefreshView>
       </PopupDrawer>
-      <BasicDialog ref={dialog} />
     </View>
   )
 }

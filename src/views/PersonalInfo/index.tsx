@@ -1,12 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { Text, View } from 'react-native'
 import { getUserInfo } from '../../api/edu/applications'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import { UserInfo } from '../../redux/reducers/user'
-import BasicDialog, {
-  BasicDialogRefAttribute,
-} from '../../component/BasicDialog'
 import { markLoginExpired, saveUserInfo } from '../../redux/actions/user'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import styles from './styles'
@@ -16,6 +13,7 @@ import CookieManager from '@react-native-cookies/cookies'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RouterTypes } from '../../router'
 import Loading from '../../component/Loading'
+import NativeDialog from '../../native/modules/NativeDialog'
 
 interface PersonalInfoProps {}
 
@@ -25,17 +23,16 @@ const PersonalInfo: React.FC<
     StoreActions &
     NativeStackScreenProps<RouterTypes>
 > = props => {
-  const dialog = useRef<BasicDialogRefAttribute>(null)
   /**
    * 加载用户信息
    */
   const checkUserInfo = () => {
     if (!props.userInfo) {
       // 加载失败了
-      dialog.current?.showDialog?.({
+      NativeDialog.showDialog({
         title: '加载资料失败',
         type: 'error',
-        content: '是否重新加载',
+        message: '是否需要重新加载?',
         onConfirm() {
           getUserInfo().then(resp => {
             props.saveUserInfo(resp)
@@ -49,9 +46,9 @@ const PersonalInfo: React.FC<
    * 登出
    */
   const logOutEduAccount = (): void => {
-    dialog.current?.showDialog?.({
+    NativeDialog.showDialog({
       title: '注销登录',
-      content: '确定要注销登录吗',
+      message: '确定要注销登录吗?',
       type: 'warn',
       onConfirm() {
         Loading.showLoading()
@@ -97,7 +94,6 @@ const PersonalInfo: React.FC<
           onTap={logOutEduAccount}
         />
       </View>
-      <BasicDialog ref={dialog} />
     </View>
   )
 }

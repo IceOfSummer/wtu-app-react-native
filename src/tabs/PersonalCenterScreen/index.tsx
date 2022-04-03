@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Text, View } from 'react-native'
+import { Image, Pressable, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import Icons from '../../component/Icons'
@@ -11,7 +11,6 @@ import {
   SCHOOL_AUTH,
   SETTINGS_PAGE,
 } from '../../router'
-import TappableView from '../../component/TappableView'
 
 interface StoreProps {
   username?: string
@@ -32,8 +31,8 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
             style={{ width: 26, height: 26 }}
           />
           {props.expired ? (
-            <TappableView
-              onTap={() => props.navigation.navigate(SCHOOL_AUTH)}
+            <Pressable
+              onPress={() => props.navigation.navigate(SCHOOL_AUTH)}
               key={SCHOOL_AUTH}>
               <Text
                 style={{
@@ -43,10 +42,10 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
                 }}>
                 {props.username ? `${props.username}(已过期)` : '未登录'}
               </Text>
-            </TappableView>
+            </Pressable>
           ) : (
-            <TappableView
-              onTap={() => props.navigation.navigate(PERSONAL_INFO)}
+            <Pressable
+              onPress={() => props.navigation.navigate(PERSONAL_INFO)}
               key={PERSONAL_INFO}>
               <Text
                 style={{
@@ -56,16 +55,16 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
                 }}>
                 {props.username}
               </Text>
-            </TappableView>
+            </Pressable>
           )}
         </View>
-        <TappableView onTap={() => props.navigation.navigate(SETTINGS_PAGE)}>
+        <Pressable onPress={() => props.navigation.navigate(SETTINGS_PAGE)}>
           <Icons
             iconText="&#xe600;"
             color={global.styles.$text_color}
             size={global.styles.$font_size_lg}
           />
-        </TappableView>
+        </Pressable>
       </View>
     </View>
   )

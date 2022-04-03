@@ -1,11 +1,10 @@
 import React from 'react'
-import { View, Text, ColorValue } from 'react-native'
+import { View, Text, ColorValue, Pressable } from 'react-native'
 import styles from './styles'
 import { ClassInfo } from '../../../redux/reducers/lessonsTable'
 import { useNavigation } from '@react-navigation/native'
 import { LESSONS_DETAIL, RouterTypes } from '../../../router'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
-import TappableView from '../../../component/TappableView'
 
 interface LessonCardProps {
   classInfo: ClassInfo
@@ -69,16 +68,16 @@ const LessonCard: React.FC<LessonCardProps> = props => {
 
   return (
     <View style={styles.cardOuter}>
-      <TappableView
+      <Pressable
         style={[styles.cardContainer, { backgroundColor: getColor() }]}
-        onTap={seeLessonsDetail}>
+        onPress={seeLessonsDetail}>
         <Text style={styles.classNameTitle}>
           {props.classInfo.className}/@{props.classInfo.location}
         </Text>
         <Text style={styles.textContent}>
           {start}-{end}
         </Text>
-      </TappableView>
+      </Pressable>
     </View>
   )
 }

@@ -14,12 +14,10 @@ import styles from './styles'
 import AniInput, { AniInputRefAttribute } from './AniInput'
 import { initLogin, InitLoginResponse, login } from '../../api/edu/auth'
 import Button from 'react-native-button'
-import BasicDialog, {
-  BasicDialogRefAttribute,
-} from '../../component/BasicDialog'
 import { wtuEncrypt } from '../../utils/aesUtils'
 import Toast from 'react-native-toast-message'
 import Loading from '../../component/Loading'
+import NativeDialog from '../../native/modules/NativeDialog'
 
 interface StoreProps {
   username?: string
@@ -49,7 +47,6 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
   const usernameInput = useRef<AniInputRefAttribute>(null)
   const passwordInput = useRef<AniInputRefAttribute>(null)
   const captchaInput = useRef<AniInputRefAttribute>(null)
-  const dialog = useRef<BasicDialogRefAttribute>(null)
 
   // 初始化loginParam
   const tryInit = () => {
@@ -70,10 +67,9 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
         loadCaptcha()
       })
       .catch(e => {
-        dialog.current?.showDialog({
-          title: '登录失败, 是否重新登录',
-          content: e.toString(),
-          type: 'error',
+        NativeDialog.showDialog({
+          title: '登录失败',
+          message: `${e.toString()}, 是否重新登录?`,
           onConfirm() {
             tryInit()
           },
@@ -95,10 +91,12 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
     // 隐藏键盘
     Keyboard.dismiss()
     if (!loginParam) {
-      dialog.current?.showDialog?.({
+      NativeDialog.showDialog({
         title: '初始化失败',
-        content: '初始化参数失败, 是否需要重新登录',
-        type: 'error',
+        message: '初始化参数失败, 是否需要重新加载',
+        onConfirm() {
+          tryInit()
+        },
       })
       return
     }
@@ -118,10 +116,10 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
           props.navigation.goBack()
         } else {
           let errMsg = match[0].replace(/<.+>/, '').replace('<', '')
-          dialog.current?.showDialog?.({
+          NativeDialog.showDialog({
             title: '登录失败',
-            content: errMsg,
-            hideCancel: true,
+            message: errMsg,
+            hideCancelBtn: true,
             onConfirm() {
               tryInit()
             },
@@ -157,8 +155,6 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
 
   return (
     <View>
-      {/* Dialog */}
-      <BasicDialog ref={dialog} />
       {/* Header */}
       <View style={styles.closeBtn}>
         <Icons
