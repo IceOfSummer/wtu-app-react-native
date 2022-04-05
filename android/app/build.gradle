@@ -82,6 +82,8 @@ project.ext.react = [
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
+// TODO provide your key password here
+apply from: "../config.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -155,8 +157,6 @@ android {
         release {
             keyAlias 'wtu-app'
             storeFile file('wtu-app-release.keystore')
-            storePassword 'abc123'
-            keyPassword 'abc123'
         }
     }
     buildTypes {
