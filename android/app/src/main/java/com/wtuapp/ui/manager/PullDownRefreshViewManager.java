@@ -1,4 +1,4 @@
-package com.wtuapp.layout;
+package com.wtuapp.ui.manager;
 
 import android.content.Context;
 
@@ -12,6 +12,7 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.scwang.smart.refresh.header.ClassicsHeader;
 import com.wtuapp.commands.PullDownRefreshCommandHelper;
+import com.wtuapp.layout.PullDownRefreshView;
 
 import java.util.Map;
 

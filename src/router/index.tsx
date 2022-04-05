@@ -17,6 +17,7 @@ import AboutPage from '../views/AboutPage'
 import defaultTheme from './Theme/defaultTheme'
 import { useStore } from 'react-redux'
 import { updateCurWeek } from '../redux/actions/lessonsTable'
+import Webpage from '../views/Webpage'
 
 const Stack = createNativeStackNavigator()
 
@@ -31,6 +32,7 @@ export const LESSONS_DETAIL = 'lessonsDetail'
 export const EMPTY_PAGE = 'emptyPage'
 export const SETTINGS_PAGE = 'settingsPage'
 export const ABOUT_PAGE = 'aboutPage'
+export const WEB_PAGE = 'webPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -53,6 +55,9 @@ export interface RouterTypes extends ParamListBase {
   [EMPTY_PAGE]: undefined
   [SETTINGS_PAGE]: undefined
   [ABOUT_PAGE]: undefined
+  [WEB_PAGE]: {
+    url: string
+  }
 }
 
 const headerCommonOptions: NativeStackNavigationOptions = {
@@ -127,6 +132,11 @@ const Router: React.FC = () => {
           name={ABOUT_PAGE}
           component={AboutPage}
           options={headerCommonOptionsWithTitle('关于')}
+        />
+        <Stack.Screen
+          name={WEB_PAGE}
+          component={Webpage}
+          options={headerCommonOptionsWithTitle('加载中')}
         />
       </Stack.Navigator>
       <DiyToast />

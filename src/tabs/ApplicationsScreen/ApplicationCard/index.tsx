@@ -10,13 +10,17 @@ interface ApplicationCardProps {
   applications: Array<Application>
 }
 
-export interface Application {
+export interface Application<
+  P extends keyof RouterTypes = keyof RouterTypes,
+  T = RouterTypes[P]
+> {
   /**
    * 图片资源, 使用require导入
    */
   image: any
   title: string
-  path: keyof RouterTypes
+  path: P
+  routeParams?: T
 }
 
 const ApplicationCard: React.FC<ApplicationCardProps> = props => {
@@ -31,7 +35,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = props => {
           {props.applications.map((app, index) => (
             <Pressable
               key={index}
-              onPress={() => nav.navigate(app.path)}
+              onPress={() => nav.navigate(app.path, app.routeParams)}
               style={styles.appContainer}>
               <Image source={app.image} style={styles.appImage} />
               <Text style={styles.appTitleText}>{app.title}</Text>

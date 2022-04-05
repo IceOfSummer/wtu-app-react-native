@@ -14,6 +14,8 @@ target 'wtuapp' do
 
   pod 'react-native-update', :path => '../node_modules/react-native-update'
 
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
   target 'wtuappTests' do
     inherit! :complete
     # Pods for testing

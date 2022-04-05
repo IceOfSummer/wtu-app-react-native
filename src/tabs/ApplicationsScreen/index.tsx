@@ -1,18 +1,22 @@
 import React from 'react'
 import BounceScrollView from '../../native/component/BounceScrollView'
 import ApplicationCard, { Application } from './ApplicationCard'
-import { EMPTY_PAGE } from '../../router'
+import { EMPTY_PAGE, WEB_PAGE } from '../../router'
+import { EduSystem, FeedbackPage } from '../../views/Webpage'
 
 const Applications: React.FC = () => {
   /**
    * 教务系统相关应用
    */
-  const EDU_SYSTEM_APPLICATIONS: Array<Application> = [
-    {
-      path: EMPTY_PAGE,
-      image: require('../../assets/img/officialWeb.png'),
-      title: '登录教务系统',
+  const loginEduSystem: Application<typeof WEB_PAGE> = {
+    path: WEB_PAGE,
+    title: '登录教务系统',
+    image: require('../../assets/img/officialWeb.png'),
+    routeParams: {
+      url: EduSystem,
     },
+  }
+  const EDU_SYSTEM_APPLICATIONS: Array<Application> = [
     {
       path: EMPTY_PAGE,
       image: require('../../assets/img/scoreQuery.png'),
@@ -24,22 +28,29 @@ const Applications: React.FC = () => {
       title: '选课工具',
     },
   ]
+  EDU_SYSTEM_APPLICATIONS.push(loginEduSystem)
 
   /**
+   * ==========================================
    * 推荐应用
    */
+  const feedback: Application<typeof WEB_PAGE> = {
+    path: WEB_PAGE,
+    image: require('../../assets/img/message.png'),
+    title: '意见反馈',
+    routeParams: {
+      url: FeedbackPage,
+    },
+  }
   const SUGGEST_APPLICATION: Array<Application> = [
     {
       path: EMPTY_PAGE,
       image: require('../../assets/img/trade.png'),
       title: '跳蚤市场',
-    },
-    {
-      path: EMPTY_PAGE,
-      image: require('../../assets/img/message.png'),
-      title: '意见反馈',
+      routeParams: {},
     },
   ]
+  SUGGEST_APPLICATION.push(feedback)
 
   return (
     <BounceScrollView enablePureScrollMode={true}>

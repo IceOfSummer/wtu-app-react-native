@@ -3,9 +3,12 @@ import { Text, View } from 'react-native'
 import PullDownRefreshView from '../../native/component/BounceScrollView'
 import { checkUpdate } from 'react-native-update'
 import Button from 'react-native-button'
-import NativeDialog from '../../native/modules/NativeDialog'
+import { useNavigation } from '@react-navigation/native'
+import { RouterTypes, WEB_PAGE } from '../../router'
+import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 
 const Index: React.FC = () => {
+  const nav = useNavigation<NavigationProp<RouterTypes>>()
   checkUpdate('lVc6_awtGU4UdySZkKLufjP1')
     .then(resp => {
       console.log(resp)
@@ -13,17 +16,7 @@ const Index: React.FC = () => {
     .catch(console.log)
 
   const test = () => {
-    NativeDialog.showDialog({
-      title: 'hello',
-      message: 'hello world',
-      onCancel: () => {
-        console.log('cancel')
-      },
-      onConfirm: () => {
-        console.log('confirm')
-      },
-      hideCancelBtn: true,
-    })
+    nav.navigate(WEB_PAGE, { url: 'http://www.baidu.com' })
   }
   return (
     <PullDownRefreshView>
