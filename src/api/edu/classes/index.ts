@@ -69,7 +69,7 @@ export const getCurWeekFromServer = (year: number, term: Term) =>
           reject('查询失败! 请检查当前学期和学年')
         } else {
           if (resp.dqzcxq.DQZC) {
-            resolve(resp.dqzcxq.DQZC)
+            resolve(Number.parseInt(resp.dqzcxq.DQZC, 10))
           } else {
             reject('查询失败! 请检查当前学期和学年')
           }
