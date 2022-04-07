@@ -104,21 +104,18 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
     Loading.showLoading()
     const pwd = wtuEncrypt(password, loginParam.encryptSalt)
     login(loginParam.lt, pwd, captcha, username, loginParam.execution)
-      .then(resp => {
+      .then(status => {
         props.saveUserCredentials(username, password)
-        const match = resp.match(/<span id="msg" class="auth_error".+</)
-        if (match == null) {
-          // success
+        if (status.isSuccess) {
           Toast.show({
-            text1: '登录成功!',
+            text1: status.message,
           })
           props.markLogin()
           props.navigation.goBack()
         } else {
-          let errMsg = match[0].replace(/<.+>/, '').replace('<', '')
           NativeDialog.showDialog({
             title: '登录失败',
-            message: errMsg,
+            message: status.message,
             hideCancelBtn: true,
             onConfirm() {
               tryInit()

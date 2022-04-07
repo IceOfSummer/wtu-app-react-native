@@ -1,17 +1,28 @@
-import { axios } from 'axios-simple-wrapper'
+import betterAjax, { axios } from 'axios-simple-wrapper'
 import Toast from 'react-native-toast-message'
 import { SCHOOL_AUTH } from '../router'
-import { existInput } from '../utils/htmlUtils'
 import { store } from '../redux/store'
 import { markLoginExpired } from '../redux/actions/user'
+import { isAuthPage } from '../utils/AuthUtils'
+
+// 当登录过期后, 不显示Toast
+export const IGNORE_LOGIN_EXPIRE = 'ignoreLoginExpire;'
+const IGNORE_LOGIN_EXPIRE_REGX = /#.*ignoreLoginExpire/
+// 返回完整的响应信息
+export const GET_FULL_RESPONSE = 'getFullResponse;'
+const GET_FULL_RESPONSE_REGX = /#.*getFullResponse/
 
 const initInterceptors = () => {
+  betterAjax.rejectMessage = '您的手速太快了! 请稍后再试!'
   axios.interceptors.response.use(
     resp => {
-      if (typeof resp.data === 'string') {
-        const usernameInput = existInput(resp.data, 'yhm')
-        const passwordInput = existInput(resp.data, 'mm')
-        if (usernameInput && passwordInput) {
+      const requestUrl = resp.request._url
+      // 检查url后是否带有 #ignoreLoginExpire 字段
+      if (
+        !IGNORE_LOGIN_EXPIRE_REGX.test(requestUrl) &&
+        typeof resp.request.responseURL === 'string'
+      ) {
+        if (isAuthPage(resp.request.responseURL)) {
           // 登录失效
           Toast.show({
             text1: '登录过期',
@@ -24,6 +35,9 @@ const initInterceptors = () => {
           store.dispatch(markLoginExpired())
           return Promise.reject('登录过期')
         }
+      }
+      if (GET_FULL_RESPONSE_REGX.test(requestUrl)) {
+        return resp
       }
       if (resp.data) {
         return resp.data

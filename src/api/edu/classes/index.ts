@@ -8,7 +8,7 @@ export const getLessons = (
 ): Promise<Array<ClassInfo>> =>
   new Promise((resolve, reject) => {
     noRepeatAjax<object>(
-      `http://jwglxt.wtu.edu.cn/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151&su=${username}`,
+      `http://jwglxt.wtu.edu.cn/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151&su=${username}#test`,
       {
         xnm: year,
         xqm: term,

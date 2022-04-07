@@ -15,6 +15,10 @@ export enum UserActionConstant {
    * 保存用户信息
    */
   saveUserInfo = 'userAction_saveUserInfo',
+  /**
+   * 检查用户登录状态, 若登录过期则尝试自动重新登录
+   */
+  checkLogin = 'userAction_checkLogin',
 }
 
 export enum LessonsTableActionConstant {

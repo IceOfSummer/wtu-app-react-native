@@ -92,11 +92,11 @@ export function getCurTerm(): Term {
   // 1为一月
   const month = new Date().getMonth() + 1
   if (month >= 3 && month <= 8) {
-    // 上学期
-    return 3
-  } else {
     // 下学期
     return 12
+  } else {
+    // 上学期
+    return 3
   }
 }
 
@@ -104,9 +104,9 @@ export function getCurYear(): number {
   const term = getCurTerm()
   const year = new Date().getFullYear()
   if (term === 12) {
-    return year
-  } else {
     return year - 1
+  } else {
+    return year
   }
 }
 
