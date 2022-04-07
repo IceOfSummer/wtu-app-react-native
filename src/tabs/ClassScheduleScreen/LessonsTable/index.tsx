@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { Dimensions, Pressable, Text, View } from 'react-native'
+import { Dimensions, Text, View } from 'react-native'
 import styles, { HEADER_HEIGHT, PER_CLASS_HEIGHT } from './styles'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../../redux/reducers'
@@ -7,6 +7,7 @@ import { ClassInfo } from '../../../redux/reducers/lessonsTable'
 import { Link, useNavigation } from '@react-navigation/native'
 import { LESSONS_DETAIL, RouterTypes, SCHOOL_AUTH } from '../../../router'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
+import TappableView from '../../../component/TappableView'
 
 interface LessonsTableProps {}
 
@@ -73,7 +74,7 @@ const LessonsTable: React.FC<
         <View>
           <View>
             {props.lessons.map(value => (
-              <Pressable
+              <TappableView
                 style={[
                   styles.lessonItem,
                   {
@@ -95,7 +96,7 @@ const LessonsTable: React.FC<
                     </Text>
                   </View>
                 </View>
-              </Pressable>
+              </TappableView>
             ))}
           </View>
           <View style={styles.header}>
