@@ -1,37 +1,34 @@
 import React, { useRef } from 'react'
-import {
-  GestureResponderEvent,
-  PanResponder,
-  View,
-  ViewProps,
-} from 'react-native'
+import { GestureResponderEvent, View, ViewProps } from 'react-native'
 
 interface TappableViewProps {
-  onTap?: (event: GestureResponderEvent) => void
+  onPress?: (event: GestureResponderEvent) => void
 }
 
 /**
  * 可点击的View
- *
  * 提供专属的onTap事件处理点击事件，可以避免滑动事件而造成的误判断
- * @deprecated
- * @see Pressable {@link https://reactnative.cn/docs/pressable#onpress}
+ *
+ * @see Pressable 推荐使用官方自带的组件, 若无效可尝试本组件
+ *
+ * 一般在父组件使用了PanResponder后, Pressable组件可能会失效
  */
 const TappableView: React.FC<ViewProps & TappableViewProps> = props => {
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderRelease: (event, gestureState) => {
-        if (gestureState.dy === 0) {
-          // tap event
-          props.onTap?.(event)
-        }
-      },
-    })
-  ).current
+  const startY = useRef(0)
+
+  const onTouchStart = ({ nativeEvent }: GestureResponderEvent) => {
+    startY.current = nativeEvent.pageY
+  }
+
+  const onTouchEnd = (event: GestureResponderEvent) => {
+    const { nativeEvent } = event
+    if (nativeEvent.pageY - startY.current === 0) {
+      props.onPress?.(event)
+    }
+  }
 
   return (
-    <View {...props} {...panResponder.panHandlers}>
+    <View {...props} onTouchEnd={onTouchEnd} onTouchStart={onTouchStart}>
       {props.children}
     </View>
   )

@@ -42,7 +42,6 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponder: () => true,
       onPanResponderMove: (event, state) => {
         const distance = -state.dy
         if (isShowingLessons.current) {
@@ -63,6 +62,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
         // 正数向下滑动
         const distance = state.dy
         const speed = state.vy
+        event.persist()
 
         if (speed > TOGGLE_SPEED) {
           // 隐藏drawer
@@ -145,7 +145,6 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
       toValue: nativeEvent.layout.height - DRAWER_BAR_HEIGHT,
       useNativeDriver: false,
     }).start()
-    console.log('onload', nativeEvent.layout.height)
   }
   return (
     <View style={styles.popupDrawerContainer}>
