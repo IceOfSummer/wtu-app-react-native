@@ -108,7 +108,7 @@ export interface CheckLoginAction extends Action<UserActionConstant> {
   data: LoginStatus
 }
 
-export const checkLogin = () => {
+export const checkLogin = (callback?: (status: LoginStatus) => void) => {
   return (dispatch: Dispatch<ModifyLoginStatusAction>) => {
     testLogin()
       .then(status => {
@@ -117,7 +117,13 @@ export const checkLogin = () => {
           `auto login status: ${status.isSuccess}, message: ${status.message}`
         )
         dispatch(modifyLoginStatus(status.isSuccess))
+        callback?.(status)
       })
-      .catch(() => null)
+      .catch(e => {
+        callback?.({
+          message: e,
+          isSuccess: false,
+        })
+      })
   }
 }

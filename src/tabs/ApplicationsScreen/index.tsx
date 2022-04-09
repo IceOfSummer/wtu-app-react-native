@@ -2,7 +2,7 @@ import React from 'react'
 import BounceScrollView from '../../native/component/BounceScrollView'
 import ApplicationCard, { Application } from './ApplicationCard'
 import { EMPTY_PAGE, WEB_PAGE } from '../../router'
-import { EduSystem, FeedbackPage } from '../../views/Webpage'
+import { EduSystem, FeedbackPage, SignPage } from '../../views/Webpage'
 
 const Applications: React.FC = () => {
   /**
@@ -49,8 +49,22 @@ const Applications: React.FC = () => {
       title: '跳蚤市场',
       routeParams: {},
     },
+    feedback,
   ]
-  SUGGEST_APPLICATION.push(feedback)
+
+  /**
+   * 其它应用
+   */
+  const signPage: Application<typeof WEB_PAGE> = {
+    path: WEB_PAGE,
+    image: require('../../assets/img/sign.png'),
+    title: '健康打卡',
+    routeParams: {
+      url: SignPage,
+    },
+  }
+
+  const OTHER_APPLICATION: Array<Application> = [signPage]
 
   return (
     <BounceScrollView enablePureScrollMode={true}>
@@ -59,6 +73,7 @@ const Applications: React.FC = () => {
         applications={EDU_SYSTEM_APPLICATIONS}
       />
       <ApplicationCard title="推荐应用" applications={SUGGEST_APPLICATION} />
+      <ApplicationCard title="其它" applications={OTHER_APPLICATION} />
     </BounceScrollView>
   )
 }
