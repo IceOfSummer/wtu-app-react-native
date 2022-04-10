@@ -28,7 +28,7 @@ type Messages = TitleChangeMessage | OpenNewWindowMessage
 export const FeedbackPage = 'https://xds.fit/webpage/#/feedback'
 export const EduSystem =
   'http://jwglxt.wtu.edu.cn/xtgl/index_initMenu.html?jsdm=&_t=1649084664790'
-export const SignPage =
+export const HealthReport =
   'http://ehall.wtu.edu.cn/qljfwapp/sys/lwWtuPassCodeSchool/*default/index.do?null#/studentDetail'
 
 const Webpage: React.FC = () => {

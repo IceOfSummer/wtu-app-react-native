@@ -18,7 +18,6 @@ import defaultTheme from './Theme/defaultTheme'
 import { useStore } from 'react-redux'
 import { updateCurWeek } from '../redux/actions/lessonsTable'
 import Webpage from '../views/Webpage'
-import { checkLogin } from '../redux/actions/user'
 
 const Stack = createNativeStackNavigator()
 
@@ -87,8 +86,6 @@ const Router: React.FC = () => {
   useEffect(() => {
     // 更新当前周
     store.dispatch(updateCurWeek())
-    // @ts-ignore
-    store.dispatch(checkLogin())
   }, [])
   return (
     <NavigationContainer theme={defaultTheme}>

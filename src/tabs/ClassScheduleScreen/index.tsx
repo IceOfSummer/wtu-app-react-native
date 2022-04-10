@@ -15,6 +15,7 @@ import PullDownRefreshView, {
   finishRefresh,
 } from '../../native/component/BounceScrollView'
 import NativeDialog from '../../native/modules/NativeDialog'
+import { splitTodayLessons } from '../../utils/LessonsUtils'
 
 interface ClassScheduleProps {}
 
@@ -23,12 +24,9 @@ const ClassSchedule: React.FC<
 > = props => {
   const [todayLessons, setTodayLessons] = useState<Array<ClassInfo>>([])
 
-  // 今天的星期
-  const curDay = new Date().getDay()
-
   useEffect(() => {
     if (props.lessons) {
-      setTodayLessons(splitTodayLessons(props.lessons))
+      setTodayLessons(splitTodayLessons(props.week, props.lessons))
     }
   }, [])
 
@@ -59,25 +57,11 @@ const ClassSchedule: React.FC<
             })
             return
           } else {
-            setTodayLessons(splitTodayLessons(resp))
+            setTodayLessons(splitTodayLessons(props.week, resp))
           }
         })
         .catch(() => resolve(false))
     })
-  }
-
-  function splitTodayLessons(lessons: Array<ClassInfo>): Array<ClassInfo> {
-    const arr: Array<ClassInfo> = []
-    lessons.forEach(value => {
-      if (
-        value.week === curDay &&
-        value.startWeek <= props.week &&
-        props.week <= value.endWeek
-      ) {
-        arr.push(value)
-      }
-    })
-    return arr
   }
 
   /**

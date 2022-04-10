@@ -1,8 +1,7 @@
 import React from 'react'
 import { StyleProp, StyleSheet, Text, TextStyle } from 'react-native'
 
-type Props = {
-  focused?: boolean
+export interface IconsProps {
   color?: string
   size?: number
   iconText: string
@@ -20,7 +19,7 @@ const styles = StyleSheet.create({
   },
 })
 
-const Icons: React.FC<Props> = props => {
+const Icons: React.FC<IconsProps> = props => {
   const unicodeToStr = (unicode: string) => {
     const hexStr = unicode.replace('&#x', '').replace(';', '')
     return String.fromCharCode(parseInt(hexStr, 16))

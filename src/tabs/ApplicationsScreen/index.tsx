@@ -2,7 +2,7 @@ import React from 'react'
 import BounceScrollView from '../../native/component/BounceScrollView'
 import ApplicationCard, { Application } from './ApplicationCard'
 import { EMPTY_PAGE, WEB_PAGE } from '../../router'
-import { EduSystem, FeedbackPage, SignPage } from '../../views/Webpage'
+import { EduSystem, FeedbackPage, HealthReport } from '../../views/Webpage'
 
 const Applications: React.FC = () => {
   /**
@@ -60,7 +60,7 @@ const Applications: React.FC = () => {
     image: require('../../assets/img/sign.png'),
     title: '健康打卡',
     routeParams: {
-      url: SignPage,
+      url: HealthReport,
     },
   }
 

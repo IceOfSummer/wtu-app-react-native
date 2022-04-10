@@ -38,11 +38,7 @@ const TabBar = () => {
           }
         },
       })}>
-      <Tab.Screen
-        name="*"
-        options={{ title: HOME_TABS }}
-        component={HomeScreen}
-      />
+      <Tab.Screen name="*" options={HOME_OPTIONS} component={HomeScreen} />
       <Tab.Screen
         name={CLASS_SCHEDULE_TABS}
         component={ClassScheduleScreen}
@@ -62,8 +58,13 @@ const TabBar = () => {
   )
 }
 
+const HOME_OPTIONS: BottomTabNavigationOptions = {
+  header: () => null,
+  tabBarLabel: '首页',
+}
+
 const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
-  headerTitle: '课程表',
+  tabBarLabel: '课程表',
   headerTitleAlign: 'center',
   headerRight: () => (
     <Icons
@@ -78,9 +79,10 @@ const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
 })
 const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
   header: () => null,
+  tabBarLabel: '个人中心',
 }
 const APPLICATIONS_SCREEN_OPTIONS: BottomTabNavigationOptions = {
-  headerTitle: '应用',
+  tabBarLabel: '应用',
   headerTitleAlign: 'center',
 }
 

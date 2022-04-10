@@ -6,14 +6,17 @@ import Router from './src/router'
 import initInterceptors from './src/api'
 import Loading from './src/component/Loading'
 import { simpleUpdate } from 'react-native-update'
+import { SafeAreaView } from 'react-native'
 
 initInterceptors()
 const App = () => {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <Router />
-        <Loading />
+        <SafeAreaView style={{ flex: 1 }}>
+          <Router />
+          <Loading />
+        </SafeAreaView>
       </PersistGate>
     </Provider>
   )
