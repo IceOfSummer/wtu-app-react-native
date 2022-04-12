@@ -1,5 +1,5 @@
 import React from 'react'
-import { ClassInfo } from '../../redux/reducers/lessonsTable'
+import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import { Text, View } from 'react-native'

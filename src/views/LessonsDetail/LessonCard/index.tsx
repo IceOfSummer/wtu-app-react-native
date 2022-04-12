@@ -1,5 +1,5 @@
 import React from 'react'
-import { ClassInfo } from '../../../redux/reducers/lessonsTable'
+import { ClassInfo } from '../../../redux/types/lessonsTableTypes'
 import { ColorValue, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../../redux/reducers'
@@ -20,20 +20,29 @@ const LessonCard: React.FC<
   /**
    * 判断当前上课时间并初始化titleColor和tipText
    */
-  if (props.week < props.lessons.startWeek) {
-    // 课程还没开始
-    titleColor = global.styles.$info_color
-    tipText = '(暂未开课)'
-  } else if (
-    props.week >= props.lessons.startWeek &&
-    props.week <= props.lessons.endWeek
-  ) {
-    // 正在上
-    titleColor = global.styles.$primary_color
+  let flag = false
+  for (let i = 0, len = props.lessons.weekInfo.length; i < len; i++) {
+    const weekInfo = props.lessons.weekInfo[i]
+    if (weekInfo.startWeek <= props.week && props.week <= weekInfo.endWeek) {
+      // 正在上
+      titleColor = global.styles.$primary_color
+      flag = true
+      break
+    }
+  }
+  if (!flag) {
+    const minTime = props.lessons.weekInfo[0].startWeek
+    if (props.week < minTime) {
+      // 课程还没开始
+      titleColor = global.styles.$info_color
+      tipText = '(暂未开课)'
+    } else {
+      // 结课
+      titleColor = global.styles.$success_color
+      tipText = '(已结课)'
+    }
   } else {
-    // 结课
-    titleColor = global.styles.$success_color
-    tipText = '(已结课)'
+    titleColor = global.styles.$primary_color
   }
 
   return (
@@ -65,7 +74,7 @@ const LessonCard: React.FC<
           课程组成: {props.lessons.contains}
         </Text>
         <Text style={styles.lessonsInfoText}>
-          上课周: {props.lessons.startWeek}-{props.lessons.endWeek}周
+          上课周: {props.lessons.origin.zcd}
         </Text>
       </View>
     </View>

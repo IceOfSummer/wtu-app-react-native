@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux'
 import userReducer, { UserState } from './user'
-import lessonsTableReducer, { LessonsTableStates } from './lessonsTable'
+import lessonsTableReducer from './lessonsTable'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { persistReducer } from 'redux-persist'
+import { LessonsTableStates } from '../types/lessonsTableTypes'
 
 const userPersistConfig = {
   key: 'user',

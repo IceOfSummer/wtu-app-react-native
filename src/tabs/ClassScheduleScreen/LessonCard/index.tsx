@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ColorValue, Pressable } from 'react-native'
 import styles from './styles'
-import { ClassInfo } from '../../../redux/reducers/lessonsTable'
+import { ClassInfo } from '../../../redux/types/lessonsTableTypes'
 import { useNavigation } from '@react-navigation/native'
 import { LESSONS_DETAIL, RouterTypes } from '../../../router'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'

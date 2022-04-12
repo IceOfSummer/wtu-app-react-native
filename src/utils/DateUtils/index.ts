@@ -7,7 +7,7 @@ export const getStanderDay = (date: Date) => {
   if (day === 0) {
     return 7
   } else {
-    return day - 1
+    return day
   }
 }
 

@@ -1,5 +1,9 @@
 import { noRepeatAjax } from 'axios-simple-wrapper'
-import { ClassInfo, Term } from '../../../redux/reducers/lessonsTable'
+import {
+  ClassInfo,
+  ClassWeekDuration,
+  Term,
+} from '../../../redux/types/lessonsTableTypes'
 
 export const getLessons = (
   username: string,
@@ -25,10 +29,6 @@ export const getLessons = (
           const start = Number.parseInt(strDuration[0], 10) - 1
           const end = Number.parseInt(strDuration[1], 10) - 1
 
-          const weekDuration = value.zcd.toString().replace('周').split('-')
-          const startWeek = Number.parseInt(weekDuration[0], 10)
-          const endWeek = Number.parseInt(weekDuration[1], 10)
-
           const teacher = value.xm
           const contains = value.kcxszc
           const examType = value.khfsmc
@@ -41,18 +41,33 @@ export const getLessons = (
             duration: end - start + 1,
             beginTime: start,
             className: value.kcmc,
-            startWeek,
-            endWeek,
+            weekInfo: splitWeekInfo(value.zcd),
             teacher,
             contains,
             examType,
             lessonsType,
+            origin: {
+              zcd: value.zcd,
+            },
           })
         })
         resolve(arr)
       })
       .catch(reject)
   })
+
+function splitWeekInfo(scd: string): Array<ClassWeekDuration> {
+  const split = scd.split(',')
+  const arr: Array<ClassWeekDuration> = []
+  split.forEach(value => {
+    const temp = value.split('-')
+    arr.push({
+      startWeek: Number.parseInt(temp[0], 10),
+      endWeek: Number.parseInt(temp[1], 10),
+    })
+  })
+  return arr
+}
 
 /**
  * 从服务器获取当前周

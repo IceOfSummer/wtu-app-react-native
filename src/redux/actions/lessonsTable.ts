@@ -1,6 +1,6 @@
 import { Action } from 'redux'
 import { LessonsTableActionConstant } from '../constant'
-import { ClassInfo, LessonTableOptions } from '../reducers/lessonsTable'
+import { ClassInfo, LessonTableOptions } from '../types/lessonsTableTypes'
 
 export type LessonsTableActions =
   | ModifyOptionsAction

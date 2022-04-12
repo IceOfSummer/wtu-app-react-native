@@ -1,4 +1,4 @@
-import { ClassInfo } from '../../redux/reducers/lessonsTable'
+import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { getCurDay } from '../DateUtils'
 
 export function splitTodayLessons(
@@ -11,12 +11,12 @@ export function splitTodayLessons(
   const arr: Array<ClassInfo> = []
   const curDay = getCurDay()
   lessons.forEach(value => {
-    if (
-      value.week === curDay &&
-      value.startWeek <= week &&
-      week <= value.endWeek
-    ) {
-      arr.push(value)
+    if (value.week === curDay) {
+      value.weekInfo.forEach(info => {
+        if (info.startWeek <= week && week <= info.endWeek) {
+          arr.push(value)
+        }
+      })
     }
   })
   return arr
