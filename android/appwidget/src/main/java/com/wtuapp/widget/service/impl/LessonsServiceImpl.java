@@ -2,6 +2,7 @@ package com.wtuapp.widget.service.impl;
 
 import android.content.Context;
 
+import com.wtuapp.widget.bean.ClassWeekDuration;
 import com.wtuapp.widget.bean.ClassesTableInfo;
 import com.wtuapp.widget.bean.Lesson;
 import com.wtuapp.widget.bean.LessonOptions;
@@ -74,14 +75,15 @@ public class LessonsServiceImpl implements LessonsService {
         LessonOptions options = info.getLessonOptions();
 
         int curWeek = options.getWeek();
-
         ArrayList<Lesson> arr = new ArrayList<>(info.getLessons().size());
         for (Lesson lesson : info.getLessons()) {
-            if (lesson.getStartWeek() <= curWeek && curWeek <= lesson.getEndWeek()) {
-                arr.add(lesson);
+            for (ClassWeekDuration classWeekDuration : lesson.getWeekInfo()) {
+                if (classWeekDuration.getStartWeek() <= curWeek && curWeek <= classWeekDuration.getEndWeek()) {
+                    arr.add(lesson);
+                    break;
+                }
             }
         }
-
         return arr;
     }
 

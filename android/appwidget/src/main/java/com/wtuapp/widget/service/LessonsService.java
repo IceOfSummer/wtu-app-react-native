@@ -1,7 +1,5 @@
 package com.wtuapp.widget.service;
 
-import androidx.annotation.Nullable;
-
 import com.wtuapp.widget.bean.Lesson;
 
 import java.util.List;

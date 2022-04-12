@@ -1,5 +1,7 @@
 package com.wtuapp.widget.bean;
 
+import java.util.List;
+
 /**
  * @author HuPeng
  * @date 2022-03-31 16:11
@@ -53,25 +55,35 @@ public class Lesson {
     private String location;
 
     /**
-     * 开始周
+     * 课程开始周与结束周信息
      */
-    private int startWeek;
+    private List<ClassWeekDuration> weekInfo;
 
     /**
-     * 结束周
+     * 原始数据
      */
-    private int endWeek;
+    private OriginData origin;
 
-    /**
-     * 检查该课程是否正在学习
-     * @param curWeek 当前周
-     * @return 返回true表示正在学习
-     */
-    public boolean isStudying(int curWeek) {
-        // 1-4周,6-9周
-        return startWeek <= curWeek && curWeek <= endWeek;
+    public static class OriginData {
+        private String zcd;
+
+        public String getZcd() {
+            return zcd;
+        }
+
+        public void setZcd(String zcd) {
+            this.zcd = zcd;
+        }
     }
 
+
+    public List<ClassWeekDuration> getWeekInfo() {
+        return weekInfo;
+    }
+
+    public void setWeekInfo(List<ClassWeekDuration> weekInfo) {
+        this.weekInfo = weekInfo;
+    }
 
     public String getId() {
         return id;
@@ -121,21 +133,6 @@ public class Lesson {
         this.location = location;
     }
 
-    public int getStartWeek() {
-        return startWeek;
-    }
-
-    public void setStartWeek(int startWeek) {
-        this.startWeek = startWeek;
-    }
-
-    public int getEndWeek() {
-        return endWeek;
-    }
-
-    public void setEndWeek(int endWeek) {
-        this.endWeek = endWeek;
-    }
 
     public String getTimeDuration() {
         int start = beginTime;

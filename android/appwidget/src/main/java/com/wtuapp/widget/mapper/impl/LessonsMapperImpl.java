@@ -2,24 +2,16 @@ package com.wtuapp.widget.mapper.impl;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.alibaba.fastjson.JSON;
 import com.wtuapp.widget.bean.ClassesTableInfo;
 import com.wtuapp.widget.bean.Lesson;
 import com.wtuapp.widget.bean.LessonOptions;
 import com.wtuapp.widget.data.SQLiteHelperImpl;
 import com.wtuapp.widget.mapper.LessonsMapper;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
