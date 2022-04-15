@@ -6,21 +6,25 @@
         android:id="@+id/first_class"
         android:gravity="center">
 
-    <TextView
+    <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/class_time"
-            android:gravity="start"
-            android:textSize="18sp"
-            android:paddingStart="18dp"
-            android:paddingEnd="0dp"
-            android:text="1-2"
-            android:textColor="#020000"
-            android:layout_weight="1" />
+            android:layout_weight="1">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/class_time"
+                android:gravity="start"
+                android:textSize="18sp"
+                android:paddingStart="18dp"
+                android:paddingEnd="0dp"
+                android:text="1-2"
+                android:textColor="#020000" />
+    </LinearLayout>
 
     <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="5"
+            android:layout_weight="4"
             android:orientation="vertical"
             android:gravity="center_vertical"
             android:layout_height="wrap_content">
