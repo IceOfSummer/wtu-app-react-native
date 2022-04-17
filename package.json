@@ -17,7 +17,6 @@
     "@react-navigation/native-stack": "^6.5.0",
     "axios-simple-wrapper": "^0.1.2",
     "react": "17.0.2",
-    "react-content-loader": "^6.2.0",
     "react-native": "0.67.2",
     "react-native-button": "^3.0.1",
     "react-native-device-info": "^8.5.1",

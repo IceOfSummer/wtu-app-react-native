@@ -7,7 +7,6 @@ import {
 import { StyleSheet, Text, View } from 'react-native'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../redux/reducers'
-import ContentLoader, { Rect } from 'react-content-loader/native'
 import NativeDialog from '../../../native/modules/NativeDialog'
 import BounceScrollView from '../../../native/component/BounceScrollView'
 
@@ -48,22 +47,11 @@ const ScoreDetailDrawerContent: React.FC<
   }, [props.subject])
   if (!scoreData) {
     return (
-      <View
-        style={{
-          alignItems: 'center',
-        }}>
-        <View style={{ width: 300 }}>
-          <ContentLoader
-            speed={2}
-            width={300}
-            height={600}
-            viewBox="0 0 300 600"
-            backgroundColor="#f3f3f3"
-            foregroundColor="#ecebeb">
-            <Rect x="0" y="40" rx="3" ry="3" width="300" height="200" />
-            <Rect x="0" y="260" rx="0" ry="0" width="300" height="300" />
-          </ContentLoader>
-        </View>
+      <View>
+        <Text
+          style={{ textAlign: 'center', color: global.styles.$primary_color }}>
+          Loading
+        </Text>
       </View>
     )
   } else if (props.subject) {

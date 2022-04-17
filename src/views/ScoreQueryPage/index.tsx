@@ -115,9 +115,6 @@ const ScoreQueryPage: React.FC<StoreStates & StoreActions> = props => {
 
   return (
     <BounceScrollView>
-      <FullScreenDialog uniqueId="TestComponent" ref={drawer}>
-        <ScoreDetailDrawerContent subject={curTapSubject} />
-      </FullScreenDialog>
       <View
         style={{
           flexDirection: 'row',
@@ -145,6 +142,9 @@ const ScoreQueryPage: React.FC<StoreStates & StoreActions> = props => {
             : ' 成绩大于等于75分用绿色标记, 60分到75分为橙色, 小于60分为红色'}
         </Text>
       </View>
+      <FullScreenDialog uniqueId="TestComponent" ref={drawer}>
+        <ScoreDetailDrawerContent subject={curTapSubject} />
+      </FullScreenDialog>
     </BounceScrollView>
   )
 }

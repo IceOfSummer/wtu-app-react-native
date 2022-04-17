@@ -1,4 +1,10 @@
-import { Dimensions, NativeModules, Platform, View } from 'react-native'
+import {
+  Dimensions,
+  NativeModules,
+  Platform,
+  View,
+  ViewStyle,
+} from 'react-native'
 import React, {
   ForwardedRef,
   RefAttributes,
@@ -14,6 +20,7 @@ export interface FullScreenDialogRefAttribute {
 interface FullScreenDialogProps {
   uniqueId: string
   children: any
+  containerStyle?: ViewStyle
 }
 
 interface OnRef {
@@ -32,7 +39,7 @@ if (Platform.OS === 'android') {
   const dialog = NativeModules.FullScreenDialog
 
   const Dialog: React.FC<FullScreenDialogProps & OnRef> = props => {
-    const width = Dimensions.get('window').width
+    const { width } = Dimensions.get('window')
     const [isHide, setHide] = useState(true)
     useEffect(() => {
       return () => {
@@ -51,16 +58,20 @@ if (Platform.OS === 'android') {
         },
       })
     )
+
     return (
       <View
-        style={{
-          position: 'absolute',
-          opacity: isHide ? 0 : 1,
-          top: 40,
-          width: width,
-        }}
+        style={[
+          {
+            opacity: isHide ? 0 : 1,
+            width: width,
+            position: 'absolute',
+            top: 40,
+          },
+          props.containerStyle,
+        ]}
         nativeID={props.uniqueId}>
-        {props.children}
+        {isHide ? null : <View>{props.children}</View>}
       </View>
     )
   }
