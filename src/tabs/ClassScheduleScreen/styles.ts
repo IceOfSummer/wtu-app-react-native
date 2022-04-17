@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native'
 export const PULL_DOWN_AREA_HEIGHT = 60
 
 export default StyleSheet.create({
-  cardOuter: {
+  blockOuter: {
     paddingTop: 10,
     paddingHorizontal: 20,
     width: '100%',

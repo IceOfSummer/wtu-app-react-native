@@ -46,7 +46,7 @@ const LessonCard: React.FC<
   }
 
   return (
-    <View style={styles.cardOuter}>
+    <View style={styles.blockOuter}>
       <View style={styles.cardContainer}>
         <Text
           style={[

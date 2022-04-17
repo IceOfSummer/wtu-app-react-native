@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
-  cardOuter: {
+  blockOuter: {
     paddingHorizontal: 50,
     marginVertical: 5,
   },

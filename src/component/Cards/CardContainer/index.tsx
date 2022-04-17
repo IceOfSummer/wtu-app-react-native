@@ -3,14 +3,14 @@ import { StyleSheet, View } from 'react-native'
 
 const CardContainer: React.FC = props => {
   return (
-    <View style={styles.cardOuter}>
+    <View style={styles.blockOuter}>
       <View style={styles.cardContainer}>{props.children}</View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  cardOuter: {
+  blockOuter: {
     padding: 10,
   },
   cardContainer: {

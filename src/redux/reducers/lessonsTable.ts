@@ -1,20 +1,8 @@
 import { Reducer } from 'redux'
 import { LessonsTableActions } from '../actions/lessonsTable'
 import { LessonsTableActionConstant } from '../constant'
-import { getStanderDay } from '../../utils/DateUtils'
-import { LessonsTableStates, Term } from '../types/lessonsTableTypes'
-
-export function getCurTerm(): Term {
-  // 1为一月
-  const month = new Date().getMonth() + 1
-  if (month >= 3 && month <= 8) {
-    // 下学期
-    return 12
-  } else {
-    // 上学期
-    return 3
-  }
-}
+import { getCurTerm, getStanderDay } from '../../utils/DateUtils'
+import { LessonsTableStates } from '../types/lessonsTableTypes'
 
 export function getCurYear(): number {
   const term = getCurTerm()

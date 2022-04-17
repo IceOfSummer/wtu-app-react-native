@@ -1,7 +1,7 @@
 import React from 'react'
 import BounceScrollView from '../../native/component/BounceScrollView'
 import ApplicationCard, { Application } from './ApplicationCard'
-import { EMPTY_PAGE, WEB_PAGE } from '../../router'
+import { EMPTY_PAGE, SCORE_QUERY, WEB_PAGE } from '../../router'
 import { EduSystem, FeedbackPage, HealthReport } from '../../views/Webpage'
 
 const Applications: React.FC = () => {
@@ -15,17 +15,20 @@ const Applications: React.FC = () => {
     routeParams: {
       url: EduSystem,
     },
+    needLogin: true,
   }
   const EDU_SYSTEM_APPLICATIONS: Array<Application> = [
     {
-      path: EMPTY_PAGE,
+      path: SCORE_QUERY,
       image: require('../../assets/img/scoreQuery.png'),
       title: '成绩查询',
+      needLogin: true,
     },
     {
       path: EMPTY_PAGE,
       image: require('../../assets/img/selectedLessons.png'),
       title: '选课工具',
+      needLogin: true,
     },
   ]
   EDU_SYSTEM_APPLICATIONS.push(loginEduSystem)
@@ -48,6 +51,7 @@ const Applications: React.FC = () => {
       image: require('../../assets/img/trade.png'),
       title: '跳蚤市场',
       routeParams: {},
+      needLogin: true,
     },
     feedback,
   ]
@@ -59,6 +63,7 @@ const Applications: React.FC = () => {
     path: WEB_PAGE,
     image: require('../../assets/img/sign.png'),
     title: '健康打卡',
+    needLogin: true,
     routeParams: {
       url: HealthReport,
     },

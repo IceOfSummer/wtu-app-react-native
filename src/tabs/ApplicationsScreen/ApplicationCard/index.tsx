@@ -1,9 +1,12 @@
 import React from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
-import { RouterTypes } from '../../../router'
+import { RouterTypes, SCHOOL_AUTH } from '../../../router'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import styles from './styles'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../redux/reducers'
+import NativeDialog from '../../../native/modules/NativeDialog'
 
 interface ApplicationCardProps {
   title: string
@@ -21,12 +24,30 @@ export interface Application<
   title: string
   path: P
   routeParams?: T
+  needLogin?: boolean
 }
 
 const ApplicationCard: React.FC<ApplicationCardProps> = props => {
+  const store = useStore<ReducerTypes>()
   const nav = useNavigation<NavigationProp<RouterTypes>>()
+
+  const pressEvent = (app: Application) => {
+    if (app.needLogin && !store.getState().user.isLoginValid) {
+      NativeDialog.showDialog({
+        title: '请先登录',
+        message: '请登录后再操作',
+        hideCancelBtn: true,
+        confirmBtnText: '登录',
+        onConfirm() {
+          nav.navigate(SCHOOL_AUTH)
+        },
+      })
+      return
+    }
+    nav.navigate(app.path, app.routeParams)
+  }
   return (
-    <View style={styles.cardOuter}>
+    <View style={styles.blockOuter}>
       <View style={styles.cardContainer}>
         <View style={styles.cardHeader}>
           <Text style={styles.headerText}>{props.title}</Text>
@@ -35,7 +56,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = props => {
           {props.applications.map((app, index) => (
             <Pressable
               key={index}
-              onPress={() => nav.navigate(app.path, app.routeParams)}
+              onPress={() => pressEvent(app)}
               style={styles.appContainer}>
               <Image source={app.image} style={styles.appImage} />
               <Text style={styles.appTitleText}>{app.title}</Text>

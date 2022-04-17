@@ -18,6 +18,7 @@ import defaultTheme from './Theme/defaultTheme'
 import { useStore } from 'react-redux'
 import { updateCurWeek } from '../redux/actions/lessonsTable'
 import Webpage from '../views/Webpage'
+import ScoreQueryPage from '../views/ScoreQueryPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -28,11 +29,12 @@ export const APPLICATIONS_TABS = 'Applications'
 export const SCHOOL_AUTH = 'SchoolAuth'
 export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
-export const LESSONS_DETAIL = 'lessonsDetail'
-export const EMPTY_PAGE = 'emptyPage'
-export const SETTINGS_PAGE = 'settingsPage'
-export const ABOUT_PAGE = 'aboutPage'
-export const WEB_PAGE = 'webPage'
+export const LESSONS_DETAIL = 'LessonsDetail'
+export const EMPTY_PAGE = 'EmptyPage'
+export const SETTINGS_PAGE = 'SettingsPage'
+export const ABOUT_PAGE = 'AboutPage'
+export const WEB_PAGE = 'WebPage'
+export const SCORE_QUERY = 'ScoreQuery'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -58,6 +60,7 @@ export interface RouterTypes extends ParamListBase {
   [WEB_PAGE]: {
     url: string
   }
+  [SCORE_QUERY]: undefined
 }
 
 const headerCommonOptions: NativeStackNavigationOptions = {
@@ -137,6 +140,11 @@ const Router: React.FC = () => {
           name={WEB_PAGE}
           component={Webpage}
           options={headerCommonOptionsWithTitle('加载中')}
+        />
+        <Stack.Screen
+          name={SCORE_QUERY}
+          component={ScoreQueryPage}
+          options={headerCommonOptionsWithTitle('成绩查询')}
         />
       </Stack.Navigator>
       <DiyToast />

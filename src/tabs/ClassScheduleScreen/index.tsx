@@ -103,7 +103,7 @@ const ClassSchedule: React.FC<
           scrollConfig={{ style: { height: '100%' } }}
           onRefresh={onPullDownRefresh}
           enableRefresh>
-          <View style={styles.cardOuter}>
+          <View style={styles.blockOuter}>
             <View style={styles.cardContainer}>
               <View>
                 <Text style={styles.cardTitleText}>今日课程</Text>

@@ -22,7 +22,7 @@ const Cards: React.FC<CardProps> = props => {
       onTouchStart={() => setTouch(true)}
       onTouchEnd={() => setTouch(false)}
       style={[
-        styles.cardOuter,
+        styles.blockOuter,
         {
           backgroundColor: isTouch ? global.styles.$bg_color_hover : '#fff',
         },

@@ -6,11 +6,10 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.wtuapp.modules.FullScreenDialogManager;
 import com.wtuapp.ui.manager.PullDownRefreshViewManager;
 import com.wtuapp.modules.BeautifulAlertDialogManager;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,7 +21,10 @@ public class NativeComponentPackages implements ReactPackage {
     @NonNull
     @Override
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
-        return Collections.singletonList(new BeautifulAlertDialogManager());
+        ArrayList<NativeModule> nativeModules = new ArrayList<>(2);
+        nativeModules.add(new BeautifulAlertDialogManager());
+        nativeModules.add(new FullScreenDialogManager(reactContext));
+        return nativeModules;
     }
 
     @NonNull

@@ -14,7 +14,7 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
   },
-  cardOuter: {
+  blockOuter: {
     padding: 10,
   },
   appOuter: {

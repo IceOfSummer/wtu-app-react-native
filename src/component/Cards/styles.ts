@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
-  cardOuter: {
+  blockOuter: {
     paddingHorizontal: global.styles.$spacing_row_base,
     paddingVertical: 1,
     backgroundColor: '#fff',

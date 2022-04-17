@@ -67,7 +67,7 @@ const LessonCard: React.FC<LessonCardProps> = props => {
   }
 
   return (
-    <View style={styles.cardOuter}>
+    <View style={styles.blockOuter}>
       <Pressable
         style={[styles.cardContainer, { backgroundColor: getColor() }]}
         onPress={seeLessonsDetail}>

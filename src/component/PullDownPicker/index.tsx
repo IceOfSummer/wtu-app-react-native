@@ -5,7 +5,7 @@ import { Modal, Pressable, Text, View } from 'react-native'
 export interface PullDownPickerProps<T = string | number> {
   data: Array<T>
   current: T
-  onSelect: (index: number, data: T) => void
+  onSelect?: (index: number, data: T) => void
   title?: string
 }
 
@@ -47,13 +47,13 @@ const PullDownPicker: React.FC<
               setVisible(false)
               if (DATA_TYPE === 'number') {
                 // 转成number
-                props.onSelect(
+                props.onSelect?.(
                   props.data.indexOf(Number.parseInt(data[0], 10)),
                   data[0]
                 )
               } else {
                 // string
-                props.onSelect(props.data.indexOf(data[0]), data[0])
+                props.onSelect?.(props.data.indexOf(data[0]), data[0])
               }
             },
             onPickerCancel: () => {

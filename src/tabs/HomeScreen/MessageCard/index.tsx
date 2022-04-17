@@ -15,7 +15,7 @@ const MessageCard: React.FC<MessageCardProps> = props => {
   const titleColor = props.titleColor ? props.titleColor : '#fff'
   const messageColor = props.messageColor ? props.messageColor : '#fff'
   return (
-    <View style={styles.cardOuter}>
+    <View style={styles.blockOuter}>
       <Pressable
         onPress={props.onPress}
         style={[
@@ -39,7 +39,7 @@ const MessageCard: React.FC<MessageCardProps> = props => {
 }
 
 const styles = StyleSheet.create({
-  cardOuter: {
+  blockOuter: {
     marginBottom: 20,
     paddingHorizontal: 20,
   },

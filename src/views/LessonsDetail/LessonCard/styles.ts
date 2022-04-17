@@ -4,7 +4,7 @@ export default StyleSheet.create({
   title: {
     fontSize: global.styles.$font_size_lg,
   },
-  cardOuter: {
+  blockOuter: {
     padding: 10,
   },
   cardContainer: {
