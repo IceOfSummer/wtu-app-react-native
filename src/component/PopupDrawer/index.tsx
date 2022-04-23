@@ -30,7 +30,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   const contentOpacity = useRef(new Animated.Value(1)).current
   const bottomPadding = useRef(new Animated.Value(0)).current
   // 动画切换事件
-  const DURATION = 200
+  const BASE_DURATION = 250
   // drawer的定位初始化距离
   const topPos = useRef(
     new Animated.Value(Dimensions.get('window').height)
@@ -67,76 +67,87 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
         if (speed > TOGGLE_SPEED) {
           // 隐藏drawer
           isShowingLessons.current = false
-          hideDrawer()
+          hideDrawer(speed)
           return
         } else if (speed < -TOGGLE_SPEED) {
           // 显示drawer
           isShowingLessons.current = true
-          showDrawer()
+          showDrawer(speed)
           return
         }
 
         if (Math.abs(distance) < TOGGLE_DISTANCE) {
           if (isShowingLessons.current) {
-            showDrawer()
+            showDrawer(speed)
           } else {
             // 还原隐藏状态
-            hideDrawer()
+            hideDrawer(speed)
           }
         } else {
           if (isShowingLessons.current && distance > 0) {
             // 隐藏drawer
             isShowingLessons.current = false
-            hideDrawer()
+            hideDrawer(speed)
           } else {
             // 显示drawer
             isShowingLessons.current = true
-            showDrawer()
+            showDrawer(speed)
           }
         }
       },
     })
   ).current
 
-  function hideDrawer() {
+  function hideDrawer(speed: number) {
+    const duration = getDuration(speed)
+    console.log(speed)
+    console.log(duration)
     drawerPos.stopAnimation()
     contentOpacity.stopAnimation()
     Animated.parallel([
       Animated.timing(drawerPos, {
         useNativeDriver: false,
         toValue: 0,
-        duration: DURATION,
+        duration: duration,
         easing: Easing.linear,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,
         toValue: 1,
-        duration: DURATION,
+        duration: duration,
       }),
     ]).start()
   }
 
-  function showDrawer() {
+  function showDrawer(speed: number) {
+    const duration = getDuration(speed)
     drawerPos.stopAnimation()
     isShowingLessons.current = true
     Animated.parallel([
       Animated.timing(drawerPos, {
         useNativeDriver: false,
         toValue: -drawerAvailableHeight.current,
-        duration: DURATION,
+        duration: duration,
         easing: Easing.linear,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,
         toValue: 0,
-        duration: DURATION,
+        duration: duration,
       }),
       Animated.timing(bottomPadding, {
         useNativeDriver: false,
         toValue: 0,
-        duration: DURATION,
+        duration: duration,
       }),
     ]).start()
+  }
+
+  function getDuration(speed: number) {
+    if (speed <= 1) {
+      return BASE_DURATION
+    }
+    return 50
   }
 
   const onDrawerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
