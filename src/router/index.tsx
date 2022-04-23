@@ -19,6 +19,9 @@ import { useStore } from 'react-redux'
 import { updateCurWeek } from '../redux/actions/lessonsTable'
 import Webpage from '../views/Webpage'
 import ScoreQueryPage from '../views/ScoreQueryPage'
+import { checkLogin } from '../redux/actions/user'
+import { markCheckLoginDone } from '../redux/actions/temporaryData'
+import { ReducerTypes } from '../redux/reducers'
 
 const Stack = createNativeStackNavigator()
 
@@ -85,10 +88,23 @@ const headerCommonOptionsWithTitle = (
 }
 
 const Router: React.FC = () => {
-  const store = useStore()
+  const store = useStore<ReducerTypes>()
   useEffect(() => {
-    // 更新当前周
-    store.dispatch(updateCurWeek())
+    store.dispatch(
+      checkLogin(status => {
+        if (status.isSuccess) {
+          // 更新当前周
+          const state = store.getState()
+          store.dispatch(
+            updateCurWeek(
+              state.lessonsTable.options.year,
+              state.lessonsTable.options.term
+            )
+          )
+        }
+        store.dispatch(markCheckLoginDone())
+      })
+    )
   }, [])
   return (
     <NavigationContainer theme={defaultTheme}>

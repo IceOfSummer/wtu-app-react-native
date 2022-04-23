@@ -108,8 +108,8 @@ export interface CheckLoginAction extends Action<UserActionConstant> {
   data: LoginStatus
 }
 
-export const checkLogin = (callback?: (status: LoginStatus) => void) => {
-  return (dispatch: Dispatch<ModifyLoginStatusAction>) => {
+export const checkLogin = (callback?: (status: LoginStatus) => void) =>
+  ((dispatch: Dispatch<ModifyLoginStatusAction>) => {
     testLogin()
       .then(status => {
         // 登录成功
@@ -125,5 +125,4 @@ export const checkLogin = (callback?: (status: LoginStatus) => void) => {
           isSuccess: false,
         })
       })
-  }
-}
+  }) as unknown as ModifyLoginStatusAction

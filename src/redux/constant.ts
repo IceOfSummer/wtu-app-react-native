@@ -35,3 +35,10 @@ export enum LessonsTableActionConstant {
    */
   updateCurWeek = 'lessonsTableAction_updateCurWeek',
 }
+
+export enum TemporaryDataActionConstant {
+  /**
+   * 标记检查登录完成
+   */
+  markCheckLoginDone = 'temporaryDataActionConstant_markCheckLoginDone',
+}

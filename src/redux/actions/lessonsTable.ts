@@ -1,6 +1,7 @@
-import { Action } from 'redux'
+import { Action, Dispatch } from 'redux'
 import { LessonsTableActionConstant } from '../constant'
-import { ClassInfo, LessonTableOptions } from '../types/lessonsTableTypes'
+import { ClassInfo, LessonTableOptions, Term } from '../types/lessonsTableTypes'
+import { getCurWeekFromServer } from '../../api/edu/classes'
 
 export type LessonsTableActions =
   | ModifyOptionsAction
@@ -14,10 +15,10 @@ export type LessonsTableActions =
 export interface ModifyOptionsAction
   extends Action<LessonsTableActionConstant> {
   type: LessonsTableActionConstant.modifyOptions
-  data: LessonTableOptions
+  data: Partial<LessonTableOptions>
 }
 export const modifyOptions = (
-  data: LessonTableOptions
+  data: Partial<LessonTableOptions>
 ): ModifyOptionsAction => ({
   type: LessonsTableActionConstant.modifyOptions,
   data,
@@ -47,6 +48,20 @@ export interface UpdateCurWeekAction
   type: LessonsTableActionConstant.updateCurWeek
 }
 
-export const updateCurWeek = (): UpdateCurWeekAction => ({
-  type: LessonsTableActionConstant.updateCurWeek,
-})
+export const updateCurWeek = (year: number, term: Term) =>
+  ((dispatch: Dispatch<ModifyOptionsAction | UpdateCurWeekAction>) => {
+    getCurWeekFromServer(year, term)
+      .then(resp =>
+        dispatch({
+          type: LessonsTableActionConstant.modifyOptions,
+          data: {
+            week: resp,
+          },
+        })
+      )
+      .catch(() =>
+        dispatch({
+          type: LessonsTableActionConstant.updateCurWeek,
+        })
+      )
+  }) as unknown as ModifyOptionsAction | UpdateCurWeekAction

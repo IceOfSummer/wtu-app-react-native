@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, View } from 'react-native'
 import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 import styles from './styles'
 import PageLink from '../../component/PageLink'
 import { CLASS_SCHEDULE_TABS, RouterTypes, WEB_PAGE } from '../../router'
 import { EduSystem, HealthReport } from '../../views/Webpage'
-import { checkLogin } from '../../redux/actions/user'
-import { connect, useStore } from 'react-redux'
+import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import MessageCard from './MessageCard'
 import { getLastSignInfo } from '../../api/edu/sign'
@@ -17,20 +16,19 @@ import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 
 const Index: React.FC<StorePros & StoreActions> = props => {
   const nav = useNavigation<NavigationProp<RouterTypes>>()
-  const store = useStore()
   const priColor = '#346bff'
   useAutoColorStatusBar(true, priColor)
-  const [isCheckDone, setCheckDone] = useState(false)
-  const isSigned = useRef(false)
+
+  const [healthSignMessage, setHealthSignMessage] = useState('加载中')
 
   useEffect(() => {
-    store.dispatch(
-      // @ts-ignore
-      checkLogin(() => {
+    console.log(props.isLoginValid)
+    if (props.isCheckLoginDone) {
+      if (props.isLoginValid) {
         getLastSignInfo()
           .then(status => {
             if (!status) {
-              isSigned.current = false
+              setHealthSignMessage('今天还没有打卡')
               return
             }
             const now = new Date()
@@ -40,18 +38,17 @@ const Index: React.FC<StorePros & StoreActions> = props => {
               now.getMonth() !== status.getMonth() ||
               now.getDate() !== status.getDate()
             ) {
-              isSigned.current = false
+              setHealthSignMessage('今天还没有打卡')
               return
             }
-            isSigned.current = true
+            setHealthSignMessage('今天已经打卡了')
           })
           .catch(() => null)
-          .finally(() => {
-            setCheckDone(true)
-          })
-      })
-    )
-  }, [])
+      } else {
+        setHealthSignMessage('登录后再查看哦!')
+      }
+    }
+  }, [props.isCheckLoginDone, props.isLoginValid])
 
   /**
    * 初始化头部文字
@@ -75,22 +72,6 @@ const Index: React.FC<StorePros & StoreActions> = props => {
     } else {
       headerText = '晚上好'
       headerTipText = '晚上好好放松一下吧!'
-    }
-  })()
-
-  /**
-   * 生成打卡信息
-   */
-  let signMessage = ''
-  ;(function () {
-    if (!isCheckDone) {
-      signMessage = '加载中'
-    } else if (!props.isLoginValid) {
-      signMessage = '登录后查看打卡信息'
-    } else if (isSigned.current) {
-      signMessage = '今天已经打卡了哦!'
-    } else {
-      signMessage = '今天还没有打卡哦!'
     }
   })()
 
@@ -156,7 +137,7 @@ const Index: React.FC<StorePros & StoreActions> = props => {
           title="健康打卡"
           backgroundColor="skyblue"
           onPress={() => nav.navigate(WEB_PAGE, { url: HealthReport })}
-          message={signMessage}
+          message={healthSignMessage}
         />
       </View>
     </View>
@@ -167,6 +148,7 @@ interface StorePros {
   isLoginValid: boolean
   lessons?: Array<ClassInfo>
   week: number
+  isCheckLoginDone: boolean
 }
 interface StoreActions {}
 
@@ -174,6 +156,7 @@ export default connect<StorePros, StoreActions, {}, ReducerTypes>(
   initialState => ({
     isLoginValid: initialState.user.isLoginValid,
     lessons: initialState.lessonsTable.lessons,
-    week: initialState.lessonsTable.options.week!,
+    week: initialState.lessonsTable.options.week,
+    isCheckLoginDone: initialState.temporary.isCheckLoginDone,
   })
 )(Index)

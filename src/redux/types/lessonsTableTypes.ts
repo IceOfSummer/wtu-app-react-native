@@ -10,19 +10,19 @@ export type LessonTableOptions = {
   /**
    * 当前周
    */
-  week?: number
+  week: number
   /**
    * 当前学年
    */
-  year?: number
+  year: number
   /**
    * 3: 上学期, 13: 下学期
    */
-  term?: Term
+  term: Term
   /**
    * 当前周的上次更新时间戳, 用于自动更新当前周
    */
-  curWeekLastUpdate?: number
+  curWeekLastUpdate: number
 }
 
 /**
