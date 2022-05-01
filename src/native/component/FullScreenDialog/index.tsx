@@ -10,11 +10,16 @@ import React, {
   RefAttributes,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react'
 
 export interface FullScreenDialogRefAttribute {
   open: () => void
+  /**
+   * @deprecated 请使用open()
+   */
+  safeOpen: () => void
 }
 
 interface FullScreenDialogProps {
@@ -39,39 +44,75 @@ if (Platform.OS === 'android') {
   const dialog = NativeModules.FullScreenDialog
 
   const Dialog: React.FC<FullScreenDialogProps & OnRef> = props => {
+    const isInitSuccess = useRef(false)
     const { width } = Dimensions.get('window')
     const [isHide, setHide] = useState(true)
+    // 是否正在等待开启
+    const isWaitingOpen = useRef(false)
+
     useEffect(() => {
+      setTimeout(() => {
+        dialog.initDialog(
+          props.uniqueId,
+          (status: boolean, message: string) => {
+            console.log(`init: ${status}, msg: ${message}`)
+            isInitSuccess.current = true
+            if (isWaitingOpen.current) {
+              isWaitingOpen.current = false
+              openDialog()
+            }
+          }
+        )
+      }, 100)
       return () => {
         dialog.removeDialogInstance(props.uniqueId)
       }
     }, [])
 
+    function openDialog() {
+      if (!isInitSuccess.current) {
+        isWaitingOpen.current = true
+        return
+      }
+      if (isHide) {
+        setHide(false)
+      }
+      dialog.openFullScreenDialog(props.uniqueId)
+    }
+
+    function safeOpenDialog() {
+      if (!isInitSuccess.current) {
+        isWaitingOpen.current = true
+        console.log('waiting')
+        return
+      }
+      setTimeout(() => {
+        if (isHide) {
+          setHide(false)
+        }
+        dialog.openFullScreenDialog(props.uniqueId)
+      }, 100)
+    }
+
     useImperativeHandle<unknown, FullScreenDialogRefAttribute>(
       props.onRef,
       () => ({
-        open() {
-          if (isHide) {
-            setHide(false)
-          }
-          dialog.openFullScreenDialog(props.uniqueId)
-        },
+        open: openDialog,
+        safeOpen: safeOpenDialog,
       })
     )
-
+    console.log(isHide)
     return (
-      <View
-        style={[
-          {
+      <View style={[props.containerStyle]} nativeID={props.uniqueId}>
+        <View
+          style={{
             opacity: isHide ? 0 : 1,
             width: width,
             position: 'absolute',
             top: 40,
-          },
-          props.containerStyle,
-        ]}
-        nativeID={props.uniqueId}>
-        {isHide ? null : <View>{props.children}</View>}
+          }}>
+          {props.children}
+        </View>
       </View>
     )
   }

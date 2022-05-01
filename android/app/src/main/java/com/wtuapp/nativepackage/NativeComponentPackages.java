@@ -1,12 +1,11 @@
 package com.wtuapp.nativepackage;
 
 import androidx.annotation.NonNull;
-
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
-import com.wtuapp.modules.FullScreenDialogManager;
+import com.wtuapp.modules.impl.FullScreenDialogManager;
 import com.wtuapp.ui.manager.PullDownRefreshViewManager;
 import com.wtuapp.modules.BeautifulAlertDialogManager;
 import java.util.ArrayList;
