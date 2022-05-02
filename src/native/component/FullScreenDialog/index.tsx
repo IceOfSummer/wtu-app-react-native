@@ -2,6 +2,7 @@ import {
   Dimensions,
   NativeModules,
   Platform,
+  StatusBar,
   View,
   ViewStyle,
 } from 'react-native'
@@ -26,6 +27,9 @@ interface FullScreenDialogProps {
   uniqueId: string
   children: any
   containerStyle?: ViewStyle
+  showButton?: boolean
+  onConfirm?: () => void
+  buttonText?: string
 }
 
 interface OnRef {
@@ -52,17 +56,32 @@ if (Platform.OS === 'android') {
 
     useEffect(() => {
       setTimeout(() => {
-        dialog.initDialog(
-          props.uniqueId,
-          (status: boolean, message: string) => {
-            console.log(`init: ${status}, msg: ${message}`)
-            isInitSuccess.current = true
-            if (isWaitingOpen.current) {
-              isWaitingOpen.current = false
-              openDialog()
+        if (props.showButton) {
+          dialog.initDialogWithButton(
+            props.uniqueId,
+            (status: boolean, message: string) => {
+              console.log(`init: ${status}, msg: ${message}`)
+              isInitSuccess.current = true
+              if (isWaitingOpen.current) {
+                isWaitingOpen.current = false
+                openDialog()
+              }
             }
-          }
-        )
+          )
+        } else {
+          console.log('mark')
+          dialog.initDialog(
+            props.uniqueId,
+            (status: boolean, message: string) => {
+              console.log(`init: ${status}, msg: ${message}`)
+              isInitSuccess.current = true
+              if (isWaitingOpen.current) {
+                isWaitingOpen.current = false
+                openDialog()
+              }
+            }
+          )
+        }
       }, 100)
       return () => {
         dialog.removeDialogInstance(props.uniqueId)
@@ -77,7 +96,20 @@ if (Platform.OS === 'android') {
       if (isHide) {
         setHide(false)
       }
-      dialog.openFullScreenDialog(props.uniqueId)
+      StatusBar.setBarStyle('light-content')
+      if (props.showButton) {
+        dialog.openFullScreenDialogWithButton(
+          props.uniqueId,
+          props.buttonText ? props.buttonText : '确定',
+          props.onConfirm,
+          () => StatusBar.setBarStyle('dark-content')
+        )
+      } else {
+        console.log('mark2')
+        dialog.openFullScreenDialog(props.uniqueId, () =>
+          StatusBar.setBarStyle('dark-content')
+        )
+      }
     }
 
     function safeOpenDialog() {
@@ -90,7 +122,7 @@ if (Platform.OS === 'android') {
         if (isHide) {
           setHide(false)
         }
-        dialog.openFullScreenDialog(props.uniqueId)
+        openDialog()
       }, 100)
     }
 
@@ -103,13 +135,13 @@ if (Platform.OS === 'android') {
     )
     console.log(isHide)
     return (
-      <View style={[props.containerStyle]} nativeID={props.uniqueId}>
+      <View
+        style={[props.containerStyle, { position: 'absolute', top: 30 }]}
+        nativeID={props.uniqueId}>
         <View
           style={{
-            opacity: isHide ? 0 : 1,
             width: width,
-            position: 'absolute',
-            top: 40,
+            opacity: isHide ? 0 : 1,
           }}>
           {props.children}
         </View>

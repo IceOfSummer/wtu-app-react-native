@@ -7,7 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.wtuapp.modules.impl.FullScreenDialogManager;
 import com.wtuapp.ui.manager.PullDownRefreshViewManager;
-import com.wtuapp.modules.BeautifulAlertDialogManager;
+import com.wtuapp.modules.impl.BeautifulAlertDialogManager;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class NativeComponentPackages implements ReactPackage {
     @NonNull
     @Override
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
-        ArrayList<NativeModule> nativeModules = new ArrayList<>(2);
+        ArrayList<NativeModule> nativeModules = new ArrayList<>();
         nativeModules.add(new BeautifulAlertDialogManager());
         nativeModules.add(new FullScreenDialogManager(reactContext));
         return nativeModules;
@@ -29,7 +29,7 @@ public class NativeComponentPackages implements ReactPackage {
     @NonNull
     @Override
     public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
-        List<ViewManager> viewManagers = new ArrayList<>(2);
+        List<ViewManager> viewManagers = new ArrayList<>();
         viewManagers.add(new PullDownRefreshViewManager());
         return viewManagers;
     }

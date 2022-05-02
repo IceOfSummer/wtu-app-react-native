@@ -1,5 +1,6 @@
 package com.wtuapp.utils;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -8,7 +9,7 @@ import android.view.ViewParent;
  * @author HuPeng
  * @date 2022-05-01 15:35
  */
-public class ViewUtils {
+public final class ViewUtils {
 
     private ViewUtils() {}
 
@@ -20,5 +21,9 @@ public class ViewUtils {
                 viewGroup.removeView(child);
             }
         }
+    }
+
+    public static View getRootView(Activity activity) {
+        return activity == null ? null : activity.getWindow().getDecorView().getRootView();
     }
 }

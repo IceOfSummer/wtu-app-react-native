@@ -1,4 +1,4 @@
-package com.wtuapp.modules;
+package com.wtuapp.modules.impl;
 
 import android.app.Dialog;
 import androidx.annotation.NonNull;
@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.wtuapp.modules.BeautifulAlertDialogModule;
 
 import java.util.Stack;
 
@@ -15,9 +16,8 @@ import java.util.Stack;
  * @author HuPeng
  * @date 2022-04-03 13:34
  */
-public class BeautifulAlertDialogManager extends ReactContextBaseJavaModule {
+public class BeautifulAlertDialogManager extends ReactContextBaseJavaModule implements BeautifulAlertDialogModule {
 
-    public static final String REACT_NAME = "BeautifulAlertDialog";
 
     public static final String DEFAULT_CONFIRM_TEXT =  "确定";
 
@@ -33,6 +33,7 @@ public class BeautifulAlertDialogManager extends ReactContextBaseJavaModule {
     /**
      * 显示对话框
      */
+    @Override
     @ReactMethod
     public void showDialog(String title, String message, String confirmBtnText, String cancelBtnText, Callback confirm, Callback cancel) {
         String confirmText = confirmBtnText == null ? DEFAULT_CONFIRM_TEXT : confirmBtnText;
@@ -58,6 +59,7 @@ public class BeautifulAlertDialogManager extends ReactContextBaseJavaModule {
     /**
      * 显示只有一个按钮的对话框
      */
+    @Override
     @ReactMethod
     public void showSingleButtonDialog(String title, String message, String btnText, Callback confirm) {
         String confirmBtnText = btnText == null ? DEFAULT_CONFIRM_TEXT : btnText;
