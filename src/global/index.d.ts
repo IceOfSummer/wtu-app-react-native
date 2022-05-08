@@ -1,4 +1,4 @@
-interface GlobalStyleTypes {
+interface GlobalStyleValues {
   $primary_color: string
   $success_color: string
   $warning_color: string
@@ -26,6 +26,19 @@ interface GlobalStyleTypes {
   $spacing_row_lg: number
 }
 
+interface GlobalStyleSheet {
+  h1: TextStyle
+  h2: TextStyle
+  centerText: TextStyle
+  textContent: TextStyle
+  baseContainer: ViewStyle
+  flexRow: ViewStyle
+  flexRowCenter: ViewStyle
+  blobText: TextStyle
+  primaryTipText: TextStyle
+  errorTipText: TextStyle
+}
+
 declare namespace global {
-  let styles: GlobalStyleTypes
+  let styles: GlobalStyleValues & GlobalStyleSheet
 }

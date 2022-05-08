@@ -41,4 +41,15 @@ export enum TemporaryDataActionConstant {
    * 标记检查登录完成
    */
   markCheckLoginDone = 'temporaryDataActionConstant_markCheckLoginDone',
+  /**
+   * 保存全局临时状态
+   */
+  saveGlobalState = 'temporaryDataActionConstant_saveGlobalState',
+}
+
+export enum CommonOptionActionConstant {
+  /**
+   * 修改配置
+   */
+  modifyOptions = 'commonOptionActionConstant_modifyOptions',
 }

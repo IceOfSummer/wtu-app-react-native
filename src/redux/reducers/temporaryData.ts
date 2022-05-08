@@ -6,6 +6,7 @@ import { deepCopyObject } from '../../utils/ObjectUtils'
 
 const initTemporaryDataState: TemporaryDataState = {
   isCheckLoginDone: false,
+  globalStates: {},
 }
 
 /**
@@ -19,6 +20,9 @@ const temporaryData: Reducer<TemporaryDataState, TemporaryDataActions> = (
     const copyStates = deepCopyObject(state)
     copyStates.isCheckLoginDone = true
     return copyStates
+  } else if (action.type === TemporaryDataActionConstant.saveGlobalState) {
+    const copyState = deepCopyObject(state)
+    copyState.globalStates = Object.assign(copyState.globalStates, action.data)
   }
   return state
 }

@@ -1,7 +1,12 @@
 import React from 'react'
 import BounceScrollView from '../../native/component/BounceScrollView'
 import ApplicationCard, { Application } from './ApplicationCard'
-import { EMPTY_PAGE, SCORE_QUERY, WEB_PAGE } from '../../router'
+import {
+  EMPTY_PAGE,
+  SCORE_QUERY,
+  SUBJECT_SELECT_PAGE,
+  WEB_PAGE,
+} from '../../router'
 import { EduSystem, FeedbackPage, HealthReport } from '../../views/Webpage'
 
 const Applications: React.FC = () => {
@@ -25,7 +30,7 @@ const Applications: React.FC = () => {
       needLogin: true,
     },
     {
-      path: EMPTY_PAGE,
+      path: SUBJECT_SELECT_PAGE,
       image: require('../../assets/img/selectedLessons.png'),
       title: '选课工具',
       needLogin: true,

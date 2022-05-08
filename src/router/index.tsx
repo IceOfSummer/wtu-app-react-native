@@ -22,6 +22,7 @@ import ScoreQueryPage from '../views/ScoreQueryPage'
 import { checkLogin } from '../redux/actions/user'
 import { markCheckLoginDone } from '../redux/actions/temporaryData'
 import { ReducerTypes } from '../redux/reducers'
+import SubjectSelectPage from '../views/SubjectSelectPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -38,6 +39,7 @@ export const SETTINGS_PAGE = 'SettingsPage'
 export const ABOUT_PAGE = 'AboutPage'
 export const WEB_PAGE = 'WebPage'
 export const SCORE_QUERY = 'ScoreQuery'
+export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -64,6 +66,7 @@ export interface RouterTypes extends ParamListBase {
     url: string
   }
   [SCORE_QUERY]: undefined
+  [SUBJECT_SELECT_PAGE]: undefined
 }
 
 const headerCommonOptions: NativeStackNavigationOptions = {
@@ -161,6 +164,11 @@ const Router: React.FC = () => {
           name={SCORE_QUERY}
           component={ScoreQueryPage}
           options={headerCommonOptionsWithTitle('成绩查询')}
+        />
+        <Stack.Screen
+          name={SUBJECT_SELECT_PAGE}
+          component={SubjectSelectPage}
+          options={headerCommonOptionsWithTitle('选课工具')}
         />
       </Stack.Navigator>
       <DiyToast />

@@ -1,4 +1,5 @@
-const gStyles: GlobalStyleTypes = {
+import { TextStyle, ViewStyle } from 'react-native'
+const gStyleValues: GlobalStyleValues = {
   $primary_color: '#007aff',
   $success_color: '#4cd964',
   $warning_color: '#f0ad4e',
@@ -25,5 +26,61 @@ const gStyles: GlobalStyleTypes = {
   $spacing_row_base: 15,
   $spacing_row_lg: 20,
 }
-global.styles = gStyles
+
+type StyleSheetTypes = Record<keyof GlobalStyleSheet, TextStyle | ViewStyle>
+
+const gStyleSheet: StyleSheetTypes = {
+  h1: {
+    textAlign: 'center',
+    fontSize: gStyleValues.$font_size_lg,
+    color: gStyleValues.$primary_color,
+    paddingVertical: 8,
+  },
+  h2: {
+    fontSize: gStyleValues.$font_size_base,
+    color: gStyleValues.$text_color,
+    paddingVertical: 6,
+  },
+  centerText: {
+    textAlign: 'center',
+  },
+  textContent: {
+    fontSize: gStyleValues.$font_size_sm,
+    color: gStyleValues.$text_color,
+    paddingVertical: 4,
+  },
+  baseContainer: {
+    paddingHorizontal: gStyleValues.$spacing_row_base,
+  },
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  flexRowCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blobText: {
+    fontWeight: 'bold',
+    fontSize: gStyleValues.$font_size_sm,
+    color: gStyleValues.$text_color,
+    paddingVertical: 4,
+  },
+  primaryTipText: {
+    color: gStyleValues.$primary_color,
+    paddingVertical: 4,
+    fontSize: gStyleValues.$font_size_sm,
+    textAlign: 'center',
+  },
+  errorTipText: {
+    color: gStyleValues.$error_color,
+    fontSize: gStyleValues.$font_size_base,
+    paddingVertical: 4,
+    textAlign: 'center',
+  },
+}
+
+global.styles = Object.assign(gStyleValues, gStyleSheet)
+
 export default {}
