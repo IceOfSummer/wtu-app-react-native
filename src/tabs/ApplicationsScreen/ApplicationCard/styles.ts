@@ -13,6 +13,7 @@ export default StyleSheet.create({
   cardContainer: {
     backgroundColor: '#fff',
     padding: 10,
+    borderRadius: 10,
   },
   blockOuter: {
     padding: 10,

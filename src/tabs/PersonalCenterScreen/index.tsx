@@ -11,6 +11,7 @@ import {
   SCHOOL_AUTH,
   SETTINGS_PAGE,
 } from '../../router'
+import Applications from '../ApplicationsScreen'
 
 interface StoreProps {
   username?: string
@@ -24,7 +25,7 @@ interface PersonalCenterProps
 const PersonalCenter: React.FC<PersonalCenterProps> = props => {
   return (
     <View>
-      <View style={{ ...styles.header }}>
+      <View style={[styles.header, { zIndex: 9999 }]}>
         <View style={styles.headerTextView}>
           <Image
             source={require('../../assets/img/studyCenter.png')}
@@ -65,6 +66,9 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
             size={global.styles.$font_size_lg}
           />
         </Pressable>
+      </View>
+      <View style={{ zIndex: 1 }}>
+        <Applications />
       </View>
     </View>
   )

@@ -29,7 +29,6 @@ const Stack = createNativeStackNavigator()
 export const HOME_TABS = 'Home'
 export const PERSONAL_CENTER_TABS = 'PersonalCenter'
 export const CLASS_SCHEDULE_TABS = 'ClassSchedule'
-export const APPLICATIONS_TABS = 'Applications'
 export const SCHOOL_AUTH = 'SchoolAuth'
 export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
@@ -45,7 +44,6 @@ export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
   [PERSONAL_CENTER_TABS]: undefined
   [CLASS_SCHEDULE_TABS]: undefined
-  [APPLICATIONS_TABS]: undefined
   [SCHOOL_AUTH]: undefined
   [PERSONAL_INFO]: undefined
   [LESSONS_TABLE_CONFIG_PAGE]: undefined

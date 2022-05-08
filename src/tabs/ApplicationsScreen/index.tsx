@@ -9,6 +9,10 @@ import {
 } from '../../router'
 import { EduSystem, FeedbackPage, HealthReport } from '../../views/Webpage'
 
+/**
+ * <b>已经与个人中心合并!<b/>
+ * @constructor
+ */
 const Applications: React.FC = () => {
   /**
    * 教务系统相关应用

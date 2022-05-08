@@ -1,7 +1,6 @@
 import Icons from '../component/Icons'
 import HomeScreen from './HomeScreen'
 import ClassScheduleScreen from './ClassScheduleScreen'
-import ApplicationsScreen from './ApplicationsScreen'
 import PersonalCenterScreen from './PersonalCenterScreen'
 import React from 'react'
 import {
@@ -9,7 +8,6 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs'
 import {
-  APPLICATIONS_TABS,
   CLASS_SCHEDULE_TABS,
   HOME_TABS,
   LESSONS_TABLE_CONFIG_PAGE,
@@ -28,8 +26,6 @@ const TabBar = () => {
               return <Icons iconText="&#xe613;" {...param} />
             case CLASS_SCHEDULE_TABS:
               return <Icons iconText="&#xe62c;" {...param} />
-            case APPLICATIONS_TABS:
-              return <Icons iconText="&#xe603;" {...param} />
             case PERSONAL_CENTER_TABS:
               return <Icons iconText="&#xe608;" {...param} />
             default:
@@ -43,11 +39,6 @@ const TabBar = () => {
         name={CLASS_SCHEDULE_TABS}
         component={ClassScheduleScreen}
         options={classScheduleOptions}
-      />
-      <Tab.Screen
-        name={APPLICATIONS_TABS}
-        component={ApplicationsScreen}
-        options={APPLICATIONS_SCREEN_OPTIONS}
       />
       <Tab.Screen
         name={PERSONAL_CENTER_TABS}
@@ -81,9 +72,4 @@ const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
   header: () => null,
   tabBarLabel: '个人中心',
 }
-const APPLICATIONS_SCREEN_OPTIONS: BottomTabNavigationOptions = {
-  tabBarLabel: '应用',
-  headerTitleAlign: 'center',
-}
-
 export default TabBar
