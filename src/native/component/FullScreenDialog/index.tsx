@@ -37,6 +37,31 @@ interface OnRef {
 }
 
 /**
+ * 原生全屏对话框类型声明
+ */
+interface NativeFullScreenDialogTypes {
+  initDialog: (
+    nativeId: string,
+    isInitSuccess: (isSuccess: boolean, message: string) => void
+  ) => void
+
+  initDialogWithButton: (
+    nativeId: string,
+    isInitSuccess: (isSuccess: boolean, message: string) => void
+  ) => void
+
+  openFullScreenDialog: (nativeId: string, onFinish: () => void) => void
+
+  openFullScreenDialogWithButton: (
+    nativeId: string,
+    confirmBtnText: string,
+    onFinish: (isPressConfirmBtn: boolean) => void
+  ) => void
+
+  removeDialogInstance: (nativeId: string) => void
+}
+
+/**
  * FullScreenDialog
  * 使用props.children
  */
@@ -45,7 +70,7 @@ let FullScreenDialog: React.FC<
 >
 
 if (Platform.OS === 'android') {
-  const dialog = NativeModules.FullScreenDialog
+  const dialog = NativeModules.FullScreenDialog as NativeFullScreenDialogTypes
 
   const Dialog: React.FC<FullScreenDialogProps & OnRef> = props => {
     const isInitSuccess = useRef(false)
@@ -57,30 +82,21 @@ if (Platform.OS === 'android') {
     useEffect(() => {
       setTimeout(() => {
         if (props.showButton) {
-          dialog.initDialogWithButton(
-            props.uniqueId,
-            (status: boolean, message: string) => {
-              console.log(`init: ${status}, msg: ${message}`)
-              isInitSuccess.current = true
-              if (isWaitingOpen.current) {
-                isWaitingOpen.current = false
-                openDialog()
-              }
+          dialog.initDialogWithButton(props.uniqueId, () => {
+            isInitSuccess.current = true
+            if (isWaitingOpen.current) {
+              isWaitingOpen.current = false
+              openDialog()
             }
-          )
+          })
         } else {
-          console.log('mark')
-          dialog.initDialog(
-            props.uniqueId,
-            (status: boolean, message: string) => {
-              console.log(`init: ${status}, msg: ${message}`)
-              isInitSuccess.current = true
-              if (isWaitingOpen.current) {
-                isWaitingOpen.current = false
-                openDialog()
-              }
+          dialog.initDialog(props.uniqueId, () => {
+            isInitSuccess.current = true
+            if (isWaitingOpen.current) {
+              isWaitingOpen.current = false
+              openDialog()
             }
-          )
+          })
         }
       }, 100)
       return () => {
@@ -101,11 +117,14 @@ if (Platform.OS === 'android') {
         dialog.openFullScreenDialogWithButton(
           props.uniqueId,
           props.buttonText ? props.buttonText : '确定',
-          props.onConfirm,
-          () => StatusBar.setBarStyle('dark-content')
+          status => {
+            StatusBar.setBarStyle('dark-content')
+            if (status) {
+              props.onConfirm?.()
+            }
+          }
         )
       } else {
-        console.log('mark2')
         dialog.openFullScreenDialog(props.uniqueId, () =>
           StatusBar.setBarStyle('dark-content')
         )

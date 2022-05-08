@@ -17,9 +17,9 @@ public interface FullScreenDialogModule {
     /**
      * 初始化对话框
      * @param nativeId 原生id
-     * @param isInitSuccess 是否初始化成功
+     * @param finish 是否初始化成功
      */
-    void initDialog(@NonNull String nativeId, @Nullable Callback isInitSuccess);
+    void initDialog(@NonNull String nativeId, @Nullable Callback finish);
 
     /**
      * 初始化一个带有按钮的对话框
@@ -39,9 +39,9 @@ public interface FullScreenDialogModule {
      * 打开带有按钮的对话框
      * @param nativeId 原生id
      * @param confirmBtnText 确定按钮文字
-     * @param onConfirm 确定回调
+     * @param onFinish 完成回调, 第一个参数为true表示点击了确定按钮
      */
-    void openFullScreenDialogWithButton(@NonNull String nativeId, @Nullable String confirmBtnText, @Nullable Callback onConfirm, @Nullable Callback onFinish);
+    void openFullScreenDialogWithButton(@NonNull String nativeId, @Nullable String confirmBtnText, @Nullable Callback onFinish);
 
     /**
      * 移除对话框实例
