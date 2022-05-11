@@ -37,6 +37,7 @@ const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
         props.saveGlobalState({
           [SUBJECT_SELECT_STORAGE_KEY]: resp,
         })
+        console.log(resp)
         setInitSuccess()
       })
       .catch(e => {

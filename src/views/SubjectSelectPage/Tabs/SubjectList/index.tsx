@@ -11,18 +11,20 @@ import BounceScrollView from '../../../../native/component/BounceScrollView'
 import {
   BaseQueryParam,
   ClassMark,
+  getSubjectDetail,
   getSubjectList,
   getSubjectQueryParam,
-  selectClass,
+  selectSubject,
+  SubjectDetail,
   SubjectInfo,
   SubjectQueryParam,
 } from '../../../../api/edu/subjectSelect'
 import { SUBJECT_SELECT_STORAGE_KEY } from '../../index'
 import { SUBJECT_QUERY_STORAGE_KEYS } from '../index'
 import NativeDialog from '../../../../native/modules/NativeDialog'
-import InitModal from '../../../../component/InitModal'
 import Toast from 'react-native-toast-message'
-import Accordion from 'react-native-collapsible/Accordion'
+import AutoCollapsible from '../../../../component/AutoCollapsible'
+import Loading from '../../../../component/Loading'
 import Button from 'react-native-button'
 
 interface ClassListProps {
@@ -35,9 +37,9 @@ const SubjectList: React.FC<
 > = props => {
   const [isInitDone, setInitDone] = useState(false)
   const [isInitFail, setInitFail] = useState(false)
-  const [isLoading, setLoading] = useState(false)
   const store = useStore<ReducerTypes>()
-  const params = store.getState() as unknown as TemporaryData
+  const params = store.getState().temporary
+    .globalStates as unknown as TemporaryData
 
   /**
    * 设置初始化成功
@@ -53,7 +55,7 @@ const SubjectList: React.FC<
    * 加载数据
    */
   function loadQueryParam() {
-    setLoading(true)
+    Loading.showLoading('初始化中')
     getSubjectQueryParam(
       props.username,
       props.classMark,
@@ -79,7 +81,7 @@ const SubjectList: React.FC<
         })
       })
       .finally(() => {
-        setLoading(false)
+        Loading.hideLoading()
       })
   }
 
@@ -95,14 +97,13 @@ const SubjectList: React.FC<
   }, [])
 
   const [subjectList, setSubjectList] = useState<Array<SubjectInfo>>([])
-  const [activeSubject, setActiveSubject] = useState<Array<number>>([])
   const nextPage = useRef(1)
   /**
    * 加载可选课程
    */
   const loadSubjects = () => {
     if (params[props.storageKey]) {
-      setLoading(true)
+      Loading.showLoading('加载课程中')
       getSubjectList(
         props.username,
         props.classMark,
@@ -128,7 +129,7 @@ const SubjectList: React.FC<
           })
         })
         .finally(() => {
-          setLoading(false)
+          Loading.hideLoading()
         })
     } else {
       NativeDialog.showDialog({
@@ -144,67 +145,10 @@ const SubjectList: React.FC<
     }
   }
 
-  const renderHeader = (subject: SubjectInfo) => {
-    return (
-      <View>
-        <Text>{subject.kcmc}</Text>
-      </View>
-    )
-  }
-
-  const RenderContent = (subject: SubjectInfo) => {
-    const [disabled, setDisabled] = useState(false)
-    const selectCurrentClass = () => {
-      setLoading(true)
-      selectClass(
-        props.username,
-        props.classMark,
-        params[SUBJECT_SELECT_STORAGE_KEY],
-        // 不加载该数据无法到达这步
-        params[props.storageKey]!,
-        subject
-      )
-        .then(() => {
-          Toast.show({
-            text1: '选课成功',
-            text2: '请不要重复选课',
-          })
-          setDisabled(true)
-        })
-        .catch(e => {
-          Toast.show({
-            text1: '选课失败',
-            text2: e,
-          })
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    }
-    // load info
-    return (
-      <View>
-        <Text>{subject.kcmc}</Text>
-        <Button onPress={selectCurrentClass} disabled={disabled}>
-          选课
-        </Button>
-      </View>
-    )
-  }
-
-  const onChange = (selected: number[]) => {
-    setActiveSubject(activeSubject.concat(selected))
-  }
-
   if (isInitFail) {
     return (
       <Pressable onPress={() => loadQueryParam()}>
-        <InitModal visible={isLoading} />
-        <Text
-          style={{
-            color: global.styles.$error_color,
-            fontSize: global.styles.$font_size_base,
-          }}>
+        <Text style={[global.styles.errorTipText, global.styles.centerText]}>
           加载失败, 点我重试
         </Text>
       </Pressable>
@@ -219,31 +163,207 @@ const SubjectList: React.FC<
   } else {
     return (
       <View>
-        <InitModal visible={isLoading} />
         <BounceScrollView enablePureScrollMode>
-          <View>Content</View>
-          <Accordion
-            sections={subjectList}
-            renderHeader={renderHeader}
-            renderContent={RenderContent}
-            activeSections={activeSubject}
-            onChange={onChange}
-          />
-          <PrimaryButton title="加载可选课程" onPress={loadSubjects} />
+          <View style={{ paddingBottom: 150 }}>
+            {subjectList.map((value, index) => (
+              <SubjectCollapsible
+                key={index}
+                info={value}
+                username={props.username}
+                baseQueryParam={params[SUBJECT_SELECT_STORAGE_KEY]}
+                mark={props.classMark}
+                queryParam={params[props.storageKey]!}
+              />
+            ))}
+            <PrimaryButton
+              title={subjectList.length === 0 ? '加载可选课程' : '加载更多'}
+              onPress={loadSubjects}
+            />
+          </View>
         </BounceScrollView>
       </View>
     )
   }
 }
 
-// const ClassInfoBlock: React.FC<SubjectInfo> = props => {
-//   return (
-//     <Accordion onChange={}>
-//       <Text>{props.kcmc}</Text>
-//       <Text>{props.}</Text>
-//     </Accordion>
-//   )
-// }
+/**
+ * 课程折叠筐
+ */
+const SubjectCollapsible: React.FC<{
+  info: SubjectInfo
+  username: string
+  baseQueryParam: BaseQueryParam
+  mark: ClassMark
+  queryParam: SubjectQueryParam
+}> = props => {
+  const [lockSelectButton, setLockSelectButton] = useState(true)
+  const [detail, setDetail] = useState<SubjectDetail>()
+  const [isLoadFail, setLoadFail] = useState(false)
+  const store = useStore<ReducerTypes>()
+
+  useEffect(() => {
+    const detailCache = store.getState().temporary.globalStates[
+      props.info.kch_id
+    ] as SubjectDetail
+    if (detailCache != null) {
+      setDetail(detailCache)
+    }
+  }, [])
+
+  function loadSubjectDetail() {
+    Loading.showLoading('加载详细信息中')
+    getSubjectDetail(
+      props.username,
+      props.mark,
+      props.baseQueryParam,
+      props.queryParam,
+      props.info
+    )
+      .then(resp => {
+        setLoadFail(false)
+        setDetail(resp)
+        // 临时保存
+        store.dispatch(
+          saveGlobalState({
+            [props.info.kch_id]: resp,
+          })
+        )
+      })
+      .catch(e => {
+        NativeDialog.showDialog({
+          title: '加载失败',
+          message: e,
+          confirmBtnText: '重试',
+          onConfirm() {
+            loadSubjectDetail()
+          },
+          onCancel() {
+            setLoadFail(true)
+          },
+        })
+      })
+      .finally(() => {
+        Loading.hideLoading()
+      })
+  }
+
+  const onFirstOpen = () => {
+    if (!detail) {
+      loadSubjectDetail()
+    }
+  }
+
+  const selectCurrentSubject = () => {
+    Loading.showLoading()
+    selectSubject(
+      props.username,
+      props.mark,
+      props.baseQueryParam,
+      props.queryParam,
+      props.info
+    )
+      .then(() => {
+        NativeDialog.showDialog({
+          title: '选课成功',
+          message: '请不要重复选课。 若要取消选课, 请前往教务系统修改!',
+          hideCancelBtn: true,
+        })
+        setLockSelectButton(true)
+      })
+      .catch(e => {
+        NativeDialog.showDialog({
+          title: '选课失败',
+          message: e,
+          confirmBtnText: '重试',
+          onConfirm() {
+            selectCurrentSubject()
+          },
+        })
+      })
+      .finally(() => {
+        Loading.hideLoading()
+      })
+  }
+
+  return (
+    <AutoCollapsible headerText={props.info.kcmc} onFirstOpen={onFirstOpen}>
+      <View style={{ height: 80 }}>
+        {detail && !isLoadFail ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingTop: 20,
+            }}>
+            <View>
+              <View style={global.styles.flexRow}>
+                <Text style={global.styles.textContent}>任课教师: </Text>
+                <Text
+                  style={[
+                    global.styles.textContent,
+                    { color: global.styles.$info_color },
+                  ]}>
+                  {detail.teacher}
+                </Text>
+              </View>
+              <View style={global.styles.flexRow}>
+                <Text style={global.styles.textContent}>上课时间: </Text>
+                <Text
+                  style={[
+                    global.styles.textContent,
+                    { color: global.styles.$info_color },
+                  ]}>
+                  {detail.time}
+                </Text>
+              </View>
+            </View>
+            <View>
+              <Text
+                style={{
+                  color:
+                    detail.maxCount > props.info.yxzrs ? '#007aff' : '#dd524d',
+                }}>
+                已选:{props.info.yxzrs}/{detail.maxCount}
+              </Text>
+              <Button
+                onPress={selectCurrentSubject}
+                disabled={lockSelectButton}
+                disabledContainerStyle={{
+                  backgroundColor: '#007aff60',
+                }}
+                containerStyle={{
+                  backgroundColor: global.styles.$primary_color,
+                  padding: 5,
+                  borderRadius: 20,
+                  marginTop: 5,
+                  overflow: 'hidden',
+                }}>
+                <Text style={{ color: '#fff', textAlign: 'center' }}>
+                  {lockSelectButton ? '已选' : '选课'}
+                </Text>
+              </Button>
+            </View>
+          </View>
+        ) : null}
+        {isLoadFail ? (
+          <Pressable onPress={loadSubjectDetail}>
+            <Text
+              style={[global.styles.centerText, global.styles.errorTipText]}>
+              加载失败, 点我重试
+            </Text>
+          </Pressable>
+        ) : null}
+        {!detail && !isLoadFail ? (
+          <Text
+            style={[global.styles.centerText, global.styles.primaryTipText]}>
+            加载中
+          </Text>
+        ) : null}
+      </View>
+    </AutoCollapsible>
+  )
+}
 
 type OwnSelectParam = Partial<
   Partial<Record<SUBJECT_QUERY_STORAGE_KEYS, SubjectQueryParam | undefined>>

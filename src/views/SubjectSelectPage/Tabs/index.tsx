@@ -1,12 +1,25 @@
 import { TabBar, TabView } from 'react-native-tab-view'
 import React, { useState } from 'react'
-import { useWindowDimensions } from 'react-native'
+import { useWindowDimensions, View } from 'react-native'
 import {
   NavigationState,
   Route,
   SceneRendererProps,
 } from 'react-native-tab-view/lib/typescript/types'
 import SubjectList from './SubjectList'
+import PrimaryButton from '../../../component/Button/PrimaryButton'
+
+const LazyLoadView: React.FC = props => {
+  const [ready, setReady] = useState(false)
+  if (ready) {
+    return <React.Fragment>{props.children}</React.Fragment>
+  }
+  return (
+    <View>
+      <PrimaryButton title="初始化课程" onPress={() => setReady(true)} />
+    </View>
+  )
+}
 
 const renderScene = ({
   route,
@@ -17,33 +30,39 @@ const renderScene = ({
   switch (key) {
     case 'electives':
       return (
-        <SubjectList
-          storageKey={ELECTIVES_STORAGE_KEY}
-          classMark={{
-            xkkz_id: 'D3B144D655222A84E053813B43D3B59D',
-            kklxdm: '10',
-          }}
-        />
+        <LazyLoadView>
+          <SubjectList
+            storageKey={ELECTIVES_STORAGE_KEY}
+            classMark={{
+              xkkz_id: 'D3B144D655222A84E053813B43D3B59D',
+              kklxdm: '10',
+            }}
+          />
+        </LazyLoadView>
       )
     case 'english':
       return (
-        <SubjectList
-          storageKey={ENGLISH_STORAGE_KEY}
-          classMark={{
-            xkkz_id: 'D3B675F475E531EDE053813B43D3E9E0',
-            kklxdm: '06',
-          }}
-        />
+        <LazyLoadView>
+          <SubjectList
+            storageKey={ENGLISH_STORAGE_KEY}
+            classMark={{
+              xkkz_id: 'D3B675F475E531EDE053813B43D3E9E0',
+              kklxdm: '06',
+            }}
+          />
+        </LazyLoadView>
       )
     case 'pe':
       return (
-        <SubjectList
-          storageKey={PE_STORAGE_KEY}
-          classMark={{
-            xkkz_id: 'D3B144D655342A84E053813B43D3B59D',
-            kklxdm: '07',
-          }}
-        />
+        <LazyLoadView>
+          <SubjectList
+            storageKey={PE_STORAGE_KEY}
+            classMark={{
+              xkkz_id: 'D3B144D655342A84E053813B43D3B59D',
+              kklxdm: '07',
+            }}
+          />
+        </LazyLoadView>
       )
     default:
       return null

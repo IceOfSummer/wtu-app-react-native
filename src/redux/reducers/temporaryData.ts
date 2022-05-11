@@ -23,6 +23,7 @@ const temporaryData: Reducer<TemporaryDataState, TemporaryDataActions> = (
   } else if (action.type === TemporaryDataActionConstant.saveGlobalState) {
     const copyState = deepCopyObject(state)
     copyState.globalStates = Object.assign(copyState.globalStates, action.data)
+    return copyState
   }
   return state
 }
