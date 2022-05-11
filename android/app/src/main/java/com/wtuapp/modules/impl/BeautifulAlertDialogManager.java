@@ -1,15 +1,14 @@
 package com.wtuapp.modules.impl;
 
-import android.app.Dialog;
 import androidx.annotation.NonNull;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.kongzue.dialogx.dialogs.MessageDialog;
+import com.kongzue.dialogx.interfaces.DialogLifecycleCallback;
+import com.wtuapp.commands.CallbackManager;
 import com.wtuapp.modules.BeautifulAlertDialogModule;
-
-import java.util.Stack;
+import com.wtuapp.utils.CallbackUtils;
 
 /**
  * IOS样式的对话框
@@ -30,30 +29,32 @@ public class BeautifulAlertDialogManager extends ReactContextBaseJavaModule impl
         return REACT_NAME;
     }
 
+
     /**
      * 显示对话框
      */
     @Override
     @ReactMethod
-    public void showDialog(String title, String message, String confirmBtnText, String cancelBtnText, Callback confirm, Callback cancel) {
+    public void showDialog(String title, String message, String confirmBtnText, String cancelBtnText, Callback onFinish) {
         String confirmText = confirmBtnText == null ? DEFAULT_CONFIRM_TEXT : confirmBtnText;
         String cancelText = cancelBtnText == null ? DEFAULT_CANCEL_TEXT : cancelBtnText;
+
+        CallbackManager callbackManager = new CallbackManager(onFinish);
 
         MessageDialog.build()
                 .setTitle(title)
                 .setMessage(message)
-                .setOkButton(confirmText, (baseDialog, v) -> {
-                    if (confirm != null) {
-                        confirm.invoke();
+                .setDialogLifecycleCallback(new DialogLifecycleCallback<MessageDialog>() {
+                    @Override
+                    public void onDismiss(MessageDialog dialog) {
+                        callbackManager.invokeCallback(false);
                     }
+                })
+                .setOkButton(confirmText, (baseDialog, v) -> {
+                    callbackManager.invokeCallback(true);
                     return false;
                 })
-                .setCancelButton(cancelText, (baseDialog, v) -> {
-                    if (cancel != null) {
-                        cancel.invoke();
-                    }
-                    return false;
-                }).show();
+                .setCancelButton(cancelText).show();
     }
 
     /**
@@ -61,16 +62,16 @@ public class BeautifulAlertDialogManager extends ReactContextBaseJavaModule impl
      */
     @Override
     @ReactMethod
-    public void showSingleButtonDialog(String title, String message, String btnText, Callback confirm) {
+    public void showSingleButtonDialog(String title, String message, String btnText, Callback onFinish) {
         String confirmBtnText = btnText == null ? DEFAULT_CONFIRM_TEXT : btnText;
+
+        CallbackManager callbackManager = new CallbackManager(onFinish);
 
         MessageDialog.build()
                 .setTitle(title)
                 .setMessage(message)
                 .setOkButton(confirmBtnText, (baseDialog, v) -> {
-                    if (confirm != null) {
-                        confirm.invoke();
-                    }
+                    callbackManager.invokeCallback();
                     return false;
                 }).show();
     }

@@ -17,10 +17,9 @@ public interface BeautifulAlertDialogModule {
      * @param message 提示信息
      * @param confirmBtnText 确定按钮文字
      * @param cancelBtnText 取消按钮文字
-     * @param confirm 确定回调
-     * @param cancel 取消回调
+     * @param onFinish 完成时的回调
      */
-    void showDialog(String title, String message, String confirmBtnText, String cancelBtnText, Callback confirm, Callback cancel);
+    void showDialog(String title, String message, String confirmBtnText, String cancelBtnText, Callback onFinish);
 
     /**
      * 显示只有一个按钮的对话框

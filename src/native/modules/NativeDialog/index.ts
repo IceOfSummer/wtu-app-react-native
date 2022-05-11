@@ -6,7 +6,7 @@ interface NativeDialogMethod {
 
 type DialogConfig = {
   title: string
-  message?: string
+  message: string
   confirmBtnText?: string
   cancelBtnText?: string
   hideCancelBtn?: boolean
@@ -18,7 +18,22 @@ type DialogConfig = {
   type?: 'error' | 'primary' | 'warn'
 }
 
-const defaultCallback = () => null
+interface AndroidNativeDialogTypes {
+  showDialog: (
+    title: string,
+    message: string,
+    confirmBtnText: string,
+    cancelBtnText: string,
+    onFinish: (isPressClickButton: boolean) => void
+  ) => void
+
+  showSingleButtonDialog: (
+    title: string,
+    message: string,
+    btnText: string,
+    onFinish: () => void
+  ) => void
+}
 
 const NativeDialog: NativeDialogMethod = (function () {
   let dialog: NativeDialogMethod
@@ -50,22 +65,28 @@ const NativeDialog: NativeDialogMethod = (function () {
     // expect android here
     dialog = {
       showDialog(config) {
-        const { BeautifulAlertDialog } = NativeModules
+        const BeautifulAlertDialog =
+          NativeModules.BeautifulAlertDialog as unknown as AndroidNativeDialogTypes
         if (config.hideCancelBtn) {
           BeautifulAlertDialog.showSingleButtonDialog(
             config.title,
-            config.message,
-            config.confirmBtnText,
-            config.onConfirm
+            config.message.toString(),
+            config.confirmBtnText ? config.confirmBtnText : '确定',
+            () => config.onConfirm?.()
           )
         } else {
           BeautifulAlertDialog.showDialog(
             config.title,
-            config.message,
-            config.confirmBtnText,
-            config.cancelBtnText,
-            config.onConfirm ? config.onConfirm : defaultCallback,
-            config.onCancel ? config.onCancel : defaultCallback
+            config.message.toString(),
+            config.confirmBtnText ? config.confirmBtnText : '确定',
+            config.cancelBtnText ? config.cancelBtnText : '取消',
+            isPressClickButton => {
+              if (isPressClickButton) {
+                config.onConfirm?.()
+              } else {
+                config.onCancel?.()
+              }
+            }
           )
         }
       },
