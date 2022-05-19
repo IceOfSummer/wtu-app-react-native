@@ -21,7 +21,14 @@ import FullScreenDialog, {
 import { BaseQueryParam, getBaseQueryParam } from '../../api/edu/subjectSelect'
 import NativeDialog from '../../native/modules/NativeDialog'
 
-export const SUBJECT_SELECT_STORAGE_KEY = 'SubjectSelectBaseQueryParam'
+/**
+ * 基础参数在redux#GlobalState存储的key
+ */
+export const S_S_K_BASE_QUERY = 'SubjectSelectBaseQueryParam'
+/**
+ * 使用redux的prefix前缀
+ */
+export const S_S_GLOBAL_PREFIX = 'subjectSelect'
 
 const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
   const layout = useWindowDimensions()
@@ -35,7 +42,9 @@ const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
     getBaseQueryParam(props.username)
       .then(resp => {
         props.saveGlobalState({
-          [SUBJECT_SELECT_STORAGE_KEY]: resp,
+          [S_S_GLOBAL_PREFIX]: {
+            [S_S_K_BASE_QUERY]: resp,
+          },
         })
         console.log(resp)
         setInitSuccess()
@@ -102,7 +111,9 @@ const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
 }
 
 type GlobalState = {
-  [SUBJECT_SELECT_STORAGE_KEY]?: BaseQueryParam
+  [S_S_GLOBAL_PREFIX]: {
+    [S_S_K_BASE_QUERY]?: BaseQueryParam
+  }
 }
 
 interface StoreStates {
@@ -119,7 +130,9 @@ interface StoreActions {
 const Content = connect<StoreStates, StoreActions, {}, ReducerTypes>(
   initialState => ({
     autoShowTips: !initialState.commonOptions.autoHideSubjectSelectPageTips,
-    queryParam: initialState.temporary.globalStates[SUBJECT_SELECT_STORAGE_KEY],
+    queryParam: initialState.temporary.globalStates[S_S_GLOBAL_PREFIX]
+      ? initialState.temporary.globalStates[S_S_GLOBAL_PREFIX][S_S_K_BASE_QUERY]
+      : null,
     username: initialState.user.username!,
   }),
   {

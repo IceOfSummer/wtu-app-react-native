@@ -4,7 +4,7 @@ export interface TemporaryDataState {
    */
   isCheckLoginDone: boolean
   /**
-   * 全局状态, 可存放任意键值对
+   * 全局状态, 可存放任意键值对, 使用时请注意安全 :)
    */
-  globalStates: Record<string, any>
+  globalStates: any
 }

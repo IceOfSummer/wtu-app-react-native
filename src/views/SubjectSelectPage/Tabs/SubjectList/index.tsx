@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
-import {
-  saveGlobalState,
-  SaveGlobalStateFunctionType,
-} from '../../../../redux/actions/temporaryData'
+import { saveGlobalState } from '../../../../redux/actions/temporaryData'
 import { connect, useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/reducers'
 import PrimaryButton from '../../../../component/Button/PrimaryButton'
@@ -19,8 +16,13 @@ import {
   SubjectInfo,
   SubjectQueryParam,
 } from '../../../../api/edu/subjectSelect'
-import { SUBJECT_SELECT_STORAGE_KEY } from '../../index'
-import { SUBJECT_QUERY_STORAGE_KEYS } from '../index'
+import { S_S_GLOBAL_PREFIX, S_S_K_BASE_QUERY } from '../../index'
+import {
+  S_S_ELECTIVES_S_K,
+  S_S_ENGLISH_S_K,
+  S_S_PE_S_K,
+  SUBJECT_QUERY_STORAGE_KEYS,
+} from '../index'
 import NativeDialog from '../../../../native/modules/NativeDialog'
 import Toast from 'react-native-toast-message'
 import AutoCollapsible from '../../../../component/AutoCollapsible'
@@ -38,8 +40,9 @@ const SubjectList: React.FC<
   const [isInitDone, setInitDone] = useState(false)
   const [isInitFail, setInitFail] = useState(false)
   const store = useStore<ReducerTypes>()
-  const params = store.getState().temporary
-    .globalStates as unknown as TemporaryData
+  const params = (
+    store.getState().temporary.globalStates as unknown as TemporaryData
+  )[S_S_GLOBAL_PREFIX]
 
   /**
    * 设置初始化成功
@@ -56,15 +59,24 @@ const SubjectList: React.FC<
    */
   function loadQueryParam() {
     Loading.showLoading('初始化中')
+    console.log(params[S_S_K_BASE_QUERY])
+    console.log(params)
     getSubjectQueryParam(
       props.username,
       props.classMark,
-      params[SUBJECT_SELECT_STORAGE_KEY]
+      params[S_S_K_BASE_QUERY]
     )
       .then(resp => {
-        props.saveGlobalState({
-          [props.storageKey]: resp,
-        })
+        store.dispatch(
+          saveGlobalState({
+            [S_S_GLOBAL_PREFIX]: {
+              [props.storageKey]: resp,
+            },
+          })
+        )
+        // props.saveGlobalState({
+        //   [props.storageKey]: resp,
+        // })
         setInitSuccess()
       })
       .catch(e => {
@@ -104,10 +116,11 @@ const SubjectList: React.FC<
   const loadSubjects = () => {
     if (params[props.storageKey]) {
       Loading.showLoading('加载课程中')
+      console.log(params[S_S_K_BASE_QUERY])
       getSubjectList(
         props.username,
         props.classMark,
-        params[SUBJECT_SELECT_STORAGE_KEY],
+        params[S_S_K_BASE_QUERY],
         params[props.storageKey]!,
         nextPage.current
       )
@@ -170,7 +183,7 @@ const SubjectList: React.FC<
                 key={index}
                 info={value}
                 username={props.username}
-                baseQueryParam={params[SUBJECT_SELECT_STORAGE_KEY]}
+                baseQueryParam={params[S_S_K_BASE_QUERY]}
                 mark={props.classMark}
                 queryParam={params[props.storageKey]!}
               />
@@ -203,8 +216,8 @@ const SubjectCollapsible: React.FC<{
 
   useEffect(() => {
     const detailCache = store.getState().temporary.globalStates[
-      props.info.kch_id
-    ] as SubjectDetail
+      S_S_GLOBAL_PREFIX
+    ][props.info.kch_id] as SubjectDetail
     if (detailCache != null) {
       setDetail(detailCache)
     }
@@ -225,7 +238,9 @@ const SubjectCollapsible: React.FC<{
         // 临时保存
         store.dispatch(
           saveGlobalState({
-            [props.info.kch_id]: resp,
+            [S_S_PE_S_K]: {
+              [props.info.kch_id]: resp,
+            },
           })
         )
       })
@@ -365,12 +380,13 @@ const SubjectCollapsible: React.FC<{
   )
 }
 
-type OwnSelectParam = Partial<
-  Partial<Record<SUBJECT_QUERY_STORAGE_KEYS, SubjectQueryParam | undefined>>
->
-
-interface TemporaryData extends OwnSelectParam {
-  [SUBJECT_SELECT_STORAGE_KEY]: BaseQueryParam
+interface TemporaryData {
+  [S_S_GLOBAL_PREFIX]: {
+    [S_S_K_BASE_QUERY]: BaseQueryParam
+    [S_S_ELECTIVES_S_K]?: SubjectQueryParam
+    [S_S_ENGLISH_S_K]?: SubjectQueryParam
+    [S_S_PE_S_K]?: SubjectQueryParam
+  }
 }
 
 interface StoreState {
@@ -378,9 +394,7 @@ interface StoreState {
   username: string
 }
 
-interface StoreAction {
-  saveGlobalState: SaveGlobalStateFunctionType<OwnSelectParam>
-}
+interface StoreAction {}
 
 export default connect<StoreState, StoreAction, ClassListProps, ReducerTypes>(
   initialState => ({
