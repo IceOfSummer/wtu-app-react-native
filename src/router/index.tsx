@@ -23,6 +23,7 @@ import { checkLogin } from '../redux/actions/user'
 import { markCheckLoginDone } from '../redux/actions/temporaryData'
 import { ReducerTypes } from '../redux/reducers'
 import SubjectSelectPage from '../views/SubjectSelectPage'
+import SubjectSelectHeaderRight from '../views/SubjectSelectPage/SubjectSelectHeaderRight'
 
 const Stack = createNativeStackNavigator()
 
@@ -166,7 +167,10 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={SUBJECT_SELECT_PAGE}
           component={SubjectSelectPage}
-          options={headerCommonOptionsWithTitle('选课工具')}
+          options={{
+            ...headerCommonOptionsWithTitle('选课工具'),
+            headerRight: () => <SubjectSelectHeaderRight />,
+          }}
         />
       </Stack.Navigator>
       <DiyToast />

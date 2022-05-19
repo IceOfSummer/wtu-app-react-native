@@ -32,7 +32,6 @@ const Index: React.FC<StorePros & StoreActions> = props => {
               return
             }
             const now = new Date()
-            console.log(now)
             if (
               now.getFullYear() !== status.getFullYear() ||
               now.getMonth() !== status.getMonth() ||

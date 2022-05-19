@@ -337,7 +337,6 @@ export const getSubjectDetail = (
           time: '1111',
           maxCount: 150,
         })
-        console.log('1')
         if (!Array.isArray(resp)) {
           reject('加载失败, 请稍后再试')
           return

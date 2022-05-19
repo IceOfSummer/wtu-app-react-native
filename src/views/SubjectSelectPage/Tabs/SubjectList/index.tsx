@@ -59,8 +59,6 @@ const SubjectList: React.FC<
    */
   function loadQueryParam() {
     Loading.showLoading('初始化中')
-    console.log(params[S_S_K_BASE_QUERY])
-    console.log(params)
     getSubjectQueryParam(
       props.username,
       props.classMark,
@@ -99,12 +97,11 @@ const SubjectList: React.FC<
 
   useEffect(() => {
     const queryParam = params[props.storageKey]
-
     if (queryParam) {
       // load
-      loadQueryParam()
-    } else {
       setInitSuccess()
+    } else {
+      loadQueryParam()
     }
   }, [])
 
@@ -116,7 +113,6 @@ const SubjectList: React.FC<
   const loadSubjects = () => {
     if (params[props.storageKey]) {
       Loading.showLoading('加载课程中')
-      console.log(params[S_S_K_BASE_QUERY])
       getSubjectList(
         props.username,
         props.classMark,
@@ -199,6 +195,7 @@ const SubjectList: React.FC<
   }
 }
 
+export const SUBJECT_CACHE_PREFIX = 'SubjectSelectCache'
 /**
  * 课程折叠筐
  */
@@ -216,8 +213,8 @@ const SubjectCollapsible: React.FC<{
 
   useEffect(() => {
     const detailCache = store.getState().temporary.globalStates[
-      S_S_GLOBAL_PREFIX
-    ][props.info.kch_id] as SubjectDetail
+      SUBJECT_CACHE_PREFIX
+    ]?.[props.info.kch_id] as SubjectDetail
     if (detailCache != null) {
       setDetail(detailCache)
     }
@@ -238,7 +235,7 @@ const SubjectCollapsible: React.FC<{
         // 临时保存
         store.dispatch(
           saveGlobalState({
-            [S_S_PE_S_K]: {
+            [SUBJECT_CACHE_PREFIX]: {
               [props.info.kch_id]: resp,
             },
           })
@@ -387,6 +384,10 @@ interface TemporaryData {
     [S_S_ENGLISH_S_K]?: SubjectQueryParam
     [S_S_PE_S_K]?: SubjectQueryParam
   }
+  /**
+   * 每项课程的单独缓存
+   */
+  [SUBJECT_CACHE_PREFIX]?: Record<string, object>
 }
 
 interface StoreState {

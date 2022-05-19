@@ -20,6 +20,7 @@ import FullScreenDialog, {
 } from '../../native/component/FullScreenDialog'
 import { BaseQueryParam, getBaseQueryParam } from '../../api/edu/subjectSelect'
 import NativeDialog from '../../native/modules/NativeDialog'
+import PubSub from 'pubsub-js'
 
 /**
  * 基础参数在redux#GlobalState存储的key
@@ -29,6 +30,7 @@ export const S_S_K_BASE_QUERY = 'SubjectSelectBaseQueryParam'
  * 使用redux的prefix前缀
  */
 export const S_S_GLOBAL_PREFIX = 'subjectSelect'
+export const BROAD_OPEN_DIALOG_TIP = 'openDialogTip'
 
 const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
   const layout = useWindowDimensions()
@@ -46,7 +48,6 @@ const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
             [S_S_K_BASE_QUERY]: resp,
           },
         })
-        console.log(resp)
         setInitSuccess()
       })
       .catch(e => {
@@ -151,11 +152,20 @@ const PageContainer: React.FC = () => {
     // props.modifyCommonOptions({ autoHideSubjectSelectPageTips: true })
   }
   useEffect(() => {
+    /**
+     * 订阅头部传来的消息
+     */
+    const token = PubSub.subscribe(BROAD_OPEN_DIALOG_TIP, () => {
+      fullScreenDialog.current?.open()
+    })
     setTimeout(() => {
       if (!store.getState().commonOptions.autoHideSubjectSelectPageTips) {
         fullScreenDialog.current?.open()
       }
     }, 2000)
+    return () => {
+      PubSub.unsubscribe(token)
+    }
   }, [])
 
   return (

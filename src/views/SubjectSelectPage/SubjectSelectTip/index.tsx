@@ -36,6 +36,14 @@ const SubjectSelectTip: React.FC = () => {
           ]}>
           -不要期望这个工具能够正常使用! 在下次选课之后才能保证完全可用。
         </Text>
+        <Text style={global.styles.h2}>3. 数据缓存</Text>
+        <Text style={global.styles.textContent}>
+          在某些情况下, 缓存的数据可能不是最新的, 从而导致选课失败.
+        </Text>
+        <Text style={global.styles.textContent}>
+          这个时候可以考虑清除缓存, 点击右上角三个点即可看到相关选项,
+          不建议一下全部都清除掉.
+        </Text>
       </View>
     </View>
   )

@@ -46,9 +46,15 @@ export const innerCombineObject = <T extends Record<string, any>>(
   source: any
 ): T => {
   Object.keys(source).forEach(key => {
-    if (src[key]) {
+    if (!source[key]) {
+      // @ts-ignore
+      src[key] = null
+    } else if (src[key]) {
       // @ts-ignore
       src[key] = Object.assign(src[key], source[key])
+    } else {
+      // @ts-ignore
+      src[key] = source[key]
     }
   })
   return src
