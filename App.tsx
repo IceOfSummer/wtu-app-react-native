@@ -5,11 +5,12 @@ import { PersistGate } from 'redux-persist/lib/integration/react'
 import Router from './src/router'
 import initInterceptors from './src/api'
 import Loading from './src/component/Loading'
-import { simpleUpdate } from 'react-native-update'
 import { SafeAreaView } from 'react-native'
+import useUpdateCheck from './src/hook/useUpdateCheck'
 
 initInterceptors()
 const App = () => {
+  useUpdateCheck()
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
@@ -22,4 +23,4 @@ const App = () => {
   )
 }
 
-export default simpleUpdate(App)
+export default App

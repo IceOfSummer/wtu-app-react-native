@@ -39,6 +39,11 @@ interface GlobalStyleSheet {
   errorTipText: TextStyle
 }
 
+interface AppConstant {
+  downloadUrl: string
+}
+
 declare namespace global {
   let styles: GlobalStyleValues & GlobalStyleSheet
+  let constant: AppConstant
 }

@@ -26,7 +26,6 @@ const gStyleValues: GlobalStyleValues = {
   $spacing_row_base: 15,
   $spacing_row_lg: 20,
 }
-
 type StyleSheetTypes = Record<keyof GlobalStyleSheet, TextStyle | ViewStyle>
 
 const gStyleSheet: StyleSheetTypes = {
@@ -81,6 +80,9 @@ const gStyleSheet: StyleSheetTypes = {
   },
 }
 
+global.constant = {
+  downloadUrl: 'https://xds.fit/wtuapp/app/',
+}
 global.styles = Object.assign(gStyleValues, gStyleSheet)
 
 export default {}
