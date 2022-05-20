@@ -82,6 +82,7 @@ const gStyleSheet: StyleSheetTypes = {
 
 global.constant = {
   downloadUrl: 'https://xds.fit/wtuapp/app/',
+  homePageUrl: 'https://github.com/HuPeng333/wtu-app-react-native.git ',
 }
 global.styles = Object.assign(gStyleValues, gStyleSheet)
 

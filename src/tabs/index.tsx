@@ -36,7 +36,7 @@ const TabBar = () => {
       })}>
       <Tab.Screen name="*" options={HOME_OPTIONS} component={HomeScreen} />
       <Tab.Screen
-        name={CLASS_SCHEDULE_TABS}
+        name="课程表"
         component={ClassScheduleScreen}
         options={classScheduleOptions}
       />

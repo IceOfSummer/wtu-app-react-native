@@ -4,6 +4,7 @@ import styles from './styles'
 import { getVersion } from 'react-native-device-info'
 import CardContainer from '../../component/Cards/CardContainer'
 import NavigationCard from '../../component/Cards/NavigationCard'
+import NativeDialog from '../../native/modules/NativeDialog'
 
 const AboutPage: React.FC = () => {
   const version = getVersion()
@@ -18,8 +19,21 @@ const AboutPage: React.FC = () => {
         <Text>v{version}</Text>
       </View>
       <CardContainer>
-        <NavigationCard title="查看代码" />
-        <NavigationCard title="捐赠" hideBorder />
+        <NavigationCard
+          title="查看代码"
+          onTap={() => Linking.openURL(global.constant.homePageUrl)}
+        />
+        <NavigationCard
+          title="捐赠"
+          hideBorder
+          onTap={() =>
+            NativeDialog.showDialog({
+              title: 'QAQ感谢您的好心',
+              message: '目前暂时不需要暂时, 祝您用的开心',
+              hideCancelBtn: true,
+            })
+          }
+        />
       </CardContainer>
       <View
         style={{

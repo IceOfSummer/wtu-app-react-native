@@ -41,6 +41,7 @@ interface GlobalStyleSheet {
 
 interface AppConstant {
   downloadUrl: string
+  homePageUrl: string
 }
 
 declare namespace global {
