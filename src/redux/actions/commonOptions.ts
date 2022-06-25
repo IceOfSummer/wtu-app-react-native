@@ -1,12 +1,14 @@
 import { Action } from 'redux'
 import { CommonOptionActionConstant } from '../constant'
 import { CommonOptionsStates } from '../types/commonOptionsTypes'
+import { modifyCommonOptions as _modifyCommonOptions } from '../counter/commonOptionsSlice'
 
 export type CommonOptionsActions = ModifyCommonOptionAction
 
 /**
  * ============================
  * 修改配置信息
+ * @deprecated
  */
 export interface ModifyCommonOptionAction
   extends Action<CommonOptionActionConstant> {
@@ -14,9 +16,7 @@ export interface ModifyCommonOptionAction
   data: Partial<CommonOptionsStates>
 }
 
-export const modifyCommonOptions = (
-  data: Partial<CommonOptionsStates>
-): ModifyCommonOptionAction => ({
-  type: CommonOptionActionConstant.modifyOptions,
-  data,
-})
+/**
+ * @deprecated
+ */
+export const modifyCommonOptions = _modifyCommonOptions

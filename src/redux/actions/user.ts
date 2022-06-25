@@ -1,9 +1,15 @@
 import { Action } from 'redux'
 import { UserActionConstant } from '../constant'
-import { getUserInfo } from '../../api/edu/applications'
 import { UserInfo } from '../reducers/user'
-import { Dispatch } from 'react'
-import { LoginStatus, testLogin } from '../../api/edu/auth'
+import { LoginStatus } from '../../api/edu/auth'
+import {
+  saveUserCredentials as _saveUserCredentials,
+  modifyLoginStatus as _modifyLoginStatus,
+  markLoginExpired as _markLoginExpired,
+  markLogin as _markLogin,
+  saveUserInfo as _saveUserInfo,
+  checkLogin as _checkLogin,
+} from '../counter/userSlice'
 
 export type UserActions =
   | SaveUserCredentials
@@ -15,6 +21,8 @@ export type UserActions =
 /**
  * ===============================
  * 保存用户信息(用户名, 密码)
+ * @see _saveUserCredentials
+ * @deprecated
  */
 export interface SaveUserCredentials extends Action<UserActionConstant> {
   type: UserActionConstant.saveUserCredentials
@@ -24,105 +32,82 @@ export interface SaveUserCredentials extends Action<UserActionConstant> {
   }
 }
 
-export const saveUserCredentials = (
-  username: string,
-  password: string
-): SaveUserCredentials => ({
-  type: UserActionConstant.saveUserCredentials,
-  data: {
+/**
+ * @deprecated
+ * @see _saveUserCredentials
+ */
+export const saveUserCredentials = (username: string, password: string) =>
+  _saveUserCredentials({
     username,
     password,
-  },
-})
+  })
 
 /**
  * ==================================
  * 修改登录状态
+ * @deprecated
+ * @see _modifyLoginStatus
  */
 export interface ModifyLoginStatusAction extends Action<UserActionConstant> {
   type: UserActionConstant.modifyLoginStatus
   data: boolean
 }
-export const markLoginExpired = (): ModifyLoginStatusAction => ({
-  type: UserActionConstant.modifyLoginStatus,
-  data: false,
-})
+
+/**
+ * @deprecated
+ */
+export const markLoginExpired = _markLoginExpired
+
 /**
  * @param status true表示登录有效, false表示无效
+ * @deprecated
+ * @see _modifyLoginStatus
  */
-export const modifyLoginStatus = (
-  status: boolean
-): ModifyLoginStatusAction => ({
-  type: UserActionConstant.modifyLoginStatus,
-  data: status,
-})
+export const modifyLoginStatus = _modifyLoginStatus
 
 /**
  * ===================================
  * 标记用户已经登录
+ * @deprecated
+ * @see _markLogin
  */
 export interface MarkLoginAction extends Action<UserActionConstant> {
   type: UserActionConstant.markLogin
   data?: UserInfo
 }
 
-export const markLogin = () => {
-  return (dispatch: Dispatch<MarkLoginAction>) => {
-    getUserInfo()
-      .then(resp => {
-        dispatch({
-          type: UserActionConstant.markLogin,
-          data: resp,
-        })
-      })
-      .catch(e => {
-        console.error(e)
-        dispatch({
-          type: UserActionConstant.markLogin,
-          data: undefined,
-        })
-      })
-  }
-}
+/**
+ * @deprecated
+ * @see _markLogin
+ */
+export const markLogin = _markLogin
 
 /**
  * ================================================
  * 保存用户信息(姓名, 入学时间等)
+ * @deprecated
+ * @see _saveUserInfo
  */
 export interface SaveUserInfoAction extends Action<UserActionConstant> {
   type: UserActionConstant.saveUserInfo
   data?: UserInfo
 }
 
-export const saveUserInfo = (info: UserInfo): SaveUserInfoAction => ({
-  type: UserActionConstant.saveUserInfo,
-  data: info,
-})
+/**
+ * @deprecated
+ * @see _saveUserInfo
+ */
+export const saveUserInfo = _saveUserInfo
 
 /**
  * =============================================
  * 检查用户登录状态, 若登录过期则尝试自动重新登录
+ * @deprecated
+ * @see _checkLogin
  */
 export interface CheckLoginAction extends Action<UserActionConstant> {
   type: UserActionConstant.checkLogin
   data: LoginStatus
 }
 
-export const checkLogin = (callback?: (status: LoginStatus) => void) =>
-  ((dispatch: Dispatch<ModifyLoginStatusAction>) => {
-    testLogin()
-      .then(status => {
-        // 登录成功
-        console.log(
-          `auto login status: ${status.isSuccess}, message: ${status.message}`
-        )
-        dispatch(modifyLoginStatus(status.isSuccess))
-        callback?.(status)
-      })
-      .catch(e => {
-        callback?.({
-          message: e,
-          isSuccess: false,
-        })
-      })
-  }) as unknown as ModifyLoginStatusAction
+export const checkLogin = _checkLogin
