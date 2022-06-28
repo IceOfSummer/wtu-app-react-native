@@ -1,20 +1,42 @@
 import { ColorValue } from 'react-native'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../redux/reducers'
+import { modifyCommonOptions } from '../../../redux/counter/commonOptionsSlice'
 import defaultTheme from './defaultTheme'
-import { modifyCommonOptions } from '../../../redux/actions/commonOptions'
 
 export interface ClassScheduleTheme {
   themeId: string
-  color: ClassScheduleColors
-  backgroundImage?: any
-  classTableBackgroundImage?: any
+  name: string
+  description?: string
+  infoTextColor?: ColorValue
+  textColor?: ColorValue
+  /**
+   * 课程卡片是否使用图片
+   */
+  classLabel: ThemeConfig<
+    ClassLabelTemplate<ColorValue>,
+    ClassLabelTemplate<any>
+  >
+  /**
+   * 课程表背景
+   */
+  background: ThemeConfig
+  /**
+   * 课程表详细页面背景
+   */
+  classLabelBackground: ThemeConfig
 }
 
-export type ClassScheduleColors = {
-  notStartedClass: ColorValue
-  activeClass: ColorValue
-  endedClass: ColorValue
+type ThemeConfig<C = ColorValue, I = any> = {
+  useImage?: boolean
+  color?: C
+  image?: I
+}
+
+type ClassLabelTemplate<T> = {
+  notStartedClass: T
+  activeClass: T
+  endedClass: T
 }
 
 interface useClassScheduleThemeHook {

@@ -13,9 +13,14 @@ const persistedReducer = persistReducer(persistConfig, reducer)
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: getDefaultMiddleware => {
-    return getDefaultMiddleware({
+    const arr = getDefaultMiddleware({
       serializableCheck: false,
     })
+    if (__DEV__) {
+      return [arr[1]]
+    } else {
+      return arr
+    }
   },
 })
 

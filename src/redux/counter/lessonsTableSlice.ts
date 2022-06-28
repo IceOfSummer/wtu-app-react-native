@@ -47,7 +47,7 @@ const lessonsTableSlice = createSlice<LessonsTableStates, LessonsTableReducers>(
         state.lessons = payload
       },
       modifyOptions(state, { payload }) {
-        Object.assign(state, payload)
+        Object.assign(state.options, payload)
         if (payload.week) {
           state.options.curWeekLastUpdate = Date.now()
         }

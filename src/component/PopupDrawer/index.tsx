@@ -30,7 +30,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   const contentOpacity = useRef(new Animated.Value(1)).current
   const bottomPadding = useRef(new Animated.Value(0)).current
   // 动画切换事件
-  const BASE_DURATION = 250
+  const MAX_DURATION = 200
   // drawer的定位初始化距离
   const topPos = useRef(
     new Animated.Value(Dimensions.get('window').height)
@@ -99,9 +99,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   ).current
 
   function hideDrawer(speed: number) {
-    const duration = getDuration(speed)
-    console.log(speed)
-    console.log(duration)
+    const duration = judgeDuration(speed)
     drawerPos.stopAnimation()
     contentOpacity.stopAnimation()
     Animated.parallel([
@@ -109,7 +107,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
         useNativeDriver: false,
         toValue: 0,
         duration: duration,
-        easing: Easing.linear,
+        easing: Easing.quad,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,
@@ -120,7 +118,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   }
 
   function showDrawer(speed: number) {
-    const duration = getDuration(speed)
+    const duration = judgeDuration(speed)
     drawerPos.stopAnimation()
     isShowingLessons.current = true
     Animated.parallel([
@@ -128,7 +126,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
         useNativeDriver: false,
         toValue: -drawerAvailableHeight.current,
         duration: duration,
-        easing: Easing.linear,
+        easing: Easing.quad,
       }),
       Animated.timing(contentOpacity, {
         useNativeDriver: false,
@@ -143,11 +141,18 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
     ]).start()
   }
 
-  function getDuration(speed: number) {
-    if (speed <= 1) {
-      return BASE_DURATION
-    }
-    return 50
+  /**
+   * 根据速度判断时间
+   */
+  function judgeDuration(speed: number): number {
+    speed = Math.abs(speed)
+    console.log(
+      drawerAvailableHeight.current,
+      speed,
+      drawerAvailableHeight.current / speed
+    )
+    const duration = drawerAvailableHeight.current / speed
+    return duration >= MAX_DURATION ? MAX_DURATION : duration
   }
 
   const onDrawerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
@@ -174,7 +179,7 @@ const PopupDrawer: React.FC<PopupDrawerProps> = props => {
           {
             top: topPos,
             transform: [{ translateY: drawerPos }],
-            paddingBottom: bottomPadding,
+            // paddingBottom: bottomPadding,
           },
         ]}>
         <View style={styles.drawerBar}>

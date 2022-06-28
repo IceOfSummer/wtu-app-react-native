@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
@@ -9,6 +9,11 @@ import { Term } from '../../redux/types/lessonsTableTypes'
 import Loading from '../../component/Loading'
 import NativeDialog from '../../native/modules/NativeDialog'
 import PullDownPickerCard from '../../component/Cards/PullDownPickerCard'
+import { PanResponder, View } from 'react-native'
+import BottomMenu from '../../native/modules/BottomMenu'
+import { useClassScheduleTheme } from '../../tabs/ClassScheduleScreen/Theme'
+import defaultTheme from '../../tabs/ClassScheduleScreen/Theme/defaultTheme'
+import remTheme from '../../tabs/ClassScheduleScreen/Theme/remTheme'
 
 interface LessonsTableConfigPageProps {}
 
@@ -78,36 +83,69 @@ const LessonsTableConfigPage: React.FC<
 
   const termStr = props.term === 3 ? '上学期' : '下学期'
 
+  // 小彩蛋, 上下滑动一定距离切换主题
+  const MIN_CHECK_DISTANCE = 200
+  const theme = useClassScheduleTheme()
+  const themeCheckPanResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderRelease(evt, state) {
+        if (Math.abs(state.dy) > MIN_CHECK_DISTANCE) {
+          BottomMenu.showMenu(['默认主题', '蕾姆主题'], (index, name) => {
+            let tarTheme
+            if (index === 0) {
+              tarTheme = defaultTheme
+            } else if (index === 1) {
+              tarTheme = remTheme
+            } else {
+              console.log('unknown theme index: ' + index)
+              return
+            }
+            theme.setTheme(tarTheme)
+            const desc = tarTheme.description + '(刷新后生效)'
+            NativeDialog.showDialog({
+              title: `成功切换为${name}`,
+              message: desc ? desc : '暂无描述',
+              hideCancelBtn: true,
+            })
+          })
+        }
+      },
+    })
+  ).current
+
   return (
-    <CardContainer>
-      <PullDownPickerCard
-        title="当前周"
-        pickerTitle="选择当前周"
-        pickerData={CUR_WEEK_DATA}
-        pickerCurrent={props.week}
-        onSelect={setCurWeek}
-      />
-      <PullDownPickerCard
-        title="当前学年"
-        pickerTitle="选择当前学年"
-        pickerData={YEAR_DATA}
-        pickerCurrent={props.year}
-        onSelect={setCurYear}
-      />
-      <PullDownPickerCard
-        title="当前学期"
-        pickerTitle="选择当前学期"
-        pickerData={TERM_DATA}
-        pickerCurrent={termStr}
-        onSelect={setCurTerm}
-      />
-      <SimpleCard
-        title="校准当前周"
-        hideBorder
-        onTap={adjustCurWeek}
-        type="primary"
-      />
-    </CardContainer>
+    <View {...themeCheckPanResponder.panHandlers} style={{ height: '100%' }}>
+      <CardContainer>
+        <PullDownPickerCard
+          title="当前周"
+          pickerTitle="选择当前周"
+          pickerData={CUR_WEEK_DATA}
+          pickerCurrent={props.week}
+          onSelect={setCurWeek}
+        />
+        <PullDownPickerCard
+          title="当前学年"
+          pickerTitle="选择当前学年"
+          pickerData={YEAR_DATA}
+          pickerCurrent={props.year}
+          onSelect={setCurYear}
+        />
+        <PullDownPickerCard
+          title="当前学期"
+          pickerTitle="选择当前学期"
+          pickerData={TERM_DATA}
+          pickerCurrent={termStr}
+          onSelect={setCurTerm}
+        />
+        <SimpleCard
+          title="校准当前周"
+          hideBorder
+          onTap={adjustCurWeek}
+          type="primary"
+        />
+      </CardContainer>
+    </View>
   )
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { PanResponder, Text, View } from 'react-native'
+import { ImageBackground, PanResponder, Text, View } from 'react-native'
 import styles from './styles'
 import LessonCard from './LessonCard'
 import LessonsTable from './LessonsTable'
@@ -16,6 +16,7 @@ import PullDownRefreshView, {
 import NativeDialog from '../../native/modules/NativeDialog'
 import { splitTodayLessons } from '../../utils/LessonsUtils'
 import Drawer from 'react-native-drawer'
+import { useClassScheduleTheme } from './Theme'
 
 interface ClassScheduleProps {}
 
@@ -122,57 +123,63 @@ const ClassSchedule: React.FC<
     })
   ).current
 
+  const theme = useClassScheduleTheme().getTheme()
   return (
-    <View
-      style={styles.classScheduleContainer}
-      {...lessonsTableControlPan.panHandlers}>
-      <Drawer
-        ref={drawer}
-        type="overlay"
-        content={<LessonsTable />}
-        tweenDuration={200}
-        tweenEasing="easeOutSine"
-        side="bottom">
-        <PullDownRefreshView
-          scrollConfig={{ style: { height: '100%' } }}
-          onRefresh={onPullDownRefresh}
-          enableRefresh>
-          <View style={styles.blockOuter}>
-            <View style={styles.cardContainer}>
-              <View>
-                <Text style={styles.cardTitleText}>今日课程</Text>
+    <View {...lessonsTableControlPan.panHandlers}>
+      <ImageBackground
+        style={[
+          styles.classScheduleContainer,
+          { backgroundColor: theme.background.color },
+        ]}
+        source={theme.background.image}>
+        <Drawer
+          ref={drawer}
+          type="overlay"
+          content={<LessonsTable />}
+          tweenDuration={200}
+          tweenEasing="easeOutSine"
+          side="bottom">
+          <PullDownRefreshView
+            scrollConfig={{ style: { height: '100%' } }}
+            onRefresh={onPullDownRefresh}
+            enableRefresh>
+            <View style={styles.blockOuter}>
+              <View style={styles.cardContainer}>
+                <View>
+                  <Text style={styles.cardTitleText}>今日课程</Text>
+                </View>
+                <View>
+                  {todayLessons.length === 0 ? (
+                    <Text style={{ textAlign: 'center', padding: 30 }}>
+                      今天没有课哦!
+                    </Text>
+                  ) : (
+                    todayLessons.map((value, index) => (
+                      <LessonCard
+                        curTime={curTime}
+                        classInfo={value}
+                        key={index}
+                      />
+                    ))
+                  )}
+                </View>
               </View>
               <View>
-                {todayLessons.length === 0 ? (
-                  <Text style={{ textAlign: 'center', padding: 30 }}>
-                    今天没有课哦!
-                  </Text>
-                ) : (
-                  todayLessons.map((value, index) => (
-                    <LessonCard
-                      curTime={curTime}
-                      classInfo={value}
-                      key={index}
-                    />
-                  ))
-                )}
+                <Text
+                  style={[
+                    {
+                      color: theme.infoTextColor,
+                      fontSize: global.styles.$font_size_sm,
+                    },
+                    global.styles.centerText,
+                  ]}>
+                  下滑可以显示课程表哦!
+                </Text>
               </View>
             </View>
-            <View>
-              <Text
-                style={[
-                  {
-                    color: global.styles.$info_color,
-                    fontSize: global.styles.$font_size_sm,
-                  },
-                  global.styles.centerText,
-                ]}>
-                下滑可以显示课程表哦!
-              </Text>
-            </View>
-          </View>
-        </PullDownRefreshView>
-      </Drawer>
+          </PullDownRefreshView>
+        </Drawer>
+      </ImageBackground>
     </View>
   )
 }
