@@ -36,25 +36,6 @@ export const getBaseQueryParam = (username: string) =>
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default&su=${username}`
     )
       .then(resp => {
-        // TODO 测试完删除
-        if (__DEV__) {
-          resolve({
-            xqh_id: 'string',
-            jg_id: 'string',
-            zyh_id: 'string',
-            zyfx_id: 'string',
-            njdm_id: 'string',
-            bh_id: 'string',
-            xbm: 'string',
-            xslbdm: 'string',
-            ccdm: 'string',
-            xsbj: 'string',
-            xkxnm: 'string',
-            xkxqm: 'string',
-            xszxzt: 'string',
-          })
-          return
-        }
         try {
           const match = resp.match(/<div class="nodata">.+<\/s/)
           if (match != null) {
@@ -222,32 +203,6 @@ export const getSubjectList = (
       },
       'POST'
     ).then(resp => {
-      // TODO 测试完删除
-      if (__DEV__) {
-        resolve([
-          {
-            kcmc: '数学',
-            kch_id: '课程号',
-            xf: '666.0',
-            cxbj: '',
-            fxbj: 'x',
-            // 已选人数
-            yxzrs: 150,
-            jxb_id: '222222',
-          },
-          {
-            kcmc: '语文',
-            kch_id: '课程号',
-            xf: '4.0',
-            cxbj: '',
-            fxbj: 'x',
-            // 已选人数
-            yxzrs: 150,
-            jxb_id: '222222',
-          },
-        ])
-        return
-      }
       if (!resp.tmpList || !Array.isArray(resp.tmpList)) {
         reject('加载失败, 请稍后重试')
         return
@@ -331,12 +286,6 @@ export const getSubjectDetail = (
       'POST'
     )
       .then(resp => {
-        // TODO 测试完毕后删除
-        resolve({
-          teacher: 'xx',
-          time: '1111',
-          maxCount: 150,
-        })
         if (!Array.isArray(resp)) {
           reject('加载失败, 请稍后再试')
           return
