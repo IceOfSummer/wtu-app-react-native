@@ -1,7 +1,11 @@
-import { Action, Dispatch } from 'redux'
+import { Action } from 'redux'
 import { LessonsTableActionConstant } from '../constant'
 import { ClassInfo, LessonTableOptions, Term } from '../types/lessonsTableTypes'
-import { getCurWeekFromServer } from '../../api/edu/classes'
+import {
+  modifyOptions as _modifyOptions,
+  saveLessonsInfo as _saveLessonsInfo,
+  updateCurWeek as _updateCurWeek,
+} from '../counter/lessonsTableSlice'
 
 export type LessonsTableActions =
   | ModifyOptionsAction
@@ -11,57 +15,50 @@ export type LessonsTableActions =
 /**
  * ====================================
  * 修改课程表设置
+ * @deprecated
  */
 export interface ModifyOptionsAction
   extends Action<LessonsTableActionConstant> {
   type: LessonsTableActionConstant.modifyOptions
   data: Partial<LessonTableOptions>
 }
-export const modifyOptions = (
-  data: Partial<LessonTableOptions>
-): ModifyOptionsAction => ({
-  type: LessonsTableActionConstant.modifyOptions,
-  data,
-})
+
+/**
+ * @deprecated
+ * @param data
+ */
+export const modifyOptions = _modifyOptions
+
 /**
  * =====================================
  * 保存课表信息
+ * @deprecated
  */
 export interface SaveLessonsInfoAction
   extends Action<LessonsTableActionConstant> {
   type: LessonsTableActionConstant.saveLessonsInfo
   data: Array<ClassInfo>
 }
-export const saveLessonsInfo = (
-  data: Array<ClassInfo>
-): SaveLessonsInfoAction => ({
-  type: LessonsTableActionConstant.saveLessonsInfo,
-  data,
-})
+
+/**
+ * @deprecated
+ */
+export const saveLessonsInfo = _saveLessonsInfo
 
 /**
  * =====================================
  * 更新当前周
+ * @deprecated
  */
 export interface UpdateCurWeekAction
   extends Action<LessonsTableActionConstant> {
   type: LessonsTableActionConstant.updateCurWeek
 }
 
+/**
+ * @param year
+ * @param term
+ * @deprecated
+ */
 export const updateCurWeek = (year: number, term: Term) =>
-  ((dispatch: Dispatch<ModifyOptionsAction | UpdateCurWeekAction>) => {
-    getCurWeekFromServer(year, term)
-      .then(resp =>
-        dispatch({
-          type: LessonsTableActionConstant.modifyOptions,
-          data: {
-            week: resp,
-          },
-        })
-      )
-      .catch(() =>
-        dispatch({
-          type: LessonsTableActionConstant.updateCurWeek,
-        })
-      )
-  }) as unknown as ModifyOptionsAction | UpdateCurWeekAction
+  _updateCurWeek({ term, year })

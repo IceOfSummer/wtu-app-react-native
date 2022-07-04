@@ -1,12 +1,16 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { WEB_PAGE, RouterTypes } from '../../router'
 import {
+  WebViewErrorEvent,
   WebViewMessageEvent,
+  WebViewNavigationEvent,
   WebViewProgressEvent,
 } from 'react-native-webview/lib/WebViewTypes'
 import WebView from 'react-native-webview'
-import { Animated, Dimensions, View } from 'react-native'
+import { Animated, Dimensions, Pressable, View } from 'react-native'
+import styles from './styles'
+import Icons from '../../component/Icons'
 
 type RouteType = RouteProp<Pick<RouterTypes, typeof WEB_PAGE>>
 
@@ -35,6 +39,8 @@ const Webpage: React.FC = () => {
   const route = useRoute<RouteType>()
   const nav = useNavigation()
   const webView = useRef<WebView>(null)
+  const [canGoBack, setCanGoBack] = useState(false)
+  const [canGoForward, setCanGoForward] = useState(false)
 
   const script = `
     const titleDom = document.getElementsByTagName('title')[0]
@@ -68,7 +74,7 @@ const Webpage: React.FC = () => {
       msg = JSON.parse(nativeEvent.data) as Messages
     } catch (e) {
       // invalid message type
-      console.warn(`invalid message type, receive: ${nativeEvent.data}`)
+      console.log(`invalid message type, receive: ${nativeEvent.data}`)
       return
     }
     if (msg.name === 'onTitleChange') {
@@ -88,7 +94,9 @@ const Webpage: React.FC = () => {
     }).start()
   }
 
-  const onLoadEnd = () => {
+  const onLoadEnd = ({
+    nativeEvent,
+  }: WebViewNavigationEvent | WebViewErrorEvent) => {
     Animated.timing(loadingBarOpacity, {
       toValue: 0,
       useNativeDriver: true,
@@ -97,6 +105,22 @@ const Webpage: React.FC = () => {
       loadingBarTranX.setValue(0)
       loadingBarOpacity.setValue(1)
     })
+    setCanGoBack(nativeEvent.canGoBack)
+    setCanGoForward(nativeEvent.canGoForward)
+  }
+
+  const go = () => {
+    console.log('go')
+    if (canGoForward) {
+      webView.current?.goForward()
+    }
+  }
+
+  const back = () => {
+    console.log('back')
+    if (canGoBack) {
+      webView.current?.goBack()
+    }
   }
 
   return (
@@ -121,6 +145,37 @@ const Webpage: React.FC = () => {
           transform: [{ translateX: loadingBarTranX }],
         }}
       />
+      <View style={styles.navigationBar}>
+        <Pressable onPress={back}>
+          <Icons
+            iconText="&#xe61d;"
+            size={20}
+            color={
+              canGoBack
+                ? global.styles.$text_color
+                : global.styles.$text_disable
+            }
+          />
+        </Pressable>
+        <Pressable onPress={() => webView.current?.reload()}>
+          <Icons
+            iconText="&#xec08;"
+            size={16}
+            color={global.styles.$text_color}
+          />
+        </Pressable>
+        <Pressable onPress={go}>
+          <Icons
+            iconText="&#xe61c;"
+            size={20}
+            color={
+              canGoForward
+                ? global.styles.$text_color
+                : global.styles.$text_disable
+            }
+          />
+        </Pressable>
+      </View>
     </View>
   )
 }

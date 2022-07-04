@@ -1,5 +1,9 @@
 import { Action } from 'redux'
 import { TemporaryDataActionConstant } from '../constant'
+import {
+  markCheckLoginDone as _markCheckLoginDone,
+  saveGlobalState as _saveGlobalState,
+} from '../counter/temporaryDataSlice'
 
 export type TemporaryDataActions =
   | MarkCheckLoginDoneAction
@@ -8,18 +12,23 @@ export type TemporaryDataActions =
 /**
  * ==================================================
  * 标记检查登录完成
+ * @deprecated
  */
 export interface MarkCheckLoginDoneAction
   extends Action<TemporaryDataActionConstant> {
   type: TemporaryDataActionConstant.markCheckLoginDone
 }
-export const markCheckLoginDone = (): MarkCheckLoginDoneAction => ({
-  type: TemporaryDataActionConstant.markCheckLoginDone,
-})
+
+/**
+ * @deprecated
+ * @see _markCheckLoginDone
+ */
+export const markCheckLoginDone = _markCheckLoginDone
 
 /**
  * ==================================================
  * 保存全局临时状态
+ * @deprecated
  */
 
 export type GlobalStateAvailableTypes =
@@ -28,6 +37,9 @@ export type GlobalStateAvailableTypes =
   | number
   | Array<unknown>
 
+/**
+ * @deprecated
+ */
 export interface SaveGlobalStateAction<
   T extends Record<string, D>,
   D = GlobalStateAvailableTypes
@@ -65,9 +77,13 @@ export interface SaveGlobalStateFunctionType<
 //   ): SaveGlobalStateAction<any>
 // }
 
-export const saveGlobalState = <D = Record<string, GlobalStateAvailableTypes>>(
-  data: Partial<D>
-) => ({
-  type: TemporaryDataActionConstant.saveGlobalState,
-  data,
-})
+// export const saveGlobalState = <D = Record<string, GlobalStateAvailableTypes>>(
+//   data: Partial<D>
+// ) => ({
+//   type: TemporaryDataActionConstant.saveGlobalState,
+//   data,
+// })
+/**
+ * @deprecated
+ */
+export const saveGlobalState = _saveGlobalState

@@ -45,11 +45,15 @@ function useUpdateCheck() {
         }
       })
       .catch(e => {
-        NativeDialog.showDialog({
-          title: '热更新失败',
-          message: '请求助开发人员或稍后再试: ' + e,
-          hideCancelBtn: true,
-        })
+        if (__DEV__) {
+          console.log(`热更新失败: ${e}`)
+        } else {
+          NativeDialog.showDialog({
+            title: '热更新失败',
+            message: '请求助开发人员或稍后再试: ' + e,
+            hideCancelBtn: true,
+          })
+        }
       })
   }, [])
 }

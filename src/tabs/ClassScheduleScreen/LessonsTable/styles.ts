@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native'
 
 export const HEADER_HEIGHT = 20
-export const PER_CLASS_HEIGHT = 50
+export const PER_CLASS_HEIGHT = 45
 
 export default StyleSheet.create({
   lessonsTableContainer: {
@@ -39,15 +39,15 @@ export default StyleSheet.create({
     position: 'absolute',
   },
   lessonItemContainer: {
-    backgroundColor: 'skyblue',
-    borderRadius: 10,
     width: '100%',
     height: '100%',
-    padding: 3,
+    borderRadius: 10,
+    paddingTop: 5,
+    overflow: 'hidden',
   },
   lessonText: {
-    fontSize: 10,
-    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   linkText: {

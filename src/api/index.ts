@@ -12,49 +12,48 @@ const IGNORE_LOGIN_EXPIRE_REGX = /#.*ignoreLoginExpire/
 export const GET_FULL_RESPONSE = 'getFullResponse;'
 const GET_FULL_RESPONSE_REGX = /#.*getFullResponse/
 
-const initInterceptors = () => {
-  betterAjax.rejectMessage = '您的手速太快了! 请稍后再试!'
-  axios.interceptors.response.use(
-    resp => {
-      const requestUrl = resp.request._url
-      // 检查url后是否带有 #ignoreLoginExpire 字段
-      if (
-        !IGNORE_LOGIN_EXPIRE_REGX.test(requestUrl) &&
-        typeof resp.request.responseURL === 'string'
-      ) {
-        if (isAuthPage(resp.request.responseURL)) {
-          // 登录失效
-          Toast.show({
-            text1: '登录过期',
-            text2: '点击重新登录',
-            type: 'NavToast',
-            props: {
-              routerName: SCHOOL_AUTH,
-            },
-          })
-          store.dispatch(markLoginExpired())
-          return Promise.reject('登录过期')
-        }
+betterAjax.rejectMessage = '您的手速太快了! 请稍后再试!'
+axios.interceptors.response.use(
+  resp => {
+    const requestUrl = resp.request._url
+    // 检查url后是否带有 #ignoreLoginExpire 字段
+    if (
+      !IGNORE_LOGIN_EXPIRE_REGX.test(requestUrl) &&
+      typeof resp.request.responseURL === 'string'
+    ) {
+      if (isAuthPage(resp.request.responseURL)) {
+        // 登录失效
+        Toast.show({
+          text1: '登录过期',
+          text2: '点击重新登录',
+          type: 'NavToast',
+          props: {
+            routerName: SCHOOL_AUTH,
+          },
+        })
+        store.dispatch(markLoginExpired())
+        return Promise.reject('登录过期')
       }
-      if (GET_FULL_RESPONSE_REGX.test(requestUrl)) {
-        return resp
-      }
-      if (resp.data) {
-        return resp.data
-      }
-      return {}
-    },
-    error => {
-      console.log(error)
     }
-  )
-  axios.interceptors.request.use(config => {
-    config.headers = {
-      ...config.headers,
-      'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39',
+    if (GET_FULL_RESPONSE_REGX.test(requestUrl)) {
+      return resp
     }
-    return config
-  })
-}
-export default initInterceptors
+    if (resp.data) {
+      return resp.data
+    }
+    return {}
+  },
+  error => {
+    console.log(error)
+  }
+)
+axios.interceptors.request.use(config => {
+  config.headers = {
+    ...config.headers,
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39',
+  }
+  return config
+})
+
+export default {}

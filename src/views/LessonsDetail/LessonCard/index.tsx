@@ -34,11 +34,11 @@ const LessonCard: React.FC<
     const minTime = props.lessons.weekInfo[0].startWeek
     if (props.week < minTime) {
       // 课程还没开始
-      titleColor = global.styles.$info_color
+      titleColor = global.styles.$success_color
       tipText = '(暂未开课)'
     } else {
       // 结课
-      titleColor = global.styles.$success_color
+      titleColor = global.styles.$info_color
       tipText = '(已结课)'
     }
   } else {

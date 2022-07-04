@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native'
 
-export const DRAWER_BAR_HEIGHT = 60
+const Padding = 10
+export const DRAWER_BAR_HEIGHT = 50 + Padding
 
 export default StyleSheet.create({
   drawerTableTitle: {
@@ -13,7 +14,7 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   drawerContainerStyle: {
-    paddingVertical: 10,
+    paddingVertical: Padding,
     width: '100%',
     backgroundColor: '#fff',
     borderTopStartRadius: 15,
@@ -26,6 +27,6 @@ export default StyleSheet.create({
     height: '100%',
   },
   drawerBar: {
-    height: DRAWER_BAR_HEIGHT,
+    height: DRAWER_BAR_HEIGHT - Padding,
   },
 })

@@ -1,3 +1,10 @@
+import {
+  AsyncThunk,
+  CaseReducer,
+  PayloadAction,
+  SliceCaseReducers,
+} from '@reduxjs/toolkit'
+
 export interface LessonsTableStates {
   options: LessonTableOptions
   lessons?: Array<ClassInfo>
@@ -101,3 +108,34 @@ export type LessonsOriginData = {
    */
   zcd: string
 }
+
+export interface LessonsTableReducers
+  extends SliceCaseReducers<LessonsTableStates> {
+  /**
+   * 修改课程表设置
+   */
+  modifyOptions: CaseReducer<
+    LessonsTableStates,
+    PayloadAction<Partial<LessonTableOptions>>
+  >
+  /**
+   * 保存课程信息
+   */
+  saveLessonsInfo: CaseReducer<
+    LessonsTableStates,
+    PayloadAction<Array<ClassInfo>>
+  >
+  /**
+   * 检查当前周并尝试自动离线更新
+   */
+  checkCurWeek: CaseReducer<LessonsTableStates, PayloadAction<undefined>>
+}
+
+/**
+ * Async action
+ */
+export type UpdateCurWeekAsyncAction = AsyncThunk<
+  void,
+  { year: number; term: Term },
+  any
+>

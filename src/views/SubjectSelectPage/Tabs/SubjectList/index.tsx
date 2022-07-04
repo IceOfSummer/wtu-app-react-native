@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
-import { saveGlobalState } from '../../../../redux/actions/temporaryData'
-import { connect, useStore } from 'react-redux'
+import { connect } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/reducers'
 import PrimaryButton from '../../../../component/Button/PrimaryButton'
 import BounceScrollView from '../../../../native/component/BounceScrollView'
@@ -16,33 +15,23 @@ import {
   SubjectInfo,
   SubjectQueryParam,
 } from '../../../../api/edu/subjectSelect'
-import { S_S_GLOBAL_PREFIX, S_S_K_BASE_QUERY } from '../../index'
-import {
-  S_S_ELECTIVES_S_K,
-  S_S_ENGLISH_S_K,
-  S_S_PE_S_K,
-  SUBJECT_QUERY_STORAGE_KEYS,
-} from '../index'
 import NativeDialog from '../../../../native/modules/NativeDialog'
 import Toast from 'react-native-toast-message'
 import AutoCollapsible from '../../../../component/AutoCollapsible'
 import Loading from '../../../../component/Loading'
 import Button from 'react-native-button'
+import useGlobalState from '../../useGlobalState'
 
 interface ClassListProps {
   classMark: ClassMark
-  storageKey: SUBJECT_QUERY_STORAGE_KEYS
+  storageKey: string
 }
 
-const SubjectList: React.FC<
-  ClassListProps & StoreState & StoreAction
-> = props => {
+const SubjectList: React.FC<ClassListProps & StoreState> = props => {
   const [isInitDone, setInitDone] = useState(false)
   const [isInitFail, setInitFail] = useState(false)
-  const store = useStore<ReducerTypes>()
-  const params = (
-    store.getState().temporary.globalStates as unknown as TemporaryData
-  )[S_S_GLOBAL_PREFIX]
+  const globalState = useGlobalState()
+  const baseQueryParam = globalState.getBaseQueryParam()
 
   /**
    * 设置初始化成功
@@ -59,22 +48,9 @@ const SubjectList: React.FC<
    */
   function loadQueryParam() {
     Loading.showLoading('初始化中')
-    getSubjectQueryParam(
-      props.username,
-      props.classMark,
-      params[S_S_K_BASE_QUERY]
-    )
+    getSubjectQueryParam(props.username, props.classMark, baseQueryParam)
       .then(resp => {
-        store.dispatch(
-          saveGlobalState({
-            [S_S_GLOBAL_PREFIX]: {
-              [props.storageKey]: resp,
-            },
-          })
-        )
-        // props.saveGlobalState({
-        //   [props.storageKey]: resp,
-        // })
+        globalState.setSubjectQueryParam(props.storageKey, resp)
         setInitSuccess()
       })
       .catch(e => {
@@ -96,7 +72,7 @@ const SubjectList: React.FC<
   }
 
   useEffect(() => {
-    const queryParam = params[props.storageKey]
+    const queryParam = globalState.getSubjectQueryParam(props.storageKey)
     if (queryParam) {
       // load
       setInitSuccess()
@@ -111,13 +87,14 @@ const SubjectList: React.FC<
    * 加载可选课程
    */
   const loadSubjects = () => {
-    if (params[props.storageKey]) {
+    const queryParam = globalState.getSubjectQueryParam(props.storageKey)
+    if (queryParam) {
       Loading.showLoading('加载课程中')
       getSubjectList(
         props.username,
         props.classMark,
-        params[S_S_K_BASE_QUERY],
-        params[props.storageKey]!,
+        queryParam,
+        baseQueryParam,
         nextPage.current
       )
         .then(resp => {
@@ -179,9 +156,9 @@ const SubjectList: React.FC<
                 key={index}
                 info={value}
                 username={props.username}
-                baseQueryParam={params[S_S_K_BASE_QUERY]}
+                baseQueryParam={baseQueryParam}
                 mark={props.classMark}
-                queryParam={params[props.storageKey]!}
+                queryParam={globalState.getSubjectQueryParam(props.storageKey)}
               />
             ))}
             <PrimaryButton
@@ -195,51 +172,35 @@ const SubjectList: React.FC<
   }
 }
 
-export const SUBJECT_CACHE_PREFIX = 'SubjectSelectCache'
 /**
  * 课程折叠筐
  */
 const SubjectCollapsible: React.FC<{
   info: SubjectInfo
   username: string
-  baseQueryParam: BaseQueryParam
+  baseQueryParam?: BaseQueryParam
   mark: ClassMark
-  queryParam: SubjectQueryParam
+  queryParam?: SubjectQueryParam
 }> = props => {
-  const [lockSelectButton, setLockSelectButton] = useState(true)
+  const [lockSelectButton, setLockSelectButton] = useState(false)
   const [detail, setDetail] = useState<SubjectDetail>()
   const [isLoadFail, setLoadFail] = useState(false)
-  const store = useStore<ReducerTypes>()
-
-  useEffect(() => {
-    const detailCache = store.getState().temporary.globalStates[
-      SUBJECT_CACHE_PREFIX
-    ]?.[props.info.kch_id] as SubjectDetail
-    if (detailCache != null) {
-      setDetail(detailCache)
-    }
-  }, [])
+  // 选课必备参数
+  const jxbIds = useRef('')
 
   function loadSubjectDetail() {
     Loading.showLoading('加载详细信息中')
     getSubjectDetail(
       props.username,
       props.mark,
-      props.baseQueryParam,
+      props.info,
       props.queryParam,
-      props.info
+      props.baseQueryParam
     )
       .then(resp => {
         setLoadFail(false)
         setDetail(resp)
-        // 临时保存
-        store.dispatch(
-          saveGlobalState({
-            [SUBJECT_CACHE_PREFIX]: {
-              [props.info.kch_id]: resp,
-            },
-          })
-        )
+        jxbIds.current = resp.origin.do_jxb_id
       })
       .catch(e => {
         NativeDialog.showDialog({
@@ -269,10 +230,11 @@ const SubjectCollapsible: React.FC<{
     Loading.showLoading()
     selectSubject(
       props.username,
+      jxbIds.current,
       props.mark,
-      props.baseQueryParam,
+      props.info,
       props.queryParam,
-      props.info
+      props.baseQueryParam
     )
       .then(() => {
         NativeDialog.showDialog({
@@ -377,32 +339,14 @@ const SubjectCollapsible: React.FC<{
   )
 }
 
-interface TemporaryData {
-  [S_S_GLOBAL_PREFIX]: {
-    [S_S_K_BASE_QUERY]: BaseQueryParam
-    [S_S_ELECTIVES_S_K]?: SubjectQueryParam
-    [S_S_ENGLISH_S_K]?: SubjectQueryParam
-    [S_S_PE_S_K]?: SubjectQueryParam
-  }
-  /**
-   * 每项课程的单独缓存
-   */
-  [SUBJECT_CACHE_PREFIX]?: Record<string, object>
-}
-
 interface StoreState {
   // params: TemporaryData
   username: string
 }
 
-interface StoreAction {}
-
-export default connect<StoreState, StoreAction, ClassListProps, ReducerTypes>(
+export default connect<StoreState, {}, ClassListProps, ReducerTypes>(
   initialState => ({
     username: initialState.user.username!,
     // params: initialState.temporary.globalStates,
-  }),
-  {
-    saveGlobalState,
-  }
+  })
 )(SubjectList)

@@ -40,6 +40,7 @@ const TabBar = () => {
         component={ClassScheduleScreen}
         options={classScheduleOptions}
       />
+      {/*ApplicationsScreen和PersonalCenterScreen合并了*/}
       <Tab.Screen
         name={PERSONAL_CENTER_TABS}
         component={PersonalCenterScreen}

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { Text, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { ImageBackground, PanResponder, Text, View } from 'react-native'
 import styles from './styles'
 import LessonCard from './LessonCard'
 import LessonsTable from './LessonsTable'
 import { ClassInfo } from '../../redux/types/lessonsTableTypes'
-import PopupDrawer from '../../component/PopupDrawer'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import { showNavigationToast } from '../../component/DiyToast/NavToast'
@@ -16,6 +15,8 @@ import PullDownRefreshView, {
 } from '../../native/component/BounceScrollView'
 import NativeDialog from '../../native/modules/NativeDialog'
 import { splitTodayLessons } from '../../utils/LessonsUtils'
+import Drawer from 'react-native-drawer'
+import { useClassScheduleTheme } from './Theme'
 
 interface ClassScheduleProps {}
 
@@ -95,38 +96,90 @@ const ClassSchedule: React.FC<
         finish(false)
       })
   }
+  /**
+   * drawer 逻辑
+   */
+  const drawer = useRef<Drawer>(null)
+  const TOGGLE_DRAWER_DISTANCE = 100
+  const MIN_TOGGLE_SPEED = 1
+  const isDrawerOpen = useRef(false)
+  const lessonsTableControlPan = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderRelease(evt, state) {
+        if (Math.abs(state.vy) < MIN_TOGGLE_SPEED) {
+          return
+        }
+        if (state.dy < 0 && -state.dy > TOGGLE_DRAWER_DISTANCE) {
+          // open
+          isDrawerOpen.current = true
+          drawer.current?.open()
+        } else if (state.dy > 0 && state.dy > TOGGLE_DRAWER_DISTANCE) {
+          // close
+          isDrawerOpen.current = false
+          drawer.current?.close()
+        }
+      },
+    })
+  ).current
 
+  const theme = useClassScheduleTheme().getTheme()
   return (
-    <View style={styles.classScheduleContainer}>
-      <PopupDrawer drawer={<LessonsTable />} drawerTitle="课程一览">
-        <PullDownRefreshView
-          scrollConfig={{ style: { height: '100%' } }}
-          onRefresh={onPullDownRefresh}
-          enableRefresh>
-          <View style={styles.blockOuter}>
-            <View style={styles.cardContainer}>
-              <View>
-                <Text style={styles.cardTitleText}>今日课程</Text>
+    <View {...lessonsTableControlPan.panHandlers}>
+      <ImageBackground
+        style={[
+          styles.classScheduleContainer,
+          { backgroundColor: theme.background.color },
+        ]}
+        source={theme.background.image}>
+        <Drawer
+          ref={drawer}
+          type="overlay"
+          content={<LessonsTable />}
+          tweenDuration={200}
+          tweenEasing="easeOutSine"
+          side="bottom">
+          <PullDownRefreshView
+            scrollConfig={{ style: { height: '100%' } }}
+            onRefresh={onPullDownRefresh}
+            enableRefresh>
+            <View style={styles.blockOuter}>
+              <View style={styles.cardContainer}>
+                <View>
+                  <Text style={styles.cardTitleText}>今日课程</Text>
+                </View>
+                <View>
+                  {todayLessons.length === 0 ? (
+                    <Text style={{ textAlign: 'center', padding: 30 }}>
+                      今天没有课哦!
+                    </Text>
+                  ) : (
+                    todayLessons.map((value, index) => (
+                      <LessonCard
+                        curTime={curTime}
+                        classInfo={value}
+                        key={index}
+                      />
+                    ))
+                  )}
+                </View>
               </View>
               <View>
-                {todayLessons.length === 0 ? (
-                  <Text style={{ textAlign: 'center', padding: 30 }}>
-                    今天没有课哦!
-                  </Text>
-                ) : (
-                  todayLessons.map((value, index) => (
-                    <LessonCard
-                      curTime={curTime}
-                      classInfo={value}
-                      key={index}
-                    />
-                  ))
-                )}
+                <Text
+                  style={[
+                    {
+                      color: theme.infoTextColor,
+                      fontSize: global.styles.$font_size_sm,
+                    },
+                    global.styles.centerText,
+                  ]}>
+                  下滑可以显示课程表哦!
+                </Text>
               </View>
             </View>
-          </View>
-        </PullDownRefreshView>
-      </PopupDrawer>
+          </PullDownRefreshView>
+        </Drawer>
+      </ImageBackground>
     </View>
   )
 }
