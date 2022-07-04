@@ -28,6 +28,14 @@ export interface BaseQueryParam {
   xkxnm: string
   xkxqm: string
   xszxzt: string
+  availableSelect: Array<SubjectSelectItem>
+}
+
+export type SubjectSelectItem = {
+  title: string
+  key: string
+  xkkz_id: string
+  kklxdm: string
 }
 
 export const getBaseQueryParam = (username: string) =>
@@ -46,6 +54,28 @@ export const getBaseQueryParam = (username: string) =>
             )
             return
           }
+          const availableItem = resp.match(/queryCourse\(.+/g)
+          const items: Array<SubjectSelectItem> = []
+          if (availableItem != null) {
+            availableItem.forEach(val => {
+              const m = val.match(/[0-9|A-Z]{2,}/g)
+              console.log(m)
+              const nameArr = val.match(/[\u4e00-\u9fa5]+/)
+              let title = '获取课程名称失败'
+              if (nameArr) {
+                title = nameArr[0]
+              }
+              if (m && m.length !== 0) {
+                items.push({
+                  kklxdm: m[0],
+                  xkkz_id: m[1],
+                  title,
+                  key: m[1],
+                })
+              }
+            })
+          }
+
           // TODO 查询有待优化!
           resolve({
             jg_id: nonNull(getInputValue(resp, 'jg_id_1')),
@@ -62,6 +92,7 @@ export const getBaseQueryParam = (username: string) =>
             xkxnm: nonNull(getInputValue(resp, 'xkxnm')),
             xkxqm: nonNull(getInputValue(resp, 'xkxqm')),
             xszxzt: nonNull(getInputValue(resp, 'xszxzt')),
+            availableSelect: items,
           })
         } catch (ignore) {
           console.log(ignore)
@@ -100,14 +131,14 @@ export interface SubjectQueryParam {
 export const getSubjectQueryParam = (
   username: string,
   mark: ClassMark,
-  baseQueryParam: BaseQueryParam
+  baseQueryParam?: BaseQueryParam
 ) =>
   new Promise<SubjectQueryParam>((resolve, reject) => {
     noRepeatAjax<string>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzb_cxZzxkYzbDisplay.html?gnmkdm=N253512&su=${username}`,
       {
         xkkz_id: mark.xkkz_id,
-        xszxzt: baseQueryParam.xszxzt,
+        xszxzt: baseQueryParam?.xszxzt,
         kspage: '0',
         jspage: '0',
       },
@@ -158,28 +189,29 @@ export interface SubjectInfo {
 export const getSubjectList = (
   username: string,
   mark: ClassMark,
-  baseQueryParam: BaseQueryParam,
   subjectQueryParam: SubjectQueryParam,
+  baseQueryParam?: BaseQueryParam,
   page = 1
 ) =>
   new Promise<Array<SubjectInfo>>((resolve, reject) => {
     noRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512&su=${username}`,
       {
+        'clb_id_list[0]': 95,
         rwlx: subjectQueryParam.rwlx,
         xkly: subjectQueryParam.xkly,
         bklx_id: subjectQueryParam.bklx_id,
         sfkkjyxdxnxq: subjectQueryParam.sfkkjyxdxnxq,
-        xqh_id: baseQueryParam.xqh_id,
-        jg_id: baseQueryParam.jg_id,
-        zyh_id: baseQueryParam.zyh_id,
-        zyfx_id: baseQueryParam.zyfx_id,
-        njdm_id: baseQueryParam.njdm_id,
-        bh_id: baseQueryParam.bh_id,
-        xbm: baseQueryParam.xbm,
-        xslbdm: baseQueryParam.xslbdm,
-        ccdm: baseQueryParam.ccdm,
-        xsbj: baseQueryParam.xsbj,
+        xqh_id: baseQueryParam?.xqh_id,
+        jg_id: baseQueryParam?.jg_id,
+        zyh_id: baseQueryParam?.zyh_id,
+        zyfx_id: baseQueryParam?.zyfx_id,
+        njdm_id: baseQueryParam?.njdm_id,
+        bh_id: baseQueryParam?.bh_id,
+        xbm: baseQueryParam?.xbm,
+        xslbdm: baseQueryParam?.xslbdm,
+        ccdm: baseQueryParam?.ccdm,
+        xsbj: baseQueryParam?.xsbj,
         sfkknj: subjectQueryParam.sfkknj,
         sfkkzy: subjectQueryParam.sfkkzy,
         kzybkxy: subjectQueryParam.kzybkxy,
@@ -192,8 +224,8 @@ export const getSubjectList = (
         sfkgbcx: subjectQueryParam.sfkgbcx,
         sfrxtgkcxd: subjectQueryParam.sfrxtgkcxd,
         tykczgxdcs: subjectQueryParam.tykczgxdcs,
-        xkxnm: baseQueryParam.xkxnm,
-        xkxqm: baseQueryParam.xkxqm,
+        xkxnm: baseQueryParam?.xkxnm,
+        xkxqm: baseQueryParam?.xkxqm,
         kklxdm: mark.kklxdm,
         rlkz: subjectQueryParam.rlkz,
         xkzgbj: subjectQueryParam.xkzgbj,
@@ -238,45 +270,51 @@ export interface SubjectDetail {
    * 授课老师 data.jsxx
    */
   teacher: string
+  /**
+   * 原始数据
+   */
+  origin: {
+    do_jxb_id: string
+  }
 }
 
 export const getSubjectDetail = (
   username: string,
   mark: ClassMark,
-  baseQueryParam: BaseQueryParam,
-  subjectQueryParam: SubjectQueryParam,
-  info: SubjectInfo
+  info: SubjectInfo,
+  subjectQueryParam?: SubjectQueryParam,
+  baseQueryParam?: BaseQueryParam
 ) =>
   new Promise<SubjectDetail>((resolve, reject) => {
     noRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512&su=${username}`,
       {
-        rwlx: subjectQueryParam.rwlx,
-        xkly: subjectQueryParam.xkly,
-        bklx_id: subjectQueryParam.bklx_id,
-        sfkkjyxdxnxq: subjectQueryParam.sfkkjyxdxnxq,
-        xqh_id: baseQueryParam.xqh_id,
-        jg_id: baseQueryParam.jg_id,
-        zyh_id: baseQueryParam.zyh_id,
-        zyfx_id: baseQueryParam.zyfx_id,
-        njdm_id: baseQueryParam.njdm_id,
-        bh_id: baseQueryParam.bh_id,
-        xbm: baseQueryParam.xbm,
-        xslbdm: baseQueryParam.xslbdm,
-        ccdm: baseQueryParam.ccdm,
-        xsbj: baseQueryParam.xsbj,
-        sfkknj: subjectQueryParam.sfkknj,
-        sfkkzy: subjectQueryParam.sfkkzy,
-        kzybkxy: subjectQueryParam.kzybkxy,
-        sfznkx: subjectQueryParam.sfznkx,
-        zdkxms: subjectQueryParam.zdkxms,
-        sfkxq: subjectQueryParam.sfkxq,
-        sfkcfx: subjectQueryParam.sfkcfx,
-        kkbk: subjectQueryParam.kkbk,
-        kkbkdj: subjectQueryParam.kkbkdj,
-        xkxnm: baseQueryParam.xkxnm,
-        xkxqm: baseQueryParam.xkxqm,
-        rlkz: subjectQueryParam.rlkz,
+        rwlx: subjectQueryParam?.rwlx,
+        xkly: subjectQueryParam?.xkly,
+        bklx_id: subjectQueryParam?.bklx_id,
+        sfkkjyxdxnxq: subjectQueryParam?.sfkkjyxdxnxq,
+        xqh_id: baseQueryParam?.xqh_id,
+        jg_id: baseQueryParam?.jg_id,
+        zyh_id: baseQueryParam?.zyh_id,
+        zyfx_id: baseQueryParam?.zyfx_id,
+        njdm_id: baseQueryParam?.njdm_id,
+        bh_id: baseQueryParam?.bh_id,
+        xbm: baseQueryParam?.xbm,
+        xslbdm: baseQueryParam?.xslbdm,
+        ccdm: baseQueryParam?.ccdm,
+        xsbj: baseQueryParam?.xsbj,
+        sfkknj: subjectQueryParam?.sfkknj,
+        sfkkzy: subjectQueryParam?.sfkkzy,
+        kzybkxy: subjectQueryParam?.kzybkxy,
+        sfznkx: subjectQueryParam?.sfznkx,
+        zdkxms: subjectQueryParam?.zdkxms,
+        sfkxq: subjectQueryParam?.sfkxq,
+        sfkcfx: subjectQueryParam?.sfkcfx,
+        kkbk: subjectQueryParam?.kkbk,
+        kkbkdj: subjectQueryParam?.kkbkdj,
+        xkxnm: baseQueryParam?.xkxnm,
+        xkxqm: baseQueryParam?.xkxqm,
+        rlkz: subjectQueryParam?.rlkz,
         kklxdm: mark.kklxdm,
         kch_id: info.kch_id,
         xkkz_id: mark.xkkz_id,
@@ -304,29 +342,42 @@ export const getSubjectDetail = (
           maxCount: Number.parseInt(nonNull(target.jxbrl), 10),
           time: nonNull(target.sksj).replace('<br/>', '\n'),
           teacher: nonNull(target.jsxx),
+          origin: {
+            do_jxb_id: nonNull(target.do_jxb_id),
+          },
         })
       })
       .catch(reject)
   })
 
+/**
+ *
+ * @param username
+ * @param jxb_ids 查看课程详细时提供
+ * @param mark
+ * @param baseQueryParam
+ * @param queryParam
+ * @param info
+ */
 export const selectSubject = (
   username: string,
+  jxb_ids: string,
   mark: ClassMark,
-  baseQueryParam: BaseQueryParam,
-  queryParam: SubjectQueryParam,
-  info: SubjectInfo
+  info: SubjectInfo,
+  queryParam?: SubjectQueryParam,
+  baseQueryParam?: BaseQueryParam
 ) =>
   new Promise<void>((resolve, reject) => {
     noRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512&su=${username}`,
       {
-        jxb_ids: info.jxb_id,
+        jxb_ids,
         kch_id: info.kch_id,
         kcmc: info.kcmc,
-        rwlx: queryParam.rwlx,
-        rlkz: queryParam.rlkz,
-        rlzlkz: queryParam.rlzlkz,
-        sxbj: queryParam.rlkz || queryParam.rlzlkz ? '1' : '0',
+        rwlx: queryParam?.rwlx,
+        rlkz: queryParam?.rlkz,
+        rlzlkz: queryParam?.rlzlkz,
+        sxbj: queryParam?.rlkz || queryParam?.rlzlkz ? '1' : '0',
         // xxkbj: 是否有先行课
         xxkbj: 0,
         // qz: 权重
@@ -334,18 +385,18 @@ export const selectSubject = (
         // cxbj: 是否重修
         cxbj: 0,
         xkkz_id: mark.xkkz_id,
-        njdm_id: baseQueryParam.njdm_id,
-        zyh_id: baseQueryParam.zyh_id,
+        njdm_id: baseQueryParam?.njdm_id,
+        zyh_id: baseQueryParam?.zyh_id,
         kklxdm: mark.kklxdm,
-        xklc: queryParam.xklc,
-        xkxnm: baseQueryParam.xkxnm,
-        xkxqm: baseQueryParam.xkxqm,
+        xklc: queryParam?.xklc,
+        xkxnm: baseQueryParam?.xkxnm,
+        xkxqm: baseQueryParam?.xkxqm,
       },
       'POST'
     )
       .then(resp => {
         if (!resp.flag) {
-          reject('选课失败, 请稍后重试')
+          reject(resp.msg ? resp.msg : '选课失败, 请稍后重试')
           return
         }
         if (Number.parseInt(resp.flag, 10) === 1) {

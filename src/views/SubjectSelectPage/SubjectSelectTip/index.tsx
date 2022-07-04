@@ -21,20 +21,11 @@ const SubjectSelectTip: React.FC = () => {
         <Text style={global.styles.blobText}>一旦关闭APP, 缓存就会清除!</Text>
         <Text style={global.styles.h2}>2.注意事项</Text>
         <Text style={global.styles.textContent}>
-          - 由于缺少测试机会, 暂时无法查看自己已经选上的课(后续会补充)
+          - 由于教务系统选课系统的代码一言难尽,
+          暂时无法查看自己已经选上的课(学校教务系统写的太乱了, 懒得去封装了...)
         </Text>
         <Text style={global.styles.textContent}>
           - 就算使用了选课工具也无法避免学校网络繁忙, 中途可能会需要多次重试
-        </Text>
-        <Text style={global.styles.blobText}>
-          - 因为缺少测试机会, 重置版APP的选课工具可能(大概率)存在BUG!!!
-        </Text>
-        <Text
-          style={[
-            global.styles.blobText,
-            { color: global.styles.$error_color },
-          ]}>
-          -不要期望这个工具能够正常使用! 在下次选课之后才能保证完全可用。
         </Text>
         <Text style={global.styles.h2}>3. 数据缓存</Text>
         <Text style={global.styles.textContent}>

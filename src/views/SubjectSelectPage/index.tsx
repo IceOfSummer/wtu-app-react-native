@@ -6,13 +6,8 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native'
-import { modifyCommonOptions } from '../../redux/actions/commonOptions'
 import { connect, useStore } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
-import {
-  saveGlobalState,
-  SaveGlobalStateFunctionType,
-} from '../../redux/actions/temporaryData'
 import Tabs from './Tabs'
 import SubjectSelectTip from './SubjectSelectTip'
 import FullScreenDialog, {
@@ -21,33 +16,23 @@ import FullScreenDialog, {
 import { BaseQueryParam, getBaseQueryParam } from '../../api/edu/subjectSelect'
 import NativeDialog from '../../native/modules/NativeDialog'
 import PubSub from 'pubsub-js'
+import useGlobalState from './useGlobalState'
+import { modifyCommonOptions } from '../../redux/counter/commonOptionsSlice'
 
-/**
- * 基础参数在redux#GlobalState存储的key
- */
-export const S_S_K_BASE_QUERY = 'SubjectSelectBaseQueryParam'
-/**
- * 使用redux的prefix前缀
- */
-export const S_S_GLOBAL_PREFIX = 'subjectSelect'
 export const BROAD_OPEN_DIALOG_TIP = 'openDialogTip'
 
 const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
   const layout = useWindowDimensions()
   const [isInitDone, setInitDone] = useState(false)
   const [isLoadingFail, setLoadingFail] = useState(false)
-
+  const globalState = useGlobalState()
   /**
    * 加载初始化参数
    */
   function loadInitParam() {
     getBaseQueryParam(props.username)
       .then(resp => {
-        props.saveGlobalState({
-          [S_S_GLOBAL_PREFIX]: {
-            [S_S_K_BASE_QUERY]: resp,
-          },
-        })
+        globalState.setBaseQueryParam(resp)
         setInitSuccess()
       })
       .catch(e => {
@@ -111,12 +96,6 @@ const SubjectSelectPage: React.FC<StoreStates & StoreActions> = props => {
   }
 }
 
-type GlobalState = {
-  [S_S_GLOBAL_PREFIX]: {
-    [S_S_K_BASE_QUERY]?: BaseQueryParam
-  }
-}
-
 interface StoreStates {
   autoShowTips: boolean
   queryParam?: BaseQueryParam
@@ -125,20 +104,15 @@ interface StoreStates {
 
 interface StoreActions {
   modifyCommonOptions: (...args: Parameters<typeof modifyCommonOptions>) => void
-  saveGlobalState: SaveGlobalStateFunctionType<GlobalState>
 }
 
 const Content = connect<StoreStates, StoreActions, {}, ReducerTypes>(
   initialState => ({
     autoShowTips: !initialState.commonOptions.autoHideSubjectSelectPageTips,
-    queryParam: initialState.temporary.globalStates[S_S_GLOBAL_PREFIX]
-      ? initialState.temporary.globalStates[S_S_GLOBAL_PREFIX][S_S_K_BASE_QUERY]
-      : null,
     username: initialState.user.username!,
   }),
   {
     modifyCommonOptions,
-    saveGlobalState: saveGlobalState,
   }
 )(SubjectSelectPage)
 
