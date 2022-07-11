@@ -41,7 +41,7 @@ axios.interceptors.response.use(
     if (resp.data) {
       return resp.data
     }
-    return {}
+    return resp
   },
   error => {
     console.log(error)
