@@ -8,7 +8,6 @@ import com.facebook.react.ReactApplication;
 import com.rnfs.RNFSPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
-import cn.reactnative.modules.update.UpdateContext;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -44,11 +43,6 @@ public class MainApplication extends Application implements ReactApplication {
                     return "index";
                 }
 
-                @Nullable
-                @Override
-                protected String getJSBundleFile() {
-                    return UpdateContext.getBundleUrl(MainApplication.this);
-                }
             };
 
     @Override
