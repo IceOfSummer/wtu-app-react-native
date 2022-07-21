@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import Icons from '../../../component/Icons'
 import Button from 'react-native-button'
 
@@ -65,11 +65,6 @@ const BottomMenu: React.FC<BottomMenuProps> = props => {
                 alignItems: 'center',
                 paddingVertical: 10,
                 paddingHorizontal: 20,
-                borderTopWidth: StyleSheet.hairlineWidth,
-                borderBottomWidth:
-                  index === props.items.length - 1
-                    ? StyleSheet.hairlineWidth
-                    : 0,
                 borderColor: global.styles.$border_color,
               }}>
               <Icons iconText={value.icon} size={26} parseUnicode />

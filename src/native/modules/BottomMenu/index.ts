@@ -16,6 +16,8 @@ interface AndroidNativeBottomMenuTypes {
 
 /**
  * export default
+ * @deprecated
+ * @see BottomMenuStatic
  */
 let BottomMenu: NativeBottomMenuMethod
 
