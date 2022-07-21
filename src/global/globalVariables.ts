@@ -25,6 +25,7 @@ const gStyleValues: GlobalStyleValues = {
   $spacing_row_sm: 10,
   $spacing_row_base: 15,
   $spacing_row_lg: 20,
+  $loading_bg_color: '#00000080',
 }
 type StyleSheetTypes = Record<keyof GlobalStyleSheet, TextStyle | ViewStyle>
 

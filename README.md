@@ -9,30 +9,22 @@
 
 而且之前的 [app](https://github.com/HuPeng333/WTU-APP) 代码实在过于臃肿，不是很好维护! 因此借此机会重构一般APP!
 
+## 下载
+
+[点我前往下载页面](https://xds.fit/wtuapp/app/)
+
+**RELEASE中的内容可能不是最新的，最新版本请以上方链接为准**
+
 ## 介绍
 
-重构后基本功能不变，但**可能**会添加如下功能:
+### 已有功能
+- 成绩查询
+- 课程表查询
+- 选课工具
+- 登录教务系统
 
-- [ ] 跳蚤市场: 提供一个平台方便大家交易二手商品(不收取任何费用, 也不采用线上交易, 需要自己线下付款，毕竟电商不是一般人能把持住的)
-- [ ] ...
+之后会制作视频介绍(*所以到视频发出之前都还不是正式版QAQ*)
 
+### 未来计划
 
-## 其它
-### 打包时报错的解决方法
-若打包出现`Android resource linking failed`, 请打开`node_modules`下的`react-native-picker`, 编辑`build.gradle`, 替换如下内容:
-```
-android {
-
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        
-        // ...   
-    }
-       
-}
-```
-
+[未来计划](https://github.com/IceOfSummer/wtu-app-react-native/issues/2)

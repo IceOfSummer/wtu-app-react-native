@@ -152,7 +152,6 @@ if (Platform.OS === 'android') {
         safeOpen: safeOpenDialog,
       })
     )
-    console.log(isHide)
     return (
       <View
         style={[props.containerStyle, { position: 'absolute', top: 30 }]}

@@ -4,7 +4,7 @@ import { StyleProp, StyleSheet, Text, TextStyle } from 'react-native'
 export interface IconsProps {
   color?: string
   size?: number
-  iconText: string
+  iconText?: string
   onPress?: () => void
   style?: StyleProp<TextStyle>
   /**
@@ -25,17 +25,21 @@ const Icons: React.FC<IconsProps> = props => {
     return String.fromCharCode(parseInt(hexStr, 16))
   }
 
-  return (
-    <Text
-      onPress={props.onPress}
-      style={[
-        styles.iconfont,
-        props.style,
-        { fontSize: props.size, color: props.color },
-      ]}>
-      {props.parseUnicode ? unicodeToStr(props.iconText) : props.iconText}
-    </Text>
-  )
+  if (!props.iconText) {
+    return null
+  } else {
+    return (
+      <Text
+        onPress={props.onPress}
+        style={[
+          styles.iconfont,
+          props.style,
+          { fontSize: props.size, color: props.color },
+        ]}>
+        {props.parseUnicode ? unicodeToStr(props.iconText) : props.iconText}
+      </Text>
+    )
+  }
 }
 
 export default Icons

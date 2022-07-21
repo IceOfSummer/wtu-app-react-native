@@ -24,6 +24,7 @@ interface GlobalStyleValues {
   $spacing_row_sm: number
   $spacing_row_base: number
   $spacing_row_lg: number
+  $loading_bg_color: string
 }
 
 interface GlobalStyleSheet {
