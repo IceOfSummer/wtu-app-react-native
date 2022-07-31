@@ -9,10 +9,12 @@ import {
 } from '@react-navigation/bottom-tabs'
 import {
   CLASS_SCHEDULE_TABS,
+  FLEA_MARKET_TABS,
   HOME_TABS,
   LESSONS_TABLE_CONFIG_PAGE,
   PERSONAL_CENTER_TABS,
 } from '../router'
+import FleaMarketScreen from './FleaMarketScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -28,6 +30,8 @@ const TabBar = () => {
               return <Icons iconText="&#xe62c;" {...param} />
             case PERSONAL_CENTER_TABS:
               return <Icons iconText="&#xe608;" {...param} />
+            case FLEA_MARKET_TABS:
+              return <Icons iconText="&#xe67f;" {...param} />
             default:
               // home
               return <Icons iconText="&#xe613;" {...param} />
@@ -36,11 +40,15 @@ const TabBar = () => {
       })}>
       <Tab.Screen name="*" options={HOME_OPTIONS} component={HomeScreen} />
       <Tab.Screen
-        name="课程表"
+        name={CLASS_SCHEDULE_TABS}
         component={ClassScheduleScreen}
         options={classScheduleOptions}
       />
-      {/*ApplicationsScreen和PersonalCenterScreen合并了*/}
+      <Tab.Screen
+        name={FLEA_MARKET_TABS}
+        component={FleaMarketScreen}
+        options={fleaMarketOptions}
+      />
       <Tab.Screen
         name={PERSONAL_CENTER_TABS}
         component={PersonalCenterScreen}
@@ -48,6 +56,12 @@ const TabBar = () => {
       />
     </Tab.Navigator>
   )
+}
+
+const fleaMarketOptions: BottomTabNavigationOptions = {
+  tabBarLabel: '跳蚤市场',
+  title: '跳蚤市场',
+  header: () => null,
 }
 
 const HOME_OPTIONS: BottomTabNavigationOptions = {

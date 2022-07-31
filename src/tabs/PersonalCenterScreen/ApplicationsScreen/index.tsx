@@ -1,13 +1,13 @@
 import React from 'react'
-import BounceScrollView from '../../native/component/BounceScrollView'
+import BounceScrollView from '../../../native/component/BounceScrollView'
 import ApplicationCard, { Application } from './ApplicationCard'
 import {
   EMPTY_PAGE,
   SCORE_QUERY,
   SUBJECT_SELECT_PAGE,
   WEB_PAGE,
-} from '../../router'
-import { EduSystem, FeedbackPage, HealthReport } from '../../views/Webpage'
+} from '../../../router'
+import { EduSystem, FeedbackPage, HealthReport } from '../../../views/Webpage'
 
 /**
  * <b>已经与个人中心合并!<b/>
@@ -20,7 +20,7 @@ const Applications: React.FC = () => {
   const loginEduSystem: Application<typeof WEB_PAGE> = {
     path: WEB_PAGE,
     title: '登录教务系统',
-    image: require('../../assets/img/officialWeb.png'),
+    image: require('../../../assets/img/officialWeb.png'),
     routeParams: {
       url: EduSystem,
     },
@@ -29,13 +29,13 @@ const Applications: React.FC = () => {
   const EDU_SYSTEM_APPLICATIONS: Array<Application> = [
     {
       path: SCORE_QUERY,
-      image: require('../../assets/img/scoreQuery.png'),
+      image: require('../../../assets/img/scoreQuery.png'),
       title: '成绩查询',
       needLogin: true,
     },
     {
       path: SUBJECT_SELECT_PAGE,
-      image: require('../../assets/img/selectedLessons.png'),
+      image: require('../../../assets/img/selectedLessons.png'),
       title: '选课工具',
       needLogin: true,
     },
@@ -48,7 +48,7 @@ const Applications: React.FC = () => {
    */
   const feedback: Application<typeof WEB_PAGE> = {
     path: WEB_PAGE,
-    image: require('../../assets/img/message.png'),
+    image: require('../../../assets/img/message.png'),
     title: '意见反馈',
     routeParams: {
       url: FeedbackPage,
@@ -57,7 +57,7 @@ const Applications: React.FC = () => {
   const SUGGEST_APPLICATION: Array<Application> = [
     {
       path: EMPTY_PAGE,
-      image: require('../../assets/img/trade.png'),
+      image: require('../../../assets/img/trade.png'),
       title: '跳蚤市场',
       routeParams: {},
       needLogin: true,
@@ -70,7 +70,7 @@ const Applications: React.FC = () => {
    */
   const signPage: Application<typeof WEB_PAGE> = {
     path: WEB_PAGE,
-    image: require('../../assets/img/sign.png'),
+    image: require('../../../assets/img/sign.png'),
     title: '健康打卡',
     needLogin: true,
     routeParams: {

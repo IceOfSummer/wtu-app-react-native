@@ -11,7 +11,7 @@ import {
   SCHOOL_AUTH,
   SETTINGS_PAGE,
 } from '../../router'
-import Applications from '../ApplicationsScreen'
+import Applications from './ApplicationsScreen'
 
 interface StoreProps {
   username?: string

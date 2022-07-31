@@ -15,7 +15,6 @@ import EmptyPage from '../views/EmptyPage'
 import SettingsPage from '../views/SettingsPage'
 import AboutPage from '../views/AboutPage'
 import defaultTheme from './Theme/defaultTheme'
-import { useStore } from 'react-redux'
 import { updateCurWeek } from '../redux/actions/lessonsTable'
 import Webpage from '../views/Webpage'
 import ScoreQueryPage from '../views/ScoreQueryPage'
@@ -24,6 +23,7 @@ import { markCheckLoginDone } from '../redux/actions/temporaryData'
 import { ReducerTypes } from '../redux/reducers'
 import SubjectSelectPage from '../views/SubjectSelectPage'
 import SubjectSelectHeaderRight from '../views/SubjectSelectPage/SubjectSelectHeaderRight'
+import { useDispatch, useStore } from 'react-redux'
 
 const Stack = createNativeStackNavigator()
 
@@ -40,6 +40,7 @@ export const ABOUT_PAGE = 'AboutPage'
 export const WEB_PAGE = 'WebPage'
 export const SCORE_QUERY = 'ScoreQuery'
 export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
+export const FLEA_MARKET_TABS = 'FleaMarket'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -66,6 +67,7 @@ export interface RouterTypes extends ParamListBase {
   }
   [SCORE_QUERY]: undefined
   [SUBJECT_SELECT_PAGE]: undefined
+  [FLEA_MARKET_TABS]: undefined
 }
 
 const headerCommonOptions: NativeStackNavigationOptions = {
@@ -91,13 +93,14 @@ const headerCommonOptionsWithTitle = (
 
 const Router: React.FC = () => {
   const store = useStore<ReducerTypes>()
+  const dispatch = useDispatch()
   useEffect(() => {
-    store.dispatch(
+    dispatch(
       checkLogin(status => {
         if (status.isSuccess) {
           // 更新当前周
           const state = store.getState()
-          store.dispatch(
+          dispatch(
             updateCurWeek(
               state.lessonsTable.options.year,
               state.lessonsTable.options.term

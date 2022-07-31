@@ -75,9 +75,19 @@ const gStyleSheet: StyleSheetTypes = {
   },
   errorTipText: {
     color: gStyleValues.$error_color,
-    fontSize: gStyleValues.$font_size_base,
+    fontSize: gStyleValues.$font_size_sm,
     paddingVertical: 4,
     textAlign: 'center',
+  },
+  flexRowJustBetween: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  flexRowJustAround: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
 }
 
@@ -86,5 +96,9 @@ global.constant = {
   homePageUrl: 'https://github.com/HuPeng333/wtu-app-react-native.git ',
 }
 global.styles = Object.assign(gStyleValues, gStyleSheet)
+
+global.util = {
+  assert: (data, backup) => (data ? data : backup),
+}
 
 export default {}

@@ -1,12 +1,12 @@
 import React from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
-import { RouterTypes, SCHOOL_AUTH } from '../../../router'
+import { RouterTypes, SCHOOL_AUTH } from '../../../../router'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import styles from './styles'
 import { useStore } from 'react-redux'
-import { ReducerTypes } from '../../../redux/reducers'
-import NativeDialog from '../../../native/modules/NativeDialog'
+import { ReducerTypes } from '../../../../redux/reducers'
+import NativeDialog from '../../../../native/modules/NativeDialog'
 
 interface ApplicationCardProps {
   title: string

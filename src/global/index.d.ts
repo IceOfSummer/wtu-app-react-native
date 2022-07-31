@@ -38,6 +38,8 @@ interface GlobalStyleSheet {
   blobText: TextStyle
   primaryTipText: TextStyle
   errorTipText: TextStyle
+  flexRowJustBetween: ViewStyle
+  flexRowJustAround: ViewStyle
 }
 
 interface AppConstant {
@@ -45,7 +47,18 @@ interface AppConstant {
   homePageUrl: string
 }
 
+interface UtilFunction {
+  /**
+   * 若data存在，则返回data，若不存在则返回backup
+   * 等价与 data ? data : backup
+   * @param data
+   * @param backup
+   */
+  assert: <T = any>(data?: T, backup: T) => T
+}
+
 declare namespace global {
   let styles: GlobalStyleValues & GlobalStyleSheet
   let constant: AppConstant
+  let util: UtilFunction
 }
