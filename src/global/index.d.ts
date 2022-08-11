@@ -7,6 +7,10 @@ interface GlobalStyleValues {
   $text_color: string
   $text_placeholder: string
   $text_disable: string
+  /**
+   * 可能会用作开发夜间模式，只有白色和黑色两种颜色
+   * @see global.styles.$bg_color_grey 背景颜色
+   */
   $bg_color: string
   $bg_color_grey: string
   $bg_color_hover: string

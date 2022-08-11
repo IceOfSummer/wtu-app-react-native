@@ -10,7 +10,7 @@ const CenterBanner: React.FC<CenterBannerProps> = props => {
   return (
     <View style={{ position: 'relative', marginVertical: -15 }}>
       <LottieView
-        source={require('../lottie/jump.json')}
+        source={require('../../lottie/jump.json')}
         autoPlay
         style={{ width: '100%' }}
       />

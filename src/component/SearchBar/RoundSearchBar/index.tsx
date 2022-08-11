@@ -1,8 +1,10 @@
 import React from 'react'
 import {
   NativeSyntheticEvent,
+  Pressable,
   StyleSheet,
   TextInput,
+  TextInputProps,
   TextInputSubmitEditingEventData,
   View,
   ViewStyle,
@@ -13,6 +15,8 @@ interface RoundSearchBarProps {
   onSubmit?: (text: string) => void
   placeHolder?: string
   containerStyle?: ViewStyle
+  textInputProps?: TextInputProps
+  onContainerPress?: () => void
 }
 
 /**
@@ -26,16 +30,19 @@ const RoundSearchBar: React.FC<RoundSearchBarProps> = props => {
   }
   return (
     <View style={styles.barOuterContainer}>
-      <View style={[styles.barContainer, props.containerStyle]}>
+      <Pressable
+        style={[styles.barContainer, props.containerStyle]}
+        onPress={props.onContainerPress}>
         <Icons iconText="&#xe632;" size={18} />
         <TextInput
+          {...props.textInputProps}
           placeholder={props.placeHolder}
           style={styles.textInputStyle}
           returnKeyType="search"
           selectionColor={global.styles.$primary_color}
           onSubmitEditing={onSubmitEditing}
         />
-      </View>
+      </Pressable>
     </View>
   )
 }

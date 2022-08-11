@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 14,
   },
   text: {

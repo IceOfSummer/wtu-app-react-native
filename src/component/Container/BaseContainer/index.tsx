@@ -1,4 +1,4 @@
-import { View, ViewStyle } from 'react-native'
+import { Text, View, ViewStyle } from 'react-native'
 import React from 'react'
 
 interface BaseContainerProps {
@@ -7,6 +7,7 @@ interface BaseContainerProps {
   innerPadding?: number
   style?: ViewStyle
   darkBackground?: boolean
+  title?: string
 }
 
 /**
@@ -17,7 +18,10 @@ const BaseContainer: React.FC<BaseContainerProps> = props => {
   return (
     <View
       style={{
-        paddingHorizontal: global.util.assert(props.padding, 10),
+        paddingHorizontal: global.util.assert(
+          props.padding,
+          global.styles.$spacing_row_base
+        ),
         marginVertical: 4,
       }}>
       <View
@@ -31,6 +35,14 @@ const BaseContainer: React.FC<BaseContainerProps> = props => {
           },
           props.style,
         ]}>
+        <Text
+          style={{
+            marginLeft: 4,
+            color: global.styles.$text_color,
+            fontSize: 16,
+          }}>
+          {props.title}
+        </Text>
         {props.children}
       </View>
     </View>

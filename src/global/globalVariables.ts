@@ -9,7 +9,7 @@ const gStyleValues: GlobalStyleValues = {
   $text_placeholder: '#808080',
   $text_disable: '#c0c0c0',
   $bg_color: '#fff',
-  $bg_color_grey: '#f1f1f1',
+  $bg_color_grey: '#f5f6fa',
   $bg_color_hover: '#f1f1f1',
   $bg_color_mask: 'rgba(0, 0, 0, 0.4)',
   $border_color: '#c8c7cc',

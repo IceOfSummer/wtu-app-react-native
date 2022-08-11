@@ -4,7 +4,11 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack'
 import TabBar from '../tabs'
-import { NavigationContainer, ParamListBase } from '@react-navigation/native'
+import {
+  NavigationContainer,
+  ParamListBase,
+  RouteProp,
+} from '@react-navigation/native'
 import SchoolAuth from '../views/SchoolAuth'
 import PersonalInfo from '../views/PersonalInfo'
 import DiyToast from '../component/DiyToast/NavToast'
@@ -24,6 +28,8 @@ import { ReducerTypes } from '../redux/reducers'
 import SubjectSelectPage from '../views/SubjectSelectPage'
 import SubjectSelectHeaderRight from '../views/SubjectSelectPage/SubjectSelectHeaderRight'
 import { useDispatch, useStore } from 'react-redux'
+import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
+import SearchPage from '../views/SearchPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -41,6 +47,7 @@ export const WEB_PAGE = 'WebPage'
 export const SCORE_QUERY = 'ScoreQuery'
 export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
 export const FLEA_MARKET_TABS = 'FleaMarket'
+export const SEARCH_PAGE = 'SearchPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -68,7 +75,14 @@ export interface RouterTypes extends ParamListBase {
   [SCORE_QUERY]: undefined
   [SUBJECT_SELECT_PAGE]: undefined
   [FLEA_MARKET_TABS]: undefined
+  [SEARCH_PAGE]: {
+    placeholder?: string
+  }
 }
+export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
+  Pick<RouterTypes, RouterName>
+>
+export type UseNavigationGeneric = NavigationProp<RouterTypes>
 
 const headerCommonOptions: NativeStackNavigationOptions = {
   headerBackImageSource: require('../assets/img/back.png'),
@@ -174,6 +188,11 @@ const Router: React.FC = () => {
             ...headerCommonOptionsWithTitle('选课工具'),
             headerRight: () => <SubjectSelectHeaderRight />,
           }}
+        />
+        <Stack.Screen
+          name={SEARCH_PAGE}
+          component={SearchPage}
+          options={hideHeaderOptions}
         />
       </Stack.Navigator>
       <DiyToast />
