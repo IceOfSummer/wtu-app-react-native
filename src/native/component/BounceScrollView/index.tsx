@@ -38,6 +38,11 @@ export interface finishRefresh {
   (status?: boolean): void
 }
 
+/**
+ * @param props
+ * @constructor
+ * @deprecated 使用react-native-spring-scrollview库 {@link https://bolan9999.github.io/react-native-spring-scrollview/#/}
+ */
 const BounceScrollView: React.FC<BounceScrollViewProps> = props => {
   const refreshViewRef = useRef(null)
 

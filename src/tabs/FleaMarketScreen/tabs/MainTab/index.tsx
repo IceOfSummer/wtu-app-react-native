@@ -1,18 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ShopItem, { ShowItemProps } from '../../components/ShopItem'
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import MenuItem from '../../components/MenuItem'
 import CenterBanner from '../../components/CenterBanner'
 import CenterButton from '../../components/CenterButton'
 import BaseContainer from '../../../../component/Container/BaseContainer'
+import { SpringScrollView } from 'react-native-spring-scrollview'
+import Toast from 'react-native-toast-message'
 
 // TODO 测试用，记得删除
 const generateTestData = async (page: number) =>
@@ -44,6 +38,7 @@ const generateTestData = async (page: number) =>
  * 生活用品 运动器械 娱乐物品 食品 电子设备 衣物 书籍 虚拟商品
  */
 const MainTab: React.FC = () => {
+  const scrollView = useRef<SpringScrollView>(null)
   /**
    * TODO 前往发布商品页面
    */
@@ -54,32 +49,12 @@ const MainTab: React.FC = () => {
   /**
    * 底部加载数据的距离阈值
    */
-  const REFRESH_DISTANCE = 30
   // 是否正在加载商品数据
   const [isLoadingShopItemData, setLoadingShopItemData] = useState(false)
-  // 加载是否失败(提供刷新选项)
-  const [isLoadingFail, setLoadingFail] = useState(false)
   // 商品数据
   const [shopItemData, setShopItemData] = useState<Array<ShowItemProps>>([])
   // 商品数据的页数
   const currentPage = useRef(1)
-  /**
-   * 监听滚动事件，当滚动到距底部一定位置时加载更多数据
-   */
-  const onScrollEvent = ({
-    nativeEvent,
-  }: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (
-      nativeEvent.contentSize.height -
-        nativeEvent.layoutMeasurement.height -
-        nativeEvent.contentOffset.y <=
-      REFRESH_DISTANCE
-    ) {
-      if (!isLoadingFail) {
-        loadMoreShopItemData()
-      }
-    }
-  }
 
   const loadMoreShopItemData = () => {
     if (isLoadingShopItemData) {
@@ -91,15 +66,18 @@ const MainTab: React.FC = () => {
     generateTestData(currentPage.current++)
       .then(resp => {
         setShopItemData(shopItemData.concat(resp))
-        setLoadingFail(false)
-        console.log('load more data success')
       })
-      .catch(() => {
-        setLoadingFail(true)
-        console.log('load more data fail')
+      .catch(e => {
+        console.log(e)
+        Toast.show({
+          text1: '加载失败',
+          text2: e.message ? e.message : '请稍后重试',
+          type: 'error',
+        })
       })
       .finally(() => {
         setLoadingShopItemData(false)
+        scrollView.current?.endLoading(true)
       })
   }
 
@@ -108,9 +86,10 @@ const MainTab: React.FC = () => {
   }, [])
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      onScroll={onScrollEvent}
+    <SpringScrollView
+      showsVerticalScrollIndicator
+      ref={scrollView}
+      onLoading={loadMoreShopItemData}
       style={{ flex: 1 }}>
       <View>
         <View style={styles.itemMenuContainer}>
@@ -198,21 +177,7 @@ const MainTab: React.FC = () => {
           ))}
         </View>
       </View>
-      <Pressable
-        onPress={loadMoreShopItemData}
-        style={{
-          display: isLoadingFail && !isLoadingShopItemData ? 'flex' : 'none',
-        }}>
-        <Text style={global.styles.errorTipText}>加载失败, 点我重试</Text>
-      </Pressable>
-      <View
-        style={{
-          opacity: isLoadingShopItemData ? 1 : 0,
-        }}>
-        <Text style={global.styles.primaryTipText}>加载中</Text>
-      </View>
-      <View style={{ paddingVertical: 25, width: '100%' }} />
-    </ScrollView>
+    </SpringScrollView>
   )
 }
 
