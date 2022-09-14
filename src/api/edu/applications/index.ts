@@ -1,13 +1,13 @@
-import { cancelOldAjax, noRepeatAjax } from 'axios-simple-wrapper'
 import { UserInfo } from '../../../redux/reducers/user'
 import { Term } from '../../../redux/types/lessonsTableTypes'
+import { wtuNoRepeatAjax } from '../../request'
 /**
  * 获取用户信息
  */
 
 export const getUserInfo = () =>
   new Promise<UserInfo>((resolve, reject) => {
-    noRepeatAjax<string>(
+    wtuNoRepeatAjax<string>(
       'http://jwglxt.wtu.edu.cn/xsxxxggl/xsgrxxwh_cxXsgrxx.html?gnmkdm=N100801&layout=default'
     )
       .then(resp => {
@@ -99,7 +99,7 @@ export type SubjectScore = {
 
 export const queryStudentScore = (id: string, year: number, term: Term) =>
   new Promise<Array<SubjectScore>>((resolve, reject) => {
-    noRepeatAjax<any>(
+    wtuNoRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/cjcx/cjcx_cxDgXscj.html?doType=query&gnmkdm=N305005&su=${id}`,
       {
         xnm: year,
@@ -174,7 +174,7 @@ export const getScoreDetail = (
   subjectName: string
 ) =>
   new Promise<ScoreDetails>((resolve, reject) => {
-    cancelOldAjax<string>(
+    wtuNoRepeatAjax<string>(
       `http://jwglxt.wtu.edu.cn/cjcx/cjcx_cxCjxqGjh.html?time=${Date.now()}&gnmkdm=N305005&su=${username}`,
       {
         jxb_id,

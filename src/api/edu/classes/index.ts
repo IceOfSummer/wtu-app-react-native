@@ -1,9 +1,9 @@
-import { noRepeatAjax } from 'axios-simple-wrapper'
 import {
   ClassInfo,
   ClassWeekDuration,
   Term,
 } from '../../../redux/types/lessonsTableTypes'
+import { wtuNoRepeatAjax } from '../../request'
 
 export const getLessons = (
   username: string,
@@ -11,7 +11,7 @@ export const getLessons = (
   term: 3 | 12
 ): Promise<Array<ClassInfo>> =>
   new Promise((resolve, reject) => {
-    noRepeatAjax<object>(
+    wtuNoRepeatAjax<object>(
       `http://jwglxt.wtu.edu.cn/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151&su=${username}#test`,
       {
         xnm: year,
@@ -76,7 +76,7 @@ function splitWeekInfo(scd: string): Array<ClassWeekDuration> {
  */
 export const getCurWeekFromServer = (year: number, term: Term) =>
   new Promise<number>((resolve, reject) => {
-    noRepeatAjax<any>(
+    wtuNoRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/cdjy/cdjy_cxQtlb.html?xqh_id=2&xnm=${year}&xqm=${term}&gnmkdm=N2155`
     )
       .then(resp => {

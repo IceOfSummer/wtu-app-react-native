@@ -1,11 +1,11 @@
-import { noRepeatAjax } from 'axios-simple-wrapper'
+import { wtuNoRepeatAjax } from '../../request'
 
 /**
  * 获取上次打卡时间
  */
 export const getLastSignInfo = () =>
   new Promise<Date | null>((resolve, reject) => {
-    noRepeatAjax<any>(
+    wtuNoRepeatAjax<any>(
       'http://ehall.wtu.edu.cn/qljfwapp/sys/lwWtuPassCodeSchool/modules/report/listRecordData.do',
       {
         appName: 'lwWtuPassCodeSchool',

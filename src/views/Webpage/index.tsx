@@ -11,6 +11,9 @@ import WebView from 'react-native-webview'
 import { Animated, Dimensions, Pressable, View } from 'react-native'
 import styles from './styles'
 import Icons from '../../component/Icons'
+import Toast from 'react-native-toast-message'
+import { useDispatch } from 'react-redux'
+import { markLogin } from '../../redux/counter/userSlice'
 
 type RouteType = RouteProp<Pick<RouterTypes, typeof WEB_PAGE>>
 
@@ -34,6 +37,8 @@ export const EduSystem =
   'http://jwglxt.wtu.edu.cn/xtgl/index_initMenu.html?jsdm=&_t=1649084664790'
 export const HealthReport =
   'http://ehall.wtu.edu.cn/qljfwapp/sys/lwWtuPassCodeSchool/*default/index.do?null#/studentDetail'
+export const EduAuthPage =
+  'https://auth.wtu.edu.cn/authserver/login?service=http%3A%2F%2Fjwglxt.wtu.edu.cn%2Fsso%2Fjziotlogin'
 
 const Webpage: React.FC = () => {
   const route = useRoute<RouteType>()
@@ -41,6 +46,7 @@ const Webpage: React.FC = () => {
   const webView = useRef<WebView>(null)
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)
+  const dispatch = useDispatch()
 
   const script = `
     const titleDom = document.getElementsByTagName('title')[0]
@@ -66,6 +72,7 @@ const Webpage: React.FC = () => {
     window.open = (url) => {
       document.location.assign(url)
     }
+    
   `
 
   const onPostMsg = ({ nativeEvent }: WebViewMessageEvent) => {
@@ -97,6 +104,21 @@ const Webpage: React.FC = () => {
   const onLoadEnd = ({
     nativeEvent,
   }: WebViewNavigationEvent | WebViewErrorEvent) => {
+    // 用于教务系统登录
+    if (route.params.url === EduAuthPage) {
+      if (
+        nativeEvent.url.startsWith(
+          'http://jwglxt.wtu.edu.cn/xtgl/index_initMenu.html'
+        )
+      ) {
+        // 登录成功
+        if (nav.canGoBack()) {
+          Toast.show({ text1: '登录成功' })
+          dispatch(markLogin())
+          nav.goBack()
+        }
+      }
+    }
     Animated.timing(loadingBarOpacity, {
       toValue: 0,
       useNativeDriver: true,

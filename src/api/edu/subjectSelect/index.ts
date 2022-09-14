@@ -1,6 +1,6 @@
-import { noRepeatAjax } from 'axios-simple-wrapper'
 import { nonNull } from '../../../utils/ObjectUtils'
 import { getInputValue } from '../../../utils/htmlUtils'
+import { wtuNoRepeatAjax } from '../../request'
 
 /**
  * 基本查课标识
@@ -40,7 +40,7 @@ export type SubjectSelectItem = {
 
 export const getBaseQueryParam = (username: string) =>
   new Promise<BaseQueryParam>((resolve, reject) => {
-    noRepeatAjax<string>(
+    wtuNoRepeatAjax<string>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default&su=${username}`
     )
       .then(resp => {
@@ -134,7 +134,7 @@ export const getSubjectQueryParam = (
   baseQueryParam?: BaseQueryParam
 ) =>
   new Promise<SubjectQueryParam>((resolve, reject) => {
-    noRepeatAjax<string>(
+    wtuNoRepeatAjax<string>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzb_cxZzxkYzbDisplay.html?gnmkdm=N253512&su=${username}`,
       {
         xkkz_id: mark.xkkz_id,
@@ -194,7 +194,7 @@ export const getSubjectList = (
   page = 1
 ) =>
   new Promise<Array<SubjectInfo>>((resolve, reject) => {
-    noRepeatAjax<any>(
+    wtuNoRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512&su=${username}`,
       {
         'clb_id_list[0]': 95,
@@ -286,7 +286,7 @@ export const getSubjectDetail = (
   baseQueryParam?: BaseQueryParam
 ) =>
   new Promise<SubjectDetail>((resolve, reject) => {
-    noRepeatAjax<any>(
+    wtuNoRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512&su=${username}`,
       {
         rwlx: subjectQueryParam?.rwlx,
@@ -368,7 +368,7 @@ export const selectSubject = (
   baseQueryParam?: BaseQueryParam
 ) =>
   new Promise<void>((resolve, reject) => {
-    noRepeatAjax<any>(
+    wtuNoRepeatAjax<any>(
       `http://jwglxt.wtu.edu.cn/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512&su=${username}`,
       {
         jxb_ids,

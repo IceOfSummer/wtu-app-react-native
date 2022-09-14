@@ -1,24 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, Image, Keyboard } from 'react-native'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { RouterTypes } from '../../router'
-import {
-  markLogin,
-  markLoginExpired,
-  saveUserCredentials,
-} from '../../redux/actions/user'
-import { connect } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
-import Icons from '../../component/Icons'
-import styles from './styles'
-import AniInput, { AniInputRefAttribute } from './AniInput'
-import { initLogin, InitLoginResponse, login } from '../../api/edu/auth'
-import Button from 'react-native-button'
-import { wtuEncrypt } from '../../utils/aesUtils'
-import Toast from 'react-native-toast-message'
-import Loading from '../../component/Loading'
+import React, { useEffect } from 'react'
 import NativeDialog from '../../native/modules/NativeDialog'
+import { StackActions, useNavigation } from '@react-navigation/native'
+import { EduAuthPage } from '../Webpage'
+import { UseNavigationGeneric, WEB_PAGE } from '../../router'
 
+/*
 interface StoreProps {
   username?: string
   password?: string
@@ -34,8 +20,9 @@ interface StoreActions {
 type SchoolAuthProps = NativeStackScreenProps<RouterTypes> &
   StoreProps &
   StoreActions
+*/
 
-const SchoolAuth: React.FC<SchoolAuthProps> = props => {
+/*const SchoolAuth: React.FC<SchoolAuthProps> = props => {
   const [captcha, setCaptcha] = useState<string>('')
   const [password, setPassword] = useState<string>(
     props.password ? props.password : ''
@@ -152,7 +139,7 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
 
   return (
     <View>
-      {/* Header */}
+      {/!* Header *!/}
       <View style={styles.closeBtn}>
         <Icons
           size={20}
@@ -205,9 +192,9 @@ const SchoolAuth: React.FC<SchoolAuthProps> = props => {
       </View>
     </View>
   )
-}
+}*/
 
-export default connect<StoreProps, StoreActions, SchoolAuthProps, ReducerTypes>(
+/*export default connect<StoreProps, StoreActions, SchoolAuthProps, ReducerTypes>(
   initialState => ({
     username: initialState.user.username,
     password: initialState.user.password,
@@ -218,4 +205,25 @@ export default connect<StoreProps, StoreActions, SchoolAuthProps, ReducerTypes>(
     markLogin,
     markLoginExpired,
   }
-)(SchoolAuth)
+)(SchoolAuth)*/
+
+/**
+ * 自定义的登录界面有莫名的bug, 不想修了= =+
+ * @constructor
+ * @deprecated 使用WebView直接转跳
+ */
+const SchoolAuth: React.FC = () => {
+  const nav = useNavigation<UseNavigationGeneric>()
+  useEffect(() => {
+    NativeDialog.showDialog({
+      title: '请在接下来的页面登录',
+      message: '登录完毕后直接退出即可',
+      hideCancelBtn: true,
+      onConfirm: () => {
+        nav.dispatch(StackActions.replace(WEB_PAGE, { url: EduAuthPage }))
+      },
+    })
+  }, [])
+  return null
+}
+export default SchoolAuth
