@@ -1,29 +1,17 @@
 import React from 'react'
-import {
-  Image,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native'
-import Icons from '../../../component/Icons'
-import { append0Prefix } from '../../../utils/DateUtils'
-
-interface HorShopItemProps {
-  id: number
-  name: string
-  price: string
-  image: string
-  createTime: number
-}
+import { Image, StyleSheet, Text, View } from 'react-native'
+import { append0Prefix } from '../../../../utils/DateUtils'
+import Icons from '../../../../component/Icons'
+import { EsCommodity } from '../../../../api/server/types'
 
 /**
  * 横着显示的商品
  * @param props
  * @constructor
  */
-const HorShopItem: React.FC<HorShopItemProps> = props => {
+const HorShopItem: React.FC<EsCommodity> = props => {
   const date = new Date(props.createTime)
+  const standerPrice = props.price.toFixed(2)
   return (
     <View style={global.styles.flexRowCenter}>
       <View style={styles.contaner}>
@@ -32,7 +20,14 @@ const HorShopItem: React.FC<HorShopItemProps> = props => {
           <Text style={global.styles.blobText} ellipsizeMode="tail">
             {props.name}
           </Text>
+          <View style={global.styles.flexRow}>
+            <Icons iconText="&#xe786;" color="#000" size={13} />
+            <Text style={styles.normalText}>{props.tradeLocation}</Text>
+          </View>
           <View style={styles.bottomContainer}>
+            <View>
+              <Text style={global.styles.errorTipText}>{standerPrice}￥</Text>
+            </View>
             <View style={global.styles.flexRowCenter}>
               <Icons
                 iconText="&#xe662;"
@@ -46,7 +41,7 @@ const HorShopItem: React.FC<HorShopItemProps> = props => {
               </Text>
             </View>
             <View>
-              <Text style={global.styles.errorTipText}>{props.price}￥</Text>
+              <Icons iconText="&#xe636;" />
             </View>
           </View>
         </View>
@@ -85,6 +80,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingRight: 18,
+  },
+  normalText: {
+    color: '#000',
+    fontSize: 12,
   },
 })
 export default HorShopItem

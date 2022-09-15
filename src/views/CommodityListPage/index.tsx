@@ -13,6 +13,8 @@ import { EsCommodity } from '../../api/server/types'
 import EnhancedScrollView from '../../component/EnhancedScrollView'
 import { searchCommodity } from '../../api/server/commodity'
 import HorShopItem from './component/HorShopItem'
+import NativeDialog from '../../native/modules/NativeDialog'
+import CommoditySkeleton from './component/CommoditySkeleton'
 
 /**
  * 商品搜索结果展示页面
@@ -23,16 +25,32 @@ const CommodityListPage: React.FC = () => {
   const { search } = route.params
   const currentPage = useRef(0)
   const [commodities, setCommodities] = useState<EsCommodity[]>([])
+  const [loadFail, setLoadFail] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [empty, setEmpty] = useState(false)
 
   const loadMore = () => {
+    setLoading(true)
     searchCommodity(route.params.search, currentPage.current)
       .then(resp => {
-        console.log(resp)
-        // setCommodities(commodities.concat(resp.data))
-        // currentPage.current++
+        if (resp.data.length === 0) {
+          setEmpty(true)
+          return
+        }
+        setCommodities(commodities.concat(resp.data))
+        currentPage.current++
+        setLoadFail(false)
       })
       .catch(e => {
-        console.log(e)
+        setLoadFail(true)
+        NativeDialog.showDialog({
+          title: '请求失败',
+          message: e.message,
+          hideCancelBtn: true,
+        })
+      })
+      .finally(() => {
+        setLoading(false)
       })
   }
 
@@ -55,8 +73,16 @@ const CommodityListPage: React.FC = () => {
           placeHolder={search}
         />
       </View>
-      <View>
-        <EnhancedScrollView>
+      <View style={{ zIndex: 1, overflow: 'hidden' }}>
+        <EnhancedScrollView
+          onRequireLoad={loadMore}
+          fail={loadFail}
+          loading={loading}
+          empty={empty}
+          dataLength={commodities.length}
+          loadingSkeleton={<LoadingSkeleton />}
+          onScrollToBottom={loadMore}
+          scrollViewProps={{ scrollEnabled: commodities.length > 0 }}>
           {commodities.map(value => (
             <HorShopItem {...value} key={value.id} />
           ))}
@@ -65,9 +91,20 @@ const CommodityListPage: React.FC = () => {
     </View>
   )
 }
-
+const LoadingSkeleton: React.FC = () => {
+  return (
+    <View>
+      <CommoditySkeleton />
+      <CommoditySkeleton />
+      <CommoditySkeleton />
+      <CommoditySkeleton />
+      <CommoditySkeleton />
+    </View>
+  )
+}
 const styles = StyleSheet.create({
   headerContainer: {
+    zIndex: 2,
     marginVertical: 5,
     paddingHorizontal: 10,
     flexDirection: 'row',

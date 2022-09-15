@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { StackActions, useNavigation, useRoute } from '@react-navigation/native'
 import {
   COMMODITY_LIST_PAGE,
   SEARCH_PAGE,
@@ -43,9 +43,7 @@ const SearchPage: React.FC = () => {
       // 已经存在, 调整顺序
       store.dispatch(swapHistoryToFirst(i))
     }
-    nav.navigate(COMMODITY_LIST_PAGE, {
-      search: text,
-    })
+    nav.dispatch(StackActions.replace(COMMODITY_LIST_PAGE, { search: text }))
   }
   const textInput = useRef<TextInput>(null)
 
@@ -127,9 +125,10 @@ const styles = StyleSheet.create({
   searchHistoryItem: {
     backgroundColor: 'rgba(0,0,0,0.1)',
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     margin: 5,
     borderRadius: 10,
+    textAlign: 'center',
     fontSize: global.styles.$font_size_sm,
   },
 })

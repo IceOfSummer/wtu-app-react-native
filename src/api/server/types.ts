@@ -8,7 +8,7 @@ export type EsCommodity = {
   id: number
   name: string
   createTime: number
-  price: string
+  price: number
   image: string
   tradeLocation: string
 }

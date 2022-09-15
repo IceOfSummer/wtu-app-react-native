@@ -2,9 +2,14 @@ import React from 'react'
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
-  ScrollView,
+  ScrollViewProps,
+  Text,
+  View,
 } from 'react-native'
 import { createPropsGetter } from '../../utils/ObjectUtils'
+import LoadingMore from './LoadingMore'
+import RetryView from './RetryView'
+import BounceScrollView from '../../native/component/BounceScrollView'
 
 const defaultProps = {
   /**
@@ -18,6 +23,17 @@ interface EnhancedScrollViewProps {
    * 当滚动条滑到底部时触发回调
    */
   onScrollToBottom?: () => void
+  onRequireLoad?: () => void
+  scrollViewProps?: ScrollViewProps
+  loadingSkeleton?: React.ReactNode
+  loading: boolean
+  fail: boolean
+  dataLength: number
+  showLoadingMoreBtn?: boolean
+  /**
+   * 数据已经全部加载完毕
+   */
+  empty?: boolean
 }
 const getProps = createPropsGetter(defaultProps)
 /**
@@ -26,7 +42,7 @@ const getProps = createPropsGetter(defaultProps)
 const EnhancedScrollView: React.FC<
   EnhancedScrollViewProps & Partial<typeof defaultProps>
 > = props => {
-  const { triggerBottomDis } = getProps(props)
+  const { triggerBottomDis, dataLength } = getProps(props)
   const onScrollEvent = ({
     nativeEvent,
   }: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -36,10 +52,30 @@ const EnhancedScrollView: React.FC<
         nativeEvent.contentOffset.y <=
       triggerBottomDis
     ) {
-      props.onScrollToBottom?.()
+      if (!props.loading && !props.empty) {
+        props.onScrollToBottom?.()
+      }
     }
   }
-  return <ScrollView onScroll={onScrollEvent}>{props.children}</ScrollView>
+  return (
+    <BounceScrollView
+      scrollConfig={{ onScroll: onScrollEvent, ...props.scrollViewProps }}>
+      <View>{props.children}</View>
+      {props.empty ? (
+        <View>
+          <Text style={global.styles.primaryTipText}>没有更多数据了...</Text>
+        </View>
+      ) : null}
+      <View>
+        {props.loadingSkeleton && props.loading && dataLength === 0
+          ? props.loadingSkeleton
+          : null}
+        <LoadingMore show={props.loading && dataLength > 0} />
+        <RetryView onRetry={props.onRequireLoad} show={props.fail} />
+      </View>
+      <View style={{ paddingBottom: 50 }} />
+    </BounceScrollView>
+  )
 }
 EnhancedScrollView.defaultProps = defaultProps
 

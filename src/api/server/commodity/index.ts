@@ -1,5 +1,5 @@
-import { serverCancelOldAjax } from '../../index'
 import { EsCommodity } from '../types'
+import { serverCancelOldAjax } from '../../request'
 
 export const searchCommodity = (searchContent: string, page = 0) =>
   serverCancelOldAjax<EsCommodity[]>(
