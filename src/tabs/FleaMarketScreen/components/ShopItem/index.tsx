@@ -5,7 +5,7 @@ export interface ShowItemProps {
   id: number
   previewImage: any
   name: string
-  price: number
+  price: number | string
 }
 
 /**

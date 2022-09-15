@@ -79,12 +79,11 @@ const FleaMarketScreen: React.FC = () => {
         <View
           style={[global.styles.flexRowJustBetween, styles.headerContainer]}>
           <RoundSearchBar
+            outerStyle={{ flex: 1 }}
             containerStyle={styles.searchBarStyle}
             placeHolder={searchBarPlaceholder}
             onContainerPress={onSearchBarPress}
-            textInputProps={{
-              editable: false,
-            }}
+            disable
           />
           <MessageBoxIcon showRedPoint={showMessageRedPoint} />
         </View>

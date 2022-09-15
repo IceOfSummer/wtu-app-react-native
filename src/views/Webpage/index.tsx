@@ -11,9 +11,6 @@ import WebView from 'react-native-webview'
 import { Animated, Dimensions, Pressable, View } from 'react-native'
 import styles from './styles'
 import Icons from '../../component/Icons'
-import Toast from 'react-native-toast-message'
-import { useDispatch } from 'react-redux'
-import { markLogin } from '../../redux/counter/userSlice'
 
 type RouteType = RouteProp<Pick<RouterTypes, typeof WEB_PAGE>>
 
@@ -46,7 +43,6 @@ const Webpage: React.FC = () => {
   const webView = useRef<WebView>(null)
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)
-  const dispatch = useDispatch()
 
   const script = `
     const titleDom = document.getElementsByTagName('title')[0]
@@ -105,20 +101,6 @@ const Webpage: React.FC = () => {
     nativeEvent,
   }: WebViewNavigationEvent | WebViewErrorEvent) => {
     // 用于教务系统登录
-    if (route.params.url === EduAuthPage) {
-      if (
-        nativeEvent.url.startsWith(
-          'http://jwglxt.wtu.edu.cn/xtgl/index_initMenu.html'
-        )
-      ) {
-        // 登录成功
-        if (nav.canGoBack()) {
-          Toast.show({ text1: '登录成功' })
-          dispatch(markLogin())
-          nav.goBack()
-        }
-      }
-    }
     Animated.timing(loadingBarOpacity, {
       toValue: 0,
       useNativeDriver: true,

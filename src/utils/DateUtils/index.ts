@@ -34,3 +34,7 @@ export const getCurTerm = (): Term => {
     return 3
   }
 }
+
+export const append0Prefix = (hour: number) => {
+  return hour < 10 ? '0' + hour : hour
+}

@@ -5,11 +5,24 @@ import { PersistGate } from 'redux-persist/lib/integration/react'
 import Router from './src/router'
 import './src/api'
 import Loading from './src/component/Loading'
-import { SafeAreaView } from 'react-native'
+import { DevSettings, SafeAreaView } from 'react-native'
 import useUpdateCheck from './src/hook/useUpdateCheck'
+import { login } from './src/api/server/auth'
 
 const App = () => {
   useUpdateCheck()
+  if (__DEV__) {
+    DevSettings.addMenuItem('login test account1', () => {
+      login('123456', 'abc123').then(resp => {
+        console.log(resp)
+      })
+    })
+    DevSettings.addMenuItem('login test account2', () => {
+      login('654321', 'abc123').then(resp => {
+        console.log(resp)
+      })
+    })
+  }
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>

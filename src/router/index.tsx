@@ -9,7 +9,6 @@ import {
   ParamListBase,
   RouteProp,
 } from '@react-navigation/native'
-import SchoolAuth from '../views/SchoolAuth'
 import PersonalInfo from '../views/PersonalInfo'
 import DiyToast from '../component/DiyToast/NavToast'
 import { StatusBar } from 'react-native'
@@ -30,6 +29,8 @@ import SubjectSelectHeaderRight from '../views/SubjectSelectPage/SubjectSelectHe
 import { useDispatch, useStore } from 'react-redux'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import SearchPage from '../views/SearchPage'
+import CommodityListPage from '../views/CommodityListPage'
+import WebSchoolAuth from '../views/SchoolAuth/WebSchoolAuth'
 
 const Stack = createNativeStackNavigator()
 
@@ -48,6 +49,7 @@ export const SCORE_QUERY = 'ScoreQuery'
 export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
 export const FLEA_MARKET_TABS = 'FleaMarket'
 export const SEARCH_PAGE = 'SearchPage'
+export const COMMODITY_LIST_PAGE = 'CommodityListPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -77,6 +79,9 @@ export interface RouterTypes extends ParamListBase {
   [FLEA_MARKET_TABS]: undefined
   [SEARCH_PAGE]: {
     placeholder?: string
+  }
+  [COMMODITY_LIST_PAGE]: {
+    search: string
   }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
@@ -138,7 +143,7 @@ const Router: React.FC = () => {
         />
         <Stack.Screen
           name={SCHOOL_AUTH}
-          component={SchoolAuth}
+          component={WebSchoolAuth}
           options={hideHeaderOptions}
         />
         <Stack.Screen
@@ -193,6 +198,11 @@ const Router: React.FC = () => {
           name={SEARCH_PAGE}
           component={SearchPage}
           options={hideHeaderOptions}
+        />
+        <Stack.Screen
+          name={COMMODITY_LIST_PAGE}
+          component={CommodityListPage}
+          options={{ header: () => null, animation: 'none' }}
         />
       </Stack.Navigator>
       <DiyToast />

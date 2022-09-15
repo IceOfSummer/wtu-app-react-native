@@ -7,7 +7,7 @@ import { isAuthPage } from '../../../utils/AuthUtils'
 const AUTH_URL = `https://auth.wtu.edu.cn/authserver/login?service=http%3A%2F%2Fjwglxt.wtu.edu.cn%2Fsso%2Fjziotlogin#${IGNORE_LOGIN_EXPIRE}`
 export const initLogin = () =>
   new Promise<InitLoginResponse>((resolve, reject) => {
-    noRepeatAjax<string>(AUTH_URL)
+    noRepeatAjax<string, true>(AUTH_URL)
       .then(data => {
         const lt = getInputValue(data, 'lt')
         if (!lt) {
@@ -26,8 +26,8 @@ export const initLogin = () =>
           .replace(/"/g, '')
 
         // 必定存在, 不可能为空
+        console.log('init success')
         const execution = getInputValue(data, 'execution') as string
-
         resolve({
           encryptSalt,
           lt,
@@ -54,7 +54,7 @@ export const login = (
   execution: string
 ) =>
   new Promise<LoginStatus>((resolve, reject) => {
-    noRepeatAjax<string>(
+    noRepeatAjax<string, true>(
       `${AUTH_URL}#${IGNORE_LOGIN_EXPIRE}`,
       {
         username,
@@ -80,7 +80,7 @@ export const login = (
  */
 export const testLogin = () =>
   new Promise<LoginStatus>((resolve, reject) => {
-    betterAjax<AxiosResponse>({
+    betterAjax<AxiosResponse, true>({
       url: `${AUTH_URL}#${GET_FULL_RESPONSE + IGNORE_LOGIN_EXPIRE}`,
       rejectPolicy: 'NO_POLICY',
     })

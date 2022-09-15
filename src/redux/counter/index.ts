@@ -10,6 +10,8 @@ import lessonsTableReducer from './lessonsTableSlice'
 import temporaryData from './temporaryDataSlice'
 import commonOptionsReducer from './commonOptionsSlice'
 import { TemporaryDataState } from '../types/temporaryDataTypes'
+import commonPersistReducer from './commonPersistenceSlice'
+import { CommonPersistenceState } from '../types/commonPersistenceTypes'
 
 const userPersistConfig: PersistConfig<UserState> = {
   key: 'user',
@@ -25,6 +27,10 @@ const commonOptionsPersistConfig: PersistConfig<CommonOptionsStates> = {
   key: 'commonOptions',
   storage: AsyncStorage,
 }
+const commonPersistPConfig: PersistConfig<CommonPersistenceState> = {
+  key: 'commonPersist',
+  storage: AsyncStorage,
+}
 
 const reducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
@@ -34,6 +40,7 @@ const reducer = combineReducers({
     commonOptionsPersistConfig,
     commonOptionsReducer
   ),
+  commonPersist: persistReducer(commonPersistPConfig, commonPersistReducer),
 })
 
 export type ReducerTypes = {
@@ -41,6 +48,7 @@ export type ReducerTypes = {
   lessonsTable: LessonsTableStates
   temporary: TemporaryDataState
   commonOptions: CommonOptionsStates
+  commonPersist: CommonPersistenceState
 }
-
+export type ReducerStates = ReducerTypes
 export default reducer

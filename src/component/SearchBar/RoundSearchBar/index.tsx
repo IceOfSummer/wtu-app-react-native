@@ -17,6 +17,9 @@ interface RoundSearchBarProps {
   containerStyle?: ViewStyle
   textInputProps?: TextInputProps
   onContainerPress?: () => void
+  outerStyle?: ViewStyle
+  onFocus?: () => void
+  disable?: boolean
 }
 
 /**
@@ -29,7 +32,7 @@ const RoundSearchBar: React.FC<RoundSearchBarProps> = props => {
     props.onSubmit?.(nativeEvent.text)
   }
   return (
-    <View style={styles.barOuterContainer}>
+    <View style={[styles.barOuterContainer, props.outerStyle]}>
       <Pressable
         style={[styles.barContainer, props.containerStyle]}
         onPress={props.onContainerPress}>
@@ -37,8 +40,10 @@ const RoundSearchBar: React.FC<RoundSearchBarProps> = props => {
         <TextInput
           {...props.textInputProps}
           placeholder={props.placeHolder}
+          onFocus={props.onFocus}
           style={styles.textInputStyle}
           returnKeyType="search"
+          editable={!props.disable}
           selectionColor={global.styles.$primary_color}
           onSubmitEditing={onSubmitEditing}
         />
@@ -50,7 +55,6 @@ const RoundSearchBar: React.FC<RoundSearchBarProps> = props => {
 const styles = StyleSheet.create({
   barOuterContainer: {
     paddingHorizontal: 5,
-    flex: 1,
   },
   barContainer: {
     backgroundColor: global.styles.$bg_color,

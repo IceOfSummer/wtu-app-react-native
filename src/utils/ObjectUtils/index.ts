@@ -59,3 +59,26 @@ export const innerCombineObject = <T extends Record<string, any>>(
   })
   return src
 }
+
+/**
+ * 用来消除React组件使用defaultProps + ts 的报错
+ * 使用方法:<p/>
+ * <code>
+ *   const defaultProps = {
+ *     triggerBottomDis: 30,
+ *   }
+ *   const getProps = createPropsGetter(defaultProps)
+ *
+ *   // ...
+ *   const {triggerBottomDis} = getProps(this.props)
+ * </code>
+ * @param defaultProps
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const createPropsGetter = <DP extends object>(defaultProps: DP) => {
+  return <P extends Partial<DP>>(props: P) => {
+    type PropsExcludingDefaults = Pick<P, Exclude<keyof P, keyof DP>>
+    type RecomposedProps = DP & PropsExcludingDefaults
+    return props as any as RecomposedProps
+  }
+}
