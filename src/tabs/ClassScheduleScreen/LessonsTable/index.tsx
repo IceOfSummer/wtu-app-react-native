@@ -4,6 +4,7 @@ import {
   Dimensions,
   Image,
   ImageBackground,
+  StyleSheet,
   Text,
   View,
 } from 'react-native'
@@ -54,8 +55,6 @@ const Lessons: React.FC<LessonsProps> = props => {
   const perBlockWidth = deviceWidth / 8
   const deviceHeight = Dimensions.get('window').height
 
-  const theme = useClassScheduleTheme().getTheme()
-
   const lessons: Array<ProcessedClassInfo> = []
   /**
    * 预处理数组
@@ -70,11 +69,11 @@ const Lessons: React.FC<LessonsProps> = props => {
   /**
    * 过滤每个课程, 防止重叠, 仅在课程卡片使用图片时过滤(卡片有透明度, 不同课程可能会重叠)
    * 优先级: 正在上课 > 未开始 > 已经结课
+   * 让先结课的卡片先渲染, 后面相同的卡片会覆盖相应的位置
    * @see SubjectStatus 优先级凭据
    * 优先级高的会完全盖住优先级低的
-   * O(log(n) + 2n)
    */
-  if (props.lessons && props.lessons.length && theme.classLabel.useImage) {
+  if (props.lessons && props.lessons.length) {
     const copyArr = lessons.slice()
     copyArr.sort((a, b) => {
       return b.status - a.status
@@ -283,7 +282,7 @@ const LessonItem: React.FC<LessonItemProps> = props => {
           height: height,
           width: perBlockWidth,
           padding: 2,
-          borderRadius: 10,
+          borderRadius: 4,
           overflow: 'hidden',
           position: 'relative',
         }}>
@@ -332,8 +331,8 @@ const ThemedContainer: React.FC<{
         styles.lessonItemContainer,
         {
           backgroundColor: labelColor,
-          borderWidth: 1.5,
-          borderColor: '#505050',
+          borderWidth: StyleSheet.hairlineWidth,
+          borderColor: global.styles.$border_color,
         },
       ]}>
       <Image
