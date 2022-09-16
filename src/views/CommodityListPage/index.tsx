@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native'
 import RoundSearchBar from '../../component/SearchBar/RoundSearchBar'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import {
+  COMMODITY_DETAIL_PAGE,
   COMMODITY_LIST_PAGE,
   SEARCH_PAGE,
   UseNavigationGeneric,
@@ -54,6 +55,10 @@ const CommodityListPage: React.FC = () => {
       })
   }
 
+  const navToCommodity = (id: number) => {
+    nav.navigate(COMMODITY_DETAIL_PAGE, { id })
+  }
+
   useEffect(() => {
     loadMore()
   }, [])
@@ -84,7 +89,11 @@ const CommodityListPage: React.FC = () => {
           onScrollToBottom={loadMore}
           scrollViewProps={{ scrollEnabled: commodities.length > 0 }}>
           {commodities.map(value => (
-            <HorShopItem {...value} key={value.id} />
+            <HorShopItem
+              onClick={() => navToCommodity(value.id)}
+              {...value}
+              key={value.id}
+            />
           ))}
         </EnhancedScrollView>
       </View>

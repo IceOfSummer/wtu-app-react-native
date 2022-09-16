@@ -3,7 +3,6 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollViewProps,
-  StyleSheet,
   Text,
   View,
 } from 'react-native'
@@ -11,7 +10,7 @@ import { createPropsGetter } from '../../utils/ObjectUtils'
 import LoadingMore from './LoadingMore'
 import RetryView from './RetryView'
 import BounceScrollView from '../../native/component/BounceScrollView'
-import LottieView from 'lottie-react-native'
+import CenterLoadingIndicator from './CenterLoadingIndicator'
 
 const defaultProps = {
   /**
@@ -70,7 +69,9 @@ const EnhancedScrollView: React.FC<
       ) : null}
       <View>
         {props.loading && dataLength === 0 ? (
-          <LoadingIndicator>{props.loadingSkeleton}</LoadingIndicator>
+          <CenterLoadingIndicator>
+            {props.loadingSkeleton}
+          </CenterLoadingIndicator>
         ) : null}
         <LoadingMore show={props.loading && dataLength > 0} />
         <RetryView onRetry={props.onRequireLoad} show={props.fail} />
@@ -80,24 +81,5 @@ const EnhancedScrollView: React.FC<
   )
 }
 EnhancedScrollView.defaultProps = defaultProps
-const LoadingIndicator: React.FC = props => {
-  return (
-    <View>
-      <View>{props.children}</View>
-      <LottieView
-        autoPlay
-        source={require('./LoadingMore/loading.json')}
-        style={styles.loadingIndicator}
-      />
-    </View>
-  )
-}
-const styles = StyleSheet.create({
-  loadingIndicator: {
-    width: 100,
-    position: 'absolute',
-    alignSelf: 'center',
-    top: '35%',
-  },
-})
+
 export default EnhancedScrollView

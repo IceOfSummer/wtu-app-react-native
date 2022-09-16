@@ -11,7 +11,7 @@ const LoadingMore: React.FC<LoadingMoreProps> = props => {
     return (
       <View style={{ alignItems: 'center' }}>
         <LottieView
-          source={require('./loading.json')}
+          source={require('../../../assets/lottie/loading.json')}
           autoPlay
           style={{ width: 100 }}
         />

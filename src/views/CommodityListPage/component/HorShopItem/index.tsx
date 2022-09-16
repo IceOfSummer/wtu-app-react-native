@@ -1,21 +1,26 @@
 import React from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { append0Prefix } from '../../../../utils/DateUtils'
 import Icons from '../../../../component/Icons'
 import { EsCommodity } from '../../../../api/server/types'
+import FastImage from 'react-native-fast-image'
+
+interface HorShopItemProps {
+  onClick?: () => void
+}
 
 /**
  * 横着显示的商品
  * @param props
  * @constructor
  */
-const HorShopItem: React.FC<EsCommodity> = props => {
+const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
   const date = new Date(props.createTime)
   const standerPrice = props.price.toFixed(2)
   return (
     <View style={global.styles.flexRowCenter}>
-      <View style={styles.contaner}>
-        <Image source={{ uri: props.image }} style={[styles.image, {}]} />
+      <Pressable onPress={props.onClick} style={styles.contaner}>
+        <FastImage source={{ uri: props.image }} style={[styles.image, {}]} />
         <View style={styles.descriptionContainer}>
           <Text style={global.styles.blobText} ellipsizeMode="tail">
             {props.name}
@@ -45,7 +50,7 @@ const HorShopItem: React.FC<EsCommodity> = props => {
             </View>
           </View>
         </View>
-      </View>
+      </Pressable>
     </View>
   )
 }

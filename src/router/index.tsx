@@ -31,6 +31,9 @@ import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import SearchPage from '../views/SearchPage'
 import CommodityListPage from '../views/CommodityListPage'
 import WebSchoolAuth from '../views/SchoolAuth/WebSchoolAuth'
+import CommodityDetailPage from '../views/CommodityDetailPage'
+import FullScreenImagePage from '../views/FullScreenImagePage'
+import { IImageInfo } from 'react-native-image-zoom-viewer/src/image-viewer.type'
 
 const Stack = createNativeStackNavigator()
 
@@ -50,6 +53,8 @@ export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
 export const FLEA_MARKET_TABS = 'FleaMarket'
 export const SEARCH_PAGE = 'SearchPage'
 export const COMMODITY_LIST_PAGE = 'CommodityListPage'
+export const COMMODITY_DETAIL_PAGE = 'CommodityDetailPage'
+export const FULL_SCREEN_IMAGE_PAGE = 'FullScreenImagePage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -82,6 +87,16 @@ export interface RouterTypes extends ParamListBase {
   }
   [COMMODITY_LIST_PAGE]: {
     search: string
+  }
+  [COMMODITY_DETAIL_PAGE]: {
+    /**
+     * 商品id
+     */
+    id: number
+  }
+  [FULL_SCREEN_IMAGE_PAGE]: {
+    images: IImageInfo[]
+    index?: number
   }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
@@ -203,6 +218,16 @@ const Router: React.FC = () => {
           name={COMMODITY_LIST_PAGE}
           component={CommodityListPage}
           options={{ header: () => null, animation: 'none' }}
+        />
+        <Stack.Screen
+          name={COMMODITY_DETAIL_PAGE}
+          component={CommodityDetailPage}
+          options={{ header: () => null }}
+        />
+        <Stack.Screen
+          name={FULL_SCREEN_IMAGE_PAGE}
+          component={FullScreenImagePage}
+          options={{ header: () => null }}
         />
       </Stack.Navigator>
       <DiyToast />
