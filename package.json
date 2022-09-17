@@ -34,6 +34,7 @@
     "react-native-linear-gradient": "^2.6.2",
     "react-native-modal": "^13.0.1",
     "react-native-pager-view": "^5.4.15",
+    "react-native-pell-rich-editor": "^1.8.8",
     "react-native-picker": "^4.3.7",
     "react-native-safe-area-context": "^3.4.1",
     "react-native-screens": "^3.12.0",
