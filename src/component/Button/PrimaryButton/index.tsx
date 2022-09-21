@@ -4,6 +4,7 @@ import Button from 'react-native-button'
 import { Text, View } from 'react-native'
 
 const PrimaryButton: React.FC<BaseButtonProps> = props => {
+  console.log('btn')
   return (
     <Button
       onPress={props.onPress}

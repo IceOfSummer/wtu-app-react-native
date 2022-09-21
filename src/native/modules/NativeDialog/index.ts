@@ -95,4 +95,12 @@ const NativeDialog: NativeDialogMethod = (function () {
   return dialog
 })()
 
+export const quickShowErrorTip = (title: string, message: string) => {
+  NativeDialog.showDialog({
+    title,
+    message,
+    hideCancelBtn: true,
+  })
+}
+
 export default NativeDialog

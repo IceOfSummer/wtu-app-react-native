@@ -19,10 +19,12 @@ interface LoadingViewProps {
  */
 const LoadingView: React.FC<LoadingViewProps> = props => {
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       {props.isLoading ? <CenterLoadingIndicator /> : null}
       {props.success && !props.isLoading ? <View>{props.children}</View> : null}
-      {!props.success ? <RetryView onRetry={props.loadCallback} /> : null}
+      {!props.success && !props.isLoading ? (
+        <RetryView onRetry={props.loadCallback} show />
+      ) : null}
     </View>
   )
 }

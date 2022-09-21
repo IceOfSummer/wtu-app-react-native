@@ -1,6 +1,6 @@
 import React from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
-import PrimaryButton from '../../Button/PrimaryButton'
+import ColorfulButton from '../../Button/ColorfulButton'
 
 interface RetryViewProps {
   onRetry?: () => void
@@ -12,10 +12,11 @@ const RetryView: React.FC<RetryViewProps> = props => {
     <View style={[style.container, { opacity: props.show ? 1 : 0 }]}>
       <Image source={require('../image/cry.png')} style={style.image} />
       <Text style={global.styles.errorTipText}>请求失败了</Text>
-      <PrimaryButton
+      <ColorfulButton
         onPress={props.onRetry}
         title="重  试"
         containerStyle={style.buttonContainer}
+        color={global.styles.$primary_color}
       />
     </View>
   )
@@ -29,7 +30,9 @@ const style = StyleSheet.create({
     width: 80,
     height: 80,
   },
-  buttonContainer: {},
+  buttonContainer: {
+    paddingHorizontal: 40,
+  },
 })
 
 export default RetryView
