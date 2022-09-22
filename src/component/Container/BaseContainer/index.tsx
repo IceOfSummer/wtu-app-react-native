@@ -18,10 +18,7 @@ const BaseContainer: React.FC<BaseContainerProps> = props => {
   return (
     <View
       style={{
-        paddingHorizontal: global.util.assert(
-          props.padding,
-          global.styles.$spacing_row_base
-        ),
+        paddingHorizontal: global.util.assert(props.padding, 8),
         marginVertical: 4,
       }}>
       <View

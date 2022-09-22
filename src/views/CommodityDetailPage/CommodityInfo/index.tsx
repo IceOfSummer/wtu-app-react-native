@@ -10,7 +10,11 @@ import {
 import { ProcessedCommodity } from '../../../api/server/commodity'
 import Swiper from 'react-native-swiper'
 import { useNavigation } from '@react-navigation/native'
-import { FULL_SCREEN_IMAGE_PAGE, UseNavigationGeneric } from '../../../router'
+import {
+  FULL_SCREEN_IMAGE_PAGE,
+  UseNavigationGeneric,
+  USER_INFO_PAGE,
+} from '../../../router'
 import FastImage from 'react-native-fast-image'
 import Icons from '../../../component/Icons'
 import ColorfulButton from '../../../component/Button/ColorfulButton'
@@ -29,6 +33,10 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
       images,
       index,
     })
+  }
+
+  const navToSellerInfo = () => {
+    nav.navigate(USER_INFO_PAGE, { id: commodity.ownerId })
   }
 
   return (
@@ -54,13 +62,15 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
             <View style={styles.commodityInfo}>
               <Icons iconText="&#xe79b;" />
               <Text>卖家: </Text>
-              <Text
-                style={[
-                  styles.commodityInfoText,
-                  { textDecorationLine: 'underline' },
-                ]}>
-                查看卖家信息
-              </Text>
+              <Pressable onPress={navToSellerInfo}>
+                <Text
+                  style={[
+                    styles.commodityInfoText,
+                    { textDecorationLine: 'underline' },
+                  ]}>
+                  查看卖家信息
+                </Text>
+              </Pressable>
             </View>
             <View style={styles.commodityInfo}>
               <Icons iconText="&#xe786;" />
@@ -87,10 +97,10 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
             <Icons iconText="&#xe8bd;" size={20} color="#000" />
             <Text style={styles.toolbarText}>联系</Text>
           </View>
-          <View style={styles.toolBarIcon}>
+          <Pressable onPress={navToSellerInfo} style={styles.toolBarIcon}>
             <Icons iconText="&#xe79b;" size={20} color="#000" />
             <Text style={styles.toolbarText}>卖家</Text>
-          </View>
+          </Pressable>
         </View>
         <View style={styles.toolBarButtonContainer}>
           <ColorfulButton

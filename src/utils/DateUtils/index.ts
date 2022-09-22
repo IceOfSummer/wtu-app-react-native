@@ -38,3 +38,17 @@ export const getCurTerm = (): Term => {
 export const append0Prefix = (hour: number) => {
   return hour < 10 ? '0' + hour : hour
 }
+
+/**
+ * 格式化时间戳
+ * @param timestamp 时间戳
+ * @return 如: 2022-09-21 23:04
+ */
+export const formatTimestamp = (timestamp: number): string => {
+  const date = new Date(timestamp)
+  return `${date.getFullYear()}-${append0Prefix(
+    date.getMonth() + 1
+  )}-${append0Prefix(date.getDate())} ${append0Prefix(
+    date.getHours()
+  )}:${append0Prefix(date.getMinutes())}`
+}

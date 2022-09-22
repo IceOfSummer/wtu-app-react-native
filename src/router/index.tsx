@@ -34,6 +34,7 @@ import WebSchoolAuth from '../views/SchoolAuth/WebSchoolAuth'
 import CommodityDetailPage from '../views/CommodityDetailPage'
 import FullScreenImagePage from '../views/FullScreenImagePage'
 import { IImageInfo } from 'react-native-image-zoom-viewer/src/image-viewer.type'
+import UserInfoPage from '../views/UserInfoPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -55,6 +56,7 @@ export const SEARCH_PAGE = 'SearchPage'
 export const COMMODITY_LIST_PAGE = 'CommodityListPage'
 export const COMMODITY_DETAIL_PAGE = 'CommodityDetailPage'
 export const FULL_SCREEN_IMAGE_PAGE = 'FullScreenImagePage'
+export const USER_INFO_PAGE = 'UserInfoPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -97,6 +99,9 @@ export interface RouterTypes extends ParamListBase {
   [FULL_SCREEN_IMAGE_PAGE]: {
     images: IImageInfo[]
     index?: number
+  }
+  [USER_INFO_PAGE]: {
+    id: number
   }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
@@ -228,6 +233,11 @@ const Router: React.FC = () => {
           name={FULL_SCREEN_IMAGE_PAGE}
           component={FullScreenImagePage}
           options={{ header: () => null }}
+        />
+        <Stack.Screen
+          name={USER_INFO_PAGE}
+          component={UserInfoPage}
+          options={headerCommonOptionsWithTitle('用户信息')}
         />
       </Stack.Navigator>
       <DiyToast />
