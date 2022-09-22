@@ -1,32 +1,39 @@
 import React from 'react'
-import { ColorValue, Text, View } from 'react-native'
+import { ColorValue, Text, View, ViewStyle } from 'react-native'
+import Icons from '../../Icons'
 
 interface KVTextContainerProps {
   name: string
   value: string | number
   keyColor?: ColorValue
+  icon?: string
+  style?: ViewStyle
 }
 
 const defaultProps = {
   valueColor: '#000',
   delimiter: ': ',
+  fontSize: 12,
 }
 
 const KVTextContainer: React.FC<
   KVTextContainerProps & Partial<typeof defaultProps>
 > = props => {
-  console.log(props.valueColor)
   return (
-    <View style={global.styles.flexRow}>
+    <View style={[{ flexDirection: 'row', alignItems: 'center' }, props.style]}>
+      <Icons
+        iconText={props.icon}
+        size={props.fontSize ? props.fontSize + 3 : 13}
+      />
       <Text
-        style={{ color: props.keyColor, fontSize: 12 }}
+        style={{ color: props.keyColor, fontSize: props.fontSize }}
         numberOfLines={1}
         ellipsizeMode="tail">
         {props.name}
         {props.delimiter}
       </Text>
       <Text
-        style={{ color: props.valueColor, fontSize: 12 }}
+        style={{ color: props.valueColor, fontSize: props.fontSize }}
         numberOfLines={1}
         ellipsizeMode="tail">
         {props.value}

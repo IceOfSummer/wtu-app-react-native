@@ -18,6 +18,9 @@ import {
 import FastImage from 'react-native-fast-image'
 import Icons from '../../../component/Icons'
 import ColorfulButton from '../../../component/Button/ColorfulButton'
+import { formatTimestamp } from '../../../utils/DateUtils'
+import KVTextContainer from '../../../component/Container/KVTextContainer'
+import NativeDialog from '../../../native/modules/NativeDialog'
 
 interface CommodityInfoProps {
   commodity: ProcessedCommodity
@@ -35,8 +38,46 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
     })
   }
 
+  const getStatusText = (): string => {
+    if (commodity.status === 0) {
+      return '可用'
+    } else if (commodity.status === 1) {
+      return '交易中'
+    } else {
+      return '交易已完成'
+    }
+  }
+
+  const getStatusColor = (): string => {
+    if (commodity.status === 0) {
+      return global.styles.$primary_color
+    } else if (commodity.status === 1) {
+      return 'gold'
+    } else {
+      return 'red'
+    }
+  }
+
   const navToSellerInfo = () => {
     nav.navigate(USER_INFO_PAGE, { id: commodity.ownerId })
+  }
+
+  const lockCommodity = () => {
+    if (commodity.status === 0) {
+      // TODO lock commodity
+      console.log('TODO: lock commodity')
+    } else {
+      NativeDialog.showDialog({
+        title: '锁定失败',
+        message: '商品正在和他人交易或者已经交易完成',
+        hideCancelBtn: true,
+      })
+    }
+  }
+
+  const chatWithSeller = () => {
+    // TODO chat with seller
+    console.log('chat with seller')
   }
 
   return (
@@ -59,26 +100,25 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
             <Text style={styles.titleText}>{commodity.name}</Text>
           </View>
           <View style={styles.commodityInfoContainer}>
-            <View style={styles.commodityInfo}>
-              <Icons iconText="&#xe79b;" />
-              <Text>卖家: </Text>
-              <Pressable onPress={navToSellerInfo}>
-                <Text
-                  style={[
-                    styles.commodityInfoText,
-                    { textDecorationLine: 'underline' },
-                  ]}>
-                  查看卖家信息
-                </Text>
-              </Pressable>
-            </View>
-            <View style={styles.commodityInfo}>
-              <Icons iconText="&#xe786;" />
-              <Text>交易地点: </Text>
-              <Text style={styles.commodityInfoText}>
-                {commodity.tradeLocation}
-              </Text>
-            </View>
+            <KVTextContainer
+              icon="&#xe786;"
+              name="交易地点"
+              style={{ marginVertical: 3 }}
+              value={commodity.tradeLocation}
+            />
+            <KVTextContainer
+              icon="&#xe662;"
+              name="发布时间"
+              style={{ marginVertical: 3 }}
+              value={formatTimestamp(commodity.createTime)}
+            />
+            <KVTextContainer
+              icon="&#xe662;"
+              name="商品状态"
+              style={{ marginVertical: 3 }}
+              valueColor={getStatusColor()}
+              value={getStatusText()}
+            />
           </View>
         </View>
         <View style={styles.descriptionContainer}>
@@ -91,12 +131,17 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
         </View>
         <View style={{ padding: 50 }} />
       </ScrollView>
+      <Pressable
+        style={styles.backButtonContainer}
+        onPress={() => nav.goBack()}>
+        <Icons iconText="&#xe61d;" color="#000" />
+      </Pressable>
       <View style={styles.toolBar}>
         <View style={styles.toolBarLeftContainer}>
-          <View style={styles.toolBarIcon}>
+          <Pressable style={styles.toolBarIcon} onPress={chatWithSeller}>
             <Icons iconText="&#xe8bd;" size={20} color="#000" />
             <Text style={styles.toolbarText}>联系</Text>
-          </View>
+          </Pressable>
           <Pressable onPress={navToSellerInfo} style={styles.toolBarIcon}>
             <Icons iconText="&#xe79b;" size={20} color="#000" />
             <Text style={styles.toolbarText}>卖家</Text>
@@ -108,12 +153,14 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
             containerStyle={styles.buttonStyle}
             color={global.styles.$primary_color}
             title="和卖家联系"
+            onPress={chatWithSeller}
           />
           <ColorfulButton
             style={{ marginRight: 6 }}
             containerStyle={styles.buttonStyle}
             color="red"
             title="  锁定商品  "
+            onPress={lockCommodity}
           />
         </View>
       </View>
@@ -124,6 +171,8 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
 const styles = StyleSheet.create({
   image: {
     height: '100%',
+    width: '100%',
+    resizeMode: 'cover',
   },
   container: {
     position: 'relative',
@@ -191,6 +240,15 @@ const styles = StyleSheet.create({
   },
   toolBarIcon: {
     // marginHorizontal: 6,
+  },
+  backButtonContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    padding: 4,
+    backgroundColor: '#00000020',
+    overflow: 'hidden',
+    borderRadius: 100,
   },
 })
 export default CommodityInfo

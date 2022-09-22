@@ -44,7 +44,10 @@ export const append0Prefix = (hour: number) => {
  * @param timestamp 时间戳
  * @return 如: 2022-09-21 23:04
  */
-export const formatTimestamp = (timestamp: number): string => {
+export const formatTimestamp = (timestamp: number | string): string => {
+  if (typeof timestamp === 'string') {
+    timestamp = Number.parseInt(timestamp, 10)
+  }
   const date = new Date(timestamp)
   return `${date.getFullYear()}-${append0Prefix(
     date.getMonth() + 1
