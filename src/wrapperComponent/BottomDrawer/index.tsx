@@ -55,7 +55,7 @@ const BottomDrawer: React.FC<
   const [open, setOpen] = useState(false)
   const screenHeight = Dimensions.get('screen').height
   const containerBottomValue = useRef(new Animated.Value(0)).current
-  const ANIMATION_DURATION = 200
+  const ANIMATION_DURATION = 250
   const [modalColor, setModalColor] = useState(global.styles.$loading_bg_color)
   const statusBarEntry = useRef<StatusBarProps>()
 

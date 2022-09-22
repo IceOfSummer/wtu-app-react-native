@@ -1,10 +1,9 @@
-import React, { useRef } from 'react'
-import { PullDownPickerRefAttribute } from '../../PullDownPicker'
+import React from 'react'
 import SimpleCard from '../SimpleCard'
-import { View } from 'react-native'
-import PullDownPicker from '../../PullDownPicker'
+import { Pressable, Text } from 'react-native'
+import PickDialog from '../../../native/modules/PickDialog'
 
-interface PullDownPickerCardProps<T = string | number> {
+interface PullDownPickerCardProps<T extends string | number> {
   title: string
   pickerTitle: string
   pickerData: Array<T>
@@ -12,24 +11,35 @@ interface PullDownPickerCardProps<T = string | number> {
   onSelect: (index: number, data: T) => void
 }
 
-const PullDownPickerCard: React.FC<PullDownPickerCardProps> = props => {
-  const picker = useRef<PullDownPickerRefAttribute>(null)
+function PullDownPickerCard<T extends string | number>(
+  props: PullDownPickerCardProps<T>
+) {
+  const showPicker = () => {
+    let active = 0
+    const data = props.pickerData.map((value, index) => {
+      if (value === props.pickerCurrent) {
+        active = index
+      }
+      return value.toString()
+    })
+    PickDialog.showPicker({
+      title: props.pickerTitle,
+      recipes: data,
+      activeIndex: active,
+      onSelect: index => props.onSelect(index, props.pickerData[index]),
+    })
+  }
   return (
     <SimpleCard
-      onTap={() => picker.current?.open?.()}
+      onTap={showPicker}
       title={props.title}
       right={
-        <View>
-          <PullDownPicker
-            ref={picker}
-            title={props.pickerTitle}
-            data={props.pickerData}
-            current={props.pickerCurrent}
-            onSelect={props.onSelect}
-          />
-        </View>
+        <Pressable>
+          <Text>{props.pickerCurrent}</Text>
+        </Pressable>
       }
     />
   )
 }
+
 export default PullDownPickerCard

@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.wtuapp.modules.impl.BottomMenuManager;
 import com.wtuapp.modules.impl.FullScreenDialogManager;
+import com.wtuapp.modules.impl.PickDialogManager;
 import com.wtuapp.ui.manager.PullDownRefreshViewManager;
 import com.wtuapp.modules.impl.BeautifulAlertDialogManager;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class NativeComponentPackages implements ReactPackage {
         nativeModules.add(new BeautifulAlertDialogManager());
         nativeModules.add(new FullScreenDialogManager(reactContext));
         nativeModules.add(new BottomMenuManager());
+        nativeModules.add(new PickDialogManager());
         return nativeModules;
     }
 

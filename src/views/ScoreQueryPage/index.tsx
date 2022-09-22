@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
-import PullDownPicker from '../../component/PullDownPicker'
 import { Term } from '../../redux/types/lessonsTableTypes'
 import { getCurTerm } from '../../utils/DateUtils'
 import { queryStudentScore, SubjectScore } from '../../api/edu/applications'
@@ -15,6 +14,7 @@ import FullScreenDialog, {
 import BounceScrollView from '../../native/component/BounceScrollView'
 import ScoreDetailDrawerContent from './ScoreDetailDrawerContent'
 import Icons from '../../component/Icons'
+import PickDialog from '../../native/modules/PickDialog'
 
 const curYear = new Date().getFullYear()
 const TERM_STR = [
@@ -113,21 +113,26 @@ const ScoreQueryPage: React.FC<StoreStates & StoreActions> = props => {
     drawer.current?.open()
   }
 
+  const showTermPicker = () => {
+    PickDialog.showPicker({
+      title: '选择学期',
+      recipes: TERM_STR,
+      onSelect,
+      activeIndex: curSelectIndex,
+    })
+  }
   return (
     <BounceScrollView>
-      <View
+      <Pressable
+        onPress={showTermPicker}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'flex-end',
         }}>
         <Icons iconText="&#xe6b9;" />
-        <PullDownPicker
-          data={TERM_STR}
-          current={TERM_STR[curSelectIndex]}
-          onSelect={onSelect}
-        />
-      </View>
+        <Text>{TERM_STR[curSelectIndex]}</Text>
+      </Pressable>
       <View style={styles.container}>
         {scores.map((value, index) => (
           <ScoreBlock
