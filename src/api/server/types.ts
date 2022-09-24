@@ -21,7 +21,7 @@ export enum CommodityStatus {
 export type Commodity = {
   commodityId: number
   ownerId: number
-  name: number
+  name: string
   description: string
   createTime: string
   price: number

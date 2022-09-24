@@ -11,7 +11,7 @@ import {
 } from '../../api/server/commodity'
 import NativeDialog from '../../native/modules/NativeDialog'
 import LoadingView from '../../component/Loading/LoadingView'
-import CommodityInfo from './CommodityInfo'
+import CommodityInfo from './component/CommodityInfo'
 
 /**
  * 商品详细界面

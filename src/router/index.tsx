@@ -35,6 +35,8 @@ import CommodityDetailPage from '../views/CommodityDetailPage'
 import FullScreenImagePage from '../views/FullScreenImagePage'
 import { IImageInfo } from 'react-native-image-zoom-viewer/src/image-viewer.type'
 import UserInfoPage from '../views/UserInfoPage'
+import OrderConfirmPage from '../views/OrderConfirmPage'
+import { ProcessedCommodity } from '../api/server/commodity'
 
 const Stack = createNativeStackNavigator()
 
@@ -57,6 +59,7 @@ export const COMMODITY_LIST_PAGE = 'CommodityListPage'
 export const COMMODITY_DETAIL_PAGE = 'CommodityDetailPage'
 export const FULL_SCREEN_IMAGE_PAGE = 'FullScreenImagePage'
 export const USER_INFO_PAGE = 'UserInfoPage'
+export const ORDER_CONFIRM_PAGE = 'OrderConfirmPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -102,6 +105,10 @@ export interface RouterTypes extends ParamListBase {
   }
   [USER_INFO_PAGE]: {
     id: number
+  }
+  [ORDER_CONFIRM_PAGE]: {
+    commodity: ProcessedCommodity
+    remark: string
   }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
@@ -238,6 +245,11 @@ const Router: React.FC = () => {
           name={USER_INFO_PAGE}
           component={UserInfoPage}
           options={headerCommonOptionsWithTitle('用户信息')}
+        />
+        <Stack.Screen
+          name={ORDER_CONFIRM_PAGE}
+          component={OrderConfirmPage}
+          options={headerCommonOptionsWithTitle('确认订单')}
         />
       </Stack.Navigator>
       <DiyToast />

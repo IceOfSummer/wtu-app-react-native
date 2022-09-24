@@ -64,7 +64,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 10,
     backgroundColor: '#fff',
-    borderRadius: 8,
   },
   image: {
     width: '30%',

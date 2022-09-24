@@ -1,7 +1,7 @@
 import { Text, View, ViewStyle } from 'react-native'
 import React from 'react'
 
-interface BaseContainerProps {
+export interface BaseContainerProps {
   borderRadius?: number
   padding?: number
   innerPadding?: number

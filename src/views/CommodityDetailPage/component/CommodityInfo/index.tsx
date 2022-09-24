@@ -7,21 +7,23 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native'
-import { ProcessedCommodity } from '../../../api/server/commodity'
+import { ProcessedCommodity } from '../../../../api/server/commodity'
 import Swiper from 'react-native-swiper'
 import { useNavigation } from '@react-navigation/native'
 import {
   FULL_SCREEN_IMAGE_PAGE,
   UseNavigationGeneric,
   USER_INFO_PAGE,
-} from '../../../router'
+} from '../../../../router'
 import FastImage from 'react-native-fast-image'
-import Icons from '../../../component/Icons'
-import ColorfulButton from '../../../component/Button/ColorfulButton'
-import { formatTimestamp } from '../../../utils/DateUtils'
-import KVTextContainer from '../../../component/Container/KVTextContainer'
-import NativeDialog from '../../../native/modules/NativeDialog'
-import RBSheet from 'react-native-raw-bottom-sheet'
+import Icons from '../../../../component/Icons'
+import ColorfulButton from '../../../../component/Button/ColorfulButton'
+import { formatTimestamp } from '../../../../utils/DateUtils'
+import KVTextContainer from '../../../../component/Container/KVTextContainer'
+import NativeDialog from '../../../../native/modules/NativeDialog'
+import LockCommodityDrawer, {
+  LockCommodityDrawerRefAttribute,
+} from '../LockCommodityDrawer'
 
 interface CommodityInfoProps {
   commodity: ProcessedCommodity
@@ -31,7 +33,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   const { commodity } = props
   const { height } = useWindowDimensions()
   const nav = useNavigation<UseNavigationGeneric>()
-  const bottomDrawer = useRef<RBSheet>(null)
+  const bottomDrawer = useRef<LockCommodityDrawerRefAttribute>(null)
   const viewImage = (index: number) => {
     const images = props.commodity.images.map(value => ({ url: value }))
     nav.navigate(FULL_SCREEN_IMAGE_PAGE, {
@@ -66,9 +68,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
 
   const doLockCommodity = () => {
     if (commodity.status === 0) {
-      // TODO lock commodity
       bottomDrawer.current?.open()
-      console.log('TODO: lock commodity')
     } else {
       NativeDialog.showDialog({
         title: '锁定失败',
@@ -116,7 +116,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
               value={formatTimestamp(commodity.createTime)}
             />
             <KVTextContainer
-              icon="&#xe662;"
+              icon="&#xe601;"
               name="商品状态"
               style={{ marginVertical: 3 }}
               valueColor={getStatusColor()}
@@ -167,11 +167,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
           />
         </View>
       </View>
-      <RBSheet ref={bottomDrawer} height={400}>
-        <View>
-          <Text>hello</Text>
-        </View>
-      </RBSheet>
+      <LockCommodityDrawer ref={bottomDrawer} commodity={commodity} />
     </View>
   )
 }
