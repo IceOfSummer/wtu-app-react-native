@@ -28,3 +28,6 @@ export const getCommodityDetail = (commodityId: number) =>
         .catch(reject)
     }
   )
+
+export const lockCommodity = (commodityId: number, remark?: string) =>
+  serverNoRepeatAjax('/commodity/lock', { c: commodityId, r: remark }, 'POST')

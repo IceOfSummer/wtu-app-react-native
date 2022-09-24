@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import {
   Pressable,
   ScrollView,
@@ -21,6 +21,7 @@ import ColorfulButton from '../../../component/Button/ColorfulButton'
 import { formatTimestamp } from '../../../utils/DateUtils'
 import KVTextContainer from '../../../component/Container/KVTextContainer'
 import NativeDialog from '../../../native/modules/NativeDialog'
+import RBSheet from 'react-native-raw-bottom-sheet'
 
 interface CommodityInfoProps {
   commodity: ProcessedCommodity
@@ -30,6 +31,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   const { commodity } = props
   const { height } = useWindowDimensions()
   const nav = useNavigation<UseNavigationGeneric>()
+  const bottomDrawer = useRef<RBSheet>(null)
   const viewImage = (index: number) => {
     const images = props.commodity.images.map(value => ({ url: value }))
     nav.navigate(FULL_SCREEN_IMAGE_PAGE, {
@@ -62,9 +64,10 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
     nav.navigate(USER_INFO_PAGE, { id: commodity.ownerId })
   }
 
-  const lockCommodity = () => {
+  const doLockCommodity = () => {
     if (commodity.status === 0) {
       // TODO lock commodity
+      bottomDrawer.current?.open()
       console.log('TODO: lock commodity')
     } else {
       NativeDialog.showDialog({
@@ -160,10 +163,15 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
             containerStyle={styles.buttonStyle}
             color="red"
             title="  锁定商品  "
-            onPress={lockCommodity}
+            onPress={doLockCommodity}
           />
         </View>
       </View>
+      <RBSheet ref={bottomDrawer} height={400}>
+        <View>
+          <Text>hello</Text>
+        </View>
+      </RBSheet>
     </View>
   )
 }

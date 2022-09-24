@@ -1,14 +1,13 @@
 import React from 'react'
-import { Pressable, Text, View } from 'react-native'
-import Icons from '../../../component/Icons'
+import { Text, View } from 'react-native'
+import Icons from '../../Icons'
 import Button from 'react-native-button'
 
-interface BottomMenuProps {
+interface BottomMenuDrawerProps {
   onSelect: OnSelect
   items: Array<MenuItem>
-  title?: string
+  title: string
 }
-
 export type OnSelect = (index: number, item?: MenuItem) => void
 
 export type MenuItem = {
@@ -16,7 +15,7 @@ export type MenuItem = {
   name: string
 }
 
-const BottomMenu: React.FC<BottomMenuProps> = props => {
+const BottomMenu: React.FC<BottomMenuDrawerProps> = props => {
   /**
    * 选择一个目录项, 并关闭目录
    * @param index 选择的目录项索引, <b>若为-1则没有选</b>
@@ -30,7 +29,7 @@ const BottomMenu: React.FC<BottomMenuProps> = props => {
   }
 
   return (
-    <Pressable style={{ paddingVertical: 10 }}>
+    <View style={{ paddingVertical: 10 }}>
       <View
         style={{
           flexDirection: 'row',
@@ -80,7 +79,7 @@ const BottomMenu: React.FC<BottomMenuProps> = props => {
           </Button>
         ))}
       </View>
-    </Pressable>
+    </View>
   )
 }
 
