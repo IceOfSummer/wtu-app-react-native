@@ -12,6 +12,9 @@ import {
   SETTINGS_PAGE,
 } from '../../router'
 import Applications from './ApplicationsScreen'
+import BaseContainer from '../../component/Container/BaseContainer'
+import TradeLabel from './component/TradeLabel'
+import BounceScrollView from '../../native/component/BounceScrollView'
 
 interface StoreProps {
   username?: string
@@ -67,9 +70,16 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
           />
         </Pressable>
       </View>
-      <View style={{ zIndex: 1 }}>
-        <Applications />
-      </View>
+      <BounceScrollView>
+        {props.expired ? null : (
+          <BaseContainer>
+            <TradeLabel />
+          </BaseContainer>
+        )}
+        <View style={{ zIndex: 1 }}>
+          <Applications />
+        </View>
+      </BounceScrollView>
     </View>
   )
 }

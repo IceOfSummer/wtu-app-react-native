@@ -32,14 +32,16 @@ const BaseContainer: React.FC<BaseContainerProps> = props => {
           },
           props.style,
         ]}>
-        <Text
-          style={{
-            marginLeft: 4,
-            color: global.styles.$text_color,
-            fontSize: 16,
-          }}>
-          {props.title}
-        </Text>
+        {props.title ? (
+          <Text
+            style={{
+              marginLeft: 4,
+              color: global.styles.$text_color,
+              fontSize: 16,
+            }}>
+            {props.title}
+          </Text>
+        ) : null}
         {props.children}
       </View>
     </View>

@@ -20,7 +20,6 @@ export default StyleSheet.create({
   },
   appOuter: {
     flexDirection: 'row',
-    marginVertical: global.styles.$spacing_col_base,
     justifyContent: 'flex-start',
   },
   cardHeader: {

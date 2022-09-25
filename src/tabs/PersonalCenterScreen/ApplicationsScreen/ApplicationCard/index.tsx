@@ -7,6 +7,7 @@ import styles from './styles'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/reducers'
 import NativeDialog from '../../../../native/modules/NativeDialog'
+import BaseContainer from '../../../../component/Container/BaseContainer'
 
 interface ApplicationCardProps {
   title: string
@@ -47,24 +48,19 @@ const ApplicationCard: React.FC<ApplicationCardProps> = props => {
     nav.navigate(app.path, app.routeParams)
   }
   return (
-    <View style={styles.blockOuter}>
-      <View style={styles.cardContainer}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.headerText}>{props.title}</Text>
-        </View>
-        <View style={styles.appOuter}>
-          {props.applications.map((app, index) => (
-            <Pressable
-              key={index}
-              onPress={() => pressEvent(app)}
-              style={styles.appContainer}>
-              <Image source={app.image} style={styles.appImage} />
-              <Text style={styles.appTitleText}>{app.title}</Text>
-            </Pressable>
-          ))}
-        </View>
+    <BaseContainer innerPadding={0} padding={0}>
+      <View style={styles.appOuter}>
+        {props.applications.map((app, index) => (
+          <Pressable
+            key={index}
+            onPress={() => pressEvent(app)}
+            style={styles.appContainer}>
+            <Image source={app.image} style={styles.appImage} />
+            <Text style={styles.appTitleText}>{app.title}</Text>
+          </Pressable>
+        ))}
       </View>
-    </View>
+    </BaseContainer>
   )
 }
 
