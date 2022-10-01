@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { useRoute } from '@react-navigation/native'
-import { ORDER_CONFIRM_PAGE, UseRouteGeneric } from '../../router'
+import {
+  ORDER_CONFIRM_PAGE,
+  PENDING_RECEIVE_PAGE,
+  UseRouteGeneric,
+} from '../../router'
 import BaseContainer from '../../component/Container/BaseContainer'
 import HorShopItem from '../CommodityListPage/component/HorShopItem'
 import BaseContainer2 from '../../component/Container/BaseContainer2'
@@ -13,20 +17,21 @@ import BounceScrollView from '../../native/component/BounceScrollView'
 import { lockCommodity } from '../../api/server/commodity'
 import Loading from '../../component/Loading'
 import NativeDialog from '../../native/modules/NativeDialog'
+import useNav from '../../hook/useNav'
 
 const OrderConfirmPage: React.FC = () => {
   const route = useRoute<UseRouteGeneric<typeof ORDER_CONFIRM_PAGE>>()
   const { commodity } = route.params
   const [userInfo, setUserInfo] = useState<UserInfoView>()
+  const nav = useNav()
 
   const loadUserInfo = () => getUserInfo(commodity.ownerId)
 
   const lock = () => {
     Loading.showLoading()
     lockCommodity(commodity.commodityId, route.params.remark)
-      .then(resp => {
-        // TODO 锁定成功, 跳转到订单记录页面
-        console.log(resp)
+      .then(() => {
+        nav.replace(PENDING_RECEIVE_PAGE)
       })
       .catch(e => {
         NativeDialog.showDialog({

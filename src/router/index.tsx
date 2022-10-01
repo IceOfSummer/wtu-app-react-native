@@ -37,6 +37,7 @@ import { IImageInfo } from 'react-native-image-zoom-viewer/src/image-viewer.type
 import UserInfoPage from '../views/UserInfoPage'
 import OrderConfirmPage from '../views/OrderConfirmPage'
 import { ProcessedCommodity } from '../api/server/commodity'
+import PendingReceivePage from '../views/PendingReceivePage'
 
 const Stack = createNativeStackNavigator()
 
@@ -60,6 +61,7 @@ export const COMMODITY_DETAIL_PAGE = 'CommodityDetailPage'
 export const FULL_SCREEN_IMAGE_PAGE = 'FullScreenImagePage'
 export const USER_INFO_PAGE = 'UserInfoPage'
 export const ORDER_CONFIRM_PAGE = 'OrderConfirmPage'
+export const PENDING_RECEIVE_PAGE = 'PendingReceivePage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -110,6 +112,7 @@ export interface RouterTypes extends ParamListBase {
     commodity: ProcessedCommodity
     remark: string
   }
+  [PENDING_RECEIVE_PAGE]: undefined
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -250,6 +253,11 @@ const Router: React.FC = () => {
           name={ORDER_CONFIRM_PAGE}
           component={OrderConfirmPage}
           options={headerCommonOptionsWithTitle('确认订单')}
+        />
+        <Stack.Screen
+          name={PENDING_RECEIVE_PAGE}
+          component={PendingReceivePage}
+          options={headerCommonOptionsWithTitle('待收货')}
         />
       </Stack.Navigator>
       <DiyToast />

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Icons from '../../../../component/Icons'
 import { getTradeStat, TradeStat } from '../../../../api/server/stat'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import KVTextContainer from '../../../../component/Container/KVTextContainer'
+import { useNavigation } from '@react-navigation/native'
+import { PENDING_RECEIVE_PAGE, UseNavigationGeneric } from '../../../../router'
 
 const logger = getLogger('src/tabs/PersonalCenterScreen/component/TradeLabel')
 
@@ -12,6 +14,7 @@ const logger = getLogger('src/tabs/PersonalCenterScreen/component/TradeLabel')
  */
 const TradeLabel: React.FC = () => {
   const [tradeStat, setTradeStat] = useState<TradeStat>()
+  const nav = useNavigation<UseNavigationGeneric>()
 
   useEffect(() => {
     getTradeStat()
@@ -44,14 +47,16 @@ const TradeLabel: React.FC = () => {
           />
           <Text style={styles.iconText}>待发货</Text>
         </View>
-        <View style={styles.appContainer}>
+        <Pressable
+          style={styles.appContainer}
+          onPress={() => nav.navigate(PENDING_RECEIVE_PAGE)}>
           <Icons
             iconText="&#xe771;"
             size={30}
             color={global.styles.$primary_color}
           />
           <Text style={styles.iconText}>待收货</Text>
-        </View>
+        </Pressable>
         <View style={styles.appContainer}>
           <Icons
             iconText="&#xe772;"

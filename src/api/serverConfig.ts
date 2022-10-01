@@ -15,7 +15,7 @@ const serverConfig: ServerConfig = {
 }
 
 if (__DEV__) {
-  serverConfig.serverBaseUrl = 'http://10.181.130.47:8080'
+  serverConfig.serverBaseUrl = 'http://10.181.18.14:8080'
 } else {
   // TODO
   serverConfig.serverBaseUrl = ''

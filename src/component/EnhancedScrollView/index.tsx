@@ -38,7 +38,11 @@ interface EnhancedScrollViewProps {
 }
 const getProps = createPropsGetter(defaultProps)
 /**
- * 增强型ScrollView
+ * 增强型ScrollView，当滚动到底部后自动加载数据
+ *
+ * 必须要提供loading, fail和dataLength(当前的数据长度)三种状态
+ *
+ * 如果没有更多数据了，将empty属性设置为true即可
  */
 const EnhancedScrollView: React.FC<
   EnhancedScrollViewProps & Partial<typeof defaultProps>
@@ -74,7 +78,10 @@ const EnhancedScrollView: React.FC<
           </CenterLoadingIndicator>
         ) : null}
         <LoadingMore show={props.loading && dataLength > 0} />
-        <RetryView onRetry={props.onRequireLoad} show={props.fail} />
+        <RetryView
+          onRetry={props.onRequireLoad}
+          show={!props.loading && props.fail}
+        />
       </View>
       <View style={{ paddingBottom: 50 }} />
     </BounceScrollView>
