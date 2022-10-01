@@ -17,7 +17,6 @@ import LessonsDetail from '../views/LessonsDetail'
 import EmptyPage from '../views/EmptyPage'
 import SettingsPage from '../views/SettingsPage'
 import AboutPage from '../views/AboutPage'
-import defaultTheme from './Theme/defaultTheme'
 import { updateCurWeek } from '../redux/actions/lessonsTable'
 import Webpage from '../views/Webpage'
 import ScoreQueryPage from '../views/ScoreQueryPage'
@@ -26,7 +25,7 @@ import { markCheckLoginDone } from '../redux/actions/temporaryData'
 import { ReducerTypes } from '../redux/reducers'
 import SubjectSelectPage from '../views/SubjectSelectPage'
 import SubjectSelectHeaderRight from '../views/SubjectSelectPage/SubjectSelectHeaderRight'
-import { useDispatch, useStore } from 'react-redux'
+import { useDispatch, useSelector, useStore } from 'react-redux'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import SearchPage from '../views/SearchPage'
 import CommodityListPage from '../views/CommodityListPage'
@@ -38,6 +37,8 @@ import UserInfoPage from '../views/UserInfoPage'
 import OrderConfirmPage from '../views/OrderConfirmPage'
 import { ProcessedCommodity } from '../api/server/commodity'
 import PendingReceivePage from '../views/PendingReceivePage'
+import { Theme } from '@react-navigation/native/lib/typescript/src/types'
+import { ThemeState } from '../redux/types/themeTypes'
 
 const Stack = createNativeStackNavigator()
 
@@ -141,6 +142,19 @@ const headerCommonOptionsWithTitle = (
 }
 
 const Router: React.FC = () => {
+  const theme = useSelector<ReducerTypes, ThemeState>(state => state.theme)
+  const navTheme: Theme = {
+    colors: {
+      background: theme.colors.backgroundColor,
+      text: theme.colors.textColor,
+      border: theme.colors.borderColor,
+      card: '#fff',
+      notification: '#fff',
+      primary: theme.colors.primaryColor,
+    },
+    dark: theme.darkMode,
+  }
+
   const store = useStore<ReducerTypes>()
   const dispatch = useDispatch()
   useEffect(() => {
@@ -161,7 +175,7 @@ const Router: React.FC = () => {
     )
   }, [])
   return (
-    <NavigationContainer theme={defaultTheme}>
+    <NavigationContainer theme={navTheme}>
       <Stack.Navigator
         screenOptions={{
           headerTitleStyle: { fontSize: global.styles.$font_size_lg },

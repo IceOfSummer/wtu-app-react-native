@@ -1,20 +1,68 @@
 interface GlobalStyleValues {
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $primary_color: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $success_color: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $warning_color: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $error_color: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $info_color: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $text_color: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $text_placeholder: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $text_disable: string
   /**
-   * 可能会用作开发夜间模式，只有白色和黑色两种颜色
-   * @see global.styles.$bg_color_grey 背景颜色
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
    */
   $bg_color: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $bg_color_grey: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $bg_color_hover: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $bg_color_mask: string
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $border_color: string
   $font_size_sm: number
   $font_size_base: number
@@ -28,6 +76,10 @@ interface GlobalStyleValues {
   $spacing_row_sm: number
   $spacing_row_base: number
   $spacing_row_lg: number
+  /**
+   * @deprecated 不利于主题化，已弃用
+   * @see themeSlice.ts
+   */
   $loading_bg_color: string
 }
 
