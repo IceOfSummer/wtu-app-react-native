@@ -5,7 +5,7 @@ import styles from './styles'
 import PageLink from '../../component/PageLink'
 import { CLASS_SCHEDULE_TABS, RouterTypes, WEB_PAGE } from '../../router'
 import { EduSystem, HealthReport } from '../../views/Webpage'
-import { connect } from 'react-redux'
+import { connect, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import MessageCard from './MessageCard'
 import { getLastSignInfo } from '../../api/edu/sign'
@@ -13,11 +13,12 @@ import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { splitTodayLessons } from '../../utils/LessonsUtils'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
+import { Colors } from '../../redux/types/themeTypes'
 
 const Index: React.FC<StorePros & StoreActions> = props => {
   const nav = useNavigation<NavigationProp<RouterTypes>>()
-  const priColor = '#346bff'
-  useAutoColorStatusBar(true, priColor)
+  const colors = useSelector<ReducerTypes, Colors>(state => state.theme.colors)
+  useAutoColorStatusBar(true, colors.primaryColor)
 
   const [healthSignMessage, setHealthSignMessage] = useState('加载中')
 
@@ -85,7 +86,7 @@ const Index: React.FC<StorePros & StoreActions> = props => {
 
   return (
     <View>
-      <View style={{ backgroundColor: priColor }}>
+      <View style={{ backgroundColor: colors.primaryColor }}>
         <View style={styles.headerContainer}>
           <View>
             <Text style={[styles.headerText, styles.headerTitleText]}>
