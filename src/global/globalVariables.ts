@@ -91,6 +91,20 @@ const gStyleSheet: StyleSheetTypes = {
   },
 }
 
+export const lightTheme = {
+  primaryColor: '#007aff',
+  success_color: '#4cd964',
+  warning_color: '#f0ad4e',
+  error_color: '#dd524d',
+  backgroundColor: '#f5f6fa',
+  boxBackgroundColor: '#fff',
+  textColor: '#000',
+  infoTextColor: '#999',
+  borderColor: '#c8c7cc',
+  statusBarColor: '#fff',
+}
+global.colors = lightTheme
+
 global.constant = {
   downloadUrl: 'https://xds.fit/wtuapp/app/',
   homePageUrl: 'https://github.com/HuPeng333/wtu-app-react-native.git ',

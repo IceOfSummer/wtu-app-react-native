@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { UserInfo, UserReducers, UserState } from '../types/userTypes'
+import { UserInfo, UserReducers, UserState } from '../types/wtuUserTypes'
 import { getUserInfo } from '../../api/edu/applications'
 import { LoginStatus, testLogin } from '../../api/edu/auth'
 
@@ -40,7 +40,7 @@ export const checkLogin = createAsyncThunk<void, checkLoginArgs>(
   }
 )
 
-export const userSlice = createSlice<UserState, UserReducers>({
+export const wtuUserSlice = createSlice<UserState, UserReducers>({
   name: 'user',
   initialState,
   reducers: {
@@ -76,6 +76,6 @@ export const {
   modifyLoginStatus,
   saveUserCredentials,
   saveUserInfo,
-} = userSlice.actions
+} = wtuUserSlice.actions
 
-export default userSlice.reducer
+export default wtuUserSlice.reducer

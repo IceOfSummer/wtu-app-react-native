@@ -83,6 +83,21 @@ interface GlobalStyleValues {
   $loading_bg_color: string
 }
 
+type ThemeColors = {
+  primaryColor: string
+  success_color: string
+  warning_color: string
+  error_color: string
+  backgroundColor: string
+  boxBackgroundColor: string
+  textColor: string
+  infoTextColor: string
+  borderColor: string
+  statusBarColor: string
+}
+
+type Colors = ThemeColors
+
 interface GlobalStyleSheet {
   h1: TextStyle
   h2: TextStyle
@@ -114,6 +129,7 @@ interface UtilFunction {
 }
 
 declare namespace global {
+  let colors: ThemeColors
   let styles: GlobalStyleValues & GlobalStyleSheet
   let constant: AppConstant
   let util: UtilFunction

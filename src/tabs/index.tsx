@@ -12,9 +12,11 @@ import {
   FLEA_MARKET_TABS,
   HOME_TABS,
   LESSONS_TABLE_CONFIG_PAGE,
+  MESSAGE_TABS,
   PERSONAL_CENTER_TABS,
 } from '../router'
 import FleaMarketScreen from './FleaMarketScreen'
+import MessageScreen from './MessageScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -32,6 +34,8 @@ const TabBar = () => {
               return <Icons iconText="&#xe608;" {...param} />
             case FLEA_MARKET_TABS:
               return <Icons iconText="&#xe67f;" {...param} />
+            case MESSAGE_TABS:
+              return <Icons iconText="&#xe619;" {...param} />
             default:
               // home
               return <Icons iconText="&#xe613;" {...param} />
@@ -50,12 +54,23 @@ const TabBar = () => {
         options={fleaMarketOptions}
       />
       <Tab.Screen
+        name={MESSAGE_TABS}
+        component={MessageScreen}
+        options={messageOptions}
+      />
+      <Tab.Screen
         name={PERSONAL_CENTER_TABS}
         component={PersonalCenterScreen}
         options={PERSONAL_CENTER_SCREEN_OPTIONS}
       />
     </Tab.Navigator>
   )
+}
+
+const messageOptions: BottomTabNavigationOptions = {
+  tabBarLabel: '聊天',
+  title: '聊天',
+  header: () => null,
 }
 
 const fleaMarketOptions: BottomTabNavigationOptions = {

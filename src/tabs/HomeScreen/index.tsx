@@ -13,17 +13,18 @@ import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { splitTodayLessons } from '../../utils/LessonsUtils'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
-import { Colors } from '../../redux/types/themeTypes'
+import { ThemeColors } from '../../redux/types/themeTypes'
 
 const Index: React.FC<StorePros & StoreActions> = props => {
   const nav = useNavigation<NavigationProp<RouterTypes>>()
-  const colors = useSelector<ReducerTypes, Colors>(state => state.theme.colors)
+  const colors = useSelector<ReducerTypes, ThemeColors>(
+    state => state.theme.colors
+  )
   useAutoColorStatusBar(true, colors.primaryColor)
 
   const [healthSignMessage, setHealthSignMessage] = useState('加载中')
 
   useEffect(() => {
-    console.log(props.isLoginValid)
     if (props.isCheckLoginDone) {
       if (props.isLoginValid) {
         getLastSignInfo()

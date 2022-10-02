@@ -45,6 +45,7 @@ const Stack = createNativeStackNavigator()
 export const HOME_TABS = 'Home'
 export const PERSONAL_CENTER_TABS = 'PersonalCenter'
 export const CLASS_SCHEDULE_TABS = 'ClassSchedule'
+export const MESSAGE_TABS = 'MessageScreen'
 export const SCHOOL_AUTH = 'SchoolAuth'
 export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
@@ -114,6 +115,7 @@ export interface RouterTypes extends ParamListBase {
     remark: string
   }
   [PENDING_RECEIVE_PAGE]: undefined
+  [MESSAGE_TABS]: undefined
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -275,7 +277,10 @@ const Router: React.FC = () => {
         />
       </Stack.Navigator>
       <DiyToast />
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+      <StatusBar
+        backgroundColor={theme.colors.statusBarColor}
+        barStyle="dark-content"
+      />
     </NavigationContainer>
   )
 }

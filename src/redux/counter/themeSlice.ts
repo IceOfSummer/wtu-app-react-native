@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { AnyAction, createSlice } from '@reduxjs/toolkit'
 import { ThemeReducers, ThemeState } from '../types/themeTypes'
 
 export const lightTheme: ThemeState = {
@@ -12,6 +12,7 @@ export const lightTheme: ThemeState = {
     textColor: '#000',
     infoTextColor: '#999',
     borderColor: '#c8c7cc',
+    statusBarColor: '#fff',
   },
   darkMode: true,
 }
@@ -22,10 +23,18 @@ const themeSlice = createSlice<ThemeState, ThemeReducers>({
   reducers: {
     toggleTheme(state, { payload }) {
       Object.assign(state, payload)
+      Object.assign(global.colors, payload.colors)
     },
   },
 })
 
+const reducer = (state: ThemeState | undefined, action: AnyAction) => {
+  if (action.key === 'theme' && action.payload) {
+    Object.assign(global.colors, action.payload.colors)
+  }
+  return themeSlice.reducer(state, action)
+}
+
 export const { toggleTheme } = themeSlice.actions
 
-export default themeSlice.reducer
+export default reducer

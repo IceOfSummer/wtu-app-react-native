@@ -11,7 +11,7 @@ import {
 import {
   markLogin,
   saveUserCredentials,
-} from '../../../redux/counter/userSlice'
+} from '../../../redux/counter/wtuUserSlice'
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
 const injectScript = `

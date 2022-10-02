@@ -9,7 +9,7 @@ import {
   markLogin as _markLogin,
   saveUserInfo as _saveUserInfo,
   checkLogin as _checkLogin,
-} from '../counter/userSlice'
+} from '../counter/wtuUserSlice'
 
 export type UserActions =
   | SaveUserCredentials
