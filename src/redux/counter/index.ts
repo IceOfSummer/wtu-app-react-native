@@ -14,6 +14,10 @@ import commonPersistReducer from './commonPersistenceSlice'
 import { CommonPersistenceState } from '../types/commonPersistenceTypes'
 import { ThemeState } from '../types/themeTypes'
 import themeReducer from './themeSlice'
+import messageSlice from './messageSlice'
+import { MessageState } from '../types/messageTypes'
+import { ServerUserState } from '../types/serverUserTypes'
+import serverUserSlice from './serverUserSlice'
 
 const userPersistConfig: PersistConfig<UserState> = {
   key: 'user',
@@ -39,6 +43,11 @@ const themePersistConfig: PersistConfig<ThemeState> = {
   storage: AsyncStorage,
 }
 
+const serverUserPersistConfig: PersistConfig<ServerUserState> = {
+  key: 'serverUser',
+  storage: AsyncStorage,
+}
+
 const reducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
   lessonsTable: persistReducer(lessonsTablePersistConfig, lessonsTableReducer),
@@ -49,6 +58,8 @@ const reducer = combineReducers({
   ),
   commonPersist: persistReducer(commonPersistPConfig, commonPersistReducer),
   theme: persistReducer(themePersistConfig, themeReducer),
+  message: messageSlice,
+  serverUser: persistReducer(serverUserPersistConfig, serverUserSlice),
 })
 
 export type ReducerTypes = {
@@ -58,5 +69,7 @@ export type ReducerTypes = {
   commonOptions: CommonOptionsStates
   commonPersist: CommonPersistenceState
   theme: ThemeState
+  message: MessageState
+  serverUser: ServerUserState
 }
 export default reducer

@@ -2,17 +2,17 @@ import { StyleSheet } from 'react-native'
 
 export default StyleSheet.create({
   header: {
-    alignItems: 'flex-end',
-    marginTop: global.styles.$spacing_col_base,
-    marginRight: global.styles.$spacing_col_base,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: global.styles.$spacing_col_lg,
+    paddingHorizontal: global.styles.$spacing_col_base,
   },
   headerTextOuter: {
-    marginStart: global.styles.$spacing_col_base,
     flexDirection: 'row',
     alignItems: 'center',
   },
   headerText: {
-    color: global.styles.$primary_color,
+    color: '#fff',
     fontSize: global.styles.$font_size_lg,
   },
   captchaInputBlock: {
@@ -38,5 +38,12 @@ export default StyleSheet.create({
   },
   textToCenter: {
     alignItems: 'center',
+  },
+  linkText: {
+    marginVertical: global.styles.$spacing_col_sm,
+    color: '#fff',
+    textDecorationLine: 'underline',
+    fontSize: global.styles.$font_size_sm,
+    textAlign: 'center',
   },
 })

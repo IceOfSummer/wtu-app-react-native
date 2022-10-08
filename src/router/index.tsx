@@ -39,6 +39,9 @@ import { ProcessedCommodity } from '../api/server/commodity'
 import PendingReceivePage from '../views/PendingReceivePage'
 import { Theme } from '@react-navigation/native/lib/typescript/src/types'
 import { ThemeState } from '../redux/types/themeTypes'
+import { modifyDatabaseInitMark } from '../redux/counter/commonPersistenceSlice'
+import DatabaseManager from '../sqlite'
+import ServerAuthPage from '../views/ServerAuthPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -64,6 +67,7 @@ export const FULL_SCREEN_IMAGE_PAGE = 'FullScreenImagePage'
 export const USER_INFO_PAGE = 'UserInfoPage'
 export const ORDER_CONFIRM_PAGE = 'OrderConfirmPage'
 export const PENDING_RECEIVE_PAGE = 'PendingReceivePage'
+export const SERVER_AUTH_PAGE = 'ServerAuthPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -175,6 +179,17 @@ const Router: React.FC = () => {
         store.dispatch(markCheckLoginDone())
       })
     )
+    // 是否第一次启动app
+    if (!store.getState().commonPersist.databaseInitMark) {
+      // TODO 测试用, 之后删除
+      DatabaseManager.loadDatabase(1)
+        .then(() => {
+          store.dispatch(modifyDatabaseInitMark(true))
+        })
+        .catch(() => {
+          // 加载失败
+        })
+    }
   }, [])
   return (
     <NavigationContainer theme={navTheme}>
@@ -274,6 +289,11 @@ const Router: React.FC = () => {
           name={PENDING_RECEIVE_PAGE}
           component={PendingReceivePage}
           options={headerCommonOptionsWithTitle('待收货')}
+        />
+        <Stack.Screen
+          name={SERVER_AUTH_PAGE}
+          component={ServerAuthPage}
+          options={{ header: () => null }}
         />
       </Stack.Navigator>
       <DiyToast />

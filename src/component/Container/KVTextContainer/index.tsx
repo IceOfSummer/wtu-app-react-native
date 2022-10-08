@@ -4,7 +4,7 @@ import Icons from '../../Icons'
 
 interface KVTextContainerProps {
   name: string
-  value: string | number
+  value?: string | number
   keyColor?: ColorValue
   icon?: string
   style?: ViewStyle

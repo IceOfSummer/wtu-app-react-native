@@ -106,9 +106,7 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
         <Animated.Text
           style={{
             transform: [{ translateY: moveText }],
-            color: isError
-              ? global.styles.$error_color
-              : global.styles.$text_color,
+            color: isError ? global.styles.$error_color : '#fff',
             marginLeft: 2,
             paddingBottom: 2,
             fontSize: scaleFont,
