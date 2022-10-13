@@ -27,13 +27,18 @@ const WtuLoginValidCard: React.FC = () => {
     <View style={global.styles.flexRowJustBetween}>
       <View>
         <Text style={styles.titleText}>教务系统已登录</Text>
-        <KVTextContainer name="用户名" value={username} />
+        <KVTextContainer
+          name="用户名"
+          value={username}
+          valueColor="#fff"
+          keyColor="#fff"
+        />
       </View>
       <View style={global.styles.flexRow}>
         <Text onPress={logOut} style={styles.exitText}>
           登出
         </Text>
-        <Icons iconText="&#xe61c;" color="#ff8e57" />
+        <Icons iconText="&#xe61c;" color="#fff" />
       </View>
     </View>
   )
@@ -41,12 +46,13 @@ const WtuLoginValidCard: React.FC = () => {
 
 const styles = StyleSheet.create({
   titleText: {
+    fontWeight: 'bold',
     color: '#fff',
     fontSize: global.styles.$font_size_lg,
     marginBottom: global.styles.$spacing_col_base,
   },
   exitText: {
-    color: '#ff8e57',
+    color: '#fff',
   },
 })
 

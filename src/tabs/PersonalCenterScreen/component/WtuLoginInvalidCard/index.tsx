@@ -36,7 +36,7 @@ const WtuLoginInvalidCard: React.FC = () => {
     <View style={global.styles.flexRowJustBetween}>
       <View>
         <Text style={styles.titleText}>登录教务系统</Text>
-        <Text>登录后获取更多支持</Text>
+        <Text style={styles.tipText}>登录后获取更多支持</Text>
       </View>
       <View style={global.styles.flexRow}>
         <Text onPress={doWtuLogin} style={styles.exitText}>
@@ -50,11 +50,15 @@ const WtuLoginInvalidCard: React.FC = () => {
 
 const styles = StyleSheet.create({
   titleText: {
-    color: 'rgba(80,75,255,0.8)',
+    fontWeight: 'bold',
+    color: '#fff',
     fontSize: global.styles.$font_size_lg,
     marginBottom: global.styles.$spacing_col_base,
   },
   exitText: {
+    color: '#fff',
+  },
+  tipText: {
     color: '#fff',
   },
 })
