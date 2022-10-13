@@ -16,6 +16,10 @@ export type ServerUserState = {
  */
 export type ServerUserInfo = {
   /**
+   * 用户id
+   */
+  uid: number
+  /**
    * 用户名
    */
   username: string

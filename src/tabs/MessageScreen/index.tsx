@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { TabBar } from 'react-native-tab-view'
 import Chat from './tabs/Chat'
 import Square from './tabs/Square'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
-import { Pressable } from 'react-native'
+import { Image, Pressable, StatusBar, useWindowDimensions } from 'react-native'
 import {
   NavigationState,
   SceneRendererProps,
@@ -14,10 +14,65 @@ import Icons from '../../component/Icons'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs/lib/typescript/src/types'
 import Care from './tabs/Care'
+import useNav from '../../hook/useNav'
+import { SERVER_AUTH_PAGE } from '../../router'
+import DatabaseManager from '../../sqlite'
+import NativeDialog from '../../native/modules/NativeDialog'
+import { initMessage } from '../../redux/counter/messageSlice'
+
+const MessageScreen: React.FC = () => {
+  const authenticated = useSelector<ReducerTypes, boolean>(
+    state => state.serverUser.authenticated
+  )
+  const { width } = useWindowDimensions()
+  const nav = useNav()
+  if (authenticated) {
+    return <AuthenticatedView />
+  } else {
+    return (
+      <View style={styles.unLoginBox}>
+        <StatusBar translucent backgroundColor="transparent" />
+        <Image
+          source={require('../../assets/img/authwanted.png')}
+          style={{ width: width / 2, height: width / 2, marginTop: '-30%' }}
+        />
+        <Text
+          style={styles.loginTipText}
+          onPress={() => nav.push(SERVER_AUTH_PAGE)}>
+          请先登录
+        </Text>
+      </View>
+    )
+  }
+}
 
 const Tab = createMaterialTopTabNavigator()
 
-const MessageScreen: React.FC = () => {
+/**
+ * 用户登录后显示消息界面
+ */
+const AuthenticatedView = () => {
+  // 断言非空，可看userInfo的注释
+  const uid = useSelector<ReducerTypes, number>(
+    state => state.serverUser.userInfo!.uid
+  )
+  const dispatch = useDispatch()
+  useEffect(() => {
+    // 是否初始化过app
+    DatabaseManager.loadDatabase(uid)
+      .then(() => {
+        // initMessage
+        dispatch(initMessage(uid))
+      })
+      .catch(e => {
+        // 加载失败
+        NativeDialog.showDialog({
+          title: '加载本地消息失败',
+          message: '请寻求开发人员帮助或者稍后重试, ' + e.message,
+          hideCancelBtn: true,
+        })
+      })
+  }, [])
   return (
     <Tab.Navigator tabBar={MyTabBar} screenOptions={{ lazy: true }}>
       <Tab.Screen name="聊天" component={Chat} navigationKey="chat" />
@@ -27,6 +82,9 @@ const MessageScreen: React.FC = () => {
   )
 }
 
+/**
+ * 渲染TabBar，主要是给左右加图标
+ */
 function MyTabBar(props: MaterialTopTabBarProps) {
   return (
     <View style={styles.topTabBarContainer}>
@@ -49,8 +107,22 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: global.colors.boxBackgroundColor,
   },
+  loginTipText: {
+    color: global.colors.primaryColor,
+    textDecorationLine: 'underline',
+  },
+  unLoginBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 })
 
+/**
+ * 渲染每个Tabs和指示器
+ *
+ * 详细可以参考 `react-native-tab-view` 依赖中的用法
+ */
 const RenderTabBar = (
   props: SceneRendererProps & {
     navigationState: NavigationState<any>

@@ -5,7 +5,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: global.styles.$spacing_col_lg,
-    paddingHorizontal: global.styles.$spacing_col_base,
+    paddingHorizontal: global.styles.$spacing_col_lg,
   },
   headerTextOuter: {
     flexDirection: 'row',

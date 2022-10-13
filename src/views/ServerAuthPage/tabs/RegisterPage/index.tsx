@@ -30,8 +30,8 @@ const RegisterPage: React.FC = () => {
       <View style={styles.header}>
         <View>
           <View style={styles.headerTextOuter}>
-            <Icons iconText="&#xe656;" color="#fff" size={20} />
-            <Text style={styles.headerText}>注册</Text>
+            <Icons iconText="&#xe656;" color="#fff" size={24} />
+            <Text style={styles.headerText}>&nbsp;注册</Text>
           </View>
         </View>
         <Icons

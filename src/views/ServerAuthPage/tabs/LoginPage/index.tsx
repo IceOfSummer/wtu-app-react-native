@@ -7,18 +7,76 @@ import { SCHOOL_AUTH } from '../../../../router'
 import styles from '../../styles'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationType, REGISTER_PAGE } from '../../index'
+import useFormManager from '../../../../hook/useFormManager'
+import { login } from '../../../../api/server/auth'
+import { useDispatch } from 'react-redux'
+import { markLogin } from '../../../../redux/counter/serverUserSlice'
+import { getLogger } from '../../../../utils/LoggerUtils'
+import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
+import Loading from '../../../../component/Loading'
+import Toast from 'react-native-toast-message'
+
+const logger = getLogger('views/ServerAuthPage/tabs/LoginPage')
 
 const LoginPage: React.FC = () => {
-  const [captcha, setCaptcha] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [username, setUsername] = useState<string>('')
   const usernameInput = useRef<AniInputRefAttribute>(null)
   const passwordInput = useRef<AniInputRefAttribute>(null)
-  const captchaInput = useRef<AniInputRefAttribute>(null)
   const nav = useNavigation<NavigationType>()
+  const dispatch = useDispatch()
+  const formManager = useFormManager<React.RefObject<AniInputRefAttribute>>({
+    formItems: [
+      {
+        name: '用户名',
+        ref: usernameInput,
+        value: username,
+        maxLength: 26,
+        minLength: 6,
+      },
+      {
+        name: '密码',
+        ref: passwordInput,
+        value: password,
+        maxLength: 26,
+        minLength: 6,
+      },
+    ],
+  })
 
   const tryLogin = () => {
-    // TODO
+    const errors = formManager.checkForm()
+    if (errors.length > 0) {
+      errors.forEach(value => {
+        value.item.ref.current?.setErrorText(value.reason)
+      })
+      return
+    }
+    logger.debug(`form is valid, username ${username} password: ${password}`)
+    Loading.showLoading()
+    login(username, password)
+      .then(({ data }) => {
+        logger.debug('login to server success, userid: ' + data)
+        dispatch(
+          markLogin({
+            uid: data,
+            username: username,
+            nickname: 'TODO',
+          })
+        )
+        Toast.show({
+          text1: '登录成功',
+          text2: '感谢您使用本APP',
+          type: 'success',
+        })
+        nav.goBack()
+      })
+      .catch(e => {
+        quickShowErrorTip('登录失败', e.message)
+      })
+      .finally(() => {
+        Loading.hideLoading()
+      })
   }
 
   const toRegister = () => {
@@ -30,8 +88,8 @@ const LoginPage: React.FC = () => {
       <View style={styles.header}>
         <View>
           <View style={styles.headerTextOuter}>
-            <Icons iconText="&#xe656;" color="#fff" size={20} />
-            <Text style={styles.headerText}>登录</Text>
+            <Icons iconText="&#xe656;" color="#fff" size={24} />
+            <Text style={styles.headerText}>&nbsp;登录</Text>
           </View>
         </View>
         <Icons
@@ -44,6 +102,7 @@ const LoginPage: React.FC = () => {
       <View style={styles.blockOuter}>
         <AniInput
           placeholder="用户名"
+          inputStyle={{ color: '#fff' }}
           onTextInput={setUsername}
           ref={usernameInput}
           value={username}
@@ -51,26 +110,11 @@ const LoginPage: React.FC = () => {
         <AniInput
           placeholder="密码"
           password
+          inputStyle={{ color: '#fff' }}
           onTextInput={setPassword}
           ref={passwordInput}
           value={password}
         />
-        <View style={styles.captchaInputBlock}>
-          <View style={styles.captchaInput}>
-            <AniInput
-              value={captcha}
-              placeholder="验证码"
-              onTextInput={setCaptcha}
-              ref={captchaInput}
-            />
-          </View>
-          <View style={styles.captchaImage}>
-            {/*<Image source={{ uri: captchaUrl }} style={styles.captchaImage} />*/}
-            <View style={[styles.captchaImage, { backgroundColor: 'skyblue' }]}>
-              <Text>验证码</Text>
-            </View>
-          </View>
-        </View>
       </View>
       <View style={styles.blockOuter}>
         <Button

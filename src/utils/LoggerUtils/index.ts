@@ -19,13 +19,14 @@ const loggerConfig: configLoggerType = {
     warn: 2,
     error: 3,
   },
-  severity: 'debug',
+  severity: __DEV__ ? 'debug' : 'info',
   transport: [consoleTransport, fileAsyncTransport],
   transportOptions: {
     colors: {
       info: 'blueBright',
       warn: 'yellowBright',
       error: 'redBright',
+      debug: 'greenBright',
     },
     FS: fs,
     filePath: fs.DocumentDirectoryPath,
@@ -61,12 +62,13 @@ function getLogPath(logName = getLogName()) {
   })
   removeExpiredLog(30)
 })()
+
 export const getLogger = (namespace: string) => {
   return LOGGER.extend(namespace)
 }
 
 function removeLog(filename: string) {
-  fs.exists(getLogPath())
+  fs.exists(filename)
     .then(ex => {
       if (ex) {
         fs.unlink(filename)

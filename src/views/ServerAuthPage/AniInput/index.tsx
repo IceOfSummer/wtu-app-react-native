@@ -5,13 +5,14 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { View, TextInput, Animated } from 'react-native'
+import { TextInput, Animated, TextStyle, View } from 'react-native'
 
 interface AniInputProps {
   placeholder?: string
   password?: boolean
   onTextInput?: (text: string) => void
   value: string
+  inputStyle?: TextStyle
 }
 interface AniInputRefProps {
   onRef?: ForwardedRef<any>
@@ -94,7 +95,6 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
   }
 
   useImperativeHandle(props.onRef, () => ({ setErrorText }))
-
   return (
     <View
       style={{
@@ -106,7 +106,7 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
         <Animated.Text
           style={{
             transform: [{ translateY: moveText }],
-            color: isError ? global.styles.$error_color : '#fff',
+            color: isError ? global.colors.error_color : '#fff',
             marginLeft: 2,
             paddingBottom: 2,
             fontSize: scaleFont,
@@ -118,7 +118,7 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
         secureTextEntry={props.password}
         onFocus={startAnimation}
         onBlur={resetAnimation}
-        style={{ margin: 2, padding: 0 }}
+        style={[{ margin: 2, padding: 0 }, props.inputStyle]}
         onChangeText={inputEvent}
         value={props.value}
       />

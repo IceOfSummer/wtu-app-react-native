@@ -61,7 +61,7 @@ function fixDeprecatedHook(path) {
   console.log('=========fixDeprecatedHook=========')
   console.log('we can not fix it automatically')
   console.log(
-    `you have to run 'npx react-codemod rename-unsafe-lifecycles ${path}' to fix it by your self`
+    `you have to run 'npx react-codemod rename-unsafe-lifecycles ${path}' to fix it by yourself`
   )
 }
 
