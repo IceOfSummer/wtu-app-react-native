@@ -13,7 +13,6 @@ import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { splitTodayLessons } from '../../utils/LessonsUtils'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
-import { ThemeColors } from '../../redux/types/themeTypes'
 
 const Index: React.FC<StorePros & StoreActions> = props => {
   const nav = useNavigation<NavigationProp<RouterTypes>>()

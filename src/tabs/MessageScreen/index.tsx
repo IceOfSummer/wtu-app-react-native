@@ -58,11 +58,11 @@ const AuthenticatedView = () => {
   )
   const dispatch = useDispatch()
   useEffect(() => {
-    // 是否初始化过app
+    console.log('effect')
     DatabaseManager.loadDatabase(uid)
       .then(() => {
         // initMessage
-        dispatch(initMessage(uid))
+        dispatch(initMessage())
       })
       .catch(e => {
         // 加载失败

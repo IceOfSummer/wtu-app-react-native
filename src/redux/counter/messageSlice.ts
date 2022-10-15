@@ -1,29 +1,26 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
-  BaseMessageRecord,
   MessageRecord,
   MessageReducers,
   MessageState,
+  RelatedUser,
 } from '../types/messageTypes'
-import {
-  ChatMessage,
-  insertMessage,
-  ParamMessage,
-  queryMessage,
-} from '../../sqlite/message'
+import { insertMessage, ParamMessage, queryMessage } from '../../sqlite/message'
 import { insertLastMessage, queryLastMessage } from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
+import { quickShowErrorTip } from '../../native/modules/NativeDialog'
+import { loadMultiUserInfo } from '../../sqlite/user'
 
 const logger = getLogger('/redux/counter/messageSlice')
 
 /**
  * 初始化消息
  */
-export const initMessage = createAsyncThunk<BaseMessageRecord, number>(
+export const initMessage = createAsyncThunk<MessageState, void>(
   'message/loadMessage',
-  async (uid: number) => {
+  async () => {
     // 加载全部聊天记录
-    const msg = await queryMessage(uid)
+    const msg = await queryMessage()
     msg.sort((a, b) => a.sendTo - b.sendTo)
 
     const messages: MessageRecord = {}
@@ -39,26 +36,42 @@ export const initMessage = createAsyncThunk<BaseMessageRecord, number>(
       }
     }
     // 加载聊天面板上的最后聊天记录
-    const lastMsg = await queryLastMessage(uid)
+    const lastMsg = await queryLastMessage()
+    // 加载相关用户
+    const info = await loadMultiUserInfo(lastMsg.map(value => value.sendTo))
+    const relatedUser: RelatedUser = {}
+    info.forEach(value => {
+      relatedUser[value.uid] = value
+    })
+    console.log('loading')
+    console.log(relatedUser)
     return {
       messageLabels: lastMsg,
       messages: messages,
+      relatedUser,
     }
   }
 )
+
+export type InsertSingleMessageParam = {
+  sender: number
+  msg: ParamMessage
+  confirm: 0 | 1
+}
 
 /**
  * 插入单条消息
  */
 export const insertSingleMessage = createAsyncThunk<
-  ChatMessage,
-  { sender: number; msg: ParamMessage }
+  void,
+  InsertSingleMessageParam
 >(
   'message/insertSingleMessage',
-  async ({ msg, sender }: { sender: number; msg: ParamMessage }) => {
+  async ({ msg, sender, confirm }, { dispatch }) => {
+    // FIXME 插入失败后的处理方式
     const re = await insertMessage(sender, msg)
-    await insertLastMessage(sender, 1, re)
-    return re
+    await insertLastMessage(sender, confirm, re)
+    dispatch(messageSlice.actions.insertSingleMessage(re))
   }
 )
 
@@ -67,24 +80,10 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
   initialState: {
     messageLabels: [],
     messages: {},
+    relatedUser: {},
   },
-  reducers: {},
-  extraReducers: {
-    [initMessage.fulfilled.type](
-      state,
-      { payload }: { payload: BaseMessageRecord }
-    ) {
-      logger.debug('init message success')
-      state.messageLabels = []
-      state.messages = payload.messages
-    },
-    [initMessage.rejected.type](state, { error }) {
-      logger.error('while run "loadMessage" error, ' + error.message)
-    },
-    [insertSingleMessage.fulfilled.type](
-      state,
-      { payload }: { payload: ChatMessage }
-    ) {
+  reducers: {
+    insertSingleMessage: (state, { payload }) => {
       const tar = state.messages[payload.sendTo]
       // 更新redux消息记录
       if (tar) {
@@ -107,6 +106,26 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         // 更新
         state.messageLabels[i] = payload
       }
+    },
+  },
+  extraReducers: {
+    [initMessage.fulfilled.type](
+      state,
+      { payload }: { payload: MessageState }
+    ) {
+      logger.debug(
+        `init message success, messageLabels count: ${payload.messageLabels.length}`
+      )
+      state.messageLabels = payload.messageLabels
+      state.messages = payload.messages
+      state.relatedUser = payload.relatedUser
+    },
+    [initMessage.rejected.type](state, { error }) {
+      logger.error('while run "loadMessage" error, ' + error.message)
+      quickShowErrorTip(
+        '加载消息失败',
+        '请寻求开发人员帮助或稍后再试:' + error.message
+      )
     },
   },
 })

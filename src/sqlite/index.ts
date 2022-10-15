@@ -36,7 +36,14 @@ CREATE TABLE app_metadata (
     name CHAR(10) PRIMARY KEY,
     value CHAR(50) NOT NULL 
 );
-INSERT INTO app_metadata VALUES ('version', '${version}')
+INSERT INTO app_metadata VALUES ('version', '${version}');
+
+DROP TABLE IF EXISTS user;
+CREATE TABLE user (
+    uid INTEGER PRIMARY KEY NOT NULL ,
+    avatar CHAR(100) NOT NULL,
+    nickname CHAR(100) NOT NULL
+)
 `
 
 class DatabaseManager {

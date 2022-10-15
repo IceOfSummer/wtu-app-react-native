@@ -22,17 +22,15 @@ export enum MessageType {
 }
 
 /**
- * 查询某个用户的消息
- * @param username 用户名
+ * 获取用户的消息
  */
-export const queryMessage = (username: number) =>
+export const queryMessage = () =>
   new Promise<ChatMessage[]>(resolve => {
-    DatabaseManager.executeSql(
-      `SELECT ${QUERY_COLUMNS} FROM message WHERE username = ?`,
-      username
-    ).then(result => {
-      resolve(result[0].rows.raw())
-    })
+    DatabaseManager.executeSql(`SELECT ${QUERY_COLUMNS} FROM message`).then(
+      result => {
+        resolve(result[0].rows.raw())
+      }
+    )
   })
 
 /**

@@ -10,13 +10,12 @@ import { showNavigationToast } from '../../component/DiyToast/NavToast'
 import { SCHOOL_AUTH } from '../../router'
 import { getLessons } from '../../api/edu/classes'
 import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
-import PullDownRefreshView, {
-  finishRefresh,
-} from '../../native/component/BounceScrollView'
 import NativeDialog from '../../native/modules/NativeDialog'
 import { splitTodayLessons } from '../../utils/LessonsUtils'
 import Drawer from 'react-native-drawer'
 import { useClassScheduleTheme } from './Theme'
+import { SpringScrollView } from 'react-native-spring-scrollview'
+import { ChineseWithLastDateHeader } from 'react-native-spring-scrollview/Customize'
 
 interface ClassScheduleProps {}
 
@@ -24,6 +23,7 @@ const ClassSchedule: React.FC<
   ClassScheduleProps & StoreActions & StoreStates
 > = props => {
   const [todayLessons, setTodayLessons] = useState<Array<ClassInfo>>([])
+  const scrollView = useRef<SpringScrollView>(null)
 
   useEffect(() => {
     if (props.lessons) {
@@ -85,17 +85,19 @@ const ClassSchedule: React.FC<
   }
   const curTime = getCurTime()
 
-  const onPullDownRefresh = (finish: finishRefresh) => {
+  const onPullDownRefresh = () => {
     loadData()
       .then(result => {
         console.log(result)
-        finish(result)
       })
       .catch(e => {
         console.log(e)
-        finish(false)
+      })
+      .finally(() => {
+        scrollView.current?.endRefresh()
       })
   }
+
   /**
    * drawer 逻辑
    */
@@ -139,10 +141,10 @@ const ClassSchedule: React.FC<
           tweenDuration={200}
           tweenEasing="easeOutSine"
           side="bottom">
-          <PullDownRefreshView
-            scrollConfig={{ style: { height: '100%' } }}
+          <SpringScrollView
             onRefresh={onPullDownRefresh}
-            enableRefresh>
+            ref={scrollView}
+            refreshHeader={ChineseWithLastDateHeader}>
             <View style={styles.blockOuter}>
               <View style={styles.cardContainer}>
                 <View>
@@ -177,7 +179,7 @@ const ClassSchedule: React.FC<
                 </Text>
               </View>
             </View>
-          </PullDownRefreshView>
+          </SpringScrollView>
         </Drawer>
       </ImageBackground>
     </View>

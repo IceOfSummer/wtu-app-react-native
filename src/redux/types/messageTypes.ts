@@ -1,5 +1,6 @@
-import { SliceCaseReducers } from '@reduxjs/toolkit'
+import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
 import { ChatMessage } from '../../sqlite/message'
+import { ServerUser } from '../../sqlite/user'
 
 /**
  * 消息状态, 结构如下:
@@ -18,7 +19,13 @@ export interface MessageState {
    * 用户的所有聊天记录
    */
   messages: MessageRecord
+  /**
+   * 相关用户
+   */
+  relatedUser: RelatedUser
 }
+
+export type RelatedUser = Record<number, ServerUser>
 
 /**
  *  * 消息状态, 结构如下:
@@ -28,11 +35,14 @@ export interface MessageState {
  */
 export type MessageRecord = Record<number, ChatMessage[] | undefined>
 
-export type MessageLabel = ChatMessage[]
+/**
+ * 消息面板
+ */
+export type MessageLabel = Array<ChatMessage>
 
-export type BaseMessageRecord = {
-  messages: MessageRecord
-  messageLabels: MessageLabel
+export interface MessageReducers extends SliceCaseReducers<MessageState> {
+  /**
+   * 插入单条消息
+   */
+  insertSingleMessage: CaseReducer<MessageState, PayloadAction<ChatMessage>>
 }
-
-export interface MessageReducers extends SliceCaseReducers<MessageState> {}

@@ -283,7 +283,7 @@ dependencies {
     def dialogx_version = "0.0.43"
     implementation "com.github.kongzue.DialogX:DialogX:${dialogx_version}"
     implementation "com.github.kongzue.DialogX:DialogXMIUIStyle:${dialogx_version}"
-
+    implementation 'com.facebook.fresco:webpsupport:2.5.0'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

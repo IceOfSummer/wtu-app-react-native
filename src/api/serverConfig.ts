@@ -1,24 +1,21 @@
+import config from '../../config.json'
 interface ServerConfig {
   /**
    * 跳蚤市场服务器url
    */
   serverBaseUrl: string
   /**
-   * 服务器成功代码
+   * 聊天服务器url
    */
-  successCode: unknown
+  chatServerUrl: string
 }
 
-const serverConfig: ServerConfig = {
-  serverBaseUrl: '',
-  successCode: 0,
-}
+let serverConfig: ServerConfig
 
 if (__DEV__) {
-  serverConfig.serverBaseUrl = 'http://10.181.18.14:8080'
+  serverConfig = config.debug
 } else {
-  // TODO
-  serverConfig.serverBaseUrl = ''
+  serverConfig = config.release
 }
 
 export default serverConfig

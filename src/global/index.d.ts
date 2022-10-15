@@ -128,9 +128,7 @@ interface UtilFunction {
   assert: <T = any>(data?: T, backup: T) => T
 }
 
-declare namespace global {
-  let colors: ThemeColors
-  let styles: GlobalStyleValues & GlobalStyleSheet
-  let constant: AppConstant
-  let util: UtilFunction
-}
+declare var colors: ThemeColors
+declare var styles: GlobalStyleValues & GlobalStyleSheet
+declare var constant: AppConstant
+declare var util: UtilFunction

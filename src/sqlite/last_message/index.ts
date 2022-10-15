@@ -1,5 +1,8 @@
 import { ChatMessage } from '../message'
 import DatabaseManager from '../index'
+import { ServerUser } from '../user'
+
+export type LastMessageExactly = ChatMessage & ServerUser
 
 /**
  * 标记消息已读
@@ -40,15 +43,28 @@ export const insertLastMessage = (
 
 /**
  * 查询用户聊天面板的消息
- * @param username 用户
  */
-export const queryLastMessage = (username: number) =>
+export const queryLastMessage = () =>
   new Promise<ChatMessage[]>(resolve => {
     DatabaseManager.executeSql(
       `SELECT lm.confirmed as confirmed, m.* FROM last_message lm
-                       JOIN message m USING(messageId)
-                       WHERE lm.username = ?`,
-      username
+                       JOIN message m USING(messageId)`
+    ).then(result => {
+      resolve(result[0].rows.raw())
+    })
+  })
+
+/**
+ * 查询用户聊天面板的详细信息
+ */
+export const queryLastMessageExactly = () =>
+  new Promise<Array<LastMessageExactly>>(resolve => {
+    DatabaseManager.executeSql(
+      `
+                SELECT u.*, lm.confirmed as confirmed, m.* 
+                FROM last_message lm, user u LEFT JOIN message m 
+                ON m.messageId = lm.messageId
+            `
     ).then(result => {
       resolve(result[0].rows.raw())
     })
