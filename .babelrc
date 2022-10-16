@@ -1,0 +1,7 @@
+{
+  "env": {
+    "production": {
+      "plugins": ["./plugin/remove-logger-debug.js"]
+    }
+  }
+}
