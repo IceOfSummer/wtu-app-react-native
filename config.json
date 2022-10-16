@@ -2,11 +2,11 @@
   "release": {
     "serverBaseUrl": "",
     "chatServerUrl": "",
-    "cdnServer": ""
+    "cdnServer": "cdn.xds.fit"
   },
   "debug": {
     "serverBaseUrl": "http://10.181.18.14:8080",
     "chatServerUrl": "http://10.181.18.14:8080",
-    "cdnServer": ""
+    "cdnServer": "cdn.xds.fit"
   }
 }

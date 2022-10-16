@@ -1865,6 +1865,14 @@
     "@types/react" "*"
     "@types/react-native" "*"
 
+"@types/react-native-material-ripple@^0.9.2":
+  version "0.9.2"
+  resolved "https://registry.npmjs.org/@types/react-native-material-ripple/-/react-native-material-ripple-0.9.2.tgz#df85b8297be55e7f6d2a551e6a3896a68976f6cf"
+  integrity sha512-54E51EnQeQ9YowKq76lAxSG4KLXjVRoKoD8d1UQrELa28jkGVUssc9850QzFJYQ2HUiTsjVXsMKsHnJnc/LlsA==
+  dependencies:
+    "@types/react" "*"
+    "@types/react-native" "*"
+
 "@types/react-native-sqlite-storage@^5.0.2":
   version "5.0.2"
   resolved "https://registry.npmjs.org/@types/react-native-sqlite-storage/-/react-native-sqlite-storage-5.0.2.tgz#eefcc9ea6ff73043bb2945023fa8ee721683b61b"
@@ -6525,6 +6533,13 @@ react-native-logs@^5.0.1:
   version "5.0.1"
   resolved "https://registry.npmjs.org/react-native-logs/-/react-native-logs-5.0.1.tgz#53665919587b499e22f514e50cb6a834cedba1ce"
   integrity sha512-30aQugeLFfcBEKd6U4I75SKc5q5fb9Qrwv0Vnsy3jwpC716xON9SxRbBEnxoPSDJjzK527r4zi+qYqzig6lPlQ==
+
+react-native-material-ripple@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.npmjs.org/react-native-material-ripple/-/react-native-material-ripple-0.9.1.tgz#db1ad9dd7cf97011e4cd8475ae2041ade0f891cb"
+  integrity sha512-dHjARdKoGD3LXwPh2TkURabywM5BfdpKc/AHplJTfBMalhVZ2bc7iJoJmNhNnmT/TZ+B3szL6uV1mO7Pv8zNeA==
+  dependencies:
+    prop-types "^15.5.10"
 
 react-native-modal@^13.0.1:
   version "13.0.1"

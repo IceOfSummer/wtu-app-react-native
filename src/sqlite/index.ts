@@ -63,7 +63,7 @@ class DatabaseManager {
    */
   public static async loadDatabase(uid: number) {
     DatabaseManager._name = 'u' + uid
-    logger.debug('loading database: ' + DatabaseManager._name)
+    logger.info('loading database: ' + DatabaseManager._name)
     if (DatabaseManager._database) {
       DatabaseManager._database.close().catch(e => {
         logger.error(
@@ -75,9 +75,9 @@ class DatabaseManager {
     DatabaseManager._database = await DatabaseManager.openDatabase(
       DatabaseManager._name
     )
-    logger.debug('starting init database')
+    logger.info('starting init database')
     await DatabaseManager.initDatabase()
-    logger.debug('init database over')
+    logger.info('init database over')
   }
 
   /**
@@ -103,7 +103,7 @@ class DatabaseManager {
         'app_metadata'
       )
       if (check[0].rows.length === 0) {
-        logger.debug('no local database exist, creating new tables')
+        logger.info('no local database exist, creating new tables')
         // 创建表
         await DatabaseManager.parseAndRunMultiSql(
           DatabaseManager._database,
@@ -112,7 +112,7 @@ class DatabaseManager {
         resolve()
         return
       }
-      logger.debug('local database is found, checking version code')
+      logger.info('local database is found, checking version code')
       const set = await DatabaseManager.executeSql(
         'SELECT * FROM app_metadata WHERE name = ?',
         'version'
@@ -121,7 +121,7 @@ class DatabaseManager {
       const gap = version - Number.parseInt(versionMeta.value, 10)
       if (gap === 1) {
         // 版本号差1才进行更新, 跨度太大不更新
-        logger.debug('database is old version, updating')
+        logger.info('database is old version, updating')
         DatabaseManager.updateDatabase()
         resolve()
         return
@@ -130,7 +130,7 @@ class DatabaseManager {
         reject(new Error('您当前APP版本过低，请重新下载最新版本'))
         return
       }
-      logger.debug('current local database is usable!')
+      logger.info('current local database is usable!')
       resolve()
     })
   }

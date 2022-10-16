@@ -55,3 +55,46 @@ export const formatTimestamp = (timestamp: number | string): string => {
     date.getHours()
   )}:${append0Prefix(date.getMinutes())}`
 }
+
+/**
+ * 格式化时间戳
+ * - 若时间戳的时间是今天，则不会显示年月日
+ * - 若时间戳的时间和当前同一年，则不会显示年份
+ * - 若都符合，显示所有时间
+ * @param timestamp 时间戳
+ * @return 如: 2022-09-21 23:04 根据上述规则进行省略
+ */
+export const formatTimestampSimply = (timestamp: number): string => {
+  const date = new Date(timestamp)
+  if (timestamp > getZeroTimestamp()) {
+    // 当天
+    return `${append0Prefix(date.getHours())}:${append0Prefix(
+      date.getMinutes()
+    )}`
+  }
+  if (new Date().getFullYear() === date.getFullYear()) {
+    // 同年
+    return `${append0Prefix(date.getMonth() + 1)}-${append0Prefix(
+      date.getDate()
+    )} ${append0Prefix(date.getHours())}:${append0Prefix(date.getMinutes())}`
+  }
+  return `${date.getFullYear()}-${append0Prefix(
+    date.getMonth() + 1
+  )}-${append0Prefix(date.getDate())} ${append0Prefix(
+    date.getHours()
+  )}:${append0Prefix(date.getMinutes())}`
+}
+
+/**
+ * 一天具有的毫秒数
+ */
+const DAY_OF_MIL = 24 * 60 * 60 * 1000
+
+/**
+ * 获取当天0点0分的时间戳
+ */
+function getZeroTimestamp(): number {
+  const now = new Date()
+  const time = now.getTime()
+  return time - ((time + now.getTimezoneOffset()) % DAY_OF_MIL)
+}
