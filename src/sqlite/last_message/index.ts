@@ -11,8 +11,8 @@ export type LastMessageExactly = ChatMessage & ServerUser
 export const markMessageRead = (messageId: number) =>
   new Promise(resolve => {
     DatabaseManager.executeSql(
-      'UPDATE last_message SET confirmed = 1 WHERE messageId = ?',
-      [messageId]
+      'UPDATE last_message SET confirmed = 1 WHERE username = ?',
+      messageId
     ).then(resolve)
   })
 
@@ -31,7 +31,7 @@ export const insertLastMessage = (
     let valuesStr = ''
     for (let i = 0, len = messages.length; i < len; i++) {
       const msg = messages[i]
-      valuesStr += `(${msg.messageId},${owner},${confirm})`
+      valuesStr += `(${owner},${msg.messageId},${confirm})`
       if (i < len - 1) {
         valuesStr += ','
       }
@@ -72,11 +72,11 @@ export const queryLastMessageExactly = () =>
 
 /**
  * 删除聊天面板的消息
- * @param messageId 消息id
+ * @param username 哪个用户的消息
  */
-export const deleteLastMessage = (messageId: number) =>
+export const deleteLastMessage = (username: number) =>
   new Promise(resolve => {
-    DatabaseManager.executeSql('DELETE FROM last_message WHERE messageId = ?', [
-      messageId,
+    DatabaseManager.executeSql('DELETE FROM last_message WHERE username = ?', [
+      username,
     ]).then(resolve)
   })

@@ -43,8 +43,6 @@ export const initMessage = createAsyncThunk<MessageState, void>(
     info.forEach(value => {
       relatedUser[value.uid] = value
     })
-    console.log('loading')
-    console.log(relatedUser)
     return {
       messageLabels: lastMsg,
       messages: messages,
@@ -70,6 +68,7 @@ export const insertSingleMessage = createAsyncThunk<
   async ({ msg, sender, confirm }, { dispatch }) => {
     // FIXME 插入失败后的处理方式
     const re = await insertMessage(sender, msg)
+    logger.debug('insert message to database success: ' + re)
     await insertLastMessage(sender, confirm, re)
     dispatch(messageSlice.actions.insertSingleMessage(re))
   }
@@ -101,9 +100,11 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       }
       if (i === len) {
         // 新聊天
+        logger.info('insert a new message')
         state.messageLabels.push(payload)
       } else {
         // 更新
+        logger.debug('update a new message')
         state.messageLabels[i] = payload
       }
     },

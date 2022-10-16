@@ -20,7 +20,7 @@ const Chat: React.FC = () => {
         sender: 1,
         msg: {
           sendTo: 2,
-          content: 'hello',
+          content: 'hello-' + Date.now(),
           createTime: Date.now(),
           type: 1,
         },
