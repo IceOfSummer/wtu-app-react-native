@@ -38,11 +38,16 @@ export type MessageRecord = Record<number, ChatMessage[] | undefined>
 /**
  * 消息面板
  */
-export type MessageLabel = Array<ChatMessage>
+export type MessageLabel = Record<number, ChatMessage | undefined>
 
 export interface MessageReducers extends SliceCaseReducers<MessageState> {
   /**
    * 插入单条消息
    */
   insertSingleMessage: CaseReducer<MessageState, PayloadAction<ChatMessage>>
+  /**
+   * 移除消息面板的消息
+   * 只需传入对应的用户名即可
+   */
+  removeMessagePanel: CaseReducer<MessageState, PayloadAction<number>>
 }

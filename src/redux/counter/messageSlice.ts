@@ -1,12 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
+  MessageLabel,
   MessageRecord,
   MessageReducers,
   MessageState,
   RelatedUser,
 } from '../types/messageTypes'
 import { insertMessage, ParamMessage, queryMessage } from '../../sqlite/message'
-import { insertLastMessage, queryLastMessage } from '../../sqlite/last_message'
+import {
+  deleteLastMessage,
+  insertLastMessage,
+  queryLastMessage,
+} from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
 import { quickShowErrorTip } from '../../native/modules/NativeDialog'
 import { loadMultiUserInfo } from '../../sqlite/user'
@@ -37,6 +42,10 @@ export const initMessage = createAsyncThunk<MessageState, void>(
     }
     // 加载聊天面板上的最后聊天记录
     const lastMsg = await queryLastMessage()
+    let messageLabels: MessageLabel = {}
+    lastMsg.forEach(value => {
+      messageLabels[value.sendTo] = value
+    })
     // 加载相关用户
     const info = await loadMultiUserInfo(lastMsg.map(value => value.sendTo))
     const relatedUser: RelatedUser = {}
@@ -44,8 +53,8 @@ export const initMessage = createAsyncThunk<MessageState, void>(
       relatedUser[value.uid] = value
     })
     return {
-      messageLabels: lastMsg,
-      messages: messages,
+      messageLabels,
+      messages,
       relatedUser,
     }
   }
@@ -74,6 +83,15 @@ export const insertSingleMessage = createAsyncThunk<
   }
 )
 
+export const removeMessagePanel = createAsyncThunk<void, number>(
+  'message/removeMessagePanel',
+  async (username, { dispatch }) => {
+    // 数据库记录删除
+    await deleteLastMessage(username)
+    dispatch(messageSlice.actions.removeMessagePanel(username))
+  }
+)
+
 const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
@@ -82,6 +100,9 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     relatedUser: {},
   },
   reducers: {
+    /**
+     * do not export it, it needs extra operation, see {@link insertSingleMessage}
+     */
     insertSingleMessage: (state, { payload }) => {
       const tar = state.messages[payload.sendTo]
       // 更新redux消息记录
@@ -90,23 +111,13 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       } else {
         state.messages[payload.sendTo] = [payload]
       }
-      // 暴搜
-      let i = 0,
-        len = state.messageLabels.length
-      for (; i < len; i++) {
-        if (state.messageLabels[i].sendTo === payload.sendTo) {
-          break
-        }
-      }
-      if (i === len) {
-        // 新聊天
-        logger.info('insert a new message')
-        state.messageLabels.push(payload)
-      } else {
-        // 更新
-        logger.debug('update a new message')
-        state.messageLabels[i] = payload
-      }
+      state.messageLabels[payload.sendTo] = payload
+    },
+    /**
+     * do not export it, it needs extra operation, see {@link removeMessagePanel}
+     */
+    removeMessagePanel: (state, { payload }) => {
+      state.messageLabels[payload] = undefined
     },
   },
   extraReducers: {
@@ -115,7 +126,9 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       { payload }: { payload: MessageState }
     ) {
       logger.debug(
-        `init message success, messageLabels count: ${payload.messageLabels.length}`
+        `init message success, messageLabels count: ${
+          Object.keys(payload.messageLabels).length
+        }`
       )
       state.messageLabels = payload.messageLabels
       state.messages = payload.messages
@@ -127,6 +140,12 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         '加载消息失败',
         '请寻求开发人员帮助或稍后再试:' + error.message
       )
+    },
+    [insertSingleMessage.rejected.type](state, { error }) {
+      logger.error('while run "insertSingleMessage" error, ' + error.message)
+    },
+    [removeMessagePanel.rejected.type](state, { error }) {
+      logger.error('while run "removeMessagePanel" error, ' + error.message)
     },
   },
 })

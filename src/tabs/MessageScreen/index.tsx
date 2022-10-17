@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { TabBar } from 'react-native-tab-view'
 import Chat from './tabs/Chat'
-import Square from './tabs/Square'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
 import { Image, Pressable, StatusBar, useWindowDimensions } from 'react-native'
@@ -75,8 +74,7 @@ const AuthenticatedView = () => {
   }, [])
   return (
     <Tab.Navigator tabBar={MyTabBar} screenOptions={{ lazy: true }}>
-      <Tab.Screen name="聊天" component={Chat} navigationKey="chat" />
-      <Tab.Screen name="广场" component={Square} navigationKey="square" />
+      <Tab.Screen name="消息" component={Chat} navigationKey="chat" />
       <Tab.Screen name="关注" component={Care} navigationKey="care" />
     </Tab.Navigator>
   )

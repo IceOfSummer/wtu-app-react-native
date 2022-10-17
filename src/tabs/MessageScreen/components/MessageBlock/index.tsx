@@ -9,16 +9,18 @@ import {
 } from 'react-native'
 import { formatTimestampSimply } from '../../../../utils/DateUtils'
 import { ChatMessage } from '../../../../sqlite/message'
-import { useStore } from 'react-redux'
+import { useDispatch, useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import config from '../../../../../config.json'
 import Avatar from '../../../../component/Container/Avatar'
 import Button from 'react-native-button'
+import { removeMessagePanel } from '../../../../redux/counter/messageSlice'
 
 const cdn = __DEV__ ? config.debug.cdnServer : config.release.cdnServer
 
 const MessageBlock: React.FC<ChatMessage> = props => {
   const store = useStore<ReducerTypes>()
+  const dispatch = useDispatch()
   const info = store.getState().message.relatedUser[props.sendTo]
   const [showToolBox, setToolBoxVisible] = useState(false)
   const startX = useRef(0)
@@ -48,7 +50,7 @@ const MessageBlock: React.FC<ChatMessage> = props => {
 
   const onDeletePress = () => {
     console.log('delete')
-    // TODO
+    dispatch(removeMessagePanel(props.sendTo))
     delayCloseModal()
   }
 
