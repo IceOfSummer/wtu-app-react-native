@@ -6,6 +6,8 @@ import { ReducerTypes } from '../../../../redux/counter'
 import MessageBlock from '../../components/MessageBlock'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { MessageLabel } from '../../../../redux/types/messageTypes'
+import { MessageType } from '../../../../sqlite/message'
+import { appendMessagePrefix } from '../../../../views/ChatPage/common/MessageManager'
 
 const Chat: React.FC = () => {
   const dispatch = useDispatch()
@@ -15,15 +17,16 @@ const Chat: React.FC = () => {
   const ent = Object.entries(lastMsg)
 
   const inrMsg = () => {
+    const content = appendMessagePrefix(1, 'hello world ' + Date.now())
+    console.log(content)
     dispatch(
       insertSingleMessage({
-        confirm: 0,
-        sender: 1,
+        confirm: 1,
         msg: {
-          sendTo: 2,
-          content: 'hello-' + Date.now(),
+          username: 2,
+          content,
           createTime: Date.now(),
-          type: 1,
+          type: MessageType.SEND,
         },
       })
     )

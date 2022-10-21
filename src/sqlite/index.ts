@@ -16,7 +16,6 @@ DROP TABLE IF EXISTS message;
 CREATE TABLE message(
     messageId INTEGER PRIMARY KEY AUTOINCREMENT,
     username INT NOT NULL,
-    sendTo INT NOT NULL,
     content CHAR(500) NOT NULL,
     createTime INT NOT NULL,
     type INT NOT NULL
@@ -47,8 +46,6 @@ CREATE TABLE user (
 `
 
 class DatabaseManager {
-  private constructor() {}
-
   private static _database: SQLiteDatabase
 
   private static _name: string

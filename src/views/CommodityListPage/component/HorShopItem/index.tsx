@@ -19,7 +19,7 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
   const standerPrice = props.price.toFixed(2)
   return (
     <View style={global.styles.flexRowCenter}>
-      <Pressable onPress={props.onClick} style={styles.contaner}>
+      <Pressable onPress={props.onClick} style={styles.container}>
         <FastImage source={{ uri: props.image }} style={[styles.image, {}]} />
         <View style={styles.descriptionContainer}>
           <Text style={global.styles.blobText} ellipsizeMode="tail">
@@ -55,7 +55,7 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
   )
 }
 const styles = StyleSheet.create({
-  contaner: {
+  container: {
     overflow: 'hidden',
     flex: 1,
     maxWidth: 400,

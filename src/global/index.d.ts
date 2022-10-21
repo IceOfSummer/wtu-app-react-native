@@ -94,6 +94,7 @@ type ThemeColors = {
   infoTextColor: string
   borderColor: string
   statusBarColor: string
+  shallowBoxBackgroundColor: string
 }
 
 type Colors = ThemeColors

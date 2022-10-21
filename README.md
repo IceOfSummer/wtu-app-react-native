@@ -28,3 +28,7 @@
 ### 未来计划
 
 [未来计划](https://github.com/IceOfSummer/wtu-app-react-native/issues/2)
+
+## 其它
+
+如果你使用 WebStorm 等重量级编译器打开该项目，请确保给IDE至少`8G`的运行内存(内存分配过少代码提示会卡死，实测给`10G`都能吃满)

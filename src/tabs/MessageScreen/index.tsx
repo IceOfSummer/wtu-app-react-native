@@ -18,6 +18,7 @@ import { SERVER_AUTH_PAGE } from '../../router'
 import DatabaseManager from '../../sqlite'
 import NativeDialog from '../../native/modules/NativeDialog'
 import { initMessage } from '../../redux/counter/messageSlice'
+import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
@@ -84,8 +85,10 @@ const AuthenticatedView = () => {
  * 渲染TabBar，主要是给左右加图标
  */
 function MyTabBar(props: MaterialTopTabBarProps) {
+  const { width, height } = useWindowDimensions()
+  const headerHeight = getDefaultHeaderHeight({ width, height }, 0, 'formSheet')
   return (
-    <View style={styles.topTabBarContainer}>
+    <View style={[styles.topTabBarContainer, { height: headerHeight }]}>
       <Pressable>
         <Icons iconText="&#xe79b;" size={25} color={global.colors.textColor} />
       </Pressable>
@@ -136,6 +139,7 @@ const RenderTabBar = (
       indicatorStyle={{ backgroundColor: colors.primaryColor }}
       style={{
         width: '50%',
+        height: '100%',
         backgroundColor: colors.boxBackgroundColor,
         borderColor: colors.borderColor,
         elevation: 0,

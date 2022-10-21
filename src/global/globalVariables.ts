@@ -91,7 +91,7 @@ const gStyleSheet: StyleSheetTypes = {
   },
 }
 
-export const lightTheme = {
+const defaultThemeColors = {
   primaryColor: '#007aff',
   success_color: '#4cd964',
   warning_color: '#f0ad4e',
@@ -102,8 +102,9 @@ export const lightTheme = {
   infoTextColor: '#999',
   borderColor: '#c8c7cc',
   statusBarColor: '#fff',
+  shallowBoxBackgroundColor: 'rgb(240, 240, 240)',
 }
-global.colors = lightTheme
+global.colors = defaultThemeColors
 
 global.constant = {
   downloadUrl: 'https://xds.fit/wtuapp/app/',

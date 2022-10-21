@@ -40,6 +40,7 @@ import PendingReceivePage from '../views/PendingReceivePage'
 import { Theme } from '@react-navigation/native/lib/typescript/src/types'
 import { ThemeState } from '../redux/types/themeTypes'
 import ServerAuthPage from '../views/ServerAuthPage'
+import ChatPage from '../views/ChatPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -66,6 +67,7 @@ export const USER_INFO_PAGE = 'UserInfoPage'
 export const ORDER_CONFIRM_PAGE = 'OrderConfirmPage'
 export const PENDING_RECEIVE_PAGE = 'PendingReceivePage'
 export const SERVER_AUTH_PAGE = 'ServerAuthPage'
+export const CHAT_PAGE = 'ChatPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -118,6 +120,12 @@ export interface RouterTypes extends ParamListBase {
   }
   [PENDING_RECEIVE_PAGE]: undefined
   [MESSAGE_TABS]: undefined
+  [CHAT_PAGE]: {
+    /**
+     * 和谁聊天
+     */
+    uid: number
+  }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -281,6 +289,15 @@ const Router: React.FC = () => {
           name={SERVER_AUTH_PAGE}
           component={ServerAuthPage}
           options={{ header: () => null }}
+        />
+        <Stack.Screen
+          name={CHAT_PAGE}
+          component={ChatPage}
+          options={{
+            animation: 'slide_from_right',
+            ...headerCommonOptions,
+            title: '',
+          }}
         />
       </Stack.Navigator>
       <DiyToast />

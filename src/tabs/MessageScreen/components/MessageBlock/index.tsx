@@ -11,20 +11,21 @@ import { formatTimestampSimply } from '../../../../utils/DateUtils'
 import { ChatMessage } from '../../../../sqlite/message'
 import { useDispatch, useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
-import config from '../../../../../config.json'
-import Avatar from '../../../../component/Container/Avatar'
+import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
 import Button from 'react-native-button'
 import { removeMessagePanel } from '../../../../redux/counter/messageSlice'
-
-const cdn = __DEV__ ? config.debug.cdnServer : config.release.cdnServer
+import useNav from '../../../../hook/useNav'
+import { CHAT_PAGE } from '../../../../router'
 
 const MessageBlock: React.FC<ChatMessage> = props => {
   const store = useStore<ReducerTypes>()
   const dispatch = useDispatch()
-  const info = store.getState().message.relatedUser[props.sendTo]
+  const info = store.getState().message.relatedUser[props.username]
   const [showToolBox, setToolBoxVisible] = useState(false)
   const startX = useRef(0)
   const startY = useRef(0)
+  const nav = useNav()
+
   let nickname = 'NAME'
   if (info) {
     nickname = info.nickname
@@ -50,7 +51,7 @@ const MessageBlock: React.FC<ChatMessage> = props => {
 
   const onDeletePress = () => {
     console.log('delete')
-    dispatch(removeMessagePanel(props.sendTo))
+    dispatch(removeMessagePanel(props.username))
     delayCloseModal()
   }
 
@@ -61,15 +62,23 @@ const MessageBlock: React.FC<ChatMessage> = props => {
     delayCloseModal()
   }
 
+  /**
+   * 跳转聊天页面
+   */
+  const onPress = () => {
+    nav.push(CHAT_PAGE, { uid: props.username })
+  }
+
   return (
     <View>
       <Button
         style={styles.outer}
         containerStyle={styles.container}
+        onPress={onPress}
         onLongPress={onLongPress}>
         <View style={styles.msgContainer}>
           <View style={{ flexDirection: 'row' }}>
-            <Avatar uri={`http://${cdn}/avatar/${props.sendTo}.webp`} />
+            <Avatar uri={getAvatarUrl(props.username)} />
             <View style={styles.nameMsgContainer}>
               <Text style={styles.nameText}>{nickname}</Text>
               <Text>{props.content}</Text>

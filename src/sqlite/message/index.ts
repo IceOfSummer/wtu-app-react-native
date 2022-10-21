@@ -1,11 +1,11 @@
 import DatabaseManager from '../index'
 
-const TABLE_COLUMNS = 'username, sendTo, content, createTime, type'
-const QUERY_COLUMNS = 'sendTo, content, createTime, type'
-
 export type ChatMessage = {
   messageId: number
-  sendTo: number
+  /**
+   * 和谁相关的消息
+   */
+  username: number
   content: string
   createTime: number
   type: MessageType
@@ -21,16 +21,18 @@ export enum MessageType {
   RECEIVE,
 }
 
+const PAGE_SIZE = 10
+const QUERY_STATEMENT = `
+    SELECT username, content, createTime, type FROM message WHERE username = ? ORDER BY messageId DESC LIMIT ?, ${PAGE_SIZE}
+`
 /**
  * 获取用户的消息
+ * @param uid 和谁聊天
+ * @param page 第几页
  */
-export const queryMessage = () =>
-  new Promise<ChatMessage[]>(resolve => {
-    DatabaseManager.executeSql(`SELECT ${QUERY_COLUMNS} FROM message`).then(
-      result => {
-        resolve(result[0].rows.raw())
-      }
-    )
+export const queryMessage = (uid: number, page = 0): Promise<ChatMessage[]> =>
+  DatabaseManager.executeSql(QUERY_STATEMENT, uid, page * 10).then(result => {
+    return Promise.resolve(result[0].rows.raw())
   })
 
 /**
@@ -42,7 +44,11 @@ export const queryMessage = () =>
 export const insertMessage = (username: number, message: ParamMessage) =>
   new Promise<ChatMessage>(resolve => {
     DatabaseManager.executeSql(
-      `INSERT INTO message(${TABLE_COLUMNS}) VALUES (${username}, ${message.sendTo}, '${message.content}', ${message.createTime}, ${message.type})`
+      'INSERT INTO message(username, content, createTime, type) VALUES (?,?,?,?)',
+      username,
+      message.content,
+      message.createTime,
+      message.type
     ).then(set => {
       // 插入最后聊天
       const re: ChatMessage = {

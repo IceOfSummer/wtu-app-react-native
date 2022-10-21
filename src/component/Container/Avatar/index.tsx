@@ -1,12 +1,15 @@
 import React, { useState } from 'react'
 import { View } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import config from '../../../../config.json'
+
+const cdn = __DEV__ ? config.debug.cdnServer : config.release.cdnServer
 
 interface AvatarProps {
   uri: string
 }
 
-const LENGTH = 60
+const LENGTH = 50
 const Avatar: React.FC<AvatarProps> = props => {
   const [fail, setFail] = useState(false)
   const onError = () => {
@@ -35,5 +38,7 @@ const Avatar: React.FC<AvatarProps> = props => {
     </View>
   )
 }
+
+export const getAvatarUrl = (uid: number) => `http://${cdn}/avatar/${uid}.webp`
 
 export default Avatar

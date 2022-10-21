@@ -16,10 +16,6 @@ export interface MessageState {
    */
   messageLabels: MessageLabel
   /**
-   * 用户的所有聊天记录
-   */
-  messages: MessageRecord
-  /**
    * 相关用户
    */
   relatedUser: RelatedUser

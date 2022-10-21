@@ -1,12 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
   MessageLabel,
-  MessageRecord,
   MessageReducers,
   MessageState,
   RelatedUser,
 } from '../types/messageTypes'
-import { insertMessage, ParamMessage, queryMessage } from '../../sqlite/message'
+import { insertMessage, ParamMessage } from '../../sqlite/message'
 import {
   deleteLastMessage,
   insertLastMessage,
@@ -18,50 +17,38 @@ import { loadMultiUserInfo } from '../../sqlite/user'
 
 const logger = getLogger('/redux/counter/messageSlice')
 
+const REPLACE_TYPE_MARKER = /§\d*§/g
+
 /**
  * 初始化消息
  */
 export const initMessage = createAsyncThunk<MessageState, void>(
   'message/loadMessage',
   async () => {
-    // 加载全部聊天记录
-    const msg = await queryMessage()
-    msg.sort((a, b) => a.sendTo - b.sendTo)
-
-    const messages: MessageRecord = {}
-    if (msg.length > 0) {
-      messages[msg[0].sendTo] = [msg[0]]
-      let last = msg[0].sendTo
-
-      for (let i = 1, len = msg.length; i < len; i++) {
-        if (msg[i].sendTo !== last) {
-          last = msg[i].sendTo
-        }
-        messages[last]!.push(msg[i])
-      }
-    }
     // 加载聊天面板上的最后聊天记录
     const lastMsg = await queryLastMessage()
     let messageLabels: MessageLabel = {}
     lastMsg.forEach(value => {
-      messageLabels[value.sendTo] = value
+      value.content = value.content.replace(REPLACE_TYPE_MARKER, '')
+      messageLabels[value.username] = value
     })
     // 加载相关用户
-    const info = await loadMultiUserInfo(lastMsg.map(value => value.sendTo))
+    const info = await loadMultiUserInfo(lastMsg.map(value => value.username))
     const relatedUser: RelatedUser = {}
     info.forEach(value => {
       relatedUser[value.uid] = value
     })
     return {
       messageLabels,
-      messages,
       relatedUser,
     }
   }
 )
 
 export type InsertSingleMessageParam = {
-  sender: number
+  /**
+   * 和谁相关的消息
+   */
   msg: ParamMessage
   confirm: 0 | 1
 }
@@ -72,16 +59,13 @@ export type InsertSingleMessageParam = {
 export const insertSingleMessage = createAsyncThunk<
   void,
   InsertSingleMessageParam
->(
-  'message/insertSingleMessage',
-  async ({ msg, sender, confirm }, { dispatch }) => {
-    // FIXME 插入失败后的处理方式
-    const re = await insertMessage(sender, msg)
-    logger.debug('insert message to database success: ' + re)
-    await insertLastMessage(sender, confirm, re)
-    dispatch(messageSlice.actions.insertSingleMessage(re))
-  }
-)
+>('message/insertSingleMessage', async ({ msg, confirm }, { dispatch }) => {
+  // FIXME 插入失败后的处理方式
+  const re = await insertMessage(msg.username, msg)
+  logger.debug('insert message to database success: ' + re)
+  await insertLastMessage(msg.username, confirm, re)
+  dispatch(messageSlice.actions.insertSingleMessage(re))
+})
 
 export const removeMessagePanel = createAsyncThunk<void, number>(
   'message/removeMessagePanel',
@@ -96,7 +80,6 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
     messageLabels: [],
-    messages: {},
     relatedUser: {},
   },
   reducers: {
@@ -104,14 +87,8 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      * do not export it, it needs extra operation, see {@link insertSingleMessage}
      */
     insertSingleMessage: (state, { payload }) => {
-      const tar = state.messages[payload.sendTo]
-      // 更新redux消息记录
-      if (tar) {
-        tar.push(payload)
-      } else {
-        state.messages[payload.sendTo] = [payload]
-      }
-      state.messageLabels[payload.sendTo] = payload
+      payload.content = payload.content.replace(REPLACE_TYPE_MARKER, '')
+      state.messageLabels[payload.username] = payload
     },
     /**
      * do not export it, it needs extra operation, see {@link removeMessagePanel}
@@ -131,7 +108,6 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         }`
       )
       state.messageLabels = payload.messageLabels
-      state.messages = payload.messages
       state.relatedUser = payload.relatedUser
     },
     [initMessage.rejected.type](state, { error }) {
