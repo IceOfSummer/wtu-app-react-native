@@ -9,24 +9,26 @@ import {
 } from 'react-native'
 import { formatTimestampSimply } from '../../../../utils/DateUtils'
 import { ChatMessage } from '../../../../sqlite/message'
-import { useDispatch, useStore } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
 import Button from 'react-native-button'
 import { removeMessagePanel } from '../../../../redux/counter/messageSlice'
 import useNav from '../../../../hook/useNav'
 import { CHAT_PAGE } from '../../../../router'
+import { ServerUser } from '../../../../sqlite/user'
 
 const MessageBlock: React.FC<ChatMessage> = props => {
-  const store = useStore<ReducerTypes>()
   const dispatch = useDispatch()
-  const info = store.getState().serverUser.cachedUser[props.username]
+  const info = useSelector<ReducerTypes, ServerUser>(
+    state => state.serverUser.cachedUser[props.username]
+  )
   const [showToolBox, setToolBoxVisible] = useState(false)
   const startX = useRef(0)
   const startY = useRef(0)
   const nav = useNav()
 
-  let nickname = 'NAME'
+  let nickname: string | number = props.username
   if (info) {
     nickname = info.nickname
   }
