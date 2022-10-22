@@ -46,6 +46,7 @@ const themePersistConfig: PersistConfig<ThemeState> = {
 const serverUserPersistConfig: PersistConfig<ServerUserState> = {
   key: 'serverUser',
   storage: AsyncStorage,
+  blacklist: ['cachedUser'],
 }
 
 const reducer = combineReducers({

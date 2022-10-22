@@ -40,7 +40,6 @@ INSERT INTO app_metadata VALUES ('version', '${version}');
 DROP TABLE IF EXISTS user;
 CREATE TABLE user (
     uid INTEGER PRIMARY KEY NOT NULL ,
-    avatar CHAR(100) NOT NULL,
     nickname CHAR(100) NOT NULL
 )
 `

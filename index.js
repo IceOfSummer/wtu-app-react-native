@@ -5,6 +5,8 @@ import { name as appName } from './app.json'
 import SQLite from 'react-native-sqlite-storage'
 import { login } from './src/api/server/auth'
 import './src/utils/LoggerUtils/index'
+import { store } from './src/redux/store'
+import { saveUserToCache } from './src/redux/counter/serverUserSlice'
 
 SQLite.enablePromise(true)
 AppRegistry.registerComponent(appName, () => App)
@@ -22,5 +24,15 @@ if (__DEV__) {
     login('654321', 'abc123').then(resp => {
       console.log(resp)
     })
+  })
+  DevSettings.addMenuItem('insert users', () => {
+    for (let i = 4; i < 10; ++i) {
+      store.dispatch(
+        saveUserToCache({
+          uid: i,
+          nickname: 'Name-' + i,
+        })
+      )
+    }
   })
 }

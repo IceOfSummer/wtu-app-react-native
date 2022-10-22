@@ -15,10 +15,6 @@ export interface MessageState {
    * 在聊天界面上保存的最后聊天记录，可手动删除
    */
   messageLabels: MessageLabel
-  /**
-   * 相关用户
-   */
-  relatedUser: RelatedUser
 }
 
 export type RelatedUser = Record<number, ServerUser>

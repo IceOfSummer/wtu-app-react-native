@@ -11,9 +11,9 @@ export type ServerUser = {
  * 插入一个用户
  * @param user
  */
-export const insertUser = (user: ServerUser) => {
+export const insertOrUpdateUser = (user: ServerUser) => {
   return DatabaseManager.executeSql(
-    'REPLACE INTO user VALUES(?, ?, ?)',
+    'REPLACE INTO user(uid, nickname) VALUES(?, ?)',
     user.uid,
     user.nickname
   )
@@ -34,7 +34,6 @@ export const loadMultiUserInfo = async (
     inSql += `${value},`
   })
   inSql = inSql.replace(/,$/, ')')
-  console.log(inSql)
   const set = await DatabaseManager.executeSql(
     `SELECT * FROM user WHERE uid IN ${inSql}`
   )

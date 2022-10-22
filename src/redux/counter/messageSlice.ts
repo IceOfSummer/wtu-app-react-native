@@ -3,7 +3,6 @@ import {
   MessageLabel,
   MessageReducers,
   MessageState,
-  RelatedUser,
 } from '../types/messageTypes'
 import { insertMessage, ParamMessage } from '../../sqlite/message'
 import {
@@ -13,7 +12,7 @@ import {
 } from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
 import { quickShowErrorTip } from '../../native/modules/NativeDialog'
-import { loadMultiUserInfo } from '../../sqlite/user'
+import { loadMultiUserCache } from './serverUserSlice'
 
 const logger = getLogger('/redux/counter/messageSlice')
 
@@ -22,9 +21,9 @@ const REPLACE_TYPE_MARKER = /§\d*§/g
 /**
  * 初始化消息
  */
-export const initMessage = createAsyncThunk<MessageState, void>(
+export const initMessage = createAsyncThunk<MessageState, undefined>(
   'message/loadMessage',
-  async () => {
+  async (arg, { dispatch }) => {
     // 加载聊天面板上的最后聊天记录
     const lastMsg = await queryLastMessage()
     let messageLabels: MessageLabel = {}
@@ -33,14 +32,9 @@ export const initMessage = createAsyncThunk<MessageState, void>(
       messageLabels[value.username] = value
     })
     // 加载相关用户
-    const info = await loadMultiUserInfo(lastMsg.map(value => value.username))
-    const relatedUser: RelatedUser = {}
-    info.forEach(value => {
-      relatedUser[value.uid] = value
-    })
+    dispatch(loadMultiUserCache(lastMsg.map(value => value.username)))
     return {
       messageLabels,
-      relatedUser,
     }
   }
 )
@@ -80,7 +74,6 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
     messageLabels: [],
-    relatedUser: {},
   },
   reducers: {
     /**
@@ -108,7 +101,6 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         }`
       )
       state.messageLabels = payload.messageLabels
-      state.relatedUser = payload.relatedUser
     },
     [initMessage.rejected.type](state, { error }) {
       logger.error('while run "loadMessage" error, ' + error.message)

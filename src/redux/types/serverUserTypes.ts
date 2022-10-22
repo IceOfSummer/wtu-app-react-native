@@ -1,4 +1,5 @@
 import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
+import { ServerUser } from '../../sqlite/user'
 
 export type ServerUserState = {
   /**
@@ -9,7 +10,15 @@ export type ServerUserState = {
    * 用户信息, 若{@link ServerUserState#authenticated}为true，则该值<b>一定</b>非空
    */
   userInfo?: ServerUserInfo
+  /**
+   * 缓存用户信息
+   *
+   * <b>不要使用redux-priests来持久化该属性！因为它可能会很大</b>
+   */
+  cachedUser: CachedUser
 }
+
+export type CachedUser = Record<number, ServerUser>
 
 /**
  * 用户身份信息
@@ -29,9 +38,19 @@ export type ServerUserInfo = {
   nickname: string
 }
 
+type Reducer<T> = CaseReducer<ServerUserState, PayloadAction<T>>
+
 export interface ServerUserReducers extends SliceCaseReducers<ServerUserState> {
   /**
    * 标记用户登录成功
    */
-  markLogin: CaseReducer<ServerUserState, PayloadAction<ServerUserInfo>>
+  markLogin: Reducer<ServerUserInfo>
+  /**
+   * 保存用户信息
+   */
+  saveUserToCache: Reducer<ServerUser>
+  /**
+   * 初始化用户信息缓存
+   */
+  initUserCache: Reducer<CachedUser>
 }

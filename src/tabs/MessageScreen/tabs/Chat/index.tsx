@@ -17,19 +17,22 @@ const Chat: React.FC = () => {
   const ent = Object.entries(lastMsg)
 
   const inrMsg = () => {
-    const content = appendMessagePrefix(1, 'hello world ' + Date.now())
+    const content = appendMessagePrefix(0, 'hello world ' + Date.now())
     console.log(content)
-    dispatch(
-      insertSingleMessage({
-        confirm: 1,
-        msg: {
-          username: 2,
-          content,
-          createTime: Date.now(),
-          type: MessageType.SEND,
-        },
-      })
-    )
+    for (let i = 0; i < 12; i++) {
+      dispatch(
+        insertSingleMessage({
+          // @ts-ignore
+          confirm: i % 2,
+          msg: {
+            username: i,
+            content,
+            createTime: Date.now(),
+            type: i % 2 === 0 ? MessageType.SEND : MessageType.RECEIVE,
+          },
+        })
+      )
+    }
   }
 
   return (

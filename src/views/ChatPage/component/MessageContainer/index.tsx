@@ -33,8 +33,8 @@ const Container: React.FC<ChatMessage> = props => {
   let nickname: string
   if (props.type === MessageType.SEND) {
     nickname = userInfo.nickname
-  } else if (state.message.relatedUser[props.username]) {
-    nickname = state.message.relatedUser[props.username].nickname
+  } else if (state.serverUser.cachedUser[props.username]) {
+    nickname = state.serverUser.cachedUser[props.username].nickname
   } else {
     // TODO 用户信息缺省时发送请求获取
     nickname = 'NAME'

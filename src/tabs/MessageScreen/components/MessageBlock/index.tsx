@@ -20,7 +20,7 @@ import { CHAT_PAGE } from '../../../../router'
 const MessageBlock: React.FC<ChatMessage> = props => {
   const store = useStore<ReducerTypes>()
   const dispatch = useDispatch()
-  const info = store.getState().message.relatedUser[props.username]
+  const info = store.getState().serverUser.cachedUser[props.username]
   const [showToolBox, setToolBoxVisible] = useState(false)
   const startX = useRef(0)
   const startY = useRef(0)
