@@ -5,6 +5,8 @@ import { USER_INFO_PAGE, UseRouteGeneric } from '../../router'
 import { getUserInfo, UserInfoView } from '../../api/server/user'
 import UserInfoCard from './UserInfoCard'
 import EnhancedLoadingView from '../../component/Loading/EnhancedLoadingView'
+import { useDispatch } from 'react-redux'
+import { saveUserToCache } from '../../redux/counter/serverUserSlice'
 
 interface UserInfoPageProps {}
 
@@ -14,8 +16,12 @@ interface UserInfoPageProps {}
 const UserInfoPage: React.FC<UserInfoPageProps> = () => {
   const route = useRoute<UseRouteGeneric<typeof USER_INFO_PAGE>>()
   const [userInfo, setUserInfo] = useState<UserInfoView>()
-
-  const loadData = () => getUserInfo(route.params.id)
+  const dispatch = useDispatch()
+  const loadData = async () => {
+    const info = await getUserInfo(route.params.id)
+    dispatch(saveUserToCache(info.data))
+    return info
+  }
 
   return (
     <EnhancedLoadingView loadData={loadData} setData={setUserInfo}>

@@ -4,8 +4,13 @@ import {
   ServerUserReducers,
   ServerUserState,
 } from '../types/serverUserTypes'
-import { insertOrUpdateUser, loadMultiUserInfo } from '../../sqlite/user'
+import {
+  insertOrUpdateMultiUsers,
+  insertOrUpdateUser,
+  loadMultiUserInfo,
+} from '../../sqlite/user'
 import { getLogger } from '../../utils/LoggerUtils'
+import { getMultiUserInfo } from '../../api/server/user'
 
 const logger = getLogger('redux/counter/serverUserSlice')
 
@@ -64,8 +69,17 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
 const loadUserCacheFromServer = createAsyncThunk<CachedUser, number[]>(
   'serverUser/loadUserCacheFromServer',
   async arg => {
-    // TODO
-    return {}
+    logger.info('loading user ' + arg + ' from server...')
+    const info = await getMultiUserInfo(arg)
+    const cachedUser: CachedUser = {}
+    info.data.forEach(value => {
+      cachedUser[value.uid] = value
+    })
+    // 存数据库
+    insertOrUpdateMultiUsers(info.data).catch(e =>
+      logger.error('save user to database fail, ' + e.message)
+    )
+    return cachedUser
   }
 )
 
@@ -86,8 +100,8 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
         logger.error('saving user: ' + str + ' fail, ' + e.message)
       })
     },
-    initUserCache(state, { payload }) {
-      state.cachedUser = payload
+    combineUserCache(state, { payload }) {
+      Object.assign(state.cachedUser, payload)
     },
   },
   extraReducers: {
@@ -99,6 +113,16 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
     },
     [loadMultiUserCache.rejected.type](state, { error }) {
       logger.error('loadMultiUserCache failed: ' + error.message)
+    },
+    [loadUserCacheFromServer.fulfilled.type](
+      state,
+      { payload }: { payload: CachedUser }
+    ) {
+      Object.assign(state.cachedUser, payload)
+      logger.info('successfully loaded user from server')
+    },
+    [loadUserCacheFromServer.rejected.type](state, { error }) {
+      logger.error('loadUserCacheFromServer failed: ' + error.message)
     },
   },
 })

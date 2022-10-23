@@ -50,7 +50,7 @@ export interface ServerUserReducers extends SliceCaseReducers<ServerUserState> {
    */
   saveUserToCache: Reducer<ServerUser>
   /**
-   * 初始化用户信息缓存
+   * 合并用户信息缓存
    */
-  initUserCache: Reducer<CachedUser>
+  combineUserCache: Reducer<CachedUser>
 }

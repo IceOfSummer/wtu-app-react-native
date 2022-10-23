@@ -10,8 +10,11 @@ import { store } from '../redux/store'
 import { markLoginExpired } from '../redux/actions/user'
 
 const serverResponseInterceptor = (resp: AxiosResponse): any => {
-  if (resp.data.code !== serverConfig.successCode) {
-    throw resp.data
+  if (resp.data.code === undefined) {
+    throw new Error(resp.data)
+  }
+  if (resp.data.code !== 0) {
+    throw new Error(resp.data.message)
   }
   return resp.data
 }

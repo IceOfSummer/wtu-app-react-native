@@ -1,11 +1,9 @@
 import DatabaseManager from '../index'
+import { UserInfoView } from '../../api/server/user'
 
 // const TABLE_NAME = 'user'
 
-export type ServerUser = {
-  uid: number
-  nickname: string
-}
+export type ServerUser = UserInfoView
 
 /**
  * 插入一个用户
@@ -13,10 +11,32 @@ export type ServerUser = {
  */
 export const insertOrUpdateUser = (user: ServerUser) => {
   return DatabaseManager.executeSql(
-    'REPLACE INTO user(uid, nickname) VALUES(?, ?)',
+    'REPLACE INTO user VALUES(?, ?, ?, ?, ?)',
     user.uid,
-    user.nickname
+    user.nickname,
+    user.name,
+    user.bedroom,
+    user.credit
   )
+}
+
+export const insertOrUpdateMultiUsers = (user: ServerUser[]) => {
+  let sql = ''
+  user.forEach(value => {
+    sql += getInlineSql(value) + ','
+  })
+  sql = sql.replace(/,$/, '')
+  return DatabaseManager.executeSql('REPLACE INTO user VALUES ' + sql)
+}
+
+function getInlineSql(user: ServerUser): string {
+  return `(${user.uid},${preventNull(user.nickname)},${preventNull(
+    user.name
+  )},${preventNull(user.bedroom)},${user.credit})`
+}
+
+function preventNull(val?: string): string {
+  return val ? `'${val}'` : 'NULL'
 }
 
 /**

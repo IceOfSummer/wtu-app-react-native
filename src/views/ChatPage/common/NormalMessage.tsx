@@ -39,7 +39,6 @@ interface NormalMessageComponentProps {
 }
 
 const NormalMessageComponent: React.FC<NormalMessageComponentProps> = props => {
-  console.log('render')
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{props.content}</Text>

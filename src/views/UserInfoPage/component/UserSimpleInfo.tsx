@@ -1,8 +1,8 @@
 import React from 'react'
 import { UserInfoView } from '../../../api/server/user'
 import BaseContainer from '../../../component/Container/BaseContainer'
-import FastImage from 'react-native-fast-image'
 import { StyleSheet, Text, View } from 'react-native'
+import Avatar, { getAvatarUrl } from '../../../component/Container/Avatar'
 
 interface UserSimpleInfoProps {
   userInfo: UserInfoView
@@ -21,14 +21,9 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
   }
   return (
     <BaseContainer>
-      <FastImage
-        style={styles.avatar}
-        source={
-          userInfo.avatar
-            ? { uri: userInfo.avatar }
-            : require('../../../assets/img/avatar-boy.png')
-        }
-      />
+      <View style={styles.avatar}>
+        <Avatar uri={getAvatarUrl(props.userInfo.userId)} size={64} />
+      </View>
       <View
         style={{
           justifyContent: 'center',
@@ -36,7 +31,6 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
           alignItems: 'center',
         }}>
         <Text style={global.styles.blobText}>{userInfo.name}</Text>
-        <Text style={styles.usernameText}>{userInfo.wtuUsername}</Text>
       </View>
       <View style={styles.infoContainer}>
         <View style={styles.infoDetailContainer}>
@@ -53,8 +47,6 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
 }
 const styles = StyleSheet.create({
   avatar: {
-    width: 64,
-    height: 64,
     resizeMode: 'stretch',
     alignSelf: 'center',
   },

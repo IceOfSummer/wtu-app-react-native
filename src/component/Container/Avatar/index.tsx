@@ -7,6 +7,7 @@ const cdn = __DEV__ ? config.debug.cdnServer : config.release.cdnServer
 
 interface AvatarProps {
   uri: string
+  size?: number
 }
 
 const LENGTH = 50
@@ -18,8 +19,8 @@ const Avatar: React.FC<AvatarProps> = props => {
   return (
     <View
       style={{
-        width: LENGTH,
-        height: LENGTH,
+        width: global.util.assert(props.size, LENGTH),
+        height: global.util.assert(props.size, LENGTH),
         overflow: 'hidden',
         borderRadius: 50,
       }}>

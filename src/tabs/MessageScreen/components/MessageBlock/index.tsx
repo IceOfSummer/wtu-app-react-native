@@ -29,7 +29,7 @@ const MessageBlock: React.FC<ChatMessage> = props => {
   const nav = useNav()
 
   let nickname: string | number = props.username
-  if (info) {
+  if (info && info.nickname) {
     nickname = info.nickname
   }
   const onLongPress = ({ nativeEvent }: GestureResponderEvent) => {

@@ -19,7 +19,7 @@ const Chat: React.FC = () => {
   const inrMsg = () => {
     const content = appendMessagePrefix(0, 'hello world ' + Date.now())
     console.log(content)
-    for (let i = 0; i < 12; i++) {
+    for (let i = 1; i < 12; i++) {
       dispatch(
         insertSingleMessage({
           // @ts-ignore
