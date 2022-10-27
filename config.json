@@ -1,12 +1,14 @@
 {
   "release": {
     "serverBaseUrl": "",
-    "chatServerUrl": "",
+    "chatServerHost": "",
+    "chatServerPort": 7001,
     "cdnServer": "cdn.xds.fit"
   },
   "debug": {
     "serverBaseUrl": "http://10.181.18.14:8080",
-    "chatServerUrl": "http://10.181.18.14:8080",
+    "chatServerHost": "10.181.18.14",
+    "chatServerPort": 7001,
     "cdnServer": "cdn.xds.fit"
   }
 }

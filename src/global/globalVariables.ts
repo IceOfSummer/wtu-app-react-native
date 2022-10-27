@@ -1,4 +1,5 @@
 import { TextStyle, ViewStyle } from 'react-native'
+import config from '../../config.json'
 const gStyleValues: GlobalStyleValues = {
   $primary_color: '#007aff',
   $success_color: '#4cd964',
@@ -106,9 +107,13 @@ const defaultThemeColors = {
 }
 global.colors = defaultThemeColors
 
+const configType = __DEV__ ? config.debug : config.release
+
 global.constant = {
   downloadUrl: 'https://xds.fit/wtuapp/app/',
-  homePageUrl: 'https://github.com/HuPeng333/wtu-app-react-native.git ',
+  homePageUrl: 'https://github.com/HuPeng333/wtu-app-react-native.git',
+  sessionCookieName: 'SESSION',
+  ...configType,
 }
 global.styles = Object.assign(gStyleValues, gStyleSheet)
 

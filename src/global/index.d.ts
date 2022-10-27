@@ -117,6 +117,14 @@ interface GlobalStyleSheet {
 interface AppConstant {
   downloadUrl: string
   homePageUrl: string
+  serverBaseUrl: string
+  chatServerHost: string
+  chatServerPort: number
+  cdnServer: string
+  /**
+   * 存储用户凭据的cookie名称
+   */
+  sessionCookieName: string
 }
 
 interface UtilFunction {
