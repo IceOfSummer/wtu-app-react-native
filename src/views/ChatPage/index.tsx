@@ -19,7 +19,7 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     const user = store.getState().serverUser.cachedUser[uid]
     nav.setOptions({
-      title: user ? user.nickname : '聊天',
+      title: user && user.nickname ? user.nickname : uid,
     })
   }, [])
 

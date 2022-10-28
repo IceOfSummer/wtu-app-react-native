@@ -19,6 +19,7 @@ import DatabaseManager from '../../sqlite'
 import NativeDialog from '../../native/modules/NativeDialog'
 import { initMessage } from '../../redux/counter/messageSlice'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
+import ChatService from '../../api/chat/ChatService'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
@@ -58,7 +59,6 @@ const AuthenticatedView = () => {
   )
   const dispatch = useDispatch()
   useEffect(() => {
-    console.log('effect')
     DatabaseManager.loadDatabase(uid)
       .then(() => {
         // initMessage
@@ -72,7 +72,19 @@ const AuthenticatedView = () => {
           hideCancelBtn: true,
         })
       })
+    tryToConnectChatServer()
   }, [])
+
+  /**
+   * 尝试连接聊天服务器
+   */
+  function tryToConnectChatServer() {
+    const ins = ChatService.instance
+    setTimeout(() => {
+      ins.tryAuth()
+    }, 2000)
+  }
+
   return (
     <Tab.Navigator tabBar={MyTabBar} screenOptions={{ lazy: true }}>
       <Tab.Screen name="消息" component={Chat} navigationKey="chat" />
@@ -132,6 +144,7 @@ const RenderTabBar = (
   const colors = useSelector<ReducerTypes, ThemeColors>(
     state => state.theme.colors
   )
+
   return (
     <TabBar
       {...props}

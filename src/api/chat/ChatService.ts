@@ -7,11 +7,10 @@ import { TLSSocket } from 'react-native-tcp-socket/lib/types/Server'
 import { getLogger } from '../../utils/LoggerUtils'
 import LinkedOneWayQueue, {
   OneWayQueue,
-} from '../../utils/Queue/SimpleLinkedList'
+} from '../../utils/Queue/LinkedOneWayQueue'
 import CookieManager from '@react-native-cookies/cookies'
 import AuthRequestMessage from './message/AuthRequestMessage'
 import ByteBuffer from 'bytebuffer'
-import SimpleLinkedList from '../../utils/Queue/SimpleLinkedList'
 
 const logger = getLogger('/api/chat/ChatService')
 
@@ -146,7 +145,7 @@ export default class ChatService {
 class FrameDecoder {
   private buffer: ByteBuffer
 
-  private decodedFrame: SimpleLinkedList<ByteBuffer>
+  private decodedFrame: OneWayQueue<ByteBuffer>
 
   private readonly lengthFieldOffset: number
 
@@ -161,7 +160,7 @@ class FrameDecoder {
   public constructor(lengthFieldOffset: number) {
     this.buffer = new ByteBuffer(1024)
     this.lengthFieldOffset = lengthFieldOffset
-    this.decodedFrame = new SimpleLinkedList()
+    this.decodedFrame = new LinkedOneWayQueue()
   }
 
   /**
@@ -173,6 +172,35 @@ class FrameDecoder {
     } else {
       this.buffer.append(ByteBuffer.wrap(data))
     }
+    let result: ByteBuffer | null
+    // 放在while循环里，防止出现粘包
+    while ((result = this.checkBuffer())) {
+      this.decodedFrame.push(result)
+    }
+  }
+
+  public pop(): ByteBuffer {
+    const popVal = this.decodedFrame.pop()
+    if (!popVal) {
+      logger.error(
+        'the FrameDecoder#pop is undefined! please ensure invoke FrameDecoder#isNotEmpty before this method'
+      )
+      throw new Error('似乎出了点问题?')
+    }
+    return popVal
+  }
+
+  public isNotEmpty(): boolean {
+    return !this.decodedFrame.empty()
+  }
+
+  /**
+   * 检查当前buffer是否可以解析出一条完整的消息，若可以，则返回解析后的消息，反之返回null
+   * <p>
+   * 可以解决半包造成的问题
+   * @private
+   */
+  private checkBuffer(): ByteBuffer | null {
     this.buffer.flip()
     // 每次添加完毕消息后就去尝试解析
     const len = this.buffer.readUint32(this.lengthFieldOffset)
@@ -182,7 +210,7 @@ class FrameDecoder {
     if (currentDataLength < len) {
       // 半包
       this.buffer.compact()
-      return
+      return null
     }
     const bufLen = this.lengthFieldOffset + this.lengthFieldLength + len
     logger.debug('successfully parsed a frame, data length: ' + bufLen)
@@ -190,21 +218,6 @@ class FrameDecoder {
     this.buffer.copyTo(parsedBuf, 0, 0, bufLen)
     this.buffer.limit = bufLen
     this.buffer.compact()
-    this.decodedFrame.push(parsedBuf)
-  }
-
-  public pop(): ByteBuffer {
-    const popVal = this.decodedFrame.pop()
-    if (!popVal) {
-      logger.error(
-        'the FrameDecoder#pop is undefined! please ensure invoke FrameDecoder#isNotEmpty before this method '
-      )
-      throw new Error('似乎出了点问题?')
-    }
-    return popVal
-  }
-
-  public isNotEmpty(): boolean {
-    return !this.decodedFrame.empty()
+    return parsedBuf
   }
 }
