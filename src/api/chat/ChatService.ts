@@ -1,6 +1,6 @@
 import TcpSockets from 'react-native-tcp-socket'
 import { ConnectionOptions } from 'react-native-tcp-socket/lib/types/Socket'
-import { buildMessage, Message } from './message/Message'
+import { buildMessage, Message, parseMessage } from './message/Message'
 import config from '../../../config.json'
 import { TLSSocketOptions } from 'react-native-tcp-socket/lib/types/TLSSocket'
 import { TLSSocket } from 'react-native-tcp-socket/lib/types/Server'
@@ -11,6 +11,7 @@ import LinkedOneWayQueue, {
 import CookieManager from '@react-native-cookies/cookies'
 import AuthRequestMessage from './message/AuthRequestMessage'
 import ByteBuffer from 'bytebuffer'
+import pubsub from 'pubsub-js'
 
 const logger = getLogger('/api/chat/ChatService')
 
@@ -30,6 +31,11 @@ const options: ConnectionOptions & TLSSocketOptions = {
   ca: require('./cert.pem'),
 }
 
+/**
+ * 消息服务
+ * <p>
+ * 若要监听服务器的消息，请使用pubsub订阅{@link ChatService#PUBSUB_KEY}
+ */
 export default class ChatService {
   /**
    * 单例模式
@@ -40,6 +46,11 @@ export default class ChatService {
   private client: TLSSocket
 
   private frameDecoder: FrameDecoder
+
+  /**
+   * 通过pubsub监听该Key值来获取最新消息
+   */
+  public static readonly PUBSUB_KEY = 'ChatServiceMessage'
 
   /**
    * 一个消息队列，用于保存响应的消息
@@ -102,6 +113,11 @@ export default class ChatService {
       while (this.frameDecoder.isNotEmpty()) {
         const bufData = this.frameDecoder.pop()
         logger.info('received data length: ' + bufData.limit)
+        const message = parseMessage(bufData)
+        if (!message) {
+          continue
+        }
+        pubsub.publish(ChatService.PUBSUB_KEY, message)
       }
     })
 
