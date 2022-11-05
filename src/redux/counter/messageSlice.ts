@@ -29,10 +29,10 @@ export const initMessage = createAsyncThunk<MessageState, undefined>(
     let messageLabels: MessageLabel = {}
     lastMsg.forEach(value => {
       value.content = value.content.replace(REPLACE_TYPE_MARKER, '')
-      messageLabels[value.username] = value
+      messageLabels[value.uid] = value
     })
     // 加载相关用户
-    dispatch(loadMultiUserCache(lastMsg.map(value => value.username)))
+    dispatch(loadMultiUserCache(lastMsg.map(value => value.uid)))
     return {
       messageLabels,
     }
@@ -55,18 +55,21 @@ export const insertSingleMessage = createAsyncThunk<
   InsertSingleMessageParam
 >('message/insertSingleMessage', async ({ msg, confirm }, { dispatch }) => {
   // FIXME 插入失败后的处理方式
-  const re = await insertMessage(msg.username, msg)
+  const re = await insertMessage(msg.uid, msg)
   logger.debug('insert message to database success: ' + re)
-  await insertLastMessage(msg.username, confirm, re)
+  await insertLastMessage(msg.uid, confirm, re)
   dispatch(messageSlice.actions.insertSingleMessage(re))
 })
 
+/**
+ * 移除消息面板上的消息
+ */
 export const removeMessagePanel = createAsyncThunk<void, number>(
   'message/removeMessagePanel',
-  async (username, { dispatch }) => {
+  async (uid, { dispatch }) => {
     // 数据库记录删除
-    await deleteLastMessage(username)
-    dispatch(messageSlice.actions.removeMessagePanel(username))
+    await deleteLastMessage(uid)
+    dispatch(messageSlice.actions.removeMessagePanel(uid))
   }
 )
 
@@ -81,7 +84,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      */
     insertSingleMessage: (state, { payload }) => {
       payload.content = payload.content.replace(REPLACE_TYPE_MARKER, '')
-      state.messageLabels[payload.username] = payload
+      state.messageLabels[payload.uid] = payload
     },
     /**
      * do not export it, it needs extra operation, see {@link removeMessagePanel}

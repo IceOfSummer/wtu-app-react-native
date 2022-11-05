@@ -21,14 +21,14 @@ import { ServerUser } from '../../../../sqlite/user'
 const MessageBlock: React.FC<ChatMessage> = props => {
   const dispatch = useDispatch()
   const info = useSelector<ReducerTypes, ServerUser>(
-    state => state.serverUser.cachedUser[props.username]
+    state => state.serverUser.cachedUser[props.uid]
   )
   const [showToolBox, setToolBoxVisible] = useState(false)
   const startX = useRef(0)
   const startY = useRef(0)
   const nav = useNav()
 
-  let nickname: string | number = props.username
+  let nickname: string | number = props.uid
   if (info && info.nickname) {
     nickname = info.nickname
   }
@@ -53,7 +53,7 @@ const MessageBlock: React.FC<ChatMessage> = props => {
 
   const onDeletePress = () => {
     console.log('delete')
-    dispatch(removeMessagePanel(props.username))
+    dispatch(removeMessagePanel(props.uid))
     delayCloseModal()
   }
 
@@ -68,7 +68,7 @@ const MessageBlock: React.FC<ChatMessage> = props => {
    * 跳转聊天页面
    */
   const onPress = () => {
-    nav.push(CHAT_PAGE, { uid: props.username })
+    nav.push(CHAT_PAGE, { uid: props.uid })
   }
 
   return (
@@ -80,7 +80,7 @@ const MessageBlock: React.FC<ChatMessage> = props => {
         onLongPress={onLongPress}>
         <View style={styles.msgContainer}>
           <View style={{ flexDirection: 'row' }}>
-            <Avatar uri={getAvatarUrl(props.username)} />
+            <Avatar uri={getAvatarUrl(props.uid)} />
             <View style={styles.nameMsgContainer}>
               <Text style={styles.nameText}>{nickname}</Text>
               <Text>{props.content}</Text>

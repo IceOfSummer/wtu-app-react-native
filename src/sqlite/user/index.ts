@@ -21,6 +21,9 @@ export const insertOrUpdateUser = (user: ServerUser) => {
 }
 
 export const insertOrUpdateMultiUsers = (user: ServerUser[]) => {
+  if (user.length === 0) {
+    return Promise.resolve()
+  }
   let sql = ''
   user.forEach(value => {
     sql += getInlineSql(value) + ','

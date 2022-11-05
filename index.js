@@ -16,12 +16,12 @@ AppRegistry.registerComponent(appName, () => App)
  */
 if (__DEV__) {
   DevSettings.addMenuItem('login test account1', () => {
-    login('123456', 'abc123').then(resp => {
+    login('100000', 'abc123').then(resp => {
       console.log(resp)
     })
   })
   DevSettings.addMenuItem('login test account2', () => {
-    login('654321', 'abc123').then(resp => {
+    login('100001', 'abc123').then(resp => {
       console.log(resp)
     })
   })

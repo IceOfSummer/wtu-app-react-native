@@ -4,6 +4,7 @@ import { responseArrayParser, responseParser } from '../../util'
 
 export type UserInfoView = {
   uid: number
+  username: string
   name?: string
   bedroom?: string
   credit: number
@@ -20,6 +21,7 @@ type UglyUserInfo = {
 
 const userInfoMapping = {
   u: 'uid',
+  un: 'username',
   n: 'name',
   b: 'bedroom',
   c: 'credit',

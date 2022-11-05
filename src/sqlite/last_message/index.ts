@@ -6,13 +6,13 @@ export type LastMessageExactly = ChatMessage & ServerUser
 
 /**
  * 标记消息已读
- * @param messageId 消息id
+ * @param uid 和谁的消息
  */
-export const markMessageRead = (messageId: number) =>
+export const markMessageRead = (uid: number) =>
   new Promise(resolve => {
     DatabaseManager.executeSql(
-      'UPDATE last_message SET confirmed = 1 WHERE username = ?',
-      messageId
+      'UPDATE last_message SET confirmed = 1 WHERE uid = ?',
+      uid
     ).then(resolve)
   })
 
@@ -72,11 +72,12 @@ export const queryLastMessageExactly = () =>
 
 /**
  * 删除聊天面板的消息
- * @param username 哪个用户的消息
+ * @param uid 哪个用户的消息
  */
-export const deleteLastMessage = (username: number) =>
+export const deleteLastMessage = (uid: number) =>
   new Promise(resolve => {
-    DatabaseManager.executeSql('DELETE FROM last_message WHERE username = ?', [
-      username,
-    ]).then(resolve)
+    DatabaseManager.executeSql(
+      'DELETE FROM last_message WHERE uid = ?',
+      uid
+    ).then(resolve)
   })

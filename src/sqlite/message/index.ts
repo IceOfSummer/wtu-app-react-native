@@ -5,7 +5,7 @@ export type ChatMessage = {
   /**
    * 和谁相关的消息
    */
-  username: number
+  uid: number
   content: string
   createTime: number
   type: MessageType
@@ -21,31 +21,37 @@ export enum MessageType {
   RECEIVE,
 }
 
+/**
+ * 消息查询分页大小
+ */
 const PAGE_SIZE = 10
-const QUERY_STATEMENT = `
-    SELECT username, content, createTime, type FROM message WHERE username = ? ORDER BY messageId DESC LIMIT ?, ${PAGE_SIZE}
-`
+
 /**
  * 获取用户的消息
  * @param uid 和谁聊天
  * @param page 第几页
  */
 export const queryMessage = (uid: number, page = 0): Promise<ChatMessage[]> =>
-  DatabaseManager.executeSql(QUERY_STATEMENT, uid, page * 10).then(result => {
+  DatabaseManager.executeSql(
+    'SELECT uid, content, createTime, type FROM message WHERE uid = ? ORDER BY createTime DESC LIMIT ?, ?',
+    uid,
+    page * 10,
+    PAGE_SIZE
+  ).then(result => {
     return Promise.resolve(result[0].rows.raw())
   })
 
 /**
  * 插入一条消息
- * @param username 谁的消息
+ * @param uid 谁的消息
  * @param message 消息内容
  * @return 返回新插入的消息id
  */
-export const insertMessage = (username: number, message: ParamMessage) =>
+export const insertMessage = (uid: number, message: ParamMessage) =>
   new Promise<ChatMessage>(resolve => {
     DatabaseManager.executeSql(
-      'INSERT INTO message(username, content, createTime, type) VALUES (?,?,?,?)',
-      username,
+      'INSERT INTO message(uid, content, createTime, type) VALUES (?,?,?,?)',
+      uid,
       message.content,
       message.createTime,
       message.type

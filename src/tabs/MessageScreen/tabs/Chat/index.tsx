@@ -25,7 +25,7 @@ const Chat: React.FC = () => {
           // @ts-ignore
           confirm: i % 2,
           msg: {
-            username: i,
+            uid: i,
             content,
             createTime: Date.now(),
             type: i % 2 === 0 ? MessageType.SEND : MessageType.RECEIVE,

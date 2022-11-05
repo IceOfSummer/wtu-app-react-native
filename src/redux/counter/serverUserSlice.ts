@@ -71,6 +71,7 @@ const loadUserCacheFromServer = createAsyncThunk<CachedUser, number[]>(
   async arg => {
     logger.info('loading user ' + arg + ' from server...')
     const info = await getMultiUserInfo(arg)
+    logger.debug(info)
     const cachedUser: CachedUser = {}
     info.data.forEach(value => {
       cachedUser[value.uid] = value

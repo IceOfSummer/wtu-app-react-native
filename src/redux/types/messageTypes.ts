@@ -1,6 +1,5 @@
 import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
 import { ChatMessage } from '../../sqlite/message'
-import { ServerUser } from '../../sqlite/user'
 
 /**
  * 消息状态, 结构如下:
@@ -16,16 +15,6 @@ export interface MessageState {
    */
   messageLabels: MessageLabel
 }
-
-export type RelatedUser = Record<number, ServerUser>
-
-/**
- *  * 消息状态, 结构如下:
- * {
- *    '聊天对象': [...消息内容]
- * }
- */
-export type MessageRecord = Record<number, ChatMessage[] | undefined>
 
 /**
  * 消息面板

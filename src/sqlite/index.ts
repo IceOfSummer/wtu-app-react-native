@@ -15,20 +15,19 @@ const sql = `
 DROP TABLE IF EXISTS message;
 CREATE TABLE message(
     messageId INTEGER PRIMARY KEY AUTOINCREMENT,
-    username INT NOT NULL,
+    uid INT NOT NULL,
     content CHAR(500) NOT NULL,
     createTime INT NOT NULL,
     type INT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS message_username_index ON message(username);
+CREATE INDEX IF NOT EXISTS message_username_index ON message(uid);
 
 DROP TABLE IF EXISTS last_message;
 CREATE TABLE last_message(
-    username INT PRIMARY KEY NOT NULL,
+    uid INT PRIMARY KEY NOT NULL,
     messageId INT NOT NULL,
     confirmed TINYINT DEFAULT 0
 );
-CREATE INDEX IF NOT EXISTS last_message_username_index ON last_message(username);
 
 DROP TABLE IF EXISTS app_metadata;
 CREATE TABLE app_metadata (
@@ -44,7 +43,7 @@ CREATE TABLE user (
     name CHAR(10),
     bedroom CHAR(10),
     credit INT NOT NULL
-)
+);
 `
 
 class DatabaseManager {
