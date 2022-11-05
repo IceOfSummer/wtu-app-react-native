@@ -10,8 +10,8 @@ export default class AuthRequestMessage extends Message {
     this.session = session
   }
 
-  encode(): string {
-    return this.session
+  encode(): Uint8Array {
+    return Buffer.from(this.session)
   }
 
   getMessageType(): number {

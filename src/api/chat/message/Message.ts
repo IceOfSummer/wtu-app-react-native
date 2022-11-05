@@ -1,8 +1,18 @@
 import ByteBuffer from 'bytebuffer'
 import { getLogger } from '../../../utils/LoggerUtils'
+import ChatResponseMessage, {
+  ChatResponseMessageFactory,
+} from './ChatResponseMessage'
+import ServerResponseMessage, {
+  ServerResponseMessageFactory,
+} from './ServerResponseMessage'
 
 const logger = getLogger('/api/message/Message')
 const messageFactories: Array<MessageFactory> = []
+messageFactories[ChatResponseMessage.MESSAGE_TYPE] = ChatResponseMessageFactory
+messageFactories[ServerResponseMessage.MESSAGE_TYPE] =
+  ServerResponseMessageFactory
+let autoRequestId = 0
 
 /**
  * 按照协议要求，构造消息格式
@@ -13,13 +23,14 @@ export const buildMessage = (message: Message): Uint8Array => {
   byteBuffer.writeUint16(Message.MAGIC_NUMBER)
   byteBuffer.writeUint8(Message.VERSION)
   byteBuffer.writeUint8(message.getMessageType())
-  byteBuffer.writeUint16(message.requestId)
+  // 自动分配
+  byteBuffer.writeUint16(autoRequestId++)
   const enc = message.encode()
   byteBuffer.writeUint32(enc.length)
-  byteBuffer.writeUTF8String(enc)
+  byteBuffer.append(enc)
   byteBuffer.flip()
   if (__DEV__) {
-    console.log(byteBuffer.toDebug())
+    logger.debug(byteBuffer.toDebug())
   }
   return new Uint8Array(byteBuffer.toArrayBuffer())
 }
@@ -69,7 +80,7 @@ export abstract class Message {
   /**
    * 将数据体进行编码
    */
-  abstract encode(): string
+  abstract encode(): Uint8Array
 
   /**
    * 获取消息类型

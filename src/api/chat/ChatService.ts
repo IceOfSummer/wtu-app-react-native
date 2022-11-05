@@ -31,6 +31,8 @@ const options: ConnectionOptions & TLSSocketOptions = {
   ca: require('./cert.pem'),
 }
 
+type PromiseCallFunc = (data: any) => void
+
 /**
  * 消息服务
  * <p>
@@ -46,6 +48,8 @@ export default class ChatService {
   private client: TLSSocket
 
   private frameDecoder: FrameDecoder
+
+  private requestManager: MessageRequestIdManager
 
   /**
    * 通过pubsub监听该Key值来获取最新消息
@@ -63,6 +67,7 @@ export default class ChatService {
     this.client = socket
     this.messageQueue = new LinkedOneWayQueue()
     this.frameDecoder = new FrameDecoder(6)
+    this.requestManager = new MessageRequestIdManager()
     this.bindEvent()
   }
 
@@ -91,14 +96,18 @@ export default class ChatService {
    * 发送前请确保登录过了，可以直接调用{@link ChatService#tryAuth}来登录
    * @param message 消息内容
    */
-  public sendMessage(message: Message): void {
-    const msg = buildMessage(message)
-    this.client.write(msg, 'utf8', err => {
-      // 当err为空时，代表服务器已经接收到相关消息了
-      if (err) {
-        throw err
-      }
-      logger.info(err)
+  public sendMessage(message: Message): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.requestManager.saveRequest(message.requestId, resolve, reject)
+      const msg = buildMessage(message)
+      this.client.write(msg, 'utf8', err => {
+        // 当err为空时，代表服务器已经接收到相关消息了
+        // 这里的回调只代表服务器成功收到了消息，但还没有回应
+        if (err) {
+          this.requestManager.reject(message.requestId, err)
+          return
+        }
+      })
     })
   }
 
@@ -117,7 +126,14 @@ export default class ChatService {
         if (!message) {
           continue
         }
-        pubsub.publish(ChatService.PUBSUB_KEY, message)
+        const requestId = message.requestId
+        if (requestId === -1) {
+          // -1代表服务器主动给用户发送信息
+          logger.debug(message)
+          pubsub.publish(ChatService.PUBSUB_KEY, message)
+        } else {
+          this.requestManager.resolve(message.requestId, message)
+        }
       }
     })
 
@@ -135,7 +151,7 @@ export default class ChatService {
    * 尝试登录
    */
   public tryAuth(): Promise<void> {
-    return new Promise<void>(async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const cookies = await CookieManager.get(global.constant.serverBaseUrl)
       const session = cookies[global.constant.sessionCookieName] as any
       if (!session) {
@@ -143,9 +159,65 @@ export default class ChatService {
         return
       }
       const sessionValue = session.value as string
-      this.sendMessage(new AuthRequestMessage(sessionValue))
-      resolve()
+      try {
+        await this.sendMessage(new AuthRequestMessage(sessionValue))
+      } catch (e) {
+        reject(e)
+        return
+      }
     })
+  }
+}
+
+class MessageRequestIdManager {
+  public static readonly REQUEST_CHECK_ARR_SIZE = 128
+
+  /**
+   * 用于一一对应响应
+   * @private
+   */
+  private messageResolveList: Array<PromiseCallFunc | undefined> = new Array<
+    PromiseCallFunc | undefined
+  >(MessageRequestIdManager.REQUEST_CHECK_ARR_SIZE)
+
+  private messageRejectList: Array<PromiseCallFunc | undefined> = new Array<
+    PromiseCallFunc | undefined
+  >(MessageRequestIdManager.REQUEST_CHECK_ARR_SIZE)
+
+  public saveRequest(
+    requestId: number,
+    resolve: PromiseCallFunc,
+    reject: PromiseCallFunc
+  ) {
+    const index = this.getIndex(requestId)
+    this.messageResolveList[index] = resolve
+    this.messageRejectList[index] = reject
+  }
+
+  public resolve(requestId: number, data?: any) {
+    const index = this.getIndex(requestId)
+    this.invoke(index, this.messageResolveList[index], data)
+  }
+
+  public reject(requestId: number, data?: any) {
+    const index = this.getIndex(requestId)
+    this.invoke(index, this.messageRejectList[index], data)
+  }
+
+  private invoke(index: number, call?: PromiseCallFunc, data?: any) {
+    if (call) {
+      call(data)
+    } else {
+      logger.warn(
+        `the index ${index} in request list is null! received data: ${data}`
+      )
+    }
+    this.messageRejectList[index] = undefined
+    this.messageResolveList[index] = undefined
+  }
+
+  private getIndex(requestId: number): number {
+    return requestId % MessageRequestIdManager.REQUEST_CHECK_ARR_SIZE
   }
 }
 

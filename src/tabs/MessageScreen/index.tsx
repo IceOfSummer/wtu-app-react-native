@@ -20,6 +20,7 @@ import NativeDialog from '../../native/modules/NativeDialog'
 import { initMessage } from '../../redux/counter/messageSlice'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
 import ChatService from '../../api/chat/ChatService'
+import Toast from 'react-native-toast-message'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
@@ -72,18 +73,33 @@ const AuthenticatedView = () => {
           hideCancelBtn: true,
         })
       })
-    tryToConnectChatServer()
-  }, [])
+    tryConnectToServer()
+    const interval = setInterval(() => {
+      tryConnectToServer()
+    }, 20000)
 
-  /**
-   * 尝试连接聊天服务器
-   */
-  function tryToConnectChatServer() {
-    const ins = ChatService.instance
-    setTimeout(() => {
-      ins.tryAuth()
-    }, 2000)
-  }
+    function tryConnectToServer() {
+      const ins = ChatService.instance
+      ins
+        .tryAuth()
+        .then(() => {
+          // TODO 检查是否登录成功
+          clearInterval(interval)
+        })
+        .catch(e => {
+          Toast.show({
+            position: 'bottom',
+            text1: '连接聊天服务器失败',
+            text2: e.message,
+            type: 'error',
+          })
+        })
+    }
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [])
 
   return (
     <Tab.Navigator tabBar={MyTabBar} screenOptions={{ lazy: true }}>
