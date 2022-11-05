@@ -1,6 +1,6 @@
 import TcpSockets from 'react-native-tcp-socket'
 import { ConnectionOptions } from 'react-native-tcp-socket/lib/types/Socket'
-import { buildMessage, Message, parseMessage } from './message/Message'
+import { Message } from './message/Message'
 import config from '../../../config.json'
 import { TLSSocketOptions } from 'react-native-tcp-socket/lib/types/TLSSocket'
 import { TLSSocket } from 'react-native-tcp-socket/lib/types/Server'
@@ -12,6 +12,7 @@ import CookieManager from '@react-native-cookies/cookies'
 import AuthRequestMessage from './message/AuthRequestMessage'
 import ByteBuffer from 'bytebuffer'
 import pubsub from 'pubsub-js'
+import { buildMessage, parseMessage } from './message/Protocol'
 
 const logger = getLogger('/api/chat/ChatService')
 
