@@ -73,20 +73,24 @@ const AuthenticatedView = () => {
           hideCancelBtn: true,
         })
       })
-    tryConnectToServer()
-    const interval = setInterval(() => {
-      tryConnectToServer()
-    }, 20000)
 
+    let waitTime = 2000
+
+    tryConnectToServer()
     function tryConnectToServer() {
       const ins = ChatService.instance
+      if (!ins) {
+        setTimeout(tryConnectToServer, waitTime)
+        return
+      }
       ins
         .tryAuth()
         .then(() => {
           // TODO 检查是否登录成功
-          clearInterval(interval)
         })
         .catch(e => {
+          waitTime += 1000
+          setTimeout(tryConnectToServer, waitTime)
           Toast.show({
             position: 'bottom',
             text1: '连接聊天服务器失败',
@@ -94,10 +98,6 @@ const AuthenticatedView = () => {
             type: 'error',
           })
         })
-    }
-
-    return () => {
-      clearInterval(interval)
     }
   }, [])
 

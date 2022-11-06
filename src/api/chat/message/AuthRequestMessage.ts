@@ -1,4 +1,5 @@
 import { Message } from './Message'
+import Buffer from 'buffer'
 
 export default class AuthRequestMessage extends Message {
   private static readonly MESSAGE_TYPE = 0
@@ -11,7 +12,7 @@ export default class AuthRequestMessage extends Message {
   }
 
   encode(): Uint8Array {
-    return Buffer.from(this.session)
+    return Buffer.Buffer.from(this.session)
   }
 
   getMessageType(): number {

@@ -8,6 +8,7 @@ import { SpringScrollView } from 'react-native-spring-scrollview'
 import { MessageLabel } from '../../../../redux/types/messageTypes'
 import { MessageType } from '../../../../sqlite/message'
 import { appendMessagePrefix } from '../../../../views/ChatPage/common/MessageManager'
+import ChatService from '../../../../api/chat/ChatService'
 
 const Chat: React.FC = () => {
   const dispatch = useDispatch()
@@ -35,9 +36,16 @@ const Chat: React.FC = () => {
     }
   }
 
+  const TestSendMsg = () => {
+    ChatService.instance?.tryAuth().catch(e => {
+      console.log(e)
+    })
+  }
+
   return (
     <SpringScrollView showsVerticalScrollIndicator>
       <Button title="测试" onPress={inrMsg} />
+      <Button title="测试2" onPress={TestSendMsg} />
       {ent.map(([key, value]) =>
         value ? <MessageBlock {...value} key={key} /> : null
       )}

@@ -72,21 +72,24 @@ export default class ChatService {
     this.bindEvent()
   }
 
+  private static pending: boolean = false
+
   /**
    * 单例模式
    */
-  static get instance(): ChatService {
-    if (!ChatService._instance) {
+  static get instance(): ChatService | undefined {
+    if (!ChatService._instance && !ChatService.pending) {
       // connect
+      ChatService.pending = true
       logger.info(`trying to connect to ${host}:${port}`)
       const client = TcpSockets.connectTLS(options, () => {
-        logger.debug('init')
+        logger.info(`successfully connected to ${host}:${port}`)
+        this._instance = new ChatService(client)
+        ChatService.pending = false
       })
-      logger.info(`successfully connected to ${host}:${port}`)
       client.setKeepAlive(true)
       // client.setEncoding('utf8')
-      this._instance = new ChatService(client)
-      return this._instance
+      return undefined
     }
     return ChatService._instance
   }
@@ -101,7 +104,7 @@ export default class ChatService {
     return new Promise((resolve, reject) => {
       this.requestManager.saveRequest(message.requestId, resolve, reject)
       const msg = buildMessage(message)
-      this.client.write(msg, 'utf8', err => {
+      this.client.write(msg, undefined, err => {
         // 当err为空时，代表服务器已经接收到相关消息了
         // 这里的回调只代表服务器成功收到了消息，但还没有回应
         if (err) {
@@ -119,6 +122,7 @@ export default class ChatService {
   private bindEvent() {
     this.client.on('data', data => {
       // 经测试，此处仍然存在粘包、半包等问题, 不能直接使用
+      console.log(data)
       this.frameDecoder.append(data)
       while (this.frameDecoder.isNotEmpty()) {
         const bufData = this.frameDecoder.pop()
@@ -133,12 +137,14 @@ export default class ChatService {
           logger.debug(message)
           pubsub.publish(ChatService.PUBSUB_KEY, message)
         } else {
+          logger.debug(message)
           this.requestManager.resolve(message.requestId, message)
         }
       }
     })
 
     this.client.on('error', error => {
+      ChatService.pending = false
       logger.error(error)
     })
 
@@ -162,9 +168,9 @@ export default class ChatService {
       const sessionValue = session.value as string
       try {
         await this.sendMessage(new AuthRequestMessage(sessionValue))
+        resolve()
       } catch (e) {
         reject(e)
-        return
       }
     })
   }
@@ -190,6 +196,7 @@ class MessageRequestIdManager {
     resolve: PromiseCallFunc,
     reject: PromiseCallFunc
   ) {
+    logger.debug('saving request id: ' + requestId)
     const index = this.getIndex(requestId)
     this.messageResolveList[index] = resolve
     this.messageRejectList[index] = reject
@@ -206,12 +213,12 @@ class MessageRequestIdManager {
   }
 
   private invoke(index: number, call?: PromiseCallFunc, data?: any) {
+    logger.debug('invoked: ' + index)
     if (call) {
       call(data)
     } else {
-      logger.warn(
-        `the index ${index} in request list is null! received data: ${data}`
-      )
+      logger.warn(`the index ${index} in request list is null! received data:`)
+      logger.warn(data)
     }
     this.messageRejectList[index] = undefined
     this.messageResolveList[index] = undefined
@@ -238,6 +245,8 @@ class FrameDecoder {
 
   private readonly lengthFieldOffset: number
 
+  private static readonly BUFFER_SIZE = 128
+
   /**
    * 数据长度的字节数
    * <p>
@@ -247,7 +256,7 @@ class FrameDecoder {
   private readonly lengthFieldLength: number = 4
 
   public constructor(lengthFieldOffset: number) {
-    this.buffer = new ByteBuffer(1024)
+    this.buffer = new ByteBuffer(FrameDecoder.BUFFER_SIZE)
     this.lengthFieldOffset = lengthFieldOffset
     this.decodedFrame = new LinkedOneWayQueue()
   }
@@ -257,9 +266,15 @@ class FrameDecoder {
    */
   public append(data: string | Buffer) {
     if (typeof data === 'string') {
+      console.log('write string: ' + data)
       this.buffer.writeString(data)
     } else {
-      this.buffer.append(ByteBuffer.wrap(data))
+      console.log(this.buffer.capacity())
+      console.log(this.buffer.offset)
+      console.log(this.buffer.limit)
+      console.log(typeof data === 'object')
+      this.buffer.append(data)
+      console.log('a2')
     }
     let result: ByteBuffer | null
     // 放在while循环里，防止出现粘包
@@ -291,6 +306,11 @@ class FrameDecoder {
    */
   private checkBuffer(): ByteBuffer | null {
     this.buffer.flip()
+    if (this.buffer.limit === 0) {
+      // 空消息
+      this.buffer.reset()
+      return null
+    }
     // 每次添加完毕消息后就去尝试解析
     const len = this.buffer.readUint32(this.lengthFieldOffset)
     const currentDataLength =
@@ -305,7 +325,15 @@ class FrameDecoder {
     logger.debug('successfully parsed a frame, data length: ' + bufLen)
     const parsedBuf = new ByteBuffer(bufLen)
     this.buffer.copyTo(parsedBuf, 0, 0, bufLen)
-    this.buffer.limit = bufLen
+    this.buffer.offset += bufLen
+    // 这个compat和java不一样，java是截取后capacity不变，这个会将capacity变为limit - offset
+    // 作者在GitHub上说因为这么做好实现... https://github.com/protobufjs/bytebuffer.js/issues/73
+    // 如果limit === offset，则会被判断为空buffer，不能做任何的添加操作(此时调用ensureCapacity会报错，可见源码)！
+    // 因此当limit === offset时应该重新new一个buffer
+    if (this.buffer.offset === this.buffer.limit) {
+      this.buffer = new ByteBuffer(FrameDecoder.BUFFER_SIZE)
+      return parsedBuf
+    }
     this.buffer.compact()
     return parsedBuf
   }
