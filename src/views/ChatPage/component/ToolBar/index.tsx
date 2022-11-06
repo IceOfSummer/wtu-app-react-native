@@ -21,6 +21,9 @@ const ToolBar: React.FC<ToolBarProps> = props => {
     if (instance) {
       instance
         .sendMessage(new ChatRequestMessage(props.talkingTo, text))
+        .then(() => {
+          setText('')
+        })
         .catch(e => {
           console.error(e)
         })

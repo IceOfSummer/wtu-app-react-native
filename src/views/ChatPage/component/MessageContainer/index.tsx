@@ -52,7 +52,7 @@ const Container: React.FC<ChatMessage> = props => {
     <View
       style={{
         flexDirection: props.type === MessageType.SEND ? 'row-reverse' : 'row',
-        marginVertical: global.styles.$spacing_col_sm,
+        marginVertical: global.styles.$spacing_col_base,
       }}>
       <View style={styles.avatarContainer}>
         <Avatar uri={getAvatarUrl(uid)} />
@@ -73,7 +73,7 @@ const Container: React.FC<ChatMessage> = props => {
 
 const styles = StyleSheet.create({
   avatarContainer: {
-    marginHorizontal: global.styles.$spacing_col_base,
+    marginHorizontal: global.styles.$spacing_row_base,
   },
   nameText: {
     fontSize: global.styles.$font_size_sm,

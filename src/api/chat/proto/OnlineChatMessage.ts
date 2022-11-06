@@ -1,8 +1,8 @@
 export interface OnlineChatMessage {
-  to?: number;
-  from?: number;
-  content?: string;
-  createTime?: Long;
+  to: number;
+  from: number;
+  content: string;
+  createTime: Long;
 }
 
 export function encodeOnlineChatMessage(message: OnlineChatMessage): Uint8Array {

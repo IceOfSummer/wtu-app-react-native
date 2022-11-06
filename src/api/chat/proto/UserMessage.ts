@@ -1,9 +1,9 @@
 export interface UserMessage {
   msgId?: number;
-  to?: number;
-  from?: number;
-  content?: string;
-  createTime?: Long;
+  to: number;
+  from: number;
+  content: string;
+  createTime: Long;
 }
 
 export function encodeUserMessage(message: UserMessage): Uint8Array {

@@ -95,6 +95,12 @@ abstract class AbstractChatMessage {
   get hideAvatar(): boolean {
     return this._hideAvatar
   }
+
+  private static readonly REPLACE_TYPE_MARKER = /§\d*§/g
+
+  public static removeTypeMarker(content: string): string {
+    return content.replace(AbstractChatMessage.REPLACE_TYPE_MARKER, '')
+  }
 }
 
 /**

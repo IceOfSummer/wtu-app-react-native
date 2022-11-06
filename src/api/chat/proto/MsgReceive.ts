@@ -1,5 +1,5 @@
 export interface MessageReceive {
-  receivedId?: number;
+  receivedId: number;
 }
 
 export function encodeMessageReceive(message: MessageReceive): Uint8Array {

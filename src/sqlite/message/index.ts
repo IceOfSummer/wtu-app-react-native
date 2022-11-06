@@ -33,7 +33,7 @@ const PAGE_SIZE = 10
  */
 export const queryMessage = (uid: number, page = 0): Promise<ChatMessage[]> =>
   DatabaseManager.executeSql(
-    'SELECT uid, content, createTime, type FROM message WHERE uid = ? ORDER BY createTime DESC LIMIT ?, ?',
+    'SELECT uid, content, createTime, type FROM message WHERE uid = ? ORDER BY createTime LIMIT ?, ?',
     uid,
     page * 10,
     PAGE_SIZE

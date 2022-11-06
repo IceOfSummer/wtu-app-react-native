@@ -14,6 +14,10 @@ export interface MessageState {
    * 在聊天界面上保存的最后聊天记录，可手动删除
    */
   messageLabels: MessageLabel
+  /**
+   * 当前聊天面板正在聊的消息, 当发送或者接收时，将消息存入该数组做临时缓存，避免查询数据库
+   */
+  currentTalkMessages: Array<ChatMessage>
 }
 
 /**
@@ -31,4 +35,15 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
    * 只需传入对应的用户名即可
    */
   removeMessagePanel: CaseReducer<MessageState, PayloadAction<number>>
+  /**
+   * 插入当前正在聊天的消息
+   */
+  insertCurrentTalkMessage: CaseReducer<
+    MessageState,
+    PayloadAction<ChatMessage>
+  >
+  /**
+   * 清空当前正在聊天的消息
+   */
+  resetCurrentTalkMessage: CaseReducer<MessageState, PayloadAction<void>>
 }

@@ -1,6 +1,6 @@
 export interface ChatMessage {
-  to?: number;
-  content?: string;
+  to: number;
+  content: string;
 }
 
 export function encodeChatMessage(message: ChatMessage): Uint8Array {

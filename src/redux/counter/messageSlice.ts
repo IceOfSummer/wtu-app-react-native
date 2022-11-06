@@ -35,6 +35,7 @@ export const initMessage = createAsyncThunk<MessageState, undefined>(
     dispatch(loadMultiUserCache(lastMsg.map(value => value.uid)))
     return {
       messageLabels,
+      currentTalkMessages: [],
     }
   }
 )
@@ -58,6 +59,7 @@ export const insertSingleMessage = createAsyncThunk<
   const re = await insertMessage(msg.uid, msg)
   logger.debug('insert message to database success: ' + re)
   await insertLastMessage(msg.uid, confirm, re)
+  dispatch(messageSlice.actions.insertCurrentTalkMessage(re))
   dispatch(messageSlice.actions.insertSingleMessage(re))
 })
 
@@ -77,6 +79,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
     messageLabels: [],
+    currentTalkMessages: [],
   },
   reducers: {
     /**
@@ -91,6 +94,12 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      */
     removeMessagePanel: (state, { payload }) => {
       state.messageLabels[payload] = undefined
+    },
+    insertCurrentTalkMessage: (state, { payload }) => {
+      state.currentTalkMessages.push(payload)
+    },
+    resetCurrentTalkMessage: state => {
+      state.currentTalkMessages = []
     },
   },
   extraReducers: {
@@ -120,5 +129,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     },
   },
 })
+
+export const { resetCurrentTalkMessage } = messageSlice.actions
 
 export default messageSlice.reducer
