@@ -13,7 +13,6 @@ const messageFactories: Array<MessageFactory> = []
 messageFactories[ChatResponseMessage.MESSAGE_TYPE] = ChatResponseMessageFactory
 messageFactories[ServerResponseMessage.MESSAGE_TYPE] =
   ServerResponseMessageFactory
-let autoRequestId = 0
 
 /**
  * 按照协议要求，构造消息格式
@@ -25,14 +24,11 @@ export const buildMessage = (message: Message): Uint8Array => {
   byteBuffer.writeUint8(Message.VERSION)
   byteBuffer.writeUint8(message.getMessageType())
   // 自动分配
-  byteBuffer.writeUint16(autoRequestId++)
+  byteBuffer.writeInt16(message.requestId)
   const enc = message.encode()
   byteBuffer.writeUint32(enc.length)
   byteBuffer.append(enc)
   byteBuffer.flip()
-  if (__DEV__) {
-    logger.debug(byteBuffer.toDebug())
-  }
   return new Uint8Array(byteBuffer.toArrayBuffer())
 }
 
@@ -56,7 +52,9 @@ export const parseMessage = (byteBuffer: ByteBuffer): Message | null => {
     return null
   }
   // request id
-  byteBuffer.readUint16()
+  const reqId = byteBuffer.readInt16()
   const len = byteBuffer.readUint32()
-  return factory(byteBuffer, len)
+  const msg = factory(byteBuffer.readBytes(len))
+  msg.requestId = reqId
+  return msg
 }

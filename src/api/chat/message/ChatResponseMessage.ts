@@ -4,6 +4,7 @@ import {
   OnlineChatMessage,
 } from '../proto/OnlineChatMessage'
 import { encodeChatMessage } from '../proto/ChatMessage'
+import Buffer from 'buffer'
 
 export default class ChatResponseMessage extends Message {
   public static readonly MESSAGE_TYPE = 4
@@ -25,5 +26,6 @@ export default class ChatResponseMessage extends Message {
 }
 
 export const ChatResponseMessageFactory: MessageFactory = msg => {
-  return new ChatResponseMessage(decodeOnlineChatMessage(msg.toBuffer()))
+  const buf = Buffer.Buffer.from(msg.view.buffer.slice(msg.offset, msg.limit))
+  return new ChatResponseMessage(decodeOnlineChatMessage(buf))
 }

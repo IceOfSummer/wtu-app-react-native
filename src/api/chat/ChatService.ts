@@ -46,6 +46,8 @@ export default class ChatService {
    */
   private static _instance: ChatService | undefined
 
+  private autoRequestId = 0
+
   private client: TLSSocket
 
   private frameDecoder: FrameDecoder
@@ -72,20 +74,38 @@ export default class ChatService {
     this.bindEvent()
   }
 
-  private static pending: boolean = false
+  /**
+   * 服务器连接是否正在加载中
+   * @private
+   */
+  private static _pending: boolean = false
+
+  /**
+   * 是否已经登录过了
+   * @private
+   */
+  private _isAuthenticated: boolean = false
+
+  get isAuthenticated(): boolean {
+    return this._isAuthenticated
+  }
+
+  public static get pending() {
+    return ChatService._pending
+  }
 
   /**
    * 单例模式
    */
   static get instance(): ChatService | undefined {
-    if (!ChatService._instance && !ChatService.pending) {
+    if (!ChatService._instance && !ChatService._pending) {
       // connect
-      ChatService.pending = true
+      ChatService._pending = true
       logger.info(`trying to connect to ${host}:${port}`)
       const client = TcpSockets.connectTLS(options, () => {
         logger.info(`successfully connected to ${host}:${port}`)
         this._instance = new ChatService(client)
-        ChatService.pending = false
+        ChatService._pending = false
       })
       client.setKeepAlive(true)
       // client.setEncoding('utf8')
@@ -95,15 +115,29 @@ export default class ChatService {
   }
 
   /**
-   * 发送消息给服务器
+   * 发送消息给服务器，这里会自动分配requestId，不需要手动分配
    * <p>
    * 发送前请确保登录过了，可以直接调用{@link ChatService#tryAuth}来登录
    * @param message 消息内容
    */
-  public sendMessage(message: Message): Promise<void> {
+  public async sendMessage(message: Message): Promise<void> {
+    if (!this.isAuthenticated) {
+      try {
+        await this.tryAuth()
+      } catch (e) {
+        return Promise.reject(e)
+      }
+    }
+    return this.sendMessage0(message)
+  }
+
+  private sendMessage0(message: Message): Promise<void> {
     return new Promise((resolve, reject) => {
+      message.requestId = this.autoRequestId++
       this.requestManager.saveRequest(message.requestId, resolve, reject)
       const msg = buildMessage(message)
+      logger.info('sending message:')
+      logger.info(message)
       this.client.write(msg, undefined, err => {
         // 当err为空时，代表服务器已经接收到相关消息了
         // 这里的回调只代表服务器成功收到了消息，但还没有回应
@@ -122,11 +156,10 @@ export default class ChatService {
   private bindEvent() {
     this.client.on('data', data => {
       // 经测试，此处仍然存在粘包、半包等问题, 不能直接使用
-      console.log(data)
       this.frameDecoder.append(data)
       while (this.frameDecoder.isNotEmpty()) {
         const bufData = this.frameDecoder.pop()
-        logger.info('received data length: ' + bufData.limit)
+        logger.info('receive data from server: ')
         const message = parseMessage(bufData)
         if (!message) {
           continue
@@ -134,17 +167,17 @@ export default class ChatService {
         const requestId = message.requestId
         if (requestId === -1) {
           // -1代表服务器主动给用户发送信息
-          logger.debug(message)
+          logger.info(message)
           pubsub.publish(ChatService.PUBSUB_KEY, message)
         } else {
-          logger.debug(message)
+          logger.info(message)
           this.requestManager.resolve(message.requestId, message)
         }
       }
     })
 
     this.client.on('error', error => {
-      ChatService.pending = false
+      ChatService._pending = false
       logger.error(error)
     })
 
@@ -167,7 +200,10 @@ export default class ChatService {
       }
       const sessionValue = session.value as string
       try {
-        await this.sendMessage(new AuthRequestMessage(sessionValue))
+        await this.sendMessage0(new AuthRequestMessage(sessionValue))
+        // TODO 检查登录是否成功
+        this._isAuthenticated = true
+        logger.info('聊天服务器登录成功')
         resolve()
       } catch (e) {
         reject(e)
@@ -213,7 +249,7 @@ class MessageRequestIdManager {
   }
 
   private invoke(index: number, call?: PromiseCallFunc, data?: any) {
-    logger.debug('invoked: ' + index)
+    logger.info(`request id ${index} has been successfully received`)
     if (call) {
       call(data)
     } else {
@@ -266,15 +302,9 @@ class FrameDecoder {
    */
   public append(data: string | Buffer) {
     if (typeof data === 'string') {
-      console.log('write string: ' + data)
       this.buffer.writeString(data)
     } else {
-      console.log(this.buffer.capacity())
-      console.log(this.buffer.offset)
-      console.log(this.buffer.limit)
-      console.log(typeof data === 'object')
       this.buffer.append(data)
-      console.log('a2')
     }
     let result: ByteBuffer | null
     // 放在while循环里，防止出现粘包

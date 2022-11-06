@@ -26,7 +26,7 @@ const ChatPage: React.FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <MessageArea chatWith={uid} />
-      <ToolBar styles={styles.toolbar} />
+      <ToolBar styles={styles.toolbar} talkingTo={uid} />
     </View>
   )
 }

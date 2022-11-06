@@ -30,11 +30,15 @@ export abstract class Message {
   get requestId(): number {
     return this._requestId
   }
+
+  set requestId(value: number) {
+    this._requestId = value
+  }
 }
 
 /**
  * 消息工厂
- * @param byteBuffer {ByteBuffer} 消息内容，offset已经到消息的位置了，是读模式
+ * @param byteBuffer {ByteBuffer} 消息内容
  * @param length {number} 消息内容长度
  */
-export type MessageFactory = (byteBuffer: ByteBuffer, length: number) => Message
+export type MessageFactory = (byteBuffer: ByteBuffer) => Message
