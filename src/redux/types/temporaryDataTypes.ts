@@ -9,6 +9,10 @@ export interface TemporaryDataState {
    * 全局状态, 可存放任意键值对, 使用时请注意安全 :)
    */
   globalStates: any
+  /**
+   * 聊天服务器是否连接失败
+   */
+  isChatServerConnectFailed?: boolean
 }
 
 export type GlobalStateAvailableTypes =
@@ -29,5 +33,12 @@ export interface TemporaryDataReducers
   saveGlobalState: CaseReducer<
     TemporaryDataState,
     PayloadAction<GlobalStateAvailableTypes>
+  >
+  /**
+   * 修改仅有键值对的属性
+   */
+  modifyKVData: CaseReducer<
+    TemporaryDataState,
+    PayloadAction<Partial<TemporaryDataState>>
   >
 }

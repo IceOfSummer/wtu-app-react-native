@@ -4,6 +4,11 @@ import config from '../../../config.json'
 import { ConnectionOptions } from 'react-native-tcp-socket/lib/types/Socket'
 import { TLSSocketOptions } from 'react-native-tcp-socket/lib/types/TLSSocket'
 import TcpSockets from 'react-native-tcp-socket'
+import { store } from '../../redux/store'
+import {
+  modifyKVData,
+  saveGlobalState,
+} from '../../redux/counter/temporaryDataSlice'
 
 const logger = getLogger('/api/chat/SocketSessionManager')
 
@@ -46,6 +51,20 @@ export default class SocketSessionManager {
   private _isPending: boolean = false
 
   /**
+   * 设置连接表示
+   *
+   * 当为true时，表示连接失败了，false为连接成功或正在连接
+   *
+   * 使用redux来管理
+   * @private
+   */
+  private setConnectFlag(flag: boolean) {
+    store.dispatch(modifyKVData({ isChatServerConnectFailed: flag }))
+  }
+
+  constructor() {}
+
+  /**
    * 绑定重连等事件
    * @private
    */
@@ -83,6 +102,7 @@ export default class SocketSessionManager {
       this._isPending = false
       this.bindEvent()
       this.onConnected?.(client)
+      this.setConnectFlag(false)
     })
     this.bindRetryEvent(client)
     this._connection = client
@@ -90,10 +110,11 @@ export default class SocketSessionManager {
 
   private bindRetryEvent(client: TLSSocket) {
     client.on('error', error => {
-      logger.error('connect failed: ' + error + ' , retry in 8s')
+      logger.error('connect failed: ' + error)
       this._isPending = false
       this._connection?.removeAllListeners('error')
       client.destroy()
+      this.setConnectFlag(true)
       setTimeout(() => {
         this.tryConnect()
       }, 8000)

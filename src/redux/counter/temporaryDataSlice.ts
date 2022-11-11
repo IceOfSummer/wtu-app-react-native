@@ -26,11 +26,17 @@ const temporaryDataSlice = createSlice<
         state.globalStates = Object.assign(state.globalStates, payload)
       }
     },
+    modifyKVData(state, { payload }) {
+      Object.keys(payload).forEach(key => {
+        // @ts-ignore
+        state[key] = payload[key]
+      })
+    },
   },
   initialState,
 })
 
-export const { markCheckLoginDone, saveGlobalState } =
+export const { markCheckLoginDone, saveGlobalState, modifyKVData } =
   temporaryDataSlice.actions
 
 export default temporaryDataSlice.reducer

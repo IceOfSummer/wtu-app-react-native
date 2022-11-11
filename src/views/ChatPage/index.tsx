@@ -6,6 +6,7 @@ import { ReducerTypes } from '../../redux/counter'
 import { StyleSheet, View } from 'react-native'
 import ToolBar from './component/ToolBar'
 import MessageArea from './component/MessageArea'
+import ConnectFailView from '../../tabs/MessageScreen/components/ConnectFailView'
 
 /**
  * 聊天页面
@@ -25,6 +26,7 @@ const ChatPage: React.FC = () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <ConnectFailView />
       <MessageArea chatWith={uid} />
       <ToolBar styles={styles.toolbar} talkingTo={uid} />
     </View>
