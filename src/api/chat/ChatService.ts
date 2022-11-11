@@ -1,8 +1,4 @@
-import TcpSockets from 'react-native-tcp-socket'
-import { ConnectionOptions } from 'react-native-tcp-socket/lib/types/Socket'
 import { Message } from './message/Message'
-import config from '../../../config.json'
-import { TLSSocketOptions } from 'react-native-tcp-socket/lib/types/TLSSocket'
 import { TLSSocket } from 'react-native-tcp-socket/lib/types/Server'
 import { getLogger } from '../../utils/LoggerUtils'
 import LinkedOneWayQueue, {
@@ -13,24 +9,9 @@ import AuthRequestMessage from './message/AuthRequestMessage'
 import ByteBuffer from 'bytebuffer'
 import pubsub from 'pubsub-js'
 import { buildMessage, parseMessage } from './message/Protocol'
+import SocketSessionManager from './SocketSessionManager'
 
 const logger = getLogger('/api/chat/ChatService')
-
-const host = __DEV__
-  ? config.debug.chatServerHost
-  : config.release.chatServerHost
-
-const port = __DEV__
-  ? config.debug.chatServerPort
-  : config.release.chatServerPort
-
-const options: ConnectionOptions & TLSSocketOptions = {
-  port,
-  host,
-  reuseAddress: true,
-  // TODO 开发环境替换证书
-  ca: require('./cert.pem'),
-}
 
 type PromiseCallFunc = (data: any) => void
 
@@ -44,11 +25,24 @@ export default class ChatService {
    * 单例模式
    * @private
    */
-  private static _instance: ChatService | undefined
+  private static _instance: ChatService
+
+  static get instance(): ChatService {
+    if (!this._instance) {
+      this._instance = new ChatService()
+    }
+    return this._instance
+  }
+
+  /**
+   * 是否已经认证过了
+   * @private
+   */
+  private _isAuthenticated: boolean = false
 
   private autoRequestId = 0
 
-  private client: TLSSocket
+  private socketSessionManager: SocketSessionManager
 
   private frameDecoder: FrameDecoder
 
@@ -66,52 +60,25 @@ export default class ChatService {
    */
   private messageQueue: OneWayQueue<string>
 
-  private constructor(socket: TLSSocket) {
-    this.client = socket
+  private constructor() {
+    this.socketSessionManager = new SocketSessionManager()
     this.messageQueue = new LinkedOneWayQueue()
     this.frameDecoder = new FrameDecoder(6)
     this.requestManager = new MessageRequestIdManager()
-    this.bindEvent()
-  }
-
-  /**
-   * 服务器连接是否正在加载中
-   * @private
-   */
-  private static _pending: boolean = false
-
-  /**
-   * 是否已经登录过了
-   * @private
-   */
-  private _isAuthenticated: boolean = false
-
-  get isAuthenticated(): boolean {
-    return this._isAuthenticated
-  }
-
-  public static get pending() {
-    return ChatService._pending
-  }
-
-  /**
-   * 单例模式
-   */
-  static get instance(): ChatService | undefined {
-    if (!ChatService._instance && !ChatService._pending) {
-      // connect
-      ChatService._pending = true
-      logger.info(`trying to connect to ${host}:${port}`)
-      const client = TcpSockets.connectTLS(options, () => {
-        logger.info(`successfully connected to ${host}:${port}`)
-        this._instance = new ChatService(client)
-        ChatService._pending = false
-      })
-      client.setKeepAlive(true)
-      // client.setEncoding('utf8')
-      return undefined
+    this.socketSessionManager.onConnectionReset = () => {
+      this._isAuthenticated = false
     }
-    return ChatService._instance
+    this.socketSessionManager.onConnected = socket => {
+      this.bindEvent(socket)
+      this.tryAuth().catch(() => {})
+    }
+  }
+
+  /**
+   * 是否准备完毕, 若为ture，则可以正常发送消息
+   */
+  public isReady(): boolean {
+    return !!this.socketSessionManager.getConnection() && this._isAuthenticated
   }
 
   /**
@@ -121,24 +88,21 @@ export default class ChatService {
    * @param message 消息内容
    */
   public async sendMessage(message: Message): Promise<void> {
-    if (!this.isAuthenticated) {
-      try {
-        await this.tryAuth()
-      } catch (e) {
-        return Promise.reject(e)
-      }
+    const connection = this.socketSessionManager.getConnection()
+    if (!connection) {
+      return Promise.reject('正在连接服务器中')
     }
-    return this.sendMessage0(message)
+    return this.sendMessage0(message, connection)
   }
 
-  private sendMessage0(message: Message): Promise<void> {
+  private sendMessage0(message: Message, connection: TLSSocket): Promise<void> {
     return new Promise((resolve, reject) => {
       message.requestId = this.autoRequestId++
       this.requestManager.saveRequest(message.requestId, resolve, reject)
       const msg = buildMessage(message)
       logger.debug('sending message:')
       logger.debug(message)
-      this.client.write(msg, undefined, err => {
+      connection.write(msg, undefined, err => {
         // 当err为空时，代表服务器已经接收到相关消息了
         // 这里的回调只代表服务器成功收到了消息，但还没有回应
         if (err) {
@@ -153,8 +117,8 @@ export default class ChatService {
    * 绑定一些基础事件，主要用于日志
    * @private
    */
-  private bindEvent() {
-    this.client.on('data', data => {
+  private bindEvent(socket: TLSSocket) {
+    socket.on('data', data => {
       // 经测试，此处仍然存在粘包、半包等问题, 不能直接使用
       this.frameDecoder.append(data)
       while (this.frameDecoder.isNotEmpty()) {
@@ -175,16 +139,6 @@ export default class ChatService {
         }
       }
     })
-
-    this.client.on('error', error => {
-      ChatService._pending = false
-      logger.error(error)
-    })
-
-    this.client.on('close', () => {
-      logger.info('connection closed')
-      ChatService._instance = undefined
-    })
   }
 
   /**
@@ -192,6 +146,11 @@ export default class ChatService {
    */
   public tryAuth(): Promise<void> {
     return new Promise(async (resolve, reject) => {
+      const conn = this.socketSessionManager.getConnection()
+      if (!conn) {
+        reject(new Error('正在连接服务器中'))
+        return
+      }
       const cookies = await CookieManager.get(global.constant.serverBaseUrl)
       const session = cookies[global.constant.sessionCookieName] as any
       if (!session) {
@@ -200,10 +159,9 @@ export default class ChatService {
       }
       const sessionValue = session.value as string
       try {
-        await this.sendMessage0(new AuthRequestMessage(sessionValue))
-        // TODO 检查登录是否成功
-        this._isAuthenticated = true
+        await this.sendMessage0(new AuthRequestMessage(sessionValue), conn)
         logger.info('聊天服务器登录成功')
+        this._isAuthenticated = true
         resolve()
       } catch (e) {
         reject(e)

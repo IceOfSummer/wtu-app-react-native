@@ -20,7 +20,6 @@ import NativeDialog from '../../native/modules/NativeDialog'
 import { initMessage } from '../../redux/counter/messageSlice'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
 import ChatService from '../../api/chat/ChatService'
-import Toast from 'react-native-toast-message'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
@@ -74,30 +73,10 @@ const AuthenticatedView = () => {
         })
       })
 
-    let waitTime = 2000
-
     tryConnectToServer()
     function tryConnectToServer() {
-      const ins = ChatService.instance
-      if (!ins) {
-        setTimeout(tryConnectToServer, waitTime)
-        return
-      }
-      ins
-        .tryAuth()
-        .then(() => {
-          // TODO 检查是否登录成功
-        })
-        .catch(e => {
-          waitTime += 1000
-          setTimeout(tryConnectToServer, waitTime)
-          Toast.show({
-            position: 'bottom',
-            text1: '连接聊天服务器失败',
-            text2: e.message,
-            type: 'error',
-          })
-        })
+      // 加载一下这个类
+      ChatService.instance.isReady()
     }
   }, [])
 
