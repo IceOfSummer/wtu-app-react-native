@@ -136,8 +136,8 @@ export default class ChatService {
       message.requestId = this.autoRequestId++
       this.requestManager.saveRequest(message.requestId, resolve, reject)
       const msg = buildMessage(message)
-      logger.info('sending message:')
-      logger.info(message)
+      logger.debug('sending message:')
+      logger.debug(message)
       this.client.write(msg, undefined, err => {
         // 当err为空时，代表服务器已经接收到相关消息了
         // 这里的回调只代表服务器成功收到了消息，但还没有回应
@@ -159,18 +159,18 @@ export default class ChatService {
       this.frameDecoder.append(data)
       while (this.frameDecoder.isNotEmpty()) {
         const bufData = this.frameDecoder.pop()
-        logger.info('receive data from server: ')
         const message = parseMessage(bufData)
         if (!message) {
           continue
         }
         const requestId = message.requestId
+        logger.debug('receive data from server: ')
         if (requestId === -1) {
           // -1代表服务器主动给用户发送信息
-          logger.info(message)
+          logger.debug(message)
           pubsub.publish(ChatService.PUBSUB_KEY, message)
         } else {
-          logger.info(message)
+          logger.debug(message)
           this.requestManager.resolve(message.requestId, message)
         }
       }
@@ -232,7 +232,6 @@ class MessageRequestIdManager {
     resolve: PromiseCallFunc,
     reject: PromiseCallFunc
   ) {
-    logger.debug('saving request id: ' + requestId)
     const index = this.getIndex(requestId)
     this.messageResolveList[index] = resolve
     this.messageRejectList[index] = reject

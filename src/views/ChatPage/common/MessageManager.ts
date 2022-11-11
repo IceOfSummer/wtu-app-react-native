@@ -22,7 +22,7 @@ const MAX_TYPE_WIDTH = 4
  */
 const parseMessage = (msg: SqliteMessage): AbstractChatMessage => {
   const { content } = msg
-  logger.info(`parsing content: ${content}`)
+  logger.debug(`parsing content: ${content}`)
   try {
     return unsafeParseMessage(msg)
   } catch (e: any) {
