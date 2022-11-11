@@ -1,5 +1,5 @@
 import React from 'react'
-import { ChatMessage } from '../../../sqlite/message'
+import { SqliteMessage } from '../../../sqlite/message'
 
 /**
  * <b>消息基类</b>
@@ -33,7 +33,7 @@ abstract class AbstractChatMessage {
    * 消息详细
    * @private
    */
-  private readonly _chatMessage: ChatMessage | undefined
+  private readonly _chatMessage: SqliteMessage | undefined
 
   /**
    * 是否隐藏头像, 消息在渲染前在外层会用头像等其它内容包括起来，将该值设置为false以取消包裹
@@ -46,7 +46,7 @@ abstract class AbstractChatMessage {
   protected constructor(
     content: string,
     messageType: number,
-    chatMessage?: ChatMessage,
+    chatMessage?: SqliteMessage,
     key?: number | string
   ) {
     this._content = content
@@ -88,7 +88,7 @@ abstract class AbstractChatMessage {
     return AbstractChatMessage.counter--
   }
 
-  get chatMessage(): ChatMessage | undefined {
+  get chatMessage(): SqliteMessage | undefined {
     return this._chatMessage
   }
 
@@ -110,7 +110,7 @@ abstract class AbstractChatMessage {
  */
 export type ChatMessageFactory = (
   param: string,
-  chatMessage: ChatMessage
+  chatMessage: SqliteMessage
 ) => AbstractChatMessage
 
 export default AbstractChatMessage

@@ -12,26 +12,24 @@ const logger = getLogger('/views/ChatPage/hook/useMessageManager')
  * 聊天消息管理
  * @param chatWith 和谁聊天
  */
-const useMessageManager = (
-  chatWith: number
-): [AbstractChatMessage[], () => void] => {
+const useMessageManager = (chatWith: number) => {
   /**
    * 当前为第几页
    */
   const curPage = useRef(0)
   const [messages, setMessages] = useState<Array<AbstractChatMessage>>([])
   useEffect(() => {
-    loadMessage()
+    loadNextPage()
   }, [])
 
   /**
    * 加载消息并自动将计数器加一
    */
-  function loadMessage() {
+  function loadNextPage() {
     logger.info(
       `loading message with uid ${chatWith}, current page: ${curPage.current}`
     )
-    queryMessage(chatWith, curPage.current)
+    return queryMessage(chatWith, curPage.current)
       .then(msg => {
         logger.info(`successfully loaded ${msg.length} messages`)
         if (msg.length === 0) {
@@ -51,7 +49,10 @@ const useMessageManager = (
       })
   }
 
-  return [messages, loadMessage]
+  return {
+    messages,
+    loadNextPage,
+  }
 }
 
 export default useMessageManager

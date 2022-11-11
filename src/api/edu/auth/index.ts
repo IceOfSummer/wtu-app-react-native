@@ -76,7 +76,7 @@ export const login = (
 /**
  * 测试登录状态
  * #ignoreLoginExpire用于在登录失败后不弹出Toast
- * @see /src/api/index.ts
+ * @see /src/api/index.tsx
  */
 export const testLogin = () =>
   new Promise<LoginStatus>((resolve, reject) => {

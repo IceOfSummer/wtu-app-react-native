@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native'
 import { formatTimestampSimply } from '../../../../utils/DateUtils'
-import { ChatMessage } from '../../../../sqlite/message'
+import { SqliteMessage } from '../../../../sqlite/message'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
@@ -18,7 +18,7 @@ import useNav from '../../../../hook/useNav'
 import { CHAT_PAGE } from '../../../../router'
 import { ServerUser } from '../../../../sqlite/user'
 
-const MessageBlock: React.FC<ChatMessage> = props => {
+const MessageBlock: React.FC<SqliteMessage> = props => {
   const dispatch = useDispatch()
   const info = useSelector<ReducerTypes, ServerUser>(
     state => state.serverUser.cachedUser[props.uid]

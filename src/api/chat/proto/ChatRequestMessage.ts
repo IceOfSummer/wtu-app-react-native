@@ -1,60 +1,36 @@
-export interface UserMessage {
-  msgId?: number;
-  to: number;
-  from: number;
-  content: string;
-  createTime: Long;
+interface ChatRequestMessage {
+  to?: number;
+  content?: string;
 }
 
-export function encodeUserMessage(message: UserMessage): Uint8Array {
+export function encodeChatRequestMessage(message: ChatRequestMessage): Uint8Array {
   let bb = popByteBuffer();
-  _encodeUserMessage(message, bb);
+  _encodeChatRequestMessage(message, bb);
   return toUint8Array(bb);
 }
 
-function _encodeUserMessage(message: UserMessage, bb: ByteBuffer): void {
-  // optional int32 msgId = 1;
-  let $msgId = message.msgId;
-  if ($msgId !== undefined) {
-    writeVarint32(bb, 8);
-    writeVarint64(bb, intToLong($msgId));
-  }
-
-  // optional int32 to = 2;
+function _encodeChatRequestMessage(message: ChatRequestMessage, bb: ByteBuffer): void {
+  // optional int32 to = 1;
   let $to = message.to;
   if ($to !== undefined) {
-    writeVarint32(bb, 16);
+    writeVarint32(bb, 8);
     writeVarint64(bb, intToLong($to));
   }
 
-  // optional int32 from = 3;
-  let $from = message.from;
-  if ($from !== undefined) {
-    writeVarint32(bb, 24);
-    writeVarint64(bb, intToLong($from));
-  }
-
-  // optional string content = 4;
+  // optional string content = 2;
   let $content = message.content;
   if ($content !== undefined) {
-    writeVarint32(bb, 34);
+    writeVarint32(bb, 18);
     writeString(bb, $content);
   }
-
-  // optional int64 createTime = 5;
-  let $createTime = message.createTime;
-  if ($createTime !== undefined) {
-    writeVarint32(bb, 40);
-    writeVarint64(bb, $createTime);
-  }
 }
 
-export function decodeUserMessage(binary: Uint8Array): UserMessage {
-  return _decodeUserMessage(wrapByteBuffer(binary));
+function decodeChatRequestMessage(binary: Uint8Array): ChatRequestMessage {
+  return _decodeChatRequestMessage(wrapByteBuffer(binary));
 }
 
-function _decodeUserMessage(bb: ByteBuffer): UserMessage {
-  let message: UserMessage = {} as any;
+function _decodeChatRequestMessage(bb: ByteBuffer): ChatRequestMessage {
+  let message: ChatRequestMessage = {} as any;
 
   end_of_message: while (!isAtEnd(bb)) {
     let tag = readVarint32(bb);
@@ -63,89 +39,15 @@ function _decodeUserMessage(bb: ByteBuffer): UserMessage {
       case 0:
         break end_of_message;
 
-      // optional int32 msgId = 1;
+      // optional int32 to = 1;
       case 1: {
-        message.msgId = readVarint32(bb);
-        break;
-      }
-
-      // optional int32 to = 2;
-      case 2: {
         message.to = readVarint32(bb);
         break;
       }
 
-      // optional int32 from = 3;
-      case 3: {
-        message.from = readVarint32(bb);
-        break;
-      }
-
-      // optional string content = 4;
-      case 4: {
+      // optional string content = 2;
+      case 2: {
         message.content = readString(bb, readVarint32(bb));
-        break;
-      }
-
-      // optional int64 createTime = 5;
-      case 5: {
-        message.createTime = readVarint64(bb, /* unsigned */ false);
-        break;
-      }
-
-      default:
-        skipUnknownField(bb, tag & 7);
-    }
-  }
-
-  return message;
-}
-
-export interface UserMessageGroup {
-  message?: UserMessage[];
-}
-
-export function encodeUserMessageGroup(message: UserMessageGroup): Uint8Array {
-  let bb = popByteBuffer();
-  _encodeUserMessageGroup(message, bb);
-  return toUint8Array(bb);
-}
-
-function _encodeUserMessageGroup(message: UserMessageGroup, bb: ByteBuffer): void {
-  // repeated UserMessage message = 1;
-  let array$message = message.message;
-  if (array$message !== undefined) {
-    for (let value of array$message) {
-      writeVarint32(bb, 10);
-      let nested = popByteBuffer();
-      _encodeUserMessage(value, nested);
-      writeVarint32(bb, nested.limit);
-      writeByteBuffer(bb, nested);
-      pushByteBuffer(nested);
-    }
-  }
-}
-
-export function decodeUserMessageGroup(binary: Uint8Array): UserMessageGroup {
-  return _decodeUserMessageGroup(wrapByteBuffer(binary));
-}
-
-function _decodeUserMessageGroup(bb: ByteBuffer): UserMessageGroup {
-  let message: UserMessageGroup = {} as any;
-
-  end_of_message: while (!isAtEnd(bb)) {
-    let tag = readVarint32(bb);
-
-    switch (tag >>> 3) {
-      case 0:
-        break end_of_message;
-
-      // repeated UserMessage message = 1;
-      case 1: {
-        let limit = pushTemporaryLength(bb);
-        let values = message.message || (message.message = []);
-        values.push(_decodeUserMessage(bb));
-        bb.limit = limit;
         break;
       }
 

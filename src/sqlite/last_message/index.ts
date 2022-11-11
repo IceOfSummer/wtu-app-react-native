@@ -1,8 +1,8 @@
-import { ChatMessage } from '../message'
+import { SqliteMessage } from '../message'
 import DatabaseManager from '../index'
 import { ServerUser } from '../user'
 
-export type LastMessageExactly = ChatMessage & ServerUser
+export type LastMessageExactly = SqliteMessage & ServerUser
 
 /**
  * 标记消息已读
@@ -18,26 +18,16 @@ export const markMessageRead = (uid: number) =>
 
 /**
  * 插入last_message
- * @param owner 谁的消息
  * @param confirm 是否为未读消息
- * @param messages 消息
+ * @param message 消息
  */
-export const insertLastMessage = (
-  owner: number,
-  confirm: 1 | 0,
-  ...messages: ChatMessage[]
-) =>
+export const insertLastMessage = (message: SqliteMessage, confirm: 1 | 0) =>
   new Promise(resolve => {
-    let valuesStr = ''
-    for (let i = 0, len = messages.length; i < len; i++) {
-      const msg = messages[i]
-      valuesStr += `(${owner},${msg.messageId},${confirm})`
-      if (i < len - 1) {
-        valuesStr += ','
-      }
-    }
     DatabaseManager.executeSql(
-      `REPLACE INTO last_message VALUES ${valuesStr}`
+      'REPLACE INTO last_message(uid, messageId, confirmed) VALUES (?, ?, ?)',
+      message.uid,
+      message.messageId,
+      confirm
     ).then(resolve)
   })
 
@@ -45,7 +35,7 @@ export const insertLastMessage = (
  * 查询用户聊天面板的消息
  */
 export const queryLastMessage = () =>
-  new Promise<ChatMessage[]>(resolve => {
+  new Promise<SqliteMessage[]>(resolve => {
     DatabaseManager.executeSql(
       `SELECT lm.confirmed as confirmed, m.* FROM last_message lm
                        JOIN message m USING(messageId)`

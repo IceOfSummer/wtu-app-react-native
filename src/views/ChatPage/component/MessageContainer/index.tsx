@@ -1,15 +1,15 @@
 import React from 'react'
-import { ChatMessage, MessageType } from '../../../../sqlite/message'
-import { StyleSheet, Text, View } from 'react-native'
+import { SqliteMessage, MessageType } from '../../../../sqlite/message'
+import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native'
 import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 
-interface MessageContainerProps {
-  chatMessage?: ChatMessage
+export interface MessageContainerProps {
+  chatMessage?: SqliteMessage
   hideContainer?: boolean
+  onLayout?: (event: LayoutChangeEvent) => void
 }
-
 /**
  * 消息容器，该容器将渲染`props.children`中的内容
  * @param props
@@ -18,15 +18,24 @@ interface MessageContainerProps {
 const MessageContainer: React.FC<MessageContainerProps> = props => {
   if (props.hideContainer || !props.chatMessage) {
     return (
-      <View style={{ marginVertical: global.styles.$spacing_col_sm }}>
+      <View
+        onLayout={props.onLayout}
+        style={{
+          marginVertical: global.styles.$spacing_col_sm,
+          transform: [{ rotateX: '180deg' }],
+        }}>
         {props.children}
       </View>
     )
   }
-  return <Container {...props.chatMessage} children={props.children} />
+  return (
+    <View onLayout={props.onLayout}>
+      <Container {...props.chatMessage} children={props.children} />
+    </View>
+  )
 }
 
-const Container: React.FC<ChatMessage> = props => {
+const Container: React.FC<SqliteMessage> = props => {
   const state = useStore<ReducerTypes>().getState()
   const userInfo = state.serverUser.userInfo!
   // 用户昵称
@@ -53,6 +62,7 @@ const Container: React.FC<ChatMessage> = props => {
       style={{
         flexDirection: props.type === MessageType.SEND ? 'row-reverse' : 'row',
         marginVertical: global.styles.$spacing_col_base,
+        transform: [{ rotateX: '180deg' }],
       }}>
       <View style={styles.avatarContainer}>
         <Avatar uri={getAvatarUrl(uid)} />

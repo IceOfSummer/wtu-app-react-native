@@ -14,7 +14,7 @@ const version = 1
 const sql = `
 DROP TABLE IF EXISTS message;
 CREATE TABLE message(
-    messageId INTEGER PRIMARY KEY AUTOINCREMENT,
+    messageId INTEGER PRIMARY KEY,
     uid INT NOT NULL,
     content CHAR(500) NOT NULL,
     createTime INT NOT NULL,

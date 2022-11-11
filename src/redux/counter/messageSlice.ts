@@ -4,7 +4,7 @@ import {
   MessageReducers,
   MessageState,
 } from '../types/messageTypes'
-import { insertMessage, ParamMessage } from '../../sqlite/message'
+import { insertMessage, SqliteMessage } from '../../sqlite/message'
 import {
   deleteLastMessage,
   insertLastMessage,
@@ -44,7 +44,7 @@ export type InsertSingleMessageParam = {
   /**
    * 和谁相关的消息
    */
-  msg: ParamMessage
+  msg: SqliteMessage
   confirm: 0 | 1
 }
 
@@ -56,11 +56,11 @@ export const insertSingleMessage = createAsyncThunk<
   InsertSingleMessageParam
 >('message/insertSingleMessage', async ({ msg, confirm }, { dispatch }) => {
   // FIXME 插入失败后的处理方式
-  const re = await insertMessage(msg.uid, msg)
+  const re = await insertMessage(msg)
   logger.debug('insert message to database success: ' + re)
-  await insertLastMessage(msg.uid, confirm, re)
-  dispatch(messageSlice.actions.insertCurrentTalkMessage(re))
-  dispatch(messageSlice.actions.insertSingleMessage(re))
+  await insertLastMessage(msg, confirm)
+  dispatch(messageSlice.actions.insertCurrentTalkMessage(msg))
+  dispatch(messageSlice.actions.insertSingleMessage(msg))
 })
 
 /**

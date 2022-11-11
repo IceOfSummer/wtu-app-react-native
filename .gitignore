@@ -60,3 +60,6 @@ buck-out/
 /ios/Pods/
 .update
 config.gradle
+
+# sqlite
+identifier.sqlite

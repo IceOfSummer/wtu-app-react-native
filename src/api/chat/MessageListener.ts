@@ -1,5 +1,5 @@
 import pubsub from 'pubsub-js'
-import ChatService, { longToNumber } from './ChatService'
+import ChatService from './ChatService'
 import { Message } from './message/Message'
 import ChatResponseMessage from './message/ChatResponseMessage'
 import { getLogger } from '../../utils/LoggerUtils'
@@ -29,8 +29,9 @@ let invoked = false
         insertSingleMessage({
           msg: {
             uid: message.from,
+            messageId: message.msgId,
             content: message.content,
-            createTime: longToNumber(message.createTime),
+            createTime: message.createTime * 1000,
             type: MessageType.RECEIVE,
           },
           confirm: 0,

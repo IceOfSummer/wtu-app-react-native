@@ -1,5 +1,5 @@
 import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
-import { ChatMessage } from '../../sqlite/message'
+import { SqliteMessage } from '../../sqlite/message'
 
 /**
  * 消息状态, 结构如下:
@@ -17,19 +17,19 @@ export interface MessageState {
   /**
    * 当前聊天面板正在聊的消息, 当发送或者接收时，将消息存入该数组做临时缓存，避免查询数据库
    */
-  currentTalkMessages: Array<ChatMessage>
+  currentTalkMessages: Array<SqliteMessage>
 }
 
 /**
  * 消息面板
  */
-export type MessageLabel = Record<number, ChatMessage | undefined>
+export type MessageLabel = Record<number, SqliteMessage | undefined>
 
 export interface MessageReducers extends SliceCaseReducers<MessageState> {
   /**
    * 插入单条消息
    */
-  insertSingleMessage: CaseReducer<MessageState, PayloadAction<ChatMessage>>
+  insertSingleMessage: CaseReducer<MessageState, PayloadAction<SqliteMessage>>
   /**
    * 移除消息面板的消息
    * 只需传入对应的用户名即可
@@ -40,7 +40,7 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
    */
   insertCurrentTalkMessage: CaseReducer<
     MessageState,
-    PayloadAction<ChatMessage>
+    PayloadAction<SqliteMessage>
   >
   /**
    * 清空当前正在聊天的消息

@@ -34,16 +34,6 @@ const options: ConnectionOptions & TLSSocketOptions = {
 
 type PromiseCallFunc = (data: any) => void
 
-interface Long {
-  low: number
-  high: number
-  unsigned: boolean
-}
-
-export function longToNumber({ low, high }: Long) {
-  return Number.parseInt(low.toString() + high.toString(), 10)
-}
-
 /**
  * 消息服务
  * <p>

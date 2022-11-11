@@ -1,5 +1,5 @@
 import { Message } from './Message'
-import { encodeChatMessage } from '../proto/ChatMessage'
+import { encodeChatRequestMessage } from '../proto/ChatRequestMessage'
 
 export default class ChatRequestMessage extends Message {
   public static readonly MESSAGE_TYPE = 1
@@ -15,7 +15,7 @@ export default class ChatRequestMessage extends Message {
   }
 
   encode(): Uint8Array {
-    return encodeChatMessage({
+    return encodeChatRequestMessage({
       to: this.to,
       content: this.content,
     })

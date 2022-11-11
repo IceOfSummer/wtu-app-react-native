@@ -1,6 +1,6 @@
 import AbstractChatMessage, { ChatMessageFactory } from './AbstractChatMessage'
 import React from 'react'
-import { ChatMessage, MessageType } from '../../../sqlite/message'
+import { SqliteMessage, MessageType } from '../../../sqlite/message'
 import { StyleSheet, Text, View } from 'react-native'
 import { getLogger } from '../../../utils/LoggerUtils'
 
@@ -9,7 +9,7 @@ const logger = getLogger('/views/ChatPage/common/NormalMessage')
 export default class NormalMessage extends AbstractChatMessage {
   public static readonly MESSAGE_TYPE = 0
 
-  constructor(content: string, chatMessage: ChatMessage) {
+  constructor(content: string, chatMessage: SqliteMessage) {
     super(content, NormalMessage.MESSAGE_TYPE, chatMessage)
   }
 

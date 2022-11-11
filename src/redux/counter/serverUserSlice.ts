@@ -14,20 +14,10 @@ import { getMultiUserInfo } from '../../api/server/user'
 
 const logger = getLogger('redux/counter/serverUserSlice')
 
-const initialState: ServerUserState = __DEV__
-  ? {
-      authenticated: true,
-      userInfo: {
-        uid: 1,
-        username: '123456',
-        nickname: '123456',
-      },
-      cachedUser: {},
-    }
-  : {
-      authenticated: false,
-      cachedUser: {},
-    }
+const initialState: ServerUserState = {
+  authenticated: false,
+  cachedUser: {},
+}
 
 /**
  * 加载多个用户的信息缓存

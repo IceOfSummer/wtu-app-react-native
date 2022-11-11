@@ -1,36 +1,53 @@
-export interface ChatMessage {
-  to: number;
+export interface ChatResponseMessage {
+  msgId: number;
+  from: number;
   content: string;
+  // 秒级别时间戳
+  createTime: number;
 }
 
-export function encodeChatMessage(message: ChatMessage): Uint8Array {
+export function encodeChatResponseMessage(message: ChatResponseMessage): Uint8Array {
   let bb = popByteBuffer();
-  _encodeChatMessage(message, bb);
+  _encodeChatResponseMessage(message, bb);
   return toUint8Array(bb);
 }
 
-function _encodeChatMessage(message: ChatMessage, bb: ByteBuffer): void {
-  // optional int32 to = 1;
-  let $to = message.to;
-  if ($to !== undefined) {
+function _encodeChatResponseMessage(message: ChatResponseMessage, bb: ByteBuffer): void {
+  // optional int32 msgId = 1;
+  let $msgId = message.msgId;
+  if ($msgId !== undefined) {
     writeVarint32(bb, 8);
-    writeVarint64(bb, intToLong($to));
+    writeVarint64(bb, intToLong($msgId));
   }
 
-  // optional string content = 2;
+  // optional int32 from = 2;
+  let $from = message.from;
+  if ($from !== undefined) {
+    writeVarint32(bb, 16);
+    writeVarint64(bb, intToLong($from));
+  }
+
+  // optional string content = 3;
   let $content = message.content;
   if ($content !== undefined) {
-    writeVarint32(bb, 18);
+    writeVarint32(bb, 26);
     writeString(bb, $content);
+  }
+
+  // optional int32 createTime = 4;
+  let $createTime = message.createTime;
+  if ($createTime !== undefined) {
+    writeVarint32(bb, 32);
+    writeVarint64(bb, intToLong($createTime));
   }
 }
 
-export function decodeChatMessage(binary: Uint8Array): ChatMessage {
-  return _decodeChatMessage(wrapByteBuffer(binary));
+export function decodeChatResponseMessage(binary: Uint8Array): ChatResponseMessage {
+  return _decodeChatResponseMessage(wrapByteBuffer(binary));
 }
 
-function _decodeChatMessage(bb: ByteBuffer): ChatMessage {
-  let message: ChatMessage = {} as any;
+function _decodeChatResponseMessage(bb: ByteBuffer): ChatResponseMessage {
+  let message: ChatResponseMessage = {} as any;
 
   end_of_message: while (!isAtEnd(bb)) {
     let tag = readVarint32(bb);
@@ -39,15 +56,83 @@ function _decodeChatMessage(bb: ByteBuffer): ChatMessage {
       case 0:
         break end_of_message;
 
-      // optional int32 to = 1;
+      // optional int32 msgId = 1;
       case 1: {
-        message.to = readVarint32(bb);
+        message.msgId = readVarint32(bb);
         break;
       }
 
-      // optional string content = 2;
+      // optional int32 from = 2;
       case 2: {
+        message.from = readVarint32(bb);
+        break;
+      }
+
+      // optional string content = 3;
+      case 3: {
         message.content = readString(bb, readVarint32(bb));
+        break;
+      }
+
+      // optional int32 createTime = 4;
+      case 4: {
+        message.createTime = readVarint32(bb);
+        break;
+      }
+
+      default:
+        skipUnknownField(bb, tag & 7);
+    }
+  }
+
+  return message;
+}
+
+export interface ChatResponseMessageGroup {
+  messages?: ChatResponseMessage[];
+}
+
+export function encodeChatResponseMessageGroup(message: ChatResponseMessageGroup): Uint8Array {
+  let bb = popByteBuffer();
+  _encodeChatResponseMessageGroup(message, bb);
+  return toUint8Array(bb);
+}
+
+function _encodeChatResponseMessageGroup(message: ChatResponseMessageGroup, bb: ByteBuffer): void {
+  // repeated ChatResponseMessage messages = 1;
+  let array$messages = message.messages;
+  if (array$messages !== undefined) {
+    for (let value of array$messages) {
+      writeVarint32(bb, 10);
+      let nested = popByteBuffer();
+      _encodeChatResponseMessage(value, nested);
+      writeVarint32(bb, nested.limit);
+      writeByteBuffer(bb, nested);
+      pushByteBuffer(nested);
+    }
+  }
+}
+
+export function decodeChatResponseMessageGroup(binary: Uint8Array): ChatResponseMessageGroup {
+  return _decodeChatResponseMessageGroup(wrapByteBuffer(binary));
+}
+
+function _decodeChatResponseMessageGroup(bb: ByteBuffer): ChatResponseMessageGroup {
+  let message: ChatResponseMessageGroup = {} as any;
+
+  end_of_message: while (!isAtEnd(bb)) {
+    let tag = readVarint32(bb);
+
+    switch (tag >>> 3) {
+      case 0:
+        break end_of_message;
+
+      // repeated ChatResponseMessage messages = 1;
+      case 1: {
+        let limit = pushTemporaryLength(bb);
+        let values = message.messages || (message.messages = []);
+        values.push(_decodeChatResponseMessage(bb));
+        bb.limit = limit;
         break;
       }
 
@@ -86,24 +171,6 @@ function skipUnknownField(bb: ByteBuffer, type: number): void {
     case 1: skip(bb, 8); break;
     default: throw new Error("Unimplemented type: " + type);
   }
-}
-
-function stringToLong(value: string): Long {
-  return {
-    low: value.charCodeAt(0) | (value.charCodeAt(1) << 16),
-    high: value.charCodeAt(2) | (value.charCodeAt(3) << 16),
-    unsigned: false,
-  };
-}
-
-function longToString(value: Long): string {
-  let low = value.low;
-  let high = value.high;
-  return String.fromCharCode(
-    low & 0xFFFF,
-    low >>> 16,
-    high & 0xFFFF,
-    high >>> 16);
 }
 
 // The code below was modified from https://github.com/protobufjs/bytebuffer.js

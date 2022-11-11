@@ -7,6 +7,7 @@ import { login } from './src/api/server/auth'
 import './src/utils/LoggerUtils/index'
 import { store } from './src/redux/store'
 import { saveUserToCache } from './src/redux/counter/serverUserSlice'
+import DatabaseManager from './src/sqlite'
 
 SQLite.enablePromise(true)
 AppRegistry.registerComponent(appName, () => App)
@@ -34,5 +35,13 @@ if (__DEV__) {
         })
       )
     }
+  })
+  DevSettings.addMenuItem('test sql', () => {
+    DatabaseManager.executeSql('SELECT * FROM last_message').then(result => {
+      console.log(result[0].rows.raw())
+    })
+    DatabaseManager.executeSql('SELECT * FROM message').then(result => {
+      console.log(result[0].rows.raw())
+    })
   })
 }
