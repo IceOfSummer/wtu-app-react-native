@@ -12,7 +12,8 @@ import {
 } from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
 import { quickShowErrorTip } from '../../native/modules/NativeDialog'
-import { loadMultiUserCache } from './serverUserSlice'
+import { loadMultiUserCache, loadUserCacheFromServer } from './serverUserSlice'
+import { ReducerTypes } from './index'
 
 const logger = getLogger('/redux/counter/messageSlice')
 
@@ -54,14 +55,21 @@ export type InsertSingleMessageParam = {
 export const insertSingleMessage = createAsyncThunk<
   void,
   InsertSingleMessageParam
->('message/insertSingleMessage', async ({ msg, confirm }, { dispatch }) => {
-  // FIXME 插入失败后的处理方式
-  const re = await insertMessage(msg)
-  logger.debug('insert message to database success: ' + re)
-  await insertLastMessage(msg, confirm)
-  dispatch(messageSlice.actions.insertCurrentTalkMessage(msg))
-  dispatch(messageSlice.actions.insertSingleMessage(msg))
-})
+>(
+  'message/insertSingleMessage',
+  async ({ msg, confirm }, { dispatch, getState }) => {
+    const re = await insertMessage(msg)
+    logger.debug('insert message to database success: ' + re)
+    await insertLastMessage(msg, confirm)
+    const state = getState() as ReducerTypes
+    if (!state.serverUser.cachedUser[msg.uid]) {
+      // 拉取用户信息
+      dispatch(loadUserCacheFromServer([msg.uid]))
+    }
+    dispatch(messageSlice.actions.insertCurrentTalkMessage(msg))
+    dispatch(messageSlice.actions.insertSingleMessage(msg))
+  }
+)
 
 /**
  * 移除消息面板上的消息

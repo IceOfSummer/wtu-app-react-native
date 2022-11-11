@@ -25,6 +25,7 @@ const initialState: ServerUserState = {
 export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
   'serverUser/loadMultiUserCache',
   async (arg, { dispatch }) => {
+    logger.info('trying to load user: ' + arg)
     arg.sort((a, b) => a - b)
     const unresolved: number[] = []
     // 先从本地数拿
@@ -46,7 +47,7 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
     }
     // 后面半截
     for (let len = arg.length; argCheckPointer < len; argCheckPointer++) {
-      unresolved.push(argCheckPointer)
+      unresolved.push(arg[argCheckPointer])
     }
     if (unresolved.length) {
       // 从服务器拿
@@ -56,7 +57,7 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
   }
 )
 
-const loadUserCacheFromServer = createAsyncThunk<CachedUser, number[]>(
+export const loadUserCacheFromServer = createAsyncThunk<CachedUser, number[]>(
   'serverUser/loadUserCacheFromServer',
   async arg => {
     logger.info('loading user ' + arg + ' from server...')

@@ -55,6 +55,7 @@ export const getMultiUserInfo = async (
   ids.forEach(value => {
     param += value + ','
   })
+  param = param.replace(/,$/, '')
   console.log(param)
   const resp = await serverNoRepeatAjax<Array<UglyUserInfo>>(
     '/user/info/multi_query',
