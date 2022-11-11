@@ -9,8 +9,6 @@ import { MessageType } from '../../sqlite/message'
 
 const logger = getLogger('/api/chat/MessageListener')
 
-logger.info('started listening server message...')
-
 let invoked = false
 ;(function () {
   if (invoked) {
