@@ -5,6 +5,7 @@ import MessageBlock from '../../components/MessageBlock'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { MessageLabel } from '../../../../redux/types/messageTypes'
 import ConnectFailView from '../../components/ConnectFailView'
+import { View } from 'react-native'
 
 const Chat: React.FC = () => {
   const lastMsg = useSelector<ReducerTypes, MessageLabel>(
@@ -13,12 +14,14 @@ const Chat: React.FC = () => {
   const ent = Object.entries(lastMsg)
 
   return (
-    <SpringScrollView showsVerticalScrollIndicator>
+    <View>
       <ConnectFailView />
-      {ent.map(([key, value]) =>
-        value ? <MessageBlock {...value} key={key} /> : null
-      )}
-    </SpringScrollView>
+      <SpringScrollView showsVerticalScrollIndicator>
+        {ent.map(([key, value]) =>
+          value ? <MessageBlock {...value} key={key} /> : null
+        )}
+      </SpringScrollView>
+    </View>
   )
 }
 

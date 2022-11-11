@@ -92,6 +92,9 @@ export default class SocketSessionManager {
   }
 
   private tryConnect() {
+    if (this._isPending) {
+      return
+    }
     this._isPending = true
     logger.info(`trying to connect to ${host}:${port}`)
     const client = TcpSockets.connectTLS(options, () => {
