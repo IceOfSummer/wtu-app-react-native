@@ -37,10 +37,7 @@ if (__DEV__) {
     }
   })
   DevSettings.addMenuItem('test sql', () => {
-    DatabaseManager.executeSql('SELECT * FROM last_message').then(result => {
-      console.log(result[0].rows.raw())
-    })
-    DatabaseManager.executeSql('SELECT * FROM message').then(result => {
+    DatabaseManager.executeSql('SELECT * FROM user').then(result => {
       console.log(result[0].rows.raw())
     })
   })

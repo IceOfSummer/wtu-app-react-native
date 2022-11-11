@@ -30,6 +30,7 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
     const unresolved: number[] = []
     // 先从本地数拿
     const info = await loadMultiUserInfo(arg)
+    const cachedUser: CachedUser = {}
     // 检查哪些数据本地没有, **此处arg和info#uid都是递增的，且arg的长度大于等于info**
     let infoPointer = 0
     let argCheckPointer = 0
@@ -38,7 +39,9 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
       argCheckPointer < len && infoPointer < infoLen;
       argCheckPointer++
     ) {
-      if (info[infoPointer].uid === arg[argCheckPointer]) {
+      const userInfo = info[infoPointer]
+      if (userInfo.uid === arg[argCheckPointer]) {
+        cachedUser[arg[argCheckPointer]] = userInfo
         infoPointer++
         continue
       }
@@ -53,7 +56,7 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
       // 从服务器拿
       dispatch(loadUserCacheFromServer(unresolved))
     }
-    return info
+    return cachedUser
   }
 )
 

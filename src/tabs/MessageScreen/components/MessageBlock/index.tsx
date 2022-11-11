@@ -27,7 +27,6 @@ const MessageBlock: React.FC<SqliteMessage> = props => {
   const startX = useRef(0)
   const startY = useRef(0)
   const nav = useNav()
-
   let nickname: string | number = props.uid
   if (info && info.nickname) {
     nickname = info.nickname
