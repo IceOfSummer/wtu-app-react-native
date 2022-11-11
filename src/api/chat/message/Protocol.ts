@@ -7,6 +7,7 @@ import ServerResponseMessage, {
 } from './ServerResponseMessage'
 import ByteBuffer from 'bytebuffer'
 import { Message, MessageFactory } from './Message'
+import Buffer from 'buffer'
 
 const logger = getLogger('/api/message/Message')
 const messageFactories: Array<MessageFactory> = []
@@ -53,8 +54,13 @@ export const parseMessage = (byteBuffer: ByteBuffer): Message | null => {
   }
   // request id
   const reqId = byteBuffer.readInt16()
-  const len = byteBuffer.readUint32()
-  const msg = factory(byteBuffer.readBytes(len))
+  // length
+  byteBuffer.readUint32()
+  const msg = factory(
+    Buffer.Buffer.from(
+      byteBuffer.view.buffer.slice(byteBuffer.offset, byteBuffer.limit)
+    )
+  )
   msg.requestId = reqId
   return msg
 }

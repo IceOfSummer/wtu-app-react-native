@@ -10,6 +10,7 @@ import ByteBuffer from 'bytebuffer'
 import pubsub from 'pubsub-js'
 import { buildMessage, parseMessage } from './message/Protocol'
 import SocketSessionManager from './SocketSessionManager'
+import ServerResponseMessage from './message/ServerResponseMessage'
 
 const logger = getLogger('/api/chat/ChatService')
 
@@ -54,6 +55,14 @@ export default class ChatService {
   public static readonly PUBSUB_KEY = 'ChatServiceMessage'
 
   /**
+   * 使用pubsub向外发送消息
+   * @param message
+   */
+  public static publishMessage(message: Message) {
+    pubsub.publish(ChatService.PUBSUB_KEY, message)
+  }
+
+  /**
    * 一个消息队列，用于保存响应的消息
    *
    * @private
@@ -87,7 +96,7 @@ export default class ChatService {
    * 发送前请确保登录过了，可以直接调用{@link ChatService#tryAuth}来登录
    * @param message 消息内容
    */
-  public async sendMessage(message: Message): Promise<void> {
+  public async sendMessage(message: Message): Promise<ServerResponseMessage> {
     const connection = this.socketSessionManager.getConnection()
     if (!connection) {
       return Promise.reject('正在连接服务器中')
@@ -95,7 +104,10 @@ export default class ChatService {
     return this.sendMessage0(message, connection)
   }
 
-  private sendMessage0(message: Message, connection: TLSSocket): Promise<void> {
+  private sendMessage0(
+    message: Message,
+    connection: TLSSocket
+  ): Promise<ServerResponseMessage> {
     return new Promise((resolve, reject) => {
       message.requestId = this.autoRequestId++
       this.requestManager.saveRequest(message.requestId, resolve, reject)
@@ -132,7 +144,7 @@ export default class ChatService {
         if (requestId === -1) {
           // -1代表服务器主动给用户发送信息
           logger.debug(message)
-          pubsub.publish(ChatService.PUBSUB_KEY, message)
+          ChatService.publishMessage(message)
         } else {
           logger.debug(message)
           this.requestManager.resolve(message.requestId, message)

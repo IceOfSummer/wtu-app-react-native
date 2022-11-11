@@ -4,11 +4,11 @@ import useMessageManager from '../../hook/useMessageManager'
 import MessageContainer from '../MessageContainer'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
-import { SqliteMessage, MessageType } from '../../../../sqlite/message'
+import { SqliteMessage } from '../../../../sqlite/message'
 import AbstractChatMessage from '../../common/AbstractChatMessage'
 import NormalMessage from '../../common/NormalMessage'
 import { resetCurrentTalkMessage } from '../../../../redux/counter/messageSlice'
-import { Button, View } from 'react-native'
+import { View } from 'react-native'
 import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
 import SimpleLoadingHeader from '../SimpleLoadingHeader'
 import NewlyMessageContainer from '../NewlyMessageContainer'
@@ -26,7 +26,6 @@ const logger = getLogger('views/ChatPage/component/MessageArea')
  */
 const AUTO_TO_BOTTOM_OFFSET = 5
 
-let testId = 1000000
 const MessageArea: React.FC<MessageAreaProps> = props => {
   const { messages, loadNextPage } = useMessageManager(props.chatWith)
   const scroll = useRef<SpringScrollView>(null)
@@ -133,20 +132,6 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
     }
   }, [])
 
-  const insertMsgInHead = () => {
-    const msg = 'test-' + Date.now()
-    setNewlyMessage([
-      new NormalMessage(msg, {
-        uid: 2,
-        type: Date.now() % 2 === 0 ? MessageType.RECEIVE : MessageType.SEND,
-        messageId: testId++,
-        content: msg,
-        createTime: Date.now(),
-      }),
-      ...newlyMessage,
-    ])
-  }
-
   return (
     <View style={{ flex: 1 }}>
       <SpringScrollView
@@ -176,8 +161,6 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
           </MessageContainer>
         ))}
       </SpringScrollView>
-      {/*TODO 生产环境删除*/}
-      <Button title="test2" onPress={insertMsgInHead} />
     </View>
   )
 }

@@ -1,22 +1,25 @@
 import { Message, MessageFactory } from './Message'
+import {
+  decodeServerResponseMessage,
+  ServerResponseMessage as ServerResponseMessageProto,
+} from '../proto/ServerResponseMessage'
 
 export default class ServerResponseMessage extends Message {
   public static readonly MESSAGE_TYPE = 2
 
-  private readonly code: number
+  public readonly success: boolean
 
-  constructor(code: number) {
+  public readonly data?: string
+
+  constructor(message: ServerResponseMessageProto) {
     super()
-    this.code = code
+    this._requestId = message.requestId
+    this.success = message.success
+    this.data = message.data
   }
 
   encode(): Uint8Array {
-    const byteCode = []
-    byteCode[0] = this.code & 0xff
-    byteCode[1] = (this.code >> 8) & 0xff
-    byteCode[2] = (this.code >> 16) & 0xff
-    byteCode[3] = (this.code >> 24) & 0xff
-    return Uint8Array.from(byteCode)
+    return Uint8Array.from([])
   }
 
   getMessageType(): number {
@@ -25,5 +28,5 @@ export default class ServerResponseMessage extends Message {
 }
 
 export const ServerResponseMessageFactory: MessageFactory = msg => {
-  return new ServerResponseMessage(msg.readUint32())
+  return new ServerResponseMessage(decodeServerResponseMessage(msg))
 }

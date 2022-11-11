@@ -14,6 +14,10 @@ abstract class AbstractChatMessage {
    */
   public static readonly UNKNOWN_MESSAGE_TYPE = -1
 
+  /**
+   * 消息内容，不包含前缀的分隔符
+   * @private
+   */
   private readonly _content: string
 
   /**

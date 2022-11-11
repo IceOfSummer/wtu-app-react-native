@@ -94,8 +94,11 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      * do not export it, it needs extra operation, see {@link insertSingleMessage}
      */
     insertSingleMessage: (state, { payload }) => {
-      payload.content = payload.content.replace(REPLACE_TYPE_MARKER, '')
-      state.messageLabels[payload.uid] = payload
+      // payload 不能直接修改
+      state.messageLabels[payload.uid] = {
+        ...payload,
+        content: payload.content.replace(REPLACE_TYPE_MARKER, ''),
+      }
     },
     /**
      * do not export it, it needs extra operation, see {@link removeMessagePanel}

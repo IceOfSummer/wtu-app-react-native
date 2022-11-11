@@ -5,10 +5,7 @@ import { ConnectionOptions } from 'react-native-tcp-socket/lib/types/Socket'
 import { TLSSocketOptions } from 'react-native-tcp-socket/lib/types/TLSSocket'
 import TcpSockets from 'react-native-tcp-socket'
 import { store } from '../../redux/store'
-import {
-  modifyKVData,
-  saveGlobalState,
-} from '../../redux/counter/temporaryDataSlice'
+import { modifyKVData } from '../../redux/counter/temporaryDataSlice'
 
 const logger = getLogger('/api/chat/SocketSessionManager')
 

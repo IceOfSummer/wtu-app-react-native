@@ -2,8 +2,12 @@ import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native'
 import Button from 'react-native-button'
 import ChatService from '../../../../api/chat/ChatService'
-import Toast from 'react-native-toast-message'
 import ChatRequestMessage from '../../../../api/chat/message/ChatRequestMessage'
+import { useDispatch } from 'react-redux'
+import { insertSingleMessage } from '../../../../redux/counter/messageSlice'
+import { MessageType } from '../../../../sqlite/message'
+import NormalMessage from '../../common/NormalMessage'
+import { appendMessagePrefix } from '../../common/MessageManager'
 
 interface ToolBarProps {
   styles?: ViewStyle
@@ -15,24 +19,33 @@ interface ToolBarProps {
  */
 const ToolBar: React.FC<ToolBarProps> = props => {
   const [text, setText] = useState('')
+  const dispatch = useDispatch()
 
   const sendMessage = () => {
-    const instance = ChatService.instance
-    if (instance) {
-      instance
-        .sendMessage(new ChatRequestMessage(props.talkingTo, text))
-        .then(() => {
-          setText('')
-        })
-        .catch(e => {
-          console.error(e)
-        })
-    } else {
-      Toast.show({
-        position: 'bottom',
-        text1: '正在连接服务器...',
+    const content = text
+    setText('')
+    ChatService.instance
+      .sendMessage(new ChatRequestMessage(props.talkingTo, text))
+      .then(msg => {
+        if (!msg.success || !msg.data) {
+          return
+        }
+        dispatch(
+          insertSingleMessage({
+            msg: {
+              uid: props.talkingTo,
+              type: MessageType.SEND,
+              messageId: Number.parseInt(msg.data, 10),
+              content: appendMessagePrefix(NormalMessage.MESSAGE_TYPE, content),
+              createTime: Date.now(),
+            },
+            confirm: 1,
+          })
+        )
       })
-    }
+      .catch(e => {
+        console.error(e)
+      })
   }
   return (
     <View style={[props.styles, styles.container]}>
@@ -40,6 +53,7 @@ const ToolBar: React.FC<ToolBarProps> = props => {
         <TextInput
           style={styles.textInput}
           onChangeText={setText}
+          value={text}
           selectionColor={global.colors.primaryColor}
         />
       </View>

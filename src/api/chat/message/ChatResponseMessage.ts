@@ -1,5 +1,4 @@
 import { Message, MessageFactory } from './Message'
-import Buffer from 'buffer'
 import {
   ChatResponseMessage as ChatResponseMessageProto,
   decodeChatResponseMessage,
@@ -30,6 +29,5 @@ export default class ChatResponseMessage extends Message {
 }
 
 export const ChatResponseMessageFactory: MessageFactory = msg => {
-  const buf = Buffer.Buffer.from(msg.view.buffer.slice(msg.offset, msg.limit))
-  return new ChatResponseMessage(decodeChatResponseMessage(buf))
+  return new ChatResponseMessage(decodeChatResponseMessage(msg))
 }

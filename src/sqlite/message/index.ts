@@ -12,8 +12,8 @@ export type SqliteMessage = {
 }
 
 export enum MessageType {
-  SEND,
   RECEIVE,
+  SEND,
 }
 
 /**

@@ -1,4 +1,4 @@
-import ByteBuffer from 'bytebuffer'
+import { Buffer } from 'buffer'
 
 export abstract class Message {
   /**
@@ -12,10 +12,10 @@ export abstract class Message {
   public static readonly VERSION = 0x01
 
   /**
-   * 请求id，暂时没有用上
+   * 请求id
    * @protected
    */
-  private _requestId = 0
+  protected _requestId = 0
 
   /**
    * 将数据体进行编码
@@ -38,7 +38,7 @@ export abstract class Message {
 
 /**
  * 消息工厂
- * @param byteBuffer {ByteBuffer} 消息内容
+ * @param byteBuffer {Buffer} 消息内容
  * @param length {number} 消息内容长度
  */
-export type MessageFactory = (byteBuffer: ByteBuffer) => Message
+export type MessageFactory = (byteBuffer: Buffer) => Message
