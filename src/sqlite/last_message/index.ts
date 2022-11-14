@@ -2,7 +2,9 @@ import { SqliteMessage } from '../message'
 import DatabaseManager from '../index'
 import { ServerUser } from '../user'
 
-export type LastMessageExactly = SqliteMessage & ServerUser
+export type LastMessageExactly = LastMessageQueryType & ServerUser
+
+export type LastMessageQueryType = SqliteMessage & { confirmed: number }
 
 /**
  * 标记消息已读
@@ -32,10 +34,30 @@ export const insertLastMessage = (message: SqliteMessage, confirm: 1 | 0) =>
   })
 
 /**
+ * 插入多条last_message
+ * @param messages 多条消息，请确保按照uid升序排序
+ * @param confirm confirm
+ */
+export const insertMultiLastMessage = (
+  messages: SqliteMessage[],
+  confirm: 1 | 0
+) => {
+  let sql = 'REPLACE INTO last_message VALUES'
+  for (let i = 0, len = messages.length; i < len; ++i) {
+    const msg = messages[i]
+    sql += `(${msg.uid}, ${msg.messageId}, ${confirm})`
+    if (i < len - 1) {
+      sql += ','
+    }
+  }
+  return DatabaseManager.executeSql(sql)
+}
+
+/**
  * 查询用户聊天面板的消息
  */
 export const queryLastMessage = () =>
-  new Promise<SqliteMessage[]>(resolve => {
+  new Promise<LastMessageQueryType[]>(resolve => {
     DatabaseManager.executeSql(
       `SELECT lm.confirmed as confirmed, m.* FROM last_message lm
                        JOIN message m USING(messageId)`

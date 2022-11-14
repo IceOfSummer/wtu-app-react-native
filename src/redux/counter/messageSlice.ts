@@ -1,19 +1,32 @@
+/**
+ * 有待重构，乱的一批 (
+ * @date 2022-11-13 16:48
+ */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
   MessageLabel,
   MessageReducers,
   MessageState,
 } from '../types/messageTypes'
-import { insertMessage, SqliteMessage } from '../../sqlite/message'
+import {
+  insertMessage,
+  insertMultiplyMessage,
+  MessageType,
+  SqliteMessage,
+} from '../../sqlite/message'
 import {
   deleteLastMessage,
   insertLastMessage,
+  insertMultiLastMessage,
   queryLastMessage,
 } from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
 import { quickShowErrorTip } from '../../native/modules/NativeDialog'
 import { loadMultiUserCache, loadUserCacheFromServer } from './serverUserSlice'
 import { ReducerTypes } from './index'
+import { MultiChatResponseMessage } from '../../api/chat/message/MultiChatResponseMessage'
+import ImTemplate from '../../api/chat/ImTemplate'
+import { ImService } from '../../api/chat/ImService'
 
 const logger = getLogger('/redux/counter/messageSlice')
 
@@ -25,6 +38,9 @@ const REPLACE_TYPE_MARKER = /§\d*§/g
 export const initMessage = createAsyncThunk<MessageState, undefined>(
   'message/loadMessage',
   async (arg, { dispatch }) => {
+    // 加载一下类
+    ImTemplate.instance.isReady()
+    ImService.INSTANCE
     // 加载聊天面板上的最后聊天记录
     const lastMsg = await queryLastMessage()
     let messageLabels: MessageLabel = {}
@@ -36,7 +52,7 @@ export const initMessage = createAsyncThunk<MessageState, undefined>(
     dispatch(loadMultiUserCache(lastMsg.map(value => value.uid)))
     return {
       messageLabels,
-      currentTalkMessages: [],
+      onlineMessages: [],
     }
   }
 )
@@ -66,8 +82,36 @@ export const insertSingleMessage = createAsyncThunk<
       // 拉取用户信息
       dispatch(loadUserCacheFromServer([msg.uid]))
     }
-    dispatch(messageSlice.actions.insertCurrentTalkMessage(msg))
-    dispatch(messageSlice.actions.insertSingleMessage(msg))
+    dispatch(messageSlice.actions.insertOnlineMessage(msg))
+    dispatch(
+      messageSlice.actions.insertSingleMessage({
+        ...msg,
+        confirmed: confirm,
+      })
+    )
+  }
+)
+
+/**
+ * 同步多组消息
+ */
+export const syncMessage = createAsyncThunk<void, MultiChatResponseMessage>(
+  'message/insertMultiplyMessage',
+  async (arg, { dispatch }) => {
+    logger.info('syncing message: ')
+    const msg: SqliteMessage[] = arg.messages.messages.map(_arg => ({
+      messageId: _arg.msgId,
+      content: _arg.content,
+      type: _arg.type ? _arg.type : MessageType.RECEIVE,
+      uid: _arg.from,
+      createTime: _arg.createTime,
+    }))
+    msg.sort((a, b) => a.messageId - b.messageId)
+    // 保存到数据库
+    await insertMultiplyMessage(msg)
+    await insertMultiLastMessage(msg, 0)
+    // 保存到新消息中
+    dispatch(messageSlice.actions.insertOnlineMessage(msg))
   }
 )
 
@@ -87,7 +131,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
     messageLabels: [],
-    currentTalkMessages: [],
+    onlineMessages: [],
   },
   reducers: {
     /**
@@ -106,11 +150,30 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     removeMessagePanel: (state, { payload }) => {
       state.messageLabels[payload] = undefined
     },
-    insertCurrentTalkMessage: (state, { payload }) => {
-      state.currentTalkMessages.push(payload)
+    insertOnlineMessage: (state, { payload }) => {
+      if (Array.isArray(payload)) {
+        state.onlineMessages = state.onlineMessages.concat(payload)
+        logger.debug('updating onlineMessages: ')
+        logger.debug(state.onlineMessages)
+      } else {
+        state.onlineMessages.push(payload)
+      }
     },
     resetCurrentTalkMessage: state => {
-      state.currentTalkMessages = []
+      state.onlineMessages = []
+    },
+    setUnread: (state, { payload }) => {
+      payload.forEach(value => {
+        const target = state.messageLabels[value.messageId]
+        if (target) {
+          target.confirmed = 0
+        } else {
+          state.messageLabels[value.messageId] = {
+            ...value,
+            confirmed: 0,
+          }
+        }
+      })
     },
   },
   extraReducers: {
@@ -137,6 +200,9 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     },
     [removeMessagePanel.rejected.type](state, { error }) {
       logger.error('while run "removeMessagePanel" error, ' + error.message)
+    },
+    [syncMessage.rejected.type](state, { error }) {
+      logger.error('sync message failed: ' + error.message)
     },
   },
 })

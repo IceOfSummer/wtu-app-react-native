@@ -37,8 +37,10 @@ if (__DEV__) {
     }
   })
   DevSettings.addMenuItem('test sql', () => {
-    DatabaseManager.executeSql('SELECT * FROM user').then(result => {
-      console.log(result[0].rows.raw())
-    })
+    DatabaseManager.executeSql('SELECT * FROM message WHERE uid = 2').then(
+      result => {
+        console.log(result[0].rows.raw())
+      }
+    )
   })
 }

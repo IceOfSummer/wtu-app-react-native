@@ -8,12 +8,18 @@ import ServerResponseMessage, {
 import ByteBuffer from 'bytebuffer'
 import { Message, MessageFactory } from './Message'
 import Buffer from 'buffer'
+import {
+  MultiChatMessageFactory,
+  MultiChatResponseMessage,
+} from './MultiChatResponseMessage'
 
 const logger = getLogger('/api/message/Message')
 const messageFactories: Array<MessageFactory> = []
 messageFactories[ChatResponseMessage.MESSAGE_TYPE] = ChatResponseMessageFactory
 messageFactories[ServerResponseMessage.MESSAGE_TYPE] =
   ServerResponseMessageFactory
+messageFactories[MultiChatResponseMessage.MESSAGE_TYPE] =
+  MultiChatMessageFactory
 
 /**
  * 按照协议要求，构造消息格式

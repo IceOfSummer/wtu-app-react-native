@@ -17,20 +17,20 @@ const logger = getLogger('/api/chat/ChatService')
 type PromiseCallFunc = (data: any) => void
 
 /**
- * 消息服务
+ * Im模板
  * <p>
- * 若要监听服务器的消息，请使用pubsub订阅{@link ChatService#PUBSUB_KEY}
+ * 若要监听服务器的消息，请使用pubsub订阅{@link ImTemplate#PUBSUB_KEY}
  */
-export default class ChatService {
+export default class ImTemplate {
   /**
    * 单例模式
    * @private
    */
-  private static _instance: ChatService
+  private static _instance: ImTemplate
 
-  static get instance(): ChatService {
+  static get instance(): ImTemplate {
     if (!this._instance) {
-      this._instance = new ChatService()
+      this._instance = new ImTemplate()
     }
     return this._instance
   }
@@ -59,7 +59,7 @@ export default class ChatService {
    * @param message
    */
   public static publishMessage(message: Message) {
-    pubsub.publish(ChatService.PUBSUB_KEY, message)
+    pubsub.publish(ImTemplate.PUBSUB_KEY, message)
   }
 
   /**
@@ -93,21 +93,18 @@ export default class ChatService {
   /**
    * 发送消息给服务器，这里会自动分配requestId，不需要手动分配
    * <p>
-   * 发送前请确保登录过了，可以直接调用{@link ChatService#tryAuth}来登录
+   * 发送前请确保登录过了，可以直接调用{@link ImTemplate#tryAuth}来登录
    * @param message 消息内容
    */
-  public async sendMessage(message: Message): Promise<ServerResponseMessage> {
+  public sendMessage<R = ServerResponseMessage>(message: Message): Promise<R> {
     const connection = this.socketSessionManager.getConnection()
     if (!connection) {
       return Promise.reject('正在连接服务器中')
     }
-    return this.sendMessage0(message, connection)
+    return this.sendMessage0<R>(message, connection)
   }
 
-  private sendMessage0(
-    message: Message,
-    connection: TLSSocket
-  ): Promise<ServerResponseMessage> {
+  private sendMessage0<R>(message: Message, connection: TLSSocket): Promise<R> {
     return new Promise((resolve, reject) => {
       message.requestId = this.autoRequestId++
       this.requestManager.saveRequest(message.requestId, resolve, reject)
@@ -144,7 +141,7 @@ export default class ChatService {
         if (requestId === -1) {
           // -1代表服务器主动给用户发送信息
           logger.debug(message)
-          ChatService.publishMessage(message)
+          ImTemplate.publishMessage(message)
         } else {
           logger.debug(message)
           this.requestManager.resolve(message.requestId, message)
@@ -282,6 +279,11 @@ class FrameDecoder {
     }
   }
 
+  /**
+   * 返回一个完整的消息
+   * <p>
+   * 返回的bytebuffer<b>一定</b>是一个完整的消息
+   */
   public pop(): ByteBuffer {
     const popVal = this.decodedFrame.pop()
     if (!popVal) {

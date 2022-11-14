@@ -34,7 +34,7 @@ abstract class AbstractChatMessage {
   private readonly _key: number | string
 
   /**
-   * 消息详细
+   * 消息详细, 用于组件渲染
    * @private
    */
   private readonly _chatMessage: SqliteMessage | undefined

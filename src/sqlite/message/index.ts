@@ -49,3 +49,30 @@ export const insertMessage = (message: SqliteMessage) =>
     message.createTime,
     message.type
   )
+
+/**
+ * 插入多条消息
+ * @param messages
+ */
+export const insertMultiplyMessage = (messages: SqliteMessage[]) => {
+  let sql = 'REPLACE INTO message VALUES'
+  for (let i = 0, len = messages.length; i < len; i++) {
+    const msg = messages[i]
+    sql += `(${msg.messageId}, ${msg.uid}, '${msg.content}', ${msg.createTime}, ${msg.type})`
+    if (i < len - 1) {
+      sql += ','
+    }
+  }
+  return DatabaseManager.executeSql(sql)
+}
+
+/**
+ * 获取当前最大的消息id
+ */
+export const getMaxMsgId = (): Promise<number> =>
+  DatabaseManager.executeSql(
+    'SELECT messageId FROM message ORDER BY messageId DESC LIMIT 1'
+  ).then(value => {
+    const item = value[0].rows.item(0)
+    return item ? item.messageId : -1
+  })

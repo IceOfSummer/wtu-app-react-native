@@ -1,5 +1,6 @@
 import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
 import { SqliteMessage } from '../../sqlite/message'
+import { LastMessageQueryType } from '../../sqlite/last_message'
 
 /**
  * 消息状态, 结构如下:
@@ -16,20 +17,31 @@ export interface MessageState {
   messageLabels: MessageLabel
   /**
    * 当前聊天面板正在聊的消息, 当发送或者接收时，将消息存入该数组做临时缓存，避免查询数据库
+   * <p>
+   * <b>该数组不一定按照messageId升序排序，在消息漏掉进行同步后，会打破其有序性!</b>，但之后仍然会按照id升序，直到漏掉了消息
+   * <pre>
+   * 大致的样子为: 10 11 12 15 13 14 16 17 18 ...
+   *                       ↑        ↑
+   *                   漏掉消息了 消息同步完毕
+   *                    开始同步  继续正常递增
+   *
    */
-  currentTalkMessages: Array<SqliteMessage>
+  onlineMessages: Array<SqliteMessage>
 }
 
 /**
  * 消息面板
  */
-export type MessageLabel = Record<number, SqliteMessage | undefined>
+export type MessageLabel = Record<number, LastMessageQueryType | undefined>
 
 export interface MessageReducers extends SliceCaseReducers<MessageState> {
   /**
    * 插入单条消息
    */
-  insertSingleMessage: CaseReducer<MessageState, PayloadAction<SqliteMessage>>
+  insertSingleMessage: CaseReducer<
+    MessageState,
+    PayloadAction<LastMessageQueryType>
+  >
   /**
    * 移除消息面板的消息
    * 只需传入对应的用户名即可
@@ -38,12 +50,16 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
   /**
    * 插入当前正在聊天的消息
    */
-  insertCurrentTalkMessage: CaseReducer<
+  insertOnlineMessage: CaseReducer<
     MessageState,
-    PayloadAction<SqliteMessage>
+    PayloadAction<SqliteMessage[] | SqliteMessage>
   >
   /**
    * 清空当前正在聊天的消息
    */
   resetCurrentTalkMessage: CaseReducer<MessageState, PayloadAction<void>>
+  /**
+   * 将消息标记为未读
+   */
+  setUnread: CaseReducer<MessageState, PayloadAction<SqliteMessage[]>>
 }

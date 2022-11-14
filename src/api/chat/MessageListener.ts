@@ -1,11 +1,15 @@
+/**
+ * 用于管理服务器主动的消息推送
+ */
 import pubsub from 'pubsub-js'
-import ChatService from './ChatService'
+import ImTemplate from './ImTemplate'
 import { Message } from './message/Message'
 import ChatResponseMessage from './message/ChatResponseMessage'
 import { getLogger } from '../../utils/LoggerUtils'
 import { store } from '../../redux/store'
 import { insertSingleMessage } from '../../redux/counter/messageSlice'
 import { MessageType } from '../../sqlite/message'
+import { ImService } from './ImService'
 
 const logger = getLogger('/api/chat/MessageListener')
 
@@ -15,7 +19,7 @@ let invoked = false
     return
   }
   invoked = true
-  pubsub.subscribe(ChatService.PUBSUB_KEY, (key, data) => {
+  pubsub.subscribe(ImTemplate.PUBSUB_KEY, (key, data) => {
     const m = data as Message
     if (!m || !m.getMessageType()) {
       return
@@ -35,6 +39,7 @@ let invoked = false
           confirm: 0,
         })
       )
+      ImService.INSTANCE.updateMsgId(message.msgId)
       return
     }
     logger.warn(`unknown message type: ${m.getMessageType()}, content: `)

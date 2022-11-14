@@ -19,7 +19,6 @@ import DatabaseManager from '../../sqlite'
 import NativeDialog from '../../native/modules/NativeDialog'
 import { initMessage } from '../../redux/counter/messageSlice'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
-import ChatService from '../../api/chat/ChatService'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
@@ -72,12 +71,6 @@ const AuthenticatedView = () => {
           hideCancelBtn: true,
         })
       })
-
-    tryConnectToServer()
-    function tryConnectToServer() {
-      // 加载一下这个类
-      ChatService.instance.isReady()
-    }
   }, [])
 
   return (

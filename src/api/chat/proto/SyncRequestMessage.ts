@@ -1,60 +1,44 @@
-export interface ChatResponseMessage {
-  msgId: number;
-  from: number;
-  content: string;
-  createTime: number;
-  type?: number;
+export interface SyncRequestMessage {
+  offline: boolean;
+  start: number;
+  end: number;
 }
 
-export function encodeChatResponseMessage(message: ChatResponseMessage): Uint8Array {
+export function encodeSyncRequestMessage(message: SyncRequestMessage): Uint8Array {
   let bb = popByteBuffer();
-  _encodeChatResponseMessage(message, bb);
+  _encodeSyncRequestMessage(message, bb);
   return toUint8Array(bb);
 }
 
-function _encodeChatResponseMessage(message: ChatResponseMessage, bb: ByteBuffer): void {
-  // optional int32 msgId = 1;
-  let $msgId = message.msgId;
-  if ($msgId !== undefined) {
+function _encodeSyncRequestMessage(message: SyncRequestMessage, bb: ByteBuffer): void {
+  // optional bool offline = 1;
+  let $offline = message.offline;
+  if ($offline !== undefined) {
     writeVarint32(bb, 8);
-    writeVarint64(bb, intToLong($msgId));
+    writeByte(bb, $offline ? 1 : 0);
   }
 
-  // optional int32 from = 2;
-  let $from = message.from;
-  if ($from !== undefined) {
+  // optional int32 start = 2;
+  let $start = message.start;
+  if ($start !== undefined) {
     writeVarint32(bb, 16);
-    writeVarint64(bb, intToLong($from));
+    writeVarint64(bb, intToLong($start));
   }
 
-  // optional string content = 3;
-  let $content = message.content;
-  if ($content !== undefined) {
-    writeVarint32(bb, 26);
-    writeString(bb, $content);
-  }
-
-  // optional int32 createTime = 4;
-  let $createTime = message.createTime;
-  if ($createTime !== undefined) {
-    writeVarint32(bb, 32);
-    writeVarint64(bb, intToLong($createTime));
-  }
-
-  // optional int32 type = 5;
-  let $type = message.type;
-  if ($type !== undefined) {
-    writeVarint32(bb, 40);
-    writeVarint64(bb, intToLong($type));
+  // optional int32 end = 3;
+  let $end = message.end;
+  if ($end !== undefined) {
+    writeVarint32(bb, 24);
+    writeVarint64(bb, intToLong($end));
   }
 }
 
-export function decodeChatResponseMessage(binary: Uint8Array): ChatResponseMessage {
-  return _decodeChatResponseMessage(wrapByteBuffer(binary));
+export function decodeSyncRequestMessage(binary: Uint8Array): SyncRequestMessage {
+  return _decodeSyncRequestMessage(wrapByteBuffer(binary));
 }
 
-function _decodeChatResponseMessage(bb: ByteBuffer): ChatResponseMessage {
-  let message: ChatResponseMessage = {} as any;
+function _decodeSyncRequestMessage(bb: ByteBuffer): SyncRequestMessage {
+  let message: SyncRequestMessage = {} as any;
 
   end_of_message: while (!isAtEnd(bb)) {
     let tag = readVarint32(bb);
@@ -63,89 +47,21 @@ function _decodeChatResponseMessage(bb: ByteBuffer): ChatResponseMessage {
       case 0:
         break end_of_message;
 
-      // optional int32 msgId = 1;
+      // optional bool offline = 1;
       case 1: {
-        message.msgId = readVarint32(bb);
+        message.offline = !!readByte(bb);
         break;
       }
 
-      // optional int32 from = 2;
+      // optional int32 start = 2;
       case 2: {
-        message.from = readVarint32(bb);
+        message.start = readVarint32(bb);
         break;
       }
 
-      // optional string content = 3;
+      // optional int32 end = 3;
       case 3: {
-        message.content = readString(bb, readVarint32(bb));
-        break;
-      }
-
-      // optional int32 createTime = 4;
-      case 4: {
-        message.createTime = readVarint32(bb);
-        break;
-      }
-
-      // optional int32 type = 5;
-      case 5: {
-        message.type = readVarint32(bb);
-        break;
-      }
-
-      default:
-        skipUnknownField(bb, tag & 7);
-    }
-  }
-
-  return message;
-}
-
-export interface ChatResponseMessageGroup {
-  messages: ChatResponseMessage[];
-}
-
-export function encodeChatResponseMessageGroup(message: ChatResponseMessageGroup): Uint8Array {
-  let bb = popByteBuffer();
-  _encodeChatResponseMessageGroup(message, bb);
-  return toUint8Array(bb);
-}
-
-function _encodeChatResponseMessageGroup(message: ChatResponseMessageGroup, bb: ByteBuffer): void {
-  // repeated ChatResponseMessage messages = 1;
-  let array$messages = message.messages;
-  if (array$messages !== undefined) {
-    for (let value of array$messages) {
-      writeVarint32(bb, 10);
-      let nested = popByteBuffer();
-      _encodeChatResponseMessage(value, nested);
-      writeVarint32(bb, nested.limit);
-      writeByteBuffer(bb, nested);
-      pushByteBuffer(nested);
-    }
-  }
-}
-
-export function decodeChatResponseMessageGroup(binary: Uint8Array): ChatResponseMessageGroup {
-  return _decodeChatResponseMessageGroup(wrapByteBuffer(binary));
-}
-
-function _decodeChatResponseMessageGroup(bb: ByteBuffer): ChatResponseMessageGroup {
-  let message: ChatResponseMessageGroup = {} as any;
-
-  end_of_message: while (!isAtEnd(bb)) {
-    let tag = readVarint32(bb);
-
-    switch (tag >>> 3) {
-      case 0:
-        break end_of_message;
-
-      // repeated ChatResponseMessage messages = 1;
-      case 1: {
-        let limit = pushTemporaryLength(bb);
-        let values = message.messages || (message.messages = []);
-        values.push(_decodeChatResponseMessage(bb));
-        bb.limit = limit;
+        message.end = readVarint32(bb);
         break;
       }
 

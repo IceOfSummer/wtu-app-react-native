@@ -36,7 +36,7 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
   )
   const pointer = useRef(0)
   const currentTalk = useSelector<ReducerTypes, Array<SqliteMessage>>(
-    state => state.message.currentTalkMessages
+    state => state.message.onlineMessages
   )
   const dispatch = useDispatch()
 
@@ -121,6 +121,15 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
         )
       }
     }
+    // 严格按照id升序排序, 找个地方插入进去
+    // 这里直接倒着找，不会遍历很多次的
+    for (let i = newlyMessage.length - 1; i; --i) {
+      // const msg = newlyMessage[i]
+      // if (msg.messageType === NormalMessage.MESSAGE_TYPE && (msg as NormalMessage).chatMessage.) {
+      //   const normalMsg
+      // }
+    }
+    // TODO 消息排序
     if (waitingAppend.length) {
       setNewlyMessage(waitingAppend.concat(newlyMessage))
     }
