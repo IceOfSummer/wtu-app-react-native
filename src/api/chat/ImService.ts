@@ -9,9 +9,9 @@ import {
   insertSingleMessage,
   syncMessage,
 } from '../../redux/counter/messageSlice'
-import { appendMessagePrefix } from '../../views/ChatPage/common/MessageManager'
-import NormalMessage from '../../views/ChatPage/common/NormalMessage'
 import { store } from '../../redux/store'
+import { encodeContent } from '../../views/ChatPage/message/MessageManager'
+import NormalMessage from '../../views/ChatPage/message/chat/NormalMessage'
 
 const logger = getLogger('/api/chat/ImService')
 
@@ -72,7 +72,7 @@ export class ImService {
           uid: to,
           type: MessageType.SEND,
           messageId,
-          content: appendMessagePrefix(NormalMessage.MESSAGE_TYPE, content),
+          content: encodeContent(NormalMessage.MESSAGE_TYPE, content),
           createTime: Date.now(),
         },
         confirm: 1,

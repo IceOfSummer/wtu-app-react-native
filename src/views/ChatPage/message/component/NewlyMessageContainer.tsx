@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import MessageContainer, { MessageContainerProps } from '../MessageContainer'
+import MessageContainer, { MessageContainerProps } from './MessageContainer'
 import { LayoutChangeEvent, View } from 'react-native'
 
 interface NewlyMessageContainer extends MessageContainerProps {

@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import useMessageManager from '../../hook/useMessageManager'
-import MessageContainer from '../MessageContainer'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import { SqliteMessage } from '../../../../sqlite/message'
-import AbstractChatMessage from '../../common/AbstractChatMessage'
-import NormalMessage from '../../common/NormalMessage'
 import { resetCurrentTalkMessage } from '../../../../redux/counter/messageSlice'
 import { View } from 'react-native'
 import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
 import SimpleLoadingHeader from '../SimpleLoadingHeader'
-import NewlyMessageContainer from '../NewlyMessageContainer'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import EmptyLoadingHeader from '../EmptyLoadingHeader'
+import AbstractMessage from '../../message/AbstractMessage'
+import NormalMessage from '../../message/chat/NormalMessage'
+import NewlyMessageContainer from '../../message/component/NewlyMessageContainer'
+import MessageContainer from '../../message/component/MessageContainer'
 
 interface MessageAreaProps {
   chatWith: number
@@ -31,9 +31,7 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
   const scroll = useRef<SpringScrollView>(null)
 
   // current message
-  const [newlyMessage, setNewlyMessage] = useState<Array<AbstractChatMessage>>(
-    []
-  )
+  const [newlyMessage, setNewlyMessage] = useState<Array<AbstractMessage>>([])
   const pointer = useRef(0)
   const currentTalk = useSelector<ReducerTypes, Array<SqliteMessage>>(
     state => state.message.onlineMessages
@@ -105,7 +103,7 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
 
   // 在内容更新前的容器高度
   useEffect(() => {
-    const waitingAppend: Array<AbstractChatMessage> = []
+    const waitingAppend: Array<AbstractMessage> = []
     for (
       let len = currentTalk.length;
       pointer.current < len;
@@ -114,21 +112,19 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
       const msg = currentTalk[pointer.current]
       if (msg.uid === props.chatWith) {
         waitingAppend.push(
-          new NormalMessage(
-            AbstractChatMessage.removeTypeMarker(msg.content),
-            msg
-          )
+          new NormalMessage(AbstractMessage.removeTypeMarker(msg.content), msg)
         )
       }
     }
     // 严格按照id升序排序, 找个地方插入进去
     // 这里直接倒着找，不会遍历很多次的
-    for (let i = newlyMessage.length - 1; i; --i) {
-      // const msg = newlyMessage[i]
-      // if (msg.messageType === NormalMessage.MESSAGE_TYPE && (msg as NormalMessage).chatMessage.) {
-      //   const normalMsg
-      // }
-    }
+    // for (let i = newlyMessage.length - 1; i; --i) {
+    //   // const msg = newlyMessage[i]
+    //   // if (msg.messageType === NormalMessage.MESSAGE_TYPE && (msg as NormalMessage).chatMessage.) {
+    //   //   const normalMsg
+    //   // }
+    //   console.log(i)
+    // }
     // TODO 消息排序
     if (waitingAppend.length) {
       setNewlyMessage(waitingAppend.concat(newlyMessage))
@@ -157,7 +153,7 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
             onMeasureDone={onNewMsgMeasureDone}
             chatMessage={value.chatMessage}
             key={value.key}
-            hideContainer={value.hideAvatar}>
+            {...value.props}>
             {value.render()}
           </NewlyMessageContainer>
         ))}
@@ -165,7 +161,7 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
           <MessageContainer
             chatMessage={value.chatMessage}
             key={value.key}
-            hideContainer={value.hideAvatar}>
+            {...value.props}>
             {value.render()}
           </MessageContainer>
         ))}

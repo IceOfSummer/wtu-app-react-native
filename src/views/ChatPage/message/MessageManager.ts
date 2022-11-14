@@ -1,7 +1,7 @@
-import AbstractChatMessage, { ChatMessageFactory } from './AbstractChatMessage'
-import NormalMessage, { normalMessageFactory } from './NormalMessage'
 import { getLogger } from '../../../utils/LoggerUtils'
 import { SqliteMessage } from '../../../sqlite/message'
+import NormalMessage, { normalMessageFactory } from './chat/NormalMessage'
+import AbstractMessage, { ChatMessageFactory } from './AbstractMessage'
 
 const logger = getLogger('views/ChatPage/common/MessageManager')
 
@@ -20,7 +20,7 @@ const MAX_TYPE_WIDTH = 4
  * 解析消息并返回<b>React组件</b>
  * @param msg 消息内容
  */
-const parseMessage = (msg: SqliteMessage): AbstractChatMessage => {
+const decodeMessage = (msg: SqliteMessage): AbstractMessage => {
   const { content } = msg
   logger.debug(`parsing content: ${content}`)
   try {
@@ -33,7 +33,7 @@ const parseMessage = (msg: SqliteMessage): AbstractChatMessage => {
   }
 }
 
-const unsafeParseMessage = (msg: SqliteMessage): AbstractChatMessage => {
+const unsafeParseMessage = (msg: SqliteMessage): AbstractMessage => {
   const { content } = msg
   if (content.charAt(0) !== splitter) {
     logger.warn('invalid message type, origin content: ' + content)
@@ -67,10 +67,7 @@ const unsafeParseMessage = (msg: SqliteMessage): AbstractChatMessage => {
   return new NormalMessage(content, msg)
 }
 
-export const appendMessagePrefix = (
-  messageType: number,
-  content: string
-): string => {
+export const encodeContent = (messageType: number, content: string): string => {
   return splitter + messageType + splitter + content
 }
-export default parseMessage
+export default decodeMessage

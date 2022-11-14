@@ -1,41 +1,27 @@
-import AbstractChatMessage, { ChatMessageFactory } from './AbstractChatMessage'
+import { AbstractChatMessage } from '../AbstractChatMessage'
+import { SqliteMessage } from '../../../../sqlite/message'
 import React from 'react'
-import { SqliteMessage, MessageType } from '../../../sqlite/message'
 import { StyleSheet, Text, View } from 'react-native'
-import { getLogger } from '../../../utils/LoggerUtils'
-
-const logger = getLogger('/views/ChatPage/common/NormalMessage')
+import { ChatMessageFactory } from '../AbstractMessage'
 
 export default class NormalMessage extends AbstractChatMessage {
   public static readonly MESSAGE_TYPE = 0
 
-  constructor(content: string, chatMessage: SqliteMessage) {
-    super(content, NormalMessage.MESSAGE_TYPE, chatMessage)
+  /**
+   * @param originContent 没有编码的原始内容
+   * @param chatMessage {@link SqliteMessage#content} 应该是编码后的内容
+   */
+  public constructor(originContent: string, chatMessage: SqliteMessage) {
+    super(NormalMessage.MESSAGE_TYPE, chatMessage, originContent)
   }
 
-  encodeMsg(): string {
-    return ''
-  }
-
-  render() {
-    if (!this.chatMessage) {
-      logger.error(
-        'the ChatMessage param is undefined! content: ' + this.content
-      )
-      return null
-    }
-    return (
-      <NormalMessageComponent
-        content={this.content}
-        type={this.chatMessage.type}
-      />
-    )
+  render(): React.ReactNode {
+    return <NormalMessageComponent content={this.decodedContent} />
   }
 }
 
 interface NormalMessageComponentProps {
   content: string
-  type: MessageType
 }
 
 const NormalMessageComponent: React.FC<NormalMessageComponentProps> = props => {

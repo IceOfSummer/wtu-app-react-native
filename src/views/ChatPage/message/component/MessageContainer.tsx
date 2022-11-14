@@ -1,15 +1,23 @@
-import React from 'react'
-import { SqliteMessage, MessageType } from '../../../../sqlite/message'
+import { MessageType, SqliteMessage } from '../../../../sqlite/message'
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native'
-import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
+import React from 'react'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
+import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
+
+export interface MessageContainerOptionalProps {
+  /**
+   * 是否隐藏外层头像，若隐藏，消息将居中显示
+   */
+  hideAvatar?: boolean
+}
 
 export interface MessageContainerProps {
   chatMessage?: SqliteMessage
   hideContainer?: boolean
   onLayout?: (event: LayoutChangeEvent) => void
 }
+
 /**
  * 消息容器，该容器将渲染`props.children`中的内容
  * @param props
