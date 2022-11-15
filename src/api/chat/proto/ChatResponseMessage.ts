@@ -102,7 +102,7 @@ function _decodeChatResponseMessage(bb: ByteBuffer): ChatResponseMessage {
 }
 
 export interface ChatResponseMessageGroup {
-  messages: ChatResponseMessage[];
+  messages?: ChatResponseMessage[];
 }
 
 export function encodeChatResponseMessageGroup(message: ChatResponseMessageGroup): Uint8Array {

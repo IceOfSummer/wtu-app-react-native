@@ -99,7 +99,7 @@ export const syncMessage = createAsyncThunk<void, MultiChatResponseMessage>(
   'message/insertMultiplyMessage',
   async (arg, { dispatch }) => {
     logger.info('syncing message: ')
-    const msg: SqliteMessage[] = arg.messages.messages.map(_arg => ({
+    const msg: SqliteMessage[] = arg.messages.map(_arg => ({
       messageId: _arg.msgId,
       content: _arg.content,
       type: _arg.type ? _arg.type : MessageType.RECEIVE,
