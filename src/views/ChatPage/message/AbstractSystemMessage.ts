@@ -11,6 +11,7 @@ export default abstract class AbstractSystemMessage extends AbstractMessage {
       props: {
         hideAvatar: true,
       },
+      createTime: Date.now(),
     })
   }
 }

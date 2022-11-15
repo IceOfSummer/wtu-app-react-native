@@ -20,10 +20,11 @@ export abstract class AbstractChatMessage extends AbstractMessage {
         ? decodedContent
         : AbstractMessage.removeTypeMarker(chatMessage.content),
       key: chatMessage.messageId,
+      createTime: chatMessage.createTime,
     })
   }
 
   get message(): SqliteMessage {
-    return this._chatMessage!
+    return this._message!
   }
 }

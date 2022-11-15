@@ -5,6 +5,7 @@ import { MessageContainerOptionalProps } from './component/MessageContainer'
 type AbstractChatMessageCons = {
   decodedContent: string
   messageType: number
+  createTime: number
   messageGroup?: number
   chatMessage?: SqliteMessage
   key?: number | string
@@ -27,7 +28,7 @@ export default abstract class AbstractMessage {
    * 双方的聊天消息，若为系统生成的消息，则可以不提供该属性，例如在消息框中插入一条时间
    * @protected
    */
-  protected _chatMessage?: SqliteMessage
+  protected _message?: SqliteMessage
 
   /**
    * 解码后的消息
@@ -66,12 +67,18 @@ export default abstract class AbstractMessage {
   private readonly _props: MessageContainerOptionalProps
 
   /**
+   * 创建时间, 应为毫秒级别时间戳
+   * @protected
+   */
+  private readonly _createTime: number
+
+  /**
    * 渲染对应的React组件<p/>
    */
   public abstract render(): React.ReactNode
 
   protected constructor(config: AbstractChatMessageCons) {
-    this._chatMessage = config.chatMessage
+    this._message = config.chatMessage
     this._decodedContent = config.decodedContent
     this._messageType = config.messageType
     this._messageGroup = config.messageGroup
@@ -79,6 +86,7 @@ export default abstract class AbstractMessage {
       : AbstractMessage.DEFAULT_MESSAGE_GROUP
     this._key = config.key ? config.key : AbstractMessage.autogenerateKey()
     this._props = config.props ? config.props : {}
+    this._createTime = config.createTime
   }
 
   private static autogenerateKey() {
@@ -107,8 +115,12 @@ export default abstract class AbstractMessage {
     return this._props
   }
 
-  get chatMessage(): SqliteMessage | undefined {
-    return this._chatMessage
+  get message(): SqliteMessage | undefined {
+    return this._message
+  }
+
+  get createTime(): number {
+    return this._createTime
   }
 }
 

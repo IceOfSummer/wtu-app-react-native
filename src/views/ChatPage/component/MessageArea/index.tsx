@@ -30,7 +30,9 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
   const { messages, loadNextPage } = useMessageManager(props.chatWith)
   const scroll = useRef<SpringScrollView>(null)
 
-  // current message
+  // 防止初始化时显示了currentTalk的内容，最开始的时候这个值应该清空
+  const ready = useRef(false)
+  // 新消息列表，id大的应该在数组的前面
   const [newlyMessage, setNewlyMessage] = useState<Array<AbstractMessage>>([])
   const pointer = useRef(0)
   const currentTalk = useSelector<ReducerTypes, Array<SqliteMessage>>(
@@ -103,6 +105,12 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
 
   // 在内容更新前的容器高度
   useEffect(() => {
+    if (currentTalk.length === 0) {
+      ready.current = true
+    }
+    if (!ready.current) {
+      return
+    }
     const waitingAppend: Array<AbstractMessage> = []
     for (
       let len = currentTalk.length;
@@ -116,22 +124,23 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
         )
       }
     }
-    // 严格按照id升序排序, 找个地方插入进去
-    // 这里直接倒着找，不会遍历很多次的
-    // for (let i = newlyMessage.length - 1; i; --i) {
-    //   // const msg = newlyMessage[i]
-    //   // if (msg.messageType === NormalMessage.MESSAGE_TYPE && (msg as NormalMessage).chatMessage.) {
-    //   //   const normalMsg
-    //   // }
-    //   console.log(i)
-    // }
-    // TODO 消息排序
-    if (waitingAppend.length) {
-      setNewlyMessage(waitingAppend.concat(newlyMessage))
+    if (waitingAppend.length === 0) {
+      return
     }
+    // 消息id不一定是递增的
+    setNewlyMessage(
+      waitingAppend
+        .concat(newlyMessage)
+        .sort((a, b) => b.createTime - a.createTime)
+    )
   }, [currentTalk])
 
   useEffect(() => {
+    // 防止消息重复加载
+    dispatch(resetCurrentTalkMessage())
+    if (currentTalk.length === 0) {
+      ready.current = true
+    }
     return () => {
       dispatch(resetCurrentTalkMessage())
     }
@@ -148,10 +157,11 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
         inverted
         ref={scroll}
         style={{ paddingBottom: global.styles.$spacing_col_base }}>
+        {/*TODO 可以考虑由实现类直接提供整个消息行的渲染*/}
         {newlyMessage.map(value => (
           <NewlyMessageContainer
             onMeasureDone={onNewMsgMeasureDone}
-            chatMessage={value.chatMessage}
+            chatMessage={value.message}
             key={value.key}
             {...value.props}>
             {value.render()}
@@ -159,7 +169,7 @@ const MessageArea: React.FC<MessageAreaProps> = props => {
         ))}
         {messages.map(value => (
           <MessageContainer
-            chatMessage={value.chatMessage}
+            chatMessage={value.message}
             key={value.key}
             {...value.props}>
             {value.render()}
