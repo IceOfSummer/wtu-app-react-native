@@ -1,17 +1,20 @@
 import { getLogger } from '../../../utils/LoggerUtils'
 import ChatResponseMessage, {
   ChatResponseMessageFactory,
-} from './ChatResponseMessage'
+} from './response/ChatResponseMessage'
 import ServerResponseMessage, {
   ServerResponseMessageFactory,
-} from './ServerResponseMessage'
+} from './response/ServerResponseMessage'
 import ByteBuffer from 'bytebuffer'
 import { Message, MessageFactory } from './Message'
 import Buffer from 'buffer'
 import {
   MultiChatMessageFactory,
   MultiChatResponseMessage,
-} from './MultiChatResponseMessage'
+} from './response/MultiChatResponseMessage'
+import ReceiveStatusMessage, {
+  receiveStatusMessageFactory,
+} from './response/ReceiveStatusMessage'
 
 const logger = getLogger('/api/message/Message')
 const messageFactories: Array<MessageFactory> = []
@@ -20,6 +23,8 @@ messageFactories[ServerResponseMessage.MESSAGE_TYPE] =
   ServerResponseMessageFactory
 messageFactories[MultiChatResponseMessage.MESSAGE_TYPE] =
   MultiChatMessageFactory
+messageFactories[ReceiveStatusMessage.MESSAGE_TYPE] =
+  receiveStatusMessageFactory
 
 /**
  * 按照协议要求，构造消息格式
@@ -29,7 +34,7 @@ export const buildMessage = (message: Message): Uint8Array => {
   const byteBuffer = new ByteBuffer()
   byteBuffer.writeUint16(Message.MAGIC_NUMBER)
   byteBuffer.writeUint8(Message.VERSION)
-  byteBuffer.writeUint8(message.getMessageType())
+  byteBuffer.writeUint8(message.messageType)
   // 自动分配
   byteBuffer.writeInt16(message.requestId)
   const enc = message.encode()

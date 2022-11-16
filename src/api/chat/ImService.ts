@@ -1,10 +1,10 @@
 import ImTemplate from './ImTemplate'
-import ChatRequestMessage from './message/ChatRequestMessage'
+import ChatRequestMessage from './message/request/ChatRequestMessage'
 import { getMaxMsgId, MessageType } from '../../sqlite/message'
 import { quickShowErrorTip } from '../../native/modules/NativeDialog'
 import { getLogger } from '../../utils/LoggerUtils'
-import SyncRequestMessage from './message/SyncRequestMessage'
-import { MultiChatResponseMessage } from './message/MultiChatResponseMessage'
+import SyncRequestMessage from './message/request/SyncRequestMessage'
+import { MultiChatResponseMessage } from './message/response/MultiChatResponseMessage'
 import {
   insertSingleMessage,
   syncMessage,
@@ -95,6 +95,19 @@ export class ImService {
     this.lastMsgId = msgId
   }
 
+  /**
+   * 同步消息, 消息不一定会拿到
+   * @param start 消息的起始id（包括）
+   * @param end 消息的结束id（不包括）
+   * @param offline 是否为离线同步，若为离线，则一定可以拿到指定的消息，若为在线，则不一定会拿到消息
+   *                在线一般用于用户在聊天的过程中丢失了消息，能够快速进行同步，速度较快，但不一定会全部拿到
+   *                离线代表用户接收离线消息，一定可以拿到范围内的内容
+   *                <p>
+   *                - 当offline为true时，end - start不应该超过200，若超过该值应该分批次获取
+   *                <p>
+   *                - 当offline为false时，end - start不应该超过20, 若超过则应该丢弃较小的消息id
+   * @private
+   */
   private syncMessage(start: number, end: number, offline?: boolean) {
     return this.imTemplate
       .sendMessage<MultiChatResponseMessage>(
@@ -110,6 +123,13 @@ export class ImService {
       .catch(e => {
         console.log(e)
       })
+  }
+
+  /**
+   * 同步离线消息
+   */
+  public syncOfflineMessage() {
+    // this.imTemplate.sendMessage()
   }
 
   static get INSTANCE(): ImService {

@@ -1,7 +1,7 @@
-import { Message } from './Message'
+import { RequestMessage } from '../Message'
 import Buffer from 'buffer'
 
-export default class AuthRequestMessage extends Message {
+export default class AuthRequestMessage extends RequestMessage {
   private static readonly MESSAGE_TYPE = 0
 
   private readonly session: string
@@ -15,7 +15,7 @@ export default class AuthRequestMessage extends Message {
     return Buffer.Buffer.from(this.session)
   }
 
-  getMessageType(): number {
+  get messageType(): number {
     return AuthRequestMessage.MESSAGE_TYPE
   }
 }

@@ -1,10 +1,10 @@
-import { Message, MessageFactory } from './Message'
+import { MessageFactory, ResponseMessage } from '../Message'
 import {
   decodeServerResponseMessage,
   ServerResponseMessage as ServerResponseMessageProto,
-} from '../proto/ServerResponseMessage'
+} from '../../proto/ServerResponseMessage'
 
-export default class ServerResponseMessage extends Message {
+export default class ServerResponseMessage extends ResponseMessage {
   public static readonly MESSAGE_TYPE = 2
 
   public readonly success: boolean
@@ -18,11 +18,7 @@ export default class ServerResponseMessage extends Message {
     this.data = message.data
   }
 
-  encode(): Uint8Array {
-    return Uint8Array.from([])
-  }
-
-  getMessageType(): number {
+  get messageType(): number {
     return ServerResponseMessage.MESSAGE_TYPE
   }
 }

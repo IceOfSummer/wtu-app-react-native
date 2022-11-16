@@ -1,11 +1,11 @@
-import { Message, MessageFactory } from './Message'
+import { MessageFactory, ResponseMessage } from '../Message'
 import {
   ChatResponseMessage as ChatResponseMessageProto,
   decodeChatResponseMessage,
-  encodeChatResponseMessage,
-} from '../proto/ChatResponseMessage'
+} from '../../proto/ChatResponseMessage'
+import ChatRequestMessage from '../request/ChatRequestMessage'
 
-export default class ChatResponseMessage extends Message {
+export default class ChatResponseMessage extends ResponseMessage {
   public static readonly MESSAGE_TYPE = 4
 
   private readonly _message: ChatResponseMessageProto
@@ -15,16 +15,12 @@ export default class ChatResponseMessage extends Message {
     this._message = message
   }
 
-  encode(): Uint8Array {
-    return encodeChatResponseMessage(this._message)
-  }
-
-  getMessageType(): number {
-    return 4
-  }
-
   get message(): ChatResponseMessageProto {
     return this._message
+  }
+
+  get messageType(): number {
+    return ChatRequestMessage.MESSAGE_TYPE
   }
 }
 

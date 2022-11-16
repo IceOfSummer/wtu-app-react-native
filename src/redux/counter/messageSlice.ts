@@ -24,7 +24,7 @@ import { getLogger } from '../../utils/LoggerUtils'
 import { quickShowErrorTip } from '../../native/modules/NativeDialog'
 import { loadMultiUserCache, loadUserCacheFromServer } from './serverUserSlice'
 import { ReducerTypes } from './index'
-import { MultiChatResponseMessage } from '../../api/chat/message/MultiChatResponseMessage'
+import { MultiChatResponseMessage } from '../../api/chat/message/response/MultiChatResponseMessage'
 import ImTemplate from '../../api/chat/ImTemplate'
 import { ImService } from '../../api/chat/ImService'
 

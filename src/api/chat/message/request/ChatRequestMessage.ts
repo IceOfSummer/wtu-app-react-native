@@ -1,7 +1,7 @@
-import { Message } from './Message'
-import { encodeChatRequestMessage } from '../proto/ChatRequestMessage'
+import { RequestMessage } from '../Message'
+import { encodeChatRequestMessage } from '../../proto/ChatRequestMessage'
 
-export default class ChatRequestMessage extends Message {
+export default class ChatRequestMessage extends RequestMessage {
   public static readonly MESSAGE_TYPE = 1
 
   public to: number
@@ -21,7 +21,7 @@ export default class ChatRequestMessage extends Message {
     })
   }
 
-  getMessageType(): number {
+  get messageType(): number {
     return ChatRequestMessage.MESSAGE_TYPE
   }
 }

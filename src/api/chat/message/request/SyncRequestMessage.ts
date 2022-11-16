@@ -1,10 +1,10 @@
-import { Message } from './Message'
+import { RequestMessage } from '../Message'
 import {
   encodeSyncRequestMessage,
   SyncRequestMessage as SyncRequestMessageProto,
-} from '../proto/SyncRequestMessage'
+} from '../../proto/SyncRequestMessage'
 
-export default class SyncRequestMessage extends Message {
+export default class SyncRequestMessage extends RequestMessage {
   public static readonly MESSAGE_TYPE = 5
 
   private readonly message: SyncRequestMessageProto
@@ -19,6 +19,10 @@ export default class SyncRequestMessage extends Message {
   }
 
   getMessageType(): number {
+    return SyncRequestMessage.MESSAGE_TYPE
+  }
+
+  get messageType(): number {
     return SyncRequestMessage.MESSAGE_TYPE
   }
 }

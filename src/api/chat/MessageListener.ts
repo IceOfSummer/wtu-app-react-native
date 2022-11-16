@@ -4,7 +4,7 @@
 import pubsub from 'pubsub-js'
 import ImTemplate from './ImTemplate'
 import { Message } from './message/Message'
-import ChatResponseMessage from './message/ChatResponseMessage'
+import ChatResponseMessage from './message/response/ChatResponseMessage'
 import { getLogger } from '../../utils/LoggerUtils'
 import { store } from '../../redux/store'
 import { insertSingleMessage } from '../../redux/counter/messageSlice'
@@ -21,10 +21,10 @@ let invoked = false
   invoked = true
   pubsub.subscribe(ImTemplate.PUBSUB_KEY, (key, data) => {
     const m = data as Message
-    if (!m || !m.getMessageType()) {
+    if (!m || !m.messageType) {
       return
     }
-    if (m.getMessageType() === ChatResponseMessage.MESSAGE_TYPE) {
+    if (m.messageType === ChatResponseMessage.MESSAGE_TYPE) {
       // 聊天消息
       const { message } = m as ChatResponseMessage
       store.dispatch<any>(
@@ -42,7 +42,7 @@ let invoked = false
       ImService.INSTANCE.updateMsgId(message.msgId)
       return
     }
-    logger.warn(`unknown message type: ${m.getMessageType()}, content: `)
+    logger.warn(`unknown message type: ${m.messageType}, content: `)
     logger.warn(m)
   })
 })()

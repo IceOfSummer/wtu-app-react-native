@@ -1,11 +1,11 @@
-import { Message, MessageFactory } from './Message'
+import { MessageFactory, ResponseMessage } from '../Message'
 import {
   ChatResponseMessage,
   ChatResponseMessageGroup,
   decodeChatResponseMessageGroup,
-} from '../proto/ChatResponseMessage'
+} from '../../proto/ChatResponseMessage'
 
-export class MultiChatResponseMessage extends Message {
+export class MultiChatResponseMessage extends ResponseMessage {
   public static readonly MESSAGE_TYPE = 6
 
   private readonly _messages: ChatResponseMessage[]
@@ -18,16 +18,12 @@ export class MultiChatResponseMessage extends Message {
     })
   }
 
-  encode(): Uint8Array {
-    return Uint8Array.from([])
-  }
-
-  getMessageType(): number {
-    return MultiChatResponseMessage.MESSAGE_TYPE
-  }
-
   get messages(): ChatResponseMessage[] {
     return this._messages
+  }
+
+  get messageType(): number {
+    return MultiChatResponseMessage.MESSAGE_TYPE
   }
 }
 

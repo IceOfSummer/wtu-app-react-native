@@ -5,12 +5,12 @@ import LinkedOneWayQueue, {
   OneWayQueue,
 } from '../../utils/Queue/LinkedOneWayQueue'
 import CookieManager from '@react-native-cookies/cookies'
-import AuthRequestMessage from './message/AuthRequestMessage'
+import AuthRequestMessage from './message/request/AuthRequestMessage'
 import ByteBuffer from 'bytebuffer'
 import pubsub from 'pubsub-js'
 import { buildMessage, parseMessage } from './message/Protocol'
 import SocketSessionManager from './SocketSessionManager'
-import ServerResponseMessage from './message/ServerResponseMessage'
+import ServerResponseMessage from './message/response/ServerResponseMessage'
 
 const logger = getLogger('/api/chat/ChatService')
 
