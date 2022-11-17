@@ -69,4 +69,11 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
    * 将消息标记为未读
    */
   setUnread: CaseReducer<MessageState, PayloadAction<SqliteMessage[]>>
+  /**
+   * 修改消息读取确认状态
+   */
+  modifyReadStatus: CaseReducer<
+    MessageState,
+    PayloadAction<{ uid: number; confirmed: 1 | 0 }>
+  >
 }

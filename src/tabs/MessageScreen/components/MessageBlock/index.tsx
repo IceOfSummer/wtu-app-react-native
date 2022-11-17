@@ -8,17 +8,20 @@ import {
   View,
 } from 'react-native'
 import { formatTimestampSimply } from '../../../../utils/DateUtils'
-import { SqliteMessage } from '../../../../sqlite/message'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
 import Button from 'react-native-button'
-import { removeMessagePanel } from '../../../../redux/counter/messageSlice'
+import {
+  markMessageRead,
+  removeMessagePanel,
+} from '../../../../redux/counter/messageSlice'
 import useNav from '../../../../hook/useNav'
 import { CHAT_PAGE } from '../../../../router'
 import { ServerUser } from '../../../../sqlite/user'
+import { LastMessageQueryType } from '../../../../sqlite/last_message'
 
-const MessageBlock: React.FC<SqliteMessage> = props => {
+const MessageBlock: React.FC<LastMessageQueryType> = props => {
   const dispatch = useDispatch()
   const info = useSelector<ReducerTypes, ServerUser>(
     state => state.serverUser.cachedUser[props.uid]
@@ -32,7 +35,6 @@ const MessageBlock: React.FC<SqliteMessage> = props => {
     nickname = info.nickname
   }
   const onLongPress = ({ nativeEvent }: GestureResponderEvent) => {
-    console.log(nativeEvent)
     startX.current = nativeEvent.pageX
     startY.current = nativeEvent.pageY
     setToolBoxVisible(true)
@@ -51,13 +53,11 @@ const MessageBlock: React.FC<SqliteMessage> = props => {
   }
 
   const onDeletePress = () => {
-    console.log('delete')
     dispatch(removeMessagePanel(props.uid))
     delayCloseModal()
   }
 
   const onPinPress = () => {
-    console.log('pin')
     // TODO
     setToolBoxVisible(false)
     delayCloseModal()
@@ -68,6 +68,14 @@ const MessageBlock: React.FC<SqliteMessage> = props => {
    */
   const onPress = () => {
     nav.push(CHAT_PAGE, { uid: props.uid })
+  }
+
+  /**
+   * 标记消息已读
+   */
+  const setRead = () => {
+    dispatch(markMessageRead(props.uid))
+    delayCloseModal()
   }
 
   return (
@@ -87,6 +95,7 @@ const MessageBlock: React.FC<SqliteMessage> = props => {
           </View>
           <View style={styles.timeContainer}>
             <Text>{formatTimestampSimply(props.createTime)}</Text>
+            {props.confirmed ? null : <View style={styles.redCircle} />}
           </View>
         </View>
       </Button>
@@ -100,6 +109,11 @@ const MessageBlock: React.FC<SqliteMessage> = props => {
               { left: startX.current, top: startY.current },
             ]}>
             <View style={styles.toolBoxContainer}>
+              {props.confirmed ? null : (
+                <Button onPress={setRead}>
+                  <Text style={styles.toolBoxButtonText}>已读</Text>
+                </Button>
+              )}
               <Button onPress={onPinPress}>
                 <Text style={styles.toolBoxButtonText}>置顶</Text>
               </Button>
@@ -143,6 +157,8 @@ const styles = StyleSheet.create({
   },
   timeContainer: {
     alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   toolBox: {
     position: 'absolute',
@@ -160,6 +176,13 @@ const styles = StyleSheet.create({
   toolBoxButtonText: {
     color: global.colors.textColor,
     padding: 8,
+  },
+  redCircle: {
+    marginLeft: global.styles.$spacing_row_sm,
+    borderRadius: 50,
+    backgroundColor: 'red',
+    width: 12,
+    height: 12,
   },
 })
 

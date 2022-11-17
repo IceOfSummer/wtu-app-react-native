@@ -27,6 +27,7 @@ import { ReducerTypes } from './index'
 import { MultiChatResponseMessage } from '../../api/chat/message/response/MultiChatResponseMessage'
 import ImTemplate from '../../api/chat/ImTemplate'
 import { ImService } from '../../api/chat/ImService'
+import { markMessageRead as markSqliteMessageRead } from '../../sqlite/last_message'
 
 const logger = getLogger('/redux/counter/messageSlice')
 
@@ -140,6 +141,19 @@ export const removeMessagePanel = createAsyncThunk<void, number>(
   }
 )
 
+export const markMessageRead = createAsyncThunk<void, number>(
+  'message/markMessageRead',
+  async (uid, { dispatch }) => {
+    await markSqliteMessageRead(uid)
+    dispatch(
+      messageSlice.actions.modifyReadStatus({
+        uid,
+        confirmed: 1,
+      })
+    )
+  }
+)
+
 const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
@@ -206,6 +220,12 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         }
       })
     },
+    modifyReadStatus: (state, { payload }) => {
+      const target = state.messageLabels[payload.uid]
+      if (target) {
+        target.confirmed = payload.confirmed
+      }
+    },
   },
   extraReducers: {
     [initMessage.fulfilled.type](
@@ -234,6 +254,9 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     },
     [syncMessage.rejected.type](state, { error }) {
       logger.error('sync message failed: ' + error.message)
+    },
+    [markMessageRead.rejected.type](state, { error }) {
+      logger.error('mark message read failed: ' + error.message)
     },
   },
 })

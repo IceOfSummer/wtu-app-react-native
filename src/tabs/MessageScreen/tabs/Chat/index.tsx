@@ -14,7 +14,7 @@ const Chat: React.FC = () => {
   const ent = Object.entries(lastMsg)
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <ConnectFailView />
       <SpringScrollView showsVerticalScrollIndicator>
         {ent.map(([key, value]) =>

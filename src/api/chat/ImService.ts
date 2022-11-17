@@ -133,7 +133,7 @@ export class ImService {
         this.lastMsgId = end - 1
         store.dispatch<any>(
           syncMessage({
-            confirmed: offline ? 1 : 0,
+            confirmed: offline ? 0 : 1,
             messages: resp,
           })
         )
