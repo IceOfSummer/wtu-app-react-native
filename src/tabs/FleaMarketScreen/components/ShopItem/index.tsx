@@ -6,6 +6,7 @@ export interface ShowItemProps {
   previewImage: any
   name: string
   price: number | string
+  width: number
 }
 
 /**
@@ -13,10 +14,13 @@ export interface ShowItemProps {
  */
 const ShopItem: React.FC<ShowItemProps> = props => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { width: props.width }]}>
       <Image
         source={props.previewImage}
-        style={[styles.image, { resizeMode: 'stretch' }]}
+        style={[
+          styles.image,
+          { resizeMode: 'stretch', width: props.width, height: props.width },
+        ]}
       />
       <View style={styles.textContainer}>
         <Text style={styles.nameText} numberOfLines={2} ellipsizeMode="tail">
@@ -30,9 +34,6 @@ const ShopItem: React.FC<ShowItemProps> = props => {
 
 const styles = StyleSheet.create({
   container: {
-    maxWidth: 180,
-    width: '48%',
-    height: 230,
     backgroundColor: '#fff',
     borderRadius: 4,
     marginVertical: 5,

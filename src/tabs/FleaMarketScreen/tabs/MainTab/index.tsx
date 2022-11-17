@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ShopItem, { ShowItemProps } from '../../components/ShopItem'
-import { StyleSheet, Text, View } from 'react-native'
+import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native'
 import MenuItem from '../../components/MenuItem'
 import CenterBanner from '../../components/CenterBanner'
 import CenterButton from '../../components/CenterButton'
@@ -19,12 +19,14 @@ const generateTestData = async (page: number) =>
             previewImage: require('../../devImages/iphone2.png'),
             name: 'Apple IPhone 11 二手苹果11 二手手机 移动联通电信',
             price: 999,
+            width: 0,
           },
           {
             id: page,
             previewImage: require('../../devImages/iphone2.png'),
             name: 'Apple iPhone 12(A2404) 苹果12国行公开版5G双卡支持',
             price: 999,
+            width: 0,
           },
         ])
       } else {
@@ -55,6 +57,12 @@ const MainTab: React.FC = () => {
   const [shopItemData, setShopItemData] = useState<Array<ShowItemProps>>([])
   // 商品数据的页数
   const currentPage = useRef(1)
+
+  const [itemContainerWidth, setItemContainerWidth] = useState(0)
+
+  const onItemContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
+    setItemContainerWidth(nativeEvent.layout.width / 2 - 5)
+  }
 
   const loadMoreShopItemData = () => {
     if (isLoadingShopItemData) {
@@ -171,9 +179,9 @@ const MainTab: React.FC = () => {
         <View style={styles.adviceContainer}>
           <Text style={styles.adviceText}>今日推荐</Text>
         </View>
-        <View style={styles.shopItemContainer}>
+        <View style={styles.shopItemContainer} onLayout={onItemContainerLayout}>
           {shopItemData.map(value => (
-            <ShopItem {...value} key={value.id} />
+            <ShopItem {...value} width={itemContainerWidth} key={value.id} />
           ))}
         </View>
       </View>
