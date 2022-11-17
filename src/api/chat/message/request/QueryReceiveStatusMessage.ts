@@ -8,6 +8,6 @@ export default class QueryReceiveStatusMessage extends RequestMessage {
   }
 
   get messageType(): number {
-    return QueryReceiveStatusMessage.MAGIC_NUMBER
+    return QueryReceiveStatusMessage.MESSAGE_TYPE
   }
 }

@@ -12,6 +12,8 @@ import {
 import { store } from '../../redux/store'
 import { encodeContent } from '../../views/ChatPage/message/MessageManager'
 import NormalMessage from '../../views/ChatPage/message/chat/NormalMessage'
+import QueryReceiveStatusMessage from './message/request/QueryReceiveStatusMessage'
+import ReceiveStatusMessage from './message/response/ReceiveStatusMessage'
 
 const logger = getLogger('/api/chat/ImService')
 
@@ -29,15 +31,24 @@ export class ImService {
 
   private lastMsgId: number = -1
 
-  private ready: boolean = false
+  private isInitDone: boolean = false
 
   private constructor() {
+    // 绑定回调
+    this.imTemplate.onReady = () => {
+      if (this.isInitDone) {
+        this.syncOfflineMessage()
+      }
+    }
     // 同步lastMsgId
     getMaxMsgId()
       .then(val => {
         logger.info('同步消息id: ' + val)
         this.lastMsgId = val
-        this.ready = true
+        this.isInitDone = true
+        if (this.imTemplate.isReady()) {
+          this.syncOfflineMessage()
+        }
       })
       .catch(e => {
         logger.error('init max id failed: ' + e.message)
@@ -54,7 +65,7 @@ export class ImService {
    * @param content 消息内容
    */
   public async sendChatMessage(to: number, content: string): Promise<void> {
-    if (!this.ready) {
+    if (!this.isInitDone) {
       throw new Error('正在加载中')
     }
     const response = await this.imTemplate.sendMessage(
@@ -98,7 +109,7 @@ export class ImService {
   /**
    * 同步消息, 消息不一定会拿到
    * @param start 消息的起始id（包括）
-   * @param end 消息的结束id（不包括）
+   * @param end 消息的结束id（不包括），同步完毕后，下一次的消息id的期望为<code>end - 1</code>
    * @param offline 是否为离线同步，若为离线，则一定可以拿到指定的消息，若为在线，则不一定会拿到消息
    *                在线一般用于用户在聊天的过程中丢失了消息，能够快速进行同步，速度较快，但不一定会全部拿到
    *                离线代表用户接收离线消息，一定可以拿到范围内的内容
@@ -118,10 +129,14 @@ export class ImService {
         })
       )
       .then(resp => {
-        store.dispatch<any>(syncMessage(resp))
-      })
-      .catch(e => {
-        console.log(e)
+        logger.info('sync message success!')
+        this.lastMsgId = end - 1
+        store.dispatch<any>(
+          syncMessage({
+            confirmed: offline ? 1 : 0,
+            messages: resp,
+          })
+        )
       })
   }
 
@@ -129,7 +144,29 @@ export class ImService {
    * 同步离线消息
    */
   public syncOfflineMessage() {
-    // this.imTemplate.sendMessage()
+    if (!this.isInitDone) {
+      logger.info('socket is not ready, can not sync offline message')
+      return
+    }
+    logger.info('started sync offline message')
+    this.imTemplate
+      .sendMessage<ReceiveStatusMessage>(new QueryReceiveStatusMessage())
+      .then(r => {
+        const start = this.lastMsgId + 1
+        const end = r.status.receivedId
+        logger.info('server receivedId: ' + end)
+        if (end === start) {
+          // 没有新消息
+          return
+        }
+        logger.info(`sync message from messageId ${start} to ${end}`)
+        this.syncMessage(start, end, true).catch(e => {
+          logger.error('sync message failed: ' + e.message)
+        })
+      })
+      .catch(e => {
+        logger.error('sync offline message failed: ' + e.message)
+      })
   }
 
   static get INSTANCE(): ImService {

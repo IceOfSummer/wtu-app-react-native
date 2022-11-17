@@ -1,4 +1,4 @@
-import { Message } from './message/Message'
+import { Message, RequestMessage } from './message/Message'
 import { TLSSocket } from 'react-native-tcp-socket/lib/types/Server'
 import { getLogger } from '../../utils/LoggerUtils'
 import LinkedOneWayQueue, {
@@ -12,7 +12,7 @@ import { buildMessage, parseMessage } from './message/Protocol'
 import SocketSessionManager from './SocketSessionManager'
 import ServerResponseMessage from './message/response/ServerResponseMessage'
 
-const logger = getLogger('/api/chat/ChatService')
+const logger = getLogger('/api/chat/ImTemplate')
 
 type PromiseCallFunc = (data: any) => void
 
@@ -27,6 +27,12 @@ export default class ImTemplate {
    * @private
    */
   private static _instance: ImTemplate
+
+  /**
+   * 当im可用时的回调
+   * @private
+   */
+  public onReady?: () => void
 
   static get instance(): ImTemplate {
     if (!this._instance) {
@@ -52,7 +58,7 @@ export default class ImTemplate {
   /**
    * 通过pubsub监听该Key值来获取最新消息
    */
-  public static readonly PUBSUB_KEY = 'ChatServiceMessage'
+  public static readonly PUBSUB_KEY = 'ImTemplateMessage'
 
   /**
    * 使用pubsub向外发送消息
@@ -96,7 +102,9 @@ export default class ImTemplate {
    * 发送前请确保登录过了，可以直接调用{@link ImTemplate#tryAuth}来登录
    * @param message 消息内容
    */
-  public sendMessage<R = ServerResponseMessage>(message: Message): Promise<R> {
+  public sendMessage<R = ServerResponseMessage>(
+    message: RequestMessage
+  ): Promise<R> {
     const connection = this.socketSessionManager.getConnection()
     if (!connection) {
       return Promise.reject('正在连接服务器中')
@@ -104,7 +112,10 @@ export default class ImTemplate {
     return this.sendMessage0<R>(message, connection)
   }
 
-  private sendMessage0<R>(message: Message, connection: TLSSocket): Promise<R> {
+  private sendMessage0<R>(
+    message: RequestMessage,
+    connection: TLSSocket
+  ): Promise<R> {
     return new Promise((resolve, reject) => {
       message.requestId = this.autoRequestId++
       this.requestManager.saveRequest(message.requestId, resolve, reject)
@@ -171,6 +182,7 @@ export default class ImTemplate {
         await this.sendMessage0(new AuthRequestMessage(sessionValue), conn)
         logger.info('聊天服务器登录成功')
         this._isAuthenticated = true
+        this.onReady?.()
         resolve()
       } catch (e) {
         reject(e)

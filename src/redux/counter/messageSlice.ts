@@ -92,14 +92,23 @@ export const insertSingleMessage = createAsyncThunk<
   }
 )
 
+type SyncMessageParam = {
+  /**
+   * 是否将这些消息标记为已读
+   */
+  confirmed: 0 | 1
+  messages: MultiChatResponseMessage
+}
+
 /**
  * 同步多组消息
  */
-export const syncMessage = createAsyncThunk<void, MultiChatResponseMessage>(
+export const syncMessage = createAsyncThunk<void, SyncMessageParam>(
   'message/insertMultiplyMessage',
-  async (arg, { dispatch }) => {
+  async ({ confirmed, messages }, { dispatch }) => {
     logger.info('syncing message: ')
-    const msg: SqliteMessage[] = arg.messages.map(_arg => ({
+    const msgArr = messages.messages
+    const msg: SqliteMessage[] = msgArr.map(_arg => ({
       messageId: _arg.msgId,
       content: _arg.content,
       type: _arg.type ? _arg.type : MessageType.RECEIVE,
@@ -111,7 +120,11 @@ export const syncMessage = createAsyncThunk<void, MultiChatResponseMessage>(
     await insertMultiplyMessage(msg)
     await insertMultiLastMessage(msg, 0)
     // 保存到新消息中
-    dispatch(messageSlice.actions.insertOnlineMessage(msg))
+    if (confirmed) {
+      dispatch(messageSlice.actions.insertOnlineMessage(msg))
+    } else {
+      dispatch(messageSlice.actions.insertOfflineMessage(msg))
+    }
   }
 )
 
@@ -153,9 +166,19 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     insertOnlineMessage: (state, { payload }) => {
       if (Array.isArray(payload)) {
         state.onlineMessages = state.onlineMessages.concat(payload)
+        payload.forEach(value => {
+          state.messageLabels[value.uid] = {
+            ...value,
+            confirmed: 1,
+          }
+        })
         logger.debug('updating onlineMessages: ')
         logger.debug(state.onlineMessages)
       } else {
+        state.messageLabels[payload.uid] = {
+          ...payload,
+          confirmed: 1,
+        }
         state.onlineMessages.push(payload)
       }
     },
@@ -172,6 +195,14 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
             ...value,
             confirmed: 0,
           }
+        }
+      })
+    },
+    insertOfflineMessage: (state, { payload }) => {
+      payload.forEach(value => {
+        state.messageLabels[value.uid] = {
+          ...value,
+          confirmed: 0,
         }
       })
     },

@@ -55,6 +55,13 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
     PayloadAction<SqliteMessage[] | SqliteMessage>
   >
   /**
+   * 同步离线消息，会自动将confirmed置为0
+   */
+  insertOfflineMessage: CaseReducer<
+    MessageState,
+    PayloadAction<SqliteMessage[]>
+  >
+  /**
    * 清空当前正在聊天的消息
    */
   resetCurrentTalkMessage: CaseReducer<MessageState, PayloadAction<void>>

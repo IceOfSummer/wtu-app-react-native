@@ -7,11 +7,15 @@ import {
 export default class ReceiveStatusMessage extends ResponseMessage {
   public static readonly MESSAGE_TYPE = 8
 
-  private readonly status: ReceiveStatus
+  private readonly _status: ReceiveStatus
 
   constructor(status: ReceiveStatus) {
     super()
-    this.status = status
+    this._status = status
+  }
+
+  get status(): ReceiveStatus {
+    return this._status
   }
 
   get messageType(): number {
