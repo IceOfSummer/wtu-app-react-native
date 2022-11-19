@@ -3,7 +3,7 @@ import { TabBar } from 'react-native-tab-view'
 import Chat from './tabs/Chat'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
-import { Image, Pressable, StatusBar, useWindowDimensions } from 'react-native'
+import { Image, Pressable, useWindowDimensions } from 'react-native'
 import {
   NavigationState,
   SceneRendererProps,
@@ -19,11 +19,13 @@ import DatabaseManager from '../../sqlite'
 import NativeDialog from '../../native/modules/NativeDialog'
 import { initMessage } from '../../redux/counter/messageSlice'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
+import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
     state => state.serverUser.authenticated
   )
+  useAutoColorStatusBar(false, global.colors.backgroundColor)
   const { width } = useWindowDimensions()
   const nav = useNav()
   if (authenticated) {
@@ -31,7 +33,6 @@ const MessageScreen: React.FC = () => {
   } else {
     return (
       <View style={styles.unLoginBox}>
-        <StatusBar translucent backgroundColor="transparent" />
         <Image
           source={require('../../assets/img/authwanted.png')}
           style={{ width: width / 2, height: width / 2, marginTop: '-30%' }}

@@ -11,6 +11,7 @@ import {
   NavigationState,
   SceneRendererProps,
 } from 'react-native-tab-view/lib/typescript/types'
+import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
 const renderScene = SceneMap({
   main: MainTab,
@@ -67,6 +68,7 @@ const FleaMarketScreen: React.FC = () => {
   const [searchBarPlaceholder] = useState('搜索您喜欢的商品')
   // 是否显示消息的红点
   const [showMessageRedPoint] = useState(true)
+  useAutoColorStatusBar(false, global.colors.backgroundColor)
   /**
    * 当点击搜索框后，跳转到专门的搜索页面
    */
