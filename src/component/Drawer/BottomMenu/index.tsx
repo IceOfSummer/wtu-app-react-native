@@ -1,12 +1,13 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { LayoutChangeEvent, Text, View } from 'react-native'
 import Icons from '../../Icons'
 import Button from 'react-native-button'
 
-interface BottomMenuDrawerProps {
+interface BottomMenuProps {
   onSelect: OnSelect
   items: Array<MenuItem>
   title: string
+  onLayout?: (event: LayoutChangeEvent) => void
 }
 export type OnSelect = (index: number, item?: MenuItem) => void
 
@@ -15,7 +16,7 @@ export type MenuItem = {
   name: string
 }
 
-const BottomMenu: React.FC<BottomMenuDrawerProps> = props => {
+const BottomMenu: React.FC<BottomMenuProps> = props => {
   /**
    * 选择一个目录项, 并关闭目录
    * @param index 选择的目录项索引, <b>若为-1则没有选</b>
@@ -29,7 +30,7 @@ const BottomMenu: React.FC<BottomMenuDrawerProps> = props => {
   }
 
   return (
-    <View style={{ paddingVertical: 10 }}>
+    <View style={{ paddingVertical: 10 }} onLayout={props.onLayout}>
       <View
         style={{
           flexDirection: 'row',

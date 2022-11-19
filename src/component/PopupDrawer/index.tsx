@@ -19,6 +19,9 @@ interface PopupDrawerProps {
   drawerContainerStyle?: StyleProp<ViewStyle>
 }
 
+/**
+ * @deprecated unused
+ */
 const PopupDrawer: React.FC<PopupDrawerProps> = props => {
   const drawerAvailableHeight = useRef(0)
   // 至少滑动多长切换页面
