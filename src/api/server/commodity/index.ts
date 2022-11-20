@@ -1,6 +1,18 @@
 import { Commodity, EsCommodity, ResponseTemplate } from '../types'
 import { serverCancelOldAjax, serverNoRepeatAjax } from '../../request'
 
+type PostCommodityType = Omit<
+  Commodity,
+  'commodityId' | 'ownerId' | 'createTime' | 'status'
+>
+
+/**
+ * 创建一个商品
+ * @param commodity
+ */
+export const createCommodity = (commodity: PostCommodityType) =>
+  serverNoRepeatAjax('/commodity/create', commodity, 'POST')
+
 export const searchCommodity = (searchContent: string, page = 0) =>
   serverCancelOldAjax<EsCommodity[]>('/commodity/search', {
     s: searchContent,
@@ -31,3 +43,9 @@ export const getCommodityDetail = (commodityId: number) =>
 
 export const lockCommodity = (commodityId: number, remark?: string) =>
   serverNoRepeatAjax('/commodity/lock', { c: commodityId, r: remark }, 'POST')
+
+/**
+ * 获取用户正在售卖的商品数量
+ */
+export const getSellingCount = () =>
+  serverNoRepeatAjax<number>('/commodity/selling_count')

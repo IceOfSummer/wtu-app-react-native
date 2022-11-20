@@ -7,6 +7,11 @@ import CenterButton from '../../components/CenterButton'
 import BaseContainer from '../../../../component/Container/BaseContainer'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import Toast from 'react-native-toast-message'
+import useNav from '../../../../hook/useNav'
+import { GOODS_SUBMIT_PAGE, SERVER_AUTH_PAGE } from '../../../../router'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../../redux/counter'
+import NativeDialog from '../../../../native/modules/NativeDialog'
 
 // TODO 测试用，记得删除
 const generateTestData = async (page: number) =>
@@ -41,11 +46,22 @@ const generateTestData = async (page: number) =>
  */
 const MainTab: React.FC = () => {
   const scrollView = useRef<SpringScrollView>(null)
-  /**
-   * TODO 前往发布商品页面
-   */
+  const nav = useNav()
+  const store = useStore<ReducerTypes>()
+
   const goSubmitItem = () => {
-    console.log('submit')
+    const uid = store.getState().serverUser.userInfo?.uid
+    if (uid) {
+      nav.push(GOODS_SUBMIT_PAGE, { uid })
+    } else {
+      NativeDialog.showDialog({
+        title: '请先登录',
+        message: '是否跳转到登录页面',
+        onConfirm() {
+          nav.push(SERVER_AUTH_PAGE)
+        },
+      })
+    }
   }
 
   /**

@@ -108,7 +108,7 @@ export class DrawerComponent extends React.Component<
       this.setState({
         visible: false,
       })
-    }, 100)
+    }, 150)
   }
 
   constructor(props: DrawerComponentProps) {

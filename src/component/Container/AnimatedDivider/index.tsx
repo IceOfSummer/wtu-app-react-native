@@ -1,9 +1,11 @@
 import React from 'react'
-import { Animated, StyleSheet } from 'react-native'
+import { Animated, ColorValue, StyleSheet } from 'react-native'
 import Divider from '../Divider'
 
 interface AnimatedDividerProps {
   width?: number | string
+  borderWidth?: number
+  color?: ColorValue
 }
 
 /**
@@ -16,6 +18,11 @@ export default class AnimatedDivider extends React.Component<
   state = {}
 
   bottomDividerWidth = new Animated.Value(0)
+
+  static defaultProps = {
+    color: global.colors.primaryColor,
+    borderWidth: StyleSheet.hairlineWidth,
+  }
 
   constructor(props: AnimatedDividerProps) {
     super(props)
@@ -42,13 +49,12 @@ export default class AnimatedDivider extends React.Component<
       <React.Fragment>
         <Divider width={this.props.width} style={styles.dividerContainer} />
         <Animated.View
-          style={[
-            styles.activeDivider,
-            {
-              width: this.props.width,
-              transform: [{ scaleX: this.bottomDividerWidth }],
-            },
-          ]}
+          style={{
+            width: this.props.width,
+            transform: [{ scaleX: this.bottomDividerWidth }],
+            borderBottomColor: this.props.color,
+            borderBottomWidth: this.props.borderWidth,
+          }}
         />
       </React.Fragment>
     )
@@ -59,9 +65,5 @@ const styles = StyleSheet.create({
   dividerContainer: {
     position: 'absolute',
     bottom: 0,
-  },
-  activeDivider: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: global.colors.primaryColor,
   },
 })

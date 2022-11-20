@@ -1,6 +1,8 @@
 /**
  * 统一管理form
  * @param config 配置
+ * @deprecated
+ * @see /src/component/Input/index.ts#useFormChecker
  */
 const useFormManager = <InputRefType>(
   config: FormManagerCons<InputRefType>
@@ -9,7 +11,7 @@ const useFormManager = <InputRefType>(
     checkForm(): Array<FormError<InputRefType>> {
       const errors: Array<FormError<InputRefType>> = []
       config.formItems.forEach(item => {
-        const val = item.value.trim()
+        const val = item.value?.trim()
         if (val) {
           const len = val.length
           if (item.minLength && len < item.minLength) {
@@ -52,7 +54,7 @@ type FormItem<InputRefType> = {
   /**
    * 当前表单的值
    */
-  value: string
+  value?: string
   /**
    * 当前表单名称
    */

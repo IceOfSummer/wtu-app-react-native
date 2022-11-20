@@ -41,6 +41,7 @@ import { Theme } from '@react-navigation/native/lib/typescript/src/types'
 import { ThemeState } from '../redux/types/themeTypes'
 import ServerAuthPage from '../views/ServerAuthPage'
 import ChatPage from '../views/ChatPage'
+import GoodsSubmitPage from '../views/GoodsSubmitPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -68,6 +69,7 @@ export const ORDER_CONFIRM_PAGE = 'OrderConfirmPage'
 export const PENDING_RECEIVE_PAGE = 'PendingReceivePage'
 export const SERVER_AUTH_PAGE = 'ServerAuthPage'
 export const CHAT_PAGE = 'ChatPage'
+export const GOODS_SUBMIT_PAGE = 'GoodsSubmitPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -123,6 +125,12 @@ export interface RouterTypes extends ParamListBase {
   [CHAT_PAGE]: {
     /**
      * 和谁聊天
+     */
+    uid: number
+  }
+  [GOODS_SUBMIT_PAGE]: {
+    /**
+     * 当前用户id，用于确保用户登录了
      */
     uid: number
   }
@@ -298,6 +306,11 @@ const Router: React.FC = () => {
             ...headerCommonOptions,
             title: '',
           }}
+        />
+        <Stack.Screen
+          name={GOODS_SUBMIT_PAGE}
+          component={GoodsSubmitPage}
+          options={headerCommonOptionsWithTitle('发布商品')}
         />
       </Stack.Navigator>
       <DiyToast />

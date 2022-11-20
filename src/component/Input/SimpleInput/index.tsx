@@ -15,6 +15,7 @@ interface SimpleInputProps {
   textInputProps?: TextInputProps
   rowTipText?: string
   rowTipTextStyle?: TextStyle
+  autoClearErrorText?: boolean
 }
 
 interface SimpleInputState {
@@ -29,7 +30,7 @@ interface SimpleInputState {
  */
 export default class SimpleInput
   extends React.Component<SimpleInputProps, SimpleInputState>
-  implements InputComponent
+  implements InputComponent<string>
 {
   state = {
     errorText: '',
@@ -41,6 +42,10 @@ export default class SimpleInput
   input = React.createRef<TextInput>()
 
   divider = React.createRef<AnimatedDivider>()
+
+  static defaultProps = {
+    autoClearErrorText: true,
+  }
 
   public showErrorText(errorText: string) {
     this.setState({
@@ -60,6 +65,9 @@ export default class SimpleInput
 
   onChangeText(text: string) {
     this._value = text
+    if (this.props.autoClearErrorText) {
+      this.clearErrorText()
+    }
   }
 
   public clearErrorText(): void {
@@ -106,7 +114,14 @@ export default class SimpleInput
         {this.state.errorText ? (
           <Text style={styles.errorText}>{this.state.errorText}</Text>
         ) : null}
-        <AnimatedDivider ref={this.divider} />
+        <AnimatedDivider
+          ref={this.divider}
+          color={
+            this.state.errorText
+              ? global.colors.error_color
+              : global.colors.primaryColor
+          }
+        />
       </View>
     )
   }
@@ -115,6 +130,8 @@ export default class SimpleInput
 const styles = StyleSheet.create({
   errorText: {
     color: global.colors.error_color,
+    marginLeft: 4,
+    marginBottom: 4,
   },
   divider: {
     position: 'absolute',
