@@ -21,6 +21,7 @@ import NativeDialog, {
 import { getLogger } from '../../../utils/LoggerUtils'
 import useNav from '../../../hook/useNav'
 import { FULL_SCREEN_IMAGE_PAGE } from '../../../router'
+import { InputComponent } from '../index'
 
 const logger = getLogger('/component/Container/ImageUploadContainer')
 
@@ -42,10 +43,10 @@ type ImageResource = {
   fileName: string
   uri: string
 }
-export default class ImageUploadContainer extends React.Component<
-  ImageUploadContainerProps,
-  ImageUploadContainerState
-> {
+export default class ImageUploadContainer
+  extends React.Component<ImageUploadContainerProps, ImageUploadContainerState>
+  implements InputComponent<string[]>
+{
   state: ImageUploadContainerState = {
     selectedImage: [],
   }
@@ -120,6 +121,18 @@ export default class ImageUploadContainer extends React.Component<
       message: this.props.tipMessage ?? '',
       hideCancelBtn: true,
     })
+  }
+
+  clearErrorText(): void {
+    // TODO
+  }
+
+  showErrorText(errorText: string): void {
+    console.log(errorText)
+  }
+
+  value(): string[] {
+    return this.state.selectedImage.map(value1 => value1.uri)
   }
 
   constructor(props: ImageUploadContainerProps) {

@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native'
 import AnimatedDivider from '../../Container/AnimatedDivider'
+import { InputComponent } from '../index'
 
 interface SimpleInputProps {
   textInputProps?: TextInputProps
@@ -26,14 +27,16 @@ interface SimpleInputState {
  *
  * 可以传入children在分割线的上方渲染其它内容
  */
-export default class SimpleInput extends React.Component<
-  SimpleInputProps,
-  SimpleInputState
-> {
+export default class SimpleInput
+  extends React.Component<SimpleInputProps, SimpleInputState>
+  implements InputComponent
+{
   state = {
     errorText: '',
     placeholderColor: undefined,
   }
+
+  _value = ''
 
   input = React.createRef<TextInput>()
 
@@ -42,12 +45,6 @@ export default class SimpleInput extends React.Component<
   public showErrorText(errorText: string) {
     this.setState({
       errorText,
-    })
-  }
-
-  public removeErrorText() {
-    this.setState({
-      errorText: '',
     })
   }
 
@@ -61,10 +58,25 @@ export default class SimpleInput extends React.Component<
     this.setState({ placeholderColor: undefined })
   }
 
+  onChangeText(text: string) {
+    this._value = text
+  }
+
+  public clearErrorText(): void {
+    this.setState({
+      errorText: '',
+    })
+  }
+
+  public value(): string {
+    return this._value
+  }
+
   constructor(props: SimpleInputProps) {
     super(props)
     this.onFocus = this.onFocus.bind(this)
     this.onBlur = this.onBlur.bind(this)
+    this.onChangeText = this.onChangeText.bind(this)
   }
 
   render() {
@@ -83,6 +95,7 @@ export default class SimpleInput extends React.Component<
             ref={this.input}
             onFocus={this.onFocus}
             onBlur={this.onBlur}
+            onChangeText={this.onChangeText}
             placeholderTextColor={this.state.placeholderColor}
           />
           {rowTipText ? (
