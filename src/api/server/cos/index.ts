@@ -1,51 +1,99 @@
 import { serverNoRepeatAjax } from '../../request'
-import { quickShowErrorTip } from '../../../native/modules/NativeDialog'
-import COS from 'cos-nodejs-sdk-v5'
 import config from '../../../../config.json'
+import fs from 'react-native-fs'
+import ByteBuffer from 'bytebuffer'
+import { getLogger } from '../../../utils/LoggerUtils'
 
-type AccessKey = {
-  credentials: {
-    tmpSecretId: string
-    tmpSecretKey: string
-    sessionToken: string
-  }
-  requestId: string
-  expiration: string
-  startTime: number
-  expiredTime: number
+type SignWrapper = {
+  token: string
+  signs: Array<SignInfo>
 }
 
-const getCosAccessKey = () => serverNoRepeatAjax<AccessKey>('/cos/key')
+type SignInfo = {
+  path: string
+  sign: string
+}
 
-const cos = new COS({
-  getAuthorization(options, callback) {
-    getCosAccessKey()
-      .then(({ data }) => {
-        callback({
-          TmpSecretKey: data.credentials.tmpSecretKey,
-          TmpSecretId: data.credentials.tmpSecretId,
-          SecurityToken: data.credentials.sessionToken,
-          ExpiredTime: data.expiredTime,
-          StartTime: data.startTime,
-        })
+const logger = getLogger('/api/server/cos')
+
+const getUserSpaceUploadSecret = (count: number, type?: string) =>
+  serverNoRepeatAjax<SignWrapper>('/cos/secret/userspace', { count, type })
+
+/**
+ * 上传文件到cos桶
+ */
+function putObject(
+  filePath: string,
+  signInfo: SignInfo,
+  token: string,
+  contentType: string
+) {
+  return new Promise<void>(async (resolve, reject) => {
+    const byteBuffer = ByteBuffer.fromBase64(
+      await fs.readFile(filePath, 'base64')
+    )
+    fetch(config.common.cosUrl + signInfo.path, {
+      method: 'PUT',
+      headers: {
+        Authorization: signInfo.sign,
+        'x-cos-security-token': token,
+        'Content-Type': contentType,
+      },
+      body: byteBuffer.buffer,
+    })
+      .then(resp => {
+        if (__DEV__) {
+          resp.text().then(txt => {
+            logger.info(txt)
+          })
+        }
+        if (resp.status === 200) {
+          resolve()
+        } else {
+          resp.text().then(txt => {
+            logger.error('上传文件失败')
+            logger.error(txt)
+          })
+          reject(new Error('上传失败'))
+        }
       })
       .catch(e => {
-        quickShowErrorTip('获取密匙失败', e.message)
+        reject(e)
       })
-  },
-})
-
-export const putObject = (body: string, path: string) => {
-  cos.putObject(
-    {
-      Bucket: config.common.bucket,
-      Region: config.common.region,
-      Key: path,
-      Body: body,
-    },
-    (err, data) => {
-      console.log(err || data)
-    }
-  )
+  })
 }
-export default cos
+type UploadStatus = {
+  token: string
+  // undefined表示上传成功
+  signs: Array<SignInfo | undefined>
+}
+
+/**
+ * 上传图片
+ * @param filepath 文件路径
+ * @param contentType 文件类型，如`image/png`
+ * @param type 文件类型描述符，默认为`.png`
+ */
+export const uploadImage = (
+  filepath: string[],
+  contentType: string,
+  type: string = '.png'
+) =>
+  new Promise<UploadStatus>(async resolve => {
+    const { data } = await getUserSpaceUploadSecret(filepath.length, type)
+    const uploadStatus: Array<SignInfo | undefined> = []
+    // up
+    for (let i = 0, len = data.signs.length; i < len; i++) {
+      const sign = data.signs[i]
+      try {
+        await putObject(filepath[i], sign, data.token, contentType)
+        uploadStatus[i] = undefined
+      } catch (e) {
+        uploadStatus[i] = sign
+      }
+    }
+    resolve({
+      token: data.token,
+      signs: uploadStatus,
+    })
+  })

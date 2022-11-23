@@ -1,1 +1,2 @@
 src/api/chat/proto/*.ts
+src/utils/CosAuth/index.js

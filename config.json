@@ -14,6 +14,6 @@
   "common": {
     "bucket": "wtuapp-cdn-1310819360",
     "region": "ap-guangzhou",
-    "cosUrl": "https://wtuapp-cdn-1310819360.cos.ap-guangzhou.myqcloud.com/"
+    "cosUrl": "https://wtuapp-cdn-1310819360.cos.ap-guangzhou.myqcloud.com"
   }
 }
