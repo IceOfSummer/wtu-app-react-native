@@ -31,7 +31,7 @@ const BaseContainer: React.FC<BaseContainerProps> = props => {
               ? 'rgb(242, 243, 247)'
               : global.styles.$bg_color,
             borderRadius: global.util.assert(props.borderRadius, 10),
-            padding: global.util.assert(props.innerPadding, 8),
+            padding: props.innerPadding ?? 8,
           },
           props.style,
         ]}>

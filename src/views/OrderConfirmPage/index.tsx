@@ -13,11 +13,11 @@ import UserSimpleInfo from '../UserInfoPage/component/UserSimpleInfo'
 import EnhancedLoadingView from '../../component/Loading/EnhancedLoadingView'
 import { getUserInfo, UserInfoView } from '../../api/server/user'
 import ColorfulButton from '../../component/Button/ColorfulButton'
-import BounceScrollView from '../../native/component/BounceScrollView'
 import { lockCommodity } from '../../api/server/commodity'
 import Loading from '../../component/Loading'
 import NativeDialog from '../../native/modules/NativeDialog'
 import useNav from '../../hook/useNav'
+import { SpringScrollView } from 'react-native-spring-scrollview'
 
 const OrderConfirmPage: React.FC = () => {
   const route = useRoute<UseRouteGeneric<typeof ORDER_CONFIRM_PAGE>>()
@@ -46,7 +46,7 @@ const OrderConfirmPage: React.FC = () => {
   }
   return (
     <View style={{ flex: 1 }}>
-      <BounceScrollView>
+      <SpringScrollView>
         <BaseContainer title="商品信息">
           <HorShopItem
             id={commodity.commodityId}
@@ -66,7 +66,7 @@ const OrderConfirmPage: React.FC = () => {
           </EnhancedLoadingView>
         </BaseContainer>
         <View style={{ padding: 50 }} />
-      </BounceScrollView>
+      </SpringScrollView>
       <View style={styles.bottomBar}>
         <View style={global.styles.flexRow}>
           <Text>价格: </Text>

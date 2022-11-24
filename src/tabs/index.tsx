@@ -2,7 +2,7 @@ import Icons from '../component/Icons'
 import HomeScreen from './HomeScreen'
 import ClassScheduleScreen from './ClassScheduleScreen'
 import PersonalCenterScreen from './PersonalCenterScreen'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   BottomTabNavigationOptions,
   createBottomTabNavigator,
@@ -14,13 +14,41 @@ import {
   LESSONS_TABLE_CONFIG_PAGE,
   MESSAGE_TABS,
   PERSONAL_CENTER_TABS,
+  RouterTypes,
 } from '../router'
 import FleaMarketScreen from './FleaMarketScreen'
 import MessageScreen from './MessageScreen'
+import pubsub from 'pubsub-js'
+import { useNavigation } from '@react-navigation/native'
+import { FunctionArgType } from '../hook/useNav'
 
 const Tab = createBottomTabNavigator()
 
+const NAVIGATION_EVENT_KEY = 'navigation'
+
+type Nav = {
+  path: string
+  param: any
+}
+
+/**
+ * 在非组件中进行路由push操作
+ * @param args
+ */
+export const navigationPush = <RouteName extends keyof RouterTypes>(
+  ...args: FunctionArgType<RouteName>
+) => {
+  pubsub.publish(NAVIGATION_EVENT_KEY, { path: args[0], param: args[1] })
+}
+
 const TabBar = () => {
+  const nav = useNavigation<any>()
+  useEffect(() => {
+    pubsub.subscribe(NAVIGATION_EVENT_KEY, (message, data: Nav) => {
+      // 在非组件内进行路由操作
+      nav.navigate(data.path, data.path)
+    })
+  }, [])
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

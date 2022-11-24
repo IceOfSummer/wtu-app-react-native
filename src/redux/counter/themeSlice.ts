@@ -12,7 +12,7 @@ export const lightTheme: ThemeState = {
     textColor: '#000',
     infoTextColor: '#999',
     borderColor: '#c8c7cc',
-    statusBarColor: '#fff',
+    statusBarColor: '#f5f6fa',
     shallowBoxBackgroundColor: 'rgb(240, 240, 240)',
   },
   darkMode: true,

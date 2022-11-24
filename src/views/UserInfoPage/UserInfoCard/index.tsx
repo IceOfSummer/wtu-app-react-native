@@ -14,7 +14,7 @@ interface UserInfoCardProps {
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { userInfo } = props
   const [orders, setOrders] = useState<SimpleOrder[]>([])
-  const loadUserSoldOrder = () => getSoldOrderSimply(props.userInfo.userId)
+  const loadUserSoldOrder = () => getSoldOrderSimply(props.userInfo.uid)
 
   return (
     <View>

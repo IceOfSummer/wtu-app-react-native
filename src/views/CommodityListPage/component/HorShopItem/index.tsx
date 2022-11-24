@@ -1,5 +1,11 @@
 import React from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { append0Prefix } from '../../../../utils/DateUtils'
 import Icons from '../../../../component/Icons'
 import { EsCommodity } from '../../../../api/server/types'
@@ -18,13 +24,20 @@ interface HorShopItemProps {
 const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
   const date = new Date(props.createTime)
   const standerPrice = props.price.toFixed(2)
+  const dimensions = useWindowDimensions()
+  const len = dimensions.height / 6
   return (
-    <View style={global.styles.flexRowCenter}>
-      <Pressable onPress={props.onClick} style={styles.container}>
-        <FastImage
-          source={{ uri: appendCdnPrefix(props.image) }}
-          style={[styles.image, {}]}
-        />
+    <View style={styles.outer}>
+      <Pressable
+        onPress={props.onClick}
+        style={[styles.container, { height: len }]}>
+        <View style={{ width: len, height: len, padding: 5 }}>
+          <FastImage
+            source={{ uri: appendCdnPrefix(props.image) }}
+            style={{ flex: 1, borderRadius: 8 }}
+            resizeMode="stretch"
+          />
+        </View>
         <View style={styles.descriptionContainer}>
           <Text style={global.styles.blobText} ellipsizeMode="tail">
             {props.name}
@@ -59,21 +72,21 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
   )
 }
 const styles = StyleSheet.create({
+  outer: {
+    paddingHorizontal: 10,
+  },
   container: {
     overflow: 'hidden',
     flex: 1,
-    maxWidth: 400,
     height: 120,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 10,
     backgroundColor: '#fff',
+    borderRadius: 10,
   },
   image: {
-    width: '30%',
-    height: '100%',
     resizeMode: 'stretch',
-    flex: 1,
   },
   descriptionContainer: {
     flex: 2,
@@ -88,6 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingRight: 18,
+    flexWrap: 'wrap',
   },
   normalText: {
     color: '#000',

@@ -30,7 +30,7 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
           alignSelf: 'center',
           alignItems: 'center',
         }}>
-        <Text style={global.styles.blobText}>{userInfo.name}</Text>
+        <Text style={global.styles.blobText}>{userInfo.nickname}</Text>
       </View>
       <View style={styles.infoContainer}>
         <View style={styles.infoDetailContainer}>
@@ -38,8 +38,12 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
           <Text style={{ color: getCreditColor() }}>{userInfo.credit}</Text>
         </View>
         <View style={styles.infoDetailContainer}>
+          <Text style={styles.labelText}>真实姓名: </Text>
+          <Text>{userInfo.name ?? '用户未上传真实姓名'}</Text>
+        </View>
+        <View style={styles.infoDetailContainer}>
           <Text style={styles.labelText}>居住寝室: </Text>
-          <Text>{userInfo.bedroom}</Text>
+          <Text>{userInfo.bedroom ?? '用户未上传居住寝室'}</Text>
         </View>
       </View>
     </BaseContainer>

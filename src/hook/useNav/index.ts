@@ -1,7 +1,7 @@
 import { StackActions, useNavigation } from '@react-navigation/native'
 import { RouterTypes, UseNavigationGeneric } from '../../router'
 
-type FunctionArgType<RouteName extends keyof RouterTypes> =
+export type FunctionArgType<RouteName extends keyof RouterTypes> =
   undefined extends RouterTypes[RouteName]
     ? [screen: RouteName] | [screen: RouteName, params: RouterTypes[RouteName]]
     : [screen: RouteName, params: RouterTypes[RouteName]]

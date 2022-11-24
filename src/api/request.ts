@@ -5,10 +5,11 @@ import serverConfig from './serverConfig'
 import { AxiosResponse, AxiosError } from 'axios'
 import { isAuthPage } from '../utils/AuthUtils'
 import Toast from 'react-native-toast-message'
-import { SCHOOL_AUTH } from '../router'
+import { SCHOOL_AUTH, SERVER_AUTH_PAGE } from '../router'
 import { store } from '../redux/store'
 import { markLoginExpired } from '../redux/actions/user'
 import { markLoginInvalid } from '../redux/counter/serverUserSlice'
+import { navigationPush } from '../tabs'
 
 const serverResponseInterceptor = (resp: AxiosResponse): any => {
   if (resp.data.code === undefined) {
@@ -26,6 +27,8 @@ const serverRequestErrorInterceptor = (error: AxiosError): Error => {
     if (data.code === 1) {
       // 标记登录失效
       store.dispatch(markLoginInvalid())
+      // 跳转登录页面
+      navigationPush(SERVER_AUTH_PAGE)
     }
     return new Error(data.message)
   } else {
