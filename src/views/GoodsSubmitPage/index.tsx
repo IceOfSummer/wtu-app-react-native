@@ -5,11 +5,12 @@ import SimpleInput from '../../component/Input/SimpleInput'
 import ImageUploadContainer from '../../component/Input/ImageUploadContainer'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import ColorfulButton from '../../component/Button/ColorfulButton'
-import { getSellingCount } from '../../api/server/commodity'
+import { createCommodity, getSellingCount } from '../../api/server/commodity'
 import { getLogger } from '../../utils/LoggerUtils'
 import { useFormChecker } from '../../component/Input'
-import fs from 'react-native-fs'
-import cos, { putObject } from '../../api/server/cos'
+import { requireUserSpaceUploadSecret } from '../../api/server/cos'
+import { quickShowErrorTip } from '../../native/modules/NativeDialog'
+import Loading from '../../component/Loading'
 
 const logger = getLogger('/views/GoodsSubmitPage')
 const MAX_DESCRIPTION_LENGTH = 100
@@ -18,9 +19,11 @@ const LOAD_FAILED = -2
 const MAX_ACTIVE_COMMODITY = 10
 /**
  * 商品提交页面，需要提前保证用户已经登录
- * @constructor
  */
 const GoodsSubmitPage: React.FC = () => {
+  const [commodityName, setCommodityName] = useState('')
+  const [commodityPrice, setCommodityPrice] = useState('')
+  const [tradeLocation, setTradeLocation] = useState('')
   // -1: 加载中, -2: 加载失败
   const [sellingCount, setSellingCount] = useState(LOADING)
   const [description, setDescription] = useState('')
@@ -29,6 +32,7 @@ const GoodsSubmitPage: React.FC = () => {
   const decorationInput = useRef<SimpleInput>(null)
   const tradeLocationInput = useRef<SimpleInput>(null)
   const previewImageInput = useRef<ImageUploadContainer>(null)
+  const detailImageInput = useRef<ImageUploadContainer>(null)
   const formManager = useFormChecker<string>([
     {
       name: '商品名称',
@@ -55,14 +59,67 @@ const GoodsSubmitPage: React.FC = () => {
 
   const submitCommodity = async () => {
     const previewImageRef = previewImageInput.current
-    const uri = previewImageRef?.getSelectedImage()[0].uri
-    fs.readFile(uri!).then(res => {
-      putObject(res, '/images/1/test.png')
-    })
-    if (!previewImageRef || formManager.checkForm().length !== 0) {
+    const detailImageRef = detailImageInput.current
+    if (
+      formManager.checkForm().length !== 0 ||
+      !detailImageRef ||
+      !previewImageRef
+    ) {
       return
     }
-    // 上传图片
+    const preview = previewImageRef.getNotUploadedImages()
+    if (previewImageRef.getUploadedImageCount() === 0 && preview.length === 0) {
+      quickShowErrorTip('上传失败', '预览图不可为空')
+      return
+    }
+    const detail = detailImageRef.getNotUploadedImages()
+    if (detailImageRef.getUploadedImageCount() === 0 && detail.length === 0) {
+      quickShowErrorTip('上传失败', '请至少上传一张详细图')
+      return
+    }
+    let count = preview.length + detail.length
+    requireUserSpaceUploadSecret(count, 'image/png')
+      .then(async r => {
+        const infos = r.data.signs
+        previewImageRef.bindUploadSign(infos)
+        detailImageRef.bindUploadSign(infos, 1)
+        // start upload
+        Loading.showLoading('上传预览图中...')
+        await previewImageRef.uploadImage(r.data.token)
+        await detailImageRef.uploadImage(r.data.token, (current, total) => {
+          Loading.showLoading(`上传详细图中(${current}/${total})`)
+        })
+        // 图片上传完毕，上传整个表单
+        Loading.showLoading('发布商品中...')
+        await uploadCommodity()
+      })
+      .catch(e => {
+        quickShowErrorTip('上传图片失败', e.message)
+      })
+      .finally(() => {
+        Loading.hideLoading()
+      })
+  }
+
+  /**
+   * 发布商品。请确保所有图片都上传完毕后再调用该函数
+   */
+  function uploadCommodity() {
+    // 太懒狗了，直接用断言了
+    const previewImage = previewImageInput.current!.getSelectedImage()[0]
+    const images = JSON.stringify(
+      detailImageInput
+        .current!.getSelectedImage()
+        .map(value => value.sign?.path)
+    )
+    return createCommodity({
+      name: commodityName,
+      previewImage: previewImage.sign!.path!,
+      images,
+      price: Number.parseInt(commodityPrice, 10),
+      description,
+      tradeLocation: tradeLocation,
+    })
   }
 
   useEffect(() => {
@@ -81,8 +138,10 @@ const GoodsSubmitPage: React.FC = () => {
       <SimpleInput
         textInputProps={{ placeholder: '商品名称', maxLength: 50 }}
         ref={goodsNameInput}
+        onChangeText={setCommodityName}
       />
       <SimpleInput
+        onChangeText={setCommodityPrice}
         textInputProps={{
           placeholder: '价格',
           keyboardType: 'numeric',
@@ -93,11 +152,13 @@ const GoodsSubmitPage: React.FC = () => {
         ref={priceInput}
       />
       <SimpleInput
+        onChangeText={setTradeLocation}
         textInputProps={{ placeholder: '交易地点(如送货上门)', maxLength: 20 }}
         ref={tradeLocationInput}
       />
       <SimpleInput
         ref={decorationInput}
+        onChangeText={setDescription}
         textInputProps={{
           placeholder: '商品描述',
           keyboardType: 'numeric',
@@ -105,7 +166,6 @@ const GoodsSubmitPage: React.FC = () => {
           numberOfLines: 5,
           textAlignVertical: 'top',
           maxLength: MAX_DESCRIPTION_LENGTH,
-          onChangeText: setDescription,
         }}>
         <Text
           style={[
@@ -129,8 +189,9 @@ const GoodsSubmitPage: React.FC = () => {
       />
       <Divider />
       <ImageUploadContainer
-        title="预览图"
+        title="详细图"
         limit={6}
+        ref={detailImageInput}
         tipMessage="用户在点进商品后会看到的详细展示图，若不上传，默认使用预览图"
       />
       <Divider />

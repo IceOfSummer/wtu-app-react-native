@@ -16,6 +16,7 @@ interface SimpleInputProps {
   rowTipText?: string
   rowTipTextStyle?: TextStyle
   autoClearErrorText?: boolean
+  onChangeText?: (text: string) => void
 }
 
 interface SimpleInputState {
@@ -25,8 +26,8 @@ interface SimpleInputState {
 
 /**
  * 简单的输入框
- *
- * 可以传入children在分割线的上方渲染其它内容
+ * <p>
+ * 可以传入children在分割线的上方渲染其它内容, 部分input事件，如onChangeText需要直接绑定在组件上
  */
 export default class SimpleInput
   extends React.Component<SimpleInputProps, SimpleInputState>
@@ -65,6 +66,7 @@ export default class SimpleInput
 
   onChangeText(text: string) {
     this._value = text
+    this.props.onChangeText?.(text)
     if (this.props.autoClearErrorText) {
       this.clearErrorText()
     }

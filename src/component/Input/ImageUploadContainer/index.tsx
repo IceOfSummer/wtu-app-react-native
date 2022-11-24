@@ -21,6 +21,7 @@ import NativeDialog, {
 import { getLogger } from '../../../utils/LoggerUtils'
 import useNav from '../../../hook/useNav'
 import { FULL_SCREEN_IMAGE_PAGE } from '../../../router'
+import { SignInfo, uploadFile } from '../../../api/server/cos'
 
 const logger = getLogger('/component/Container/ImageUploadContainer')
 
@@ -34,14 +35,28 @@ interface ImageUploadContainerProps {
   tipTitle?: string
   imagePreviewResizeMode?: ImageResizeMode
 }
+type ImageRes = ImageResource & {
+  // 是否已经上传
+  uploaded?: boolean
+  // 绑定的签名，用于上传
+  sign?: SignInfo
+}
+
 interface ImageUploadContainerState {
-  selectedImage: Array<ImageResource>
+  selectedImage: Array<ImageRes>
 }
 
 type ImageResource = {
   fileName: string
   uri: string
+  filetype: string
 }
+
+/**
+ * 图片上传组件
+ * <p>
+ * 在上传图片到服务器前，应该先调用`bindUploadSign()`来绑定上传签名，之后直接调用`uploadImage()`就可以开始自动上传了
+ */
 export default class ImageUploadContainer extends React.Component<
   ImageUploadContainerProps,
   ImageUploadContainerState
@@ -58,6 +73,65 @@ export default class ImageUploadContainer extends React.Component<
 
   public getSelectedImage() {
     return this.state.selectedImage
+  }
+
+  /**
+   * 获取还未上传的图片
+   */
+  public getNotUploadedImages(): Array<ImageRes> {
+    const arr: Array<ImageRes> = []
+    this.state.selectedImage.forEach(value => {
+      if (!value.uploaded) {
+        arr.push(value)
+      }
+    })
+    return arr
+  }
+
+  public getUploadedImageCount(): number {
+    let count = 0
+    for (let i = 0, len = this.state.selectedImage.length; i < len; i++) {
+      count += i
+    }
+    return count
+  }
+
+  /**
+   * 上传所选的图片
+   * @param token token
+   * @param progressCallback 进度条回调
+   */
+  public async uploadImage(
+    token: string,
+    progressCallback?: (current: number, total: number) => void
+  ) {
+    logger.info('started upload image')
+    const images = this.getNotUploadedImages()
+    for (let i = 0; i < images.length; i++) {
+      const value = images[i]
+      logger.info('uploading image ' + i)
+      if (value.sign) {
+        progressCallback?.(i, images.length)
+        await uploadFile(value.uri, value.sign, token, value.filetype)
+        value.uploaded = true
+      } else {
+        logger.error('missing sign in image: ' + value + ', can not upload')
+      }
+    }
+  }
+
+  /**
+   * 绑定上传签名
+   * @param signInfos 上传签名，长度应和{@link ImageUploadContainer#getNotUploadedImages()}的返回值的长度相等
+   * @param start 从signInfos的哪个索引开始绑定
+   */
+  public bindUploadSign(signInfos: SignInfo[], start = 0) {
+    const images = this.getNotUploadedImages()
+    const infoLen = signInfos.length - start
+    let len = images.length < infoLen ? images.length : infoLen
+    for (let i = 0; i < len; i++) {
+      images[i].sign = signInfos[start++]
+    }
   }
 
   addImage() {
@@ -90,8 +164,12 @@ export default class ImageUploadContainer extends React.Component<
         }
         const uris: Array<ImageResource> = []
         result.assets?.forEach(value => {
-          if (value.uri && value.fileName) {
-            uris.push({ uri: value.uri, fileName: value.fileName })
+          if (value.uri && value.fileName && value.type) {
+            uris.push({
+              uri: value.uri,
+              fileName: value.fileName,
+              filetype: value.type,
+            })
           }
         })
         this.setState({
@@ -167,6 +245,7 @@ export default class ImageUploadContainer extends React.Component<
             </Pressable>
           )}
         </View>
+        <View>{this.props.children}</View>
         <Drawer drawerRef={this.drawer}>
           <BottomMenu
             onSelect={this.onBottomMenuSelect}

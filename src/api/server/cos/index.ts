@@ -9,7 +9,7 @@ type SignWrapper = {
   signs: Array<SignInfo>
 }
 
-type SignInfo = {
+export type SignInfo = {
   path: string
   sign: string
 }
@@ -42,19 +42,14 @@ function putObject(
       body: byteBuffer.buffer,
     })
       .then(resp => {
-        if (__DEV__) {
-          resp.text().then(txt => {
-            logger.info(txt)
-          })
-        }
         if (resp.status === 200) {
           resolve()
         } else {
           resp.text().then(txt => {
             logger.error('上传文件失败')
             logger.error(txt)
+            reject(new Error(txt))
           })
-          reject(new Error('上传失败'))
         }
       })
       .catch(e => {
@@ -62,38 +57,28 @@ function putObject(
       })
   })
 }
-type UploadStatus = {
-  token: string
-  // undefined表示上传成功
-  signs: Array<SignInfo | undefined>
+
+export const uploadFile = (
+  filepath: string,
+  signInfo: SignInfo,
+  token: string,
+  contentType: string
+) => {
+  return putObject(filepath, signInfo, token, contentType)
 }
 
 /**
- * 上传图片
- * @param filepath 文件路径
- * @param contentType 文件类型，如`image/png`
- * @param type 文件类型描述符，默认为`.png`
+ * 申请用户空间上传签名
+ * @param count 要上传的文件数量
+ * @param contentType 文件类型，如(application/json)
  */
-export const uploadImage = (
-  filepath: string[],
-  contentType: string,
-  type: string = '.png'
-) =>
-  new Promise<UploadStatus>(async resolve => {
-    const { data } = await getUserSpaceUploadSecret(filepath.length, type)
-    const uploadStatus: Array<SignInfo | undefined> = []
-    // up
-    for (let i = 0, len = data.signs.length; i < len; i++) {
-      const sign = data.signs[i]
-      try {
-        await putObject(filepath[i], sign, data.token, contentType)
-        uploadStatus[i] = undefined
-      } catch (e) {
-        uploadStatus[i] = sign
-      }
-    }
-    resolve({
-      token: data.token,
-      signs: uploadStatus,
-    })
-  })
+export const requireUserSpaceUploadSecret = (
+  count: number,
+  contentType: string
+) => {
+  const suffix = contentType.substring(contentType.lastIndexOf('/') + 1)
+  if (!suffix) {
+    throw new Error('无效的文件类型: ' + contentType)
+  }
+  return getUserSpaceUploadSecret(count, '.' + suffix)
+}
