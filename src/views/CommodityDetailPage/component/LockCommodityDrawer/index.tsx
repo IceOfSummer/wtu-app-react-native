@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import { ORDER_CONFIRM_PAGE, UseNavigationGeneric } from '../../../../router'
 import { ProcessedCommodity } from '../../../../api/server/commodity'
 import { OnRef } from '../../../../component/types'
-import RBSheet from 'react-native-raw-bottom-sheet'
+import Drawer, { DrawerComponent } from '../../../../component/Drawer'
 
 interface LockCommodityDrawerProps {
   commodity: ProcessedCommodity
@@ -18,15 +18,14 @@ export interface LockCommodityDrawerRefAttribute {
  * 用户想要锁定商品时弹出的抽屉提示框用于输入备注
  *
  */
-const DRAWER_HEIGHT = 250
 const LockCommodityDrawer: React.FC<
   LockCommodityDrawerProps & OnRef<LockCommodityDrawerRefAttribute>
 > = props => {
   const [text, setText] = useState('')
   const nav = useNavigation<UseNavigationGeneric>()
-  const drawer = useRef<RBSheet>(null)
+  const drawer = useRef<DrawerComponent>(null)
   const lock = () => {
-    drawer.current?.close()
+    drawer.current?.closeDrawer()
     // 关闭再转跳
     nav.navigate(ORDER_CONFIRM_PAGE, {
       commodity: props.commodity,
@@ -37,23 +36,17 @@ const LockCommodityDrawer: React.FC<
     props.onRef,
     () => ({
       open() {
-        drawer.current?.open()
+        drawer.current?.openDrawer()
       },
       close() {
-        drawer.current?.close()
+        drawer.current?.closeDrawer()
       },
     })
   )
 
   return (
-    <RBSheet
-      ref={drawer}
-      height={DRAWER_HEIGHT}
-      keyboardAvoidingViewEnabled
-      customStyles={{
-        container: { borderTopStartRadius: 15, borderTopEndRadius: 15 },
-      }}>
-      <View style={styles.contianer}>
+    <Drawer drawerRef={drawer}>
+      <View style={styles.container}>
         <View style={global.styles.flexRowJustBetween}>
           <View>
             <Text style={global.styles.blobText}>锁定商品: </Text>
@@ -74,17 +67,18 @@ const LockCommodityDrawer: React.FC<
           <Text>{text.length} / 200</Text>
         </View>
       </View>
-    </RBSheet>
+    </Drawer>
   )
 }
 const styles = StyleSheet.create({
-  contianer: {
-    height: DRAWER_HEIGHT,
+  container: {
     paddingTop: 10,
     paddingHorizontal: 15,
+    paddingBottom: 50,
   },
   tip: {
     alignSelf: 'flex-end',
+    paddingBottom: 40,
   },
 })
 

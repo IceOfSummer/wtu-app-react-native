@@ -1,6 +1,8 @@
 import React from 'react'
 import {
   Animated,
+  EmitterSubscription,
+  Keyboard,
   LayoutChangeEvent,
   Modal,
   Pressable,
@@ -64,6 +66,7 @@ interface DrawerComponentProps {
 interface DrawerComponentState {
   visible: boolean
   maskVisible: boolean
+  keyboardAvoidHeight: number
 }
 
 export class DrawerComponent extends React.Component<
@@ -73,6 +76,7 @@ export class DrawerComponent extends React.Component<
   state = {
     visible: false,
     maskVisible: true,
+    keyboardAvoidHeight: 0,
   }
 
   modalOffset: Animated.Value
@@ -111,6 +115,32 @@ export class DrawerComponent extends React.Component<
     }, 150)
   }
 
+  keyboardDidShowKey?: EmitterSubscription
+
+  keyboardDidHideKey?: EmitterSubscription
+
+  componentDidMount() {
+    this.keyboardDidShowKey = Keyboard.addListener('keyboardDidShow', evt => {
+      this.setState({
+        keyboardAvoidHeight: evt.endCoordinates.height,
+      })
+    })
+    this.keyboardDidHideKey = Keyboard.addListener('keyboardDidHide', () => {
+      this.setState({
+        keyboardAvoidHeight: 0,
+      })
+    })
+  }
+
+  componentWillUnmount() {
+    if (this.keyboardDidShowKey) {
+      this.keyboardDidShowKey.remove()
+    }
+    if (this.keyboardDidHideKey) {
+      this.keyboardDidHideKey.remove()
+    }
+  }
+
   constructor(props: DrawerComponentProps) {
     super(props)
     this.modalOffset = new Animated.Value(props.height)
@@ -126,20 +156,21 @@ export class DrawerComponent extends React.Component<
             backgroundColor: this.state.maskVisible
               ? global.styles.$bg_color_mask
               : undefined,
+            flexDirection: 'column-reverse',
             flex: 1,
+            paddingBottom: this.state.keyboardAvoidHeight,
           }}>
           <Animated.View
             style={{
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
               backgroundColor: global.colors.boxBackgroundColor,
-              position: 'absolute',
-              bottom: 0,
               width: '100%',
               height: this.props.height,
               transform: [{ translateY: this.modalOffset }],
             }}>
-            {this.props.children}
+            {/*这里加一层，防止点了Drawer内的东西导致退出了*/}
+            <Pressable>{this.props.children}</Pressable>
           </Animated.View>
         </Pressable>
       </Modal>
