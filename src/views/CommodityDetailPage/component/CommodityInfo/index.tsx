@@ -141,10 +141,6 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
       </Pressable>
       <View style={styles.toolBar}>
         <View style={styles.toolBarLeftContainer}>
-          <Pressable style={styles.toolBarIcon} onPress={chatWithSeller}>
-            <Icons iconText="&#xe8bd;" size={20} color="#000" />
-            <Text style={styles.toolbarText}>联系</Text>
-          </Pressable>
           <Pressable onPress={navToSellerInfo} style={styles.toolBarIcon}>
             <Icons iconText="&#xe79b;" size={20} color="#000" />
             <Text style={styles.toolbarText}>卖家</Text>

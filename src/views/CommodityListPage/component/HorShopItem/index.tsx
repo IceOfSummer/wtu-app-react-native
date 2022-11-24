@@ -4,6 +4,7 @@ import { append0Prefix } from '../../../../utils/DateUtils'
 import Icons from '../../../../component/Icons'
 import { EsCommodity } from '../../../../api/server/types'
 import FastImage from 'react-native-fast-image'
+import { appendCdnPrefix } from '../../../../utils/CdnUtil'
 
 interface HorShopItemProps {
   onClick?: () => void
@@ -20,7 +21,10 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
   return (
     <View style={global.styles.flexRowCenter}>
       <Pressable onPress={props.onClick} style={styles.container}>
-        <FastImage source={{ uri: props.image }} style={[styles.image, {}]} />
+        <FastImage
+          source={{ uri: appendCdnPrefix(props.image) }}
+          style={[styles.image, {}]}
+        />
         <View style={styles.descriptionContainer}>
           <Text style={global.styles.blobText} ellipsizeMode="tail">
             {props.name}

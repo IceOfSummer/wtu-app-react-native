@@ -1,5 +1,6 @@
 import { Commodity, EsCommodity, ResponseTemplate } from '../types'
 import { serverCancelOldAjax, serverNoRepeatAjax } from '../../request'
+import { appendCdnPrefix } from '../../../utils/CdnUtil'
 
 type PostCommodityType = Omit<
   Commodity,
@@ -26,16 +27,29 @@ export type ProcessedCommodity = Omit<Commodity, 'images'> & {
 export const getCommodityDetail = (commodityId: number) =>
   new Promise<ResponseTemplate<ProcessedCommodity | null>>(
     (resolve, reject) => {
-      serverNoRepeatAjax<Commodity | undefined>('/commodity/query', {
-        i: commodityId,
-      })
+      serverNoRepeatAjax<Commodity | undefined>(`/commodity/${commodityId}`)
         .then(resp => {
           const data = resp.data
           if (data) {
-            data.images = JSON.parse(data.images)
+            const arr = JSON.parse(data.images) as Array<string>
+            for (let i = 0; i < arr.length; i++) {
+              arr[i] = appendCdnPrefix(arr[i])
+            }
+            resolve({
+              message: resp.message,
+              code: resp.code,
+              data: {
+                ...data,
+                images: arr,
+              },
+            })
+          } else {
+            resolve({
+              data: null,
+              code: resp.code,
+              message: resp.message,
+            })
           }
-          // @ts-ignore
-          resolve(resp)
         })
         .catch(reject)
     }
