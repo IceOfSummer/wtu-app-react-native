@@ -2,12 +2,13 @@ import { AjaxResponseTypes } from 'axios-simple-wrapper/lib/common/betterAjax'
 import { ResponseTemplate } from './server/types'
 import { cancelOldAjax, noRepeatAjax } from 'axios-simple-wrapper'
 import serverConfig from './serverConfig'
-import { AxiosResponse } from 'axios'
+import { AxiosResponse, AxiosError } from 'axios'
 import { isAuthPage } from '../utils/AuthUtils'
 import Toast from 'react-native-toast-message'
 import { SCHOOL_AUTH } from '../router'
 import { store } from '../redux/store'
 import { markLoginExpired } from '../redux/actions/user'
+import { markLoginInvalid } from '../redux/counter/serverUserSlice'
 
 const serverResponseInterceptor = (resp: AxiosResponse): any => {
   if (resp.data.code === undefined) {
@@ -17,6 +18,19 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
     throw new Error(resp.data.message)
   }
   return resp.data
+}
+
+const serverRequestErrorInterceptor = (error: AxiosError): Error => {
+  const data = error.response?.data as any
+  if (data && data.message) {
+    if (data.code === 1) {
+      // 标记登录失效
+      store.dispatch(markLoginInvalid())
+    }
+    return new Error(data.message)
+  } else {
+    return error
+  }
 }
 
 /**
@@ -34,7 +48,7 @@ export const serverNoRepeatAjax = <T>(
       method
     )
       .then(resp => resolve(serverResponseInterceptor(resp)))
-      .catch(reject)
+      .catch(e => reject(serverRequestErrorInterceptor(e)))
   })
 
 /**
@@ -52,7 +66,7 @@ export const serverCancelOldAjax = <T>(
       method
     )
       .then(resp => resolve(serverResponseInterceptor(resp)))
-      .catch(reject)
+      .catch(e => reject(serverRequestErrorInterceptor(e)))
   })
 // 当登录过期后, 不显示Toast
 export const IGNORE_LOGIN_EXPIRE = 'ignoreLoginExpire;'

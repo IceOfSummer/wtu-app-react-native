@@ -46,6 +46,10 @@ export interface ServerUserReducers extends SliceCaseReducers<ServerUserState> {
    */
   markLogin: Reducer<ServerUserInfo>
   /**
+   * 标记用户的登录失效
+   */
+  markLoginInvalid: Reducer<void>
+  /**
    * 保存用户信息
    */
   saveUserToCache: Reducer<ServerUser>

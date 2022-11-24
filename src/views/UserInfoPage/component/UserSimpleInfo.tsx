@@ -22,7 +22,7 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
   return (
     <BaseContainer>
       <View style={styles.avatar}>
-        <Avatar uri={getAvatarUrl(props.userInfo.userId)} size={64} />
+        <Avatar uri={getAvatarUrl(props.userInfo.uid)} size={64} />
       </View>
       <View
         style={{

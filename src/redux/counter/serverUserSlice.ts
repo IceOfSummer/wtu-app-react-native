@@ -90,6 +90,7 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
       const str = JSON.stringify(payload)
       logger.info('saving user: ' + str)
       state.cachedUser[payload.uid] = payload
+      // FIXME 该操作应该提到外面
       // 保存到数据库
       insertOrUpdateUser(payload).catch(e => {
         logger.error('saving user: ' + str + ' fail, ' + e.message)
@@ -97,6 +98,9 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
     },
     combineUserCache(state, { payload }) {
       Object.assign(state.cachedUser, payload)
+    },
+    markLoginInvalid(state) {
+      state.authenticated = false
     },
   },
   extraReducers: {
@@ -122,6 +126,7 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
   },
 })
 
-export const { markLogin, saveUserToCache } = serverUserSlice.actions
+export const { markLogin, saveUserToCache, markLoginInvalid } =
+  serverUserSlice.actions
 
 export default serverUserSlice.reducer
