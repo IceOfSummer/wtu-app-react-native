@@ -13,10 +13,11 @@ import {
 import Applications from './ApplicationsScreen'
 import BaseContainer from '../../component/Container/BaseContainer'
 import TradeLabel from './component/TradeLabel'
-import BounceScrollView from '../../native/component/BounceScrollView'
 import LinearGradient from 'react-native-linear-gradient'
 import WtuLoginValidCard from './component/WtuLoginValidCard'
 import WtuLoginInvalidCard from './component/WtuLoginInvalidCard'
+import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
+import { SpringScrollView } from 'react-native-spring-scrollview'
 
 interface StoreProps {
   authenticated: boolean
@@ -30,8 +31,9 @@ interface PersonalCenterProps
     NativeStackScreenProps<RouterTypes> {}
 
 const PersonalCenter: React.FC<PersonalCenterProps> = props => {
+  useAutoColorStatusBar(false, '#fff')
   return (
-    <View>
+    <View style={{ flexDirection: 'column', flex: 1 }}>
       <View style={[styles.header, { zIndex: 9999 }]}>
         <View style={styles.headerTextView}>
           <Image
@@ -71,7 +73,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
           />
         </Pressable>
       </View>
-      <BounceScrollView>
+      <SpringScrollView contentStyle={{ flex: 1 }}>
         <LinearGradient
           style={styles.wtuBox}
           colors={['#36D1DC', '#5B86E5']}
@@ -91,7 +93,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
         <View style={{ zIndex: 1 }}>
           <Applications />
         </View>
-      </BounceScrollView>
+      </SpringScrollView>
     </View>
   )
 }

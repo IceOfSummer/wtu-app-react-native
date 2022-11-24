@@ -114,6 +114,7 @@ const HOME_OPTIONS: BottomTabNavigationOptions = {
 
 const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
   tabBarLabel: '课程表',
+  headerTitle: '课程表',
   headerTitleAlign: 'center',
   headerRight: () => (
     <Icons

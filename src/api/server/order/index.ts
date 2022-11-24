@@ -24,4 +24,4 @@ export type SimpleOrder = {
 }
 
 export const getSoldOrderSimply = (userId: number, page = 0) =>
-  serverNoRepeatAjax<SimpleOrder[]>(`/record/${userId}/sold`, { p: page, s: 5 })
+  serverNoRepeatAjax<SimpleOrder[]>(`/order/${userId}/sold`, { p: page, s: 5 })

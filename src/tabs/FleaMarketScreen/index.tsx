@@ -68,7 +68,7 @@ const FleaMarketScreen: React.FC = () => {
   const [searchBarPlaceholder] = useState('搜索您喜欢的商品')
   // 是否显示消息的红点
   const [showMessageRedPoint] = useState(true)
-  useAutoColorStatusBar(false, global.colors.backgroundColor)
+  useAutoColorStatusBar(false, global.colors.statusBarColor)
   /**
    * 当点击搜索框后，跳转到专门的搜索页面
    */

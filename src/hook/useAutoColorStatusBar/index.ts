@@ -9,13 +9,13 @@ import { RouterTypes } from '../../router'
 export default function (light?: boolean, color?: ColorValue) {
   const nav = useNavigation<NavigationProp<RouterTypes>>()
   nav.addListener('blur', () => {
-    StatusBar.setBackgroundColor('#fff')
+    StatusBar.setBackgroundColor(global.colors.statusBarColor)
     if (light) {
       StatusBar.setBarStyle('dark-content')
     }
   })
   nav.addListener('focus', () => {
-    StatusBar.setBackgroundColor(color ? color : 'transparent')
+    StatusBar.setBackgroundColor(color ?? 'transparent')
     if (light) {
       StatusBar.setBarStyle('light-content')
     }

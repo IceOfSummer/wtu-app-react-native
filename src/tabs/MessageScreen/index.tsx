@@ -53,6 +53,7 @@ const Tab = createMaterialTopTabNavigator()
  * 用户登录后显示消息界面
  */
 const AuthenticatedView = () => {
+  useAutoColorStatusBar(false, '#fff')
   // 断言非空，可看userInfo的注释
   const uid = useSelector<ReducerTypes, number>(
     state => state.serverUser.userInfo!.uid
