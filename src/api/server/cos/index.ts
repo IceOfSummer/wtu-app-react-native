@@ -4,11 +4,6 @@ import fs from 'react-native-fs'
 import ByteBuffer from 'bytebuffer'
 import { getLogger } from '../../../utils/LoggerUtils'
 
-type SignWrapper = {
-  token: string
-  signs: Array<SignInfo>
-}
-
 export type SignInfo = {
   path: string
   sign: string
@@ -16,8 +11,8 @@ export type SignInfo = {
 
 const logger = getLogger('/api/server/cos')
 
-const getUserSpaceUploadSecret = (count: number, type?: string) =>
-  serverNoRepeatAjax<SignWrapper>('/cos/secret/userspace', { count, type })
+const getUserSpaceUploadSign = (count: number, type?: string) =>
+  serverNoRepeatAjax<Array<SignInfo>>('/cos/secret/userspace', { count, type })
 
 /**
  * 上传文件到cos桶
@@ -25,31 +20,35 @@ const getUserSpaceUploadSecret = (count: number, type?: string) =>
 function putObject(
   filePath: string,
   signInfo: SignInfo,
-  token: string,
-  contentType: string
+  contentType: string,
+  headers?: Record<string, string>
 ) {
   return new Promise<void>(async (resolve, reject) => {
     const byteBuffer = ByteBuffer.fromBase64(
       await fs.readFile(filePath, 'base64')
     )
+    logger.debug('start put object')
     fetch(config.common.cosUrl + signInfo.path, {
       method: 'PUT',
       headers: {
+        ...headers,
         Authorization: signInfo.sign,
-        'x-cos-security-token': token,
         'Content-Type': contentType,
       },
       body: byteBuffer.buffer,
     })
       .then(resp => {
-        if (resp.status === 200) {
-          resolve()
-        } else {
-          resp.text().then(txt => {
+        resp.text().then(txt => {
+          logger.debug(txt)
+          if (resp.status === 200) {
+            resolve()
+          } else {
             logger.error('上传文件失败')
-            logger.error(txt)
             reject(new Error(txt))
-          })
+          }
+        })
+        if (resp.status === 200) {
+        } else {
         }
       })
       .catch(e => {
@@ -58,13 +57,15 @@ function putObject(
   })
 }
 
-export const uploadFile = (
+export const uploadImageToUserspace = (
+  uid: number,
   filepath: string,
   signInfo: SignInfo,
-  token: string,
   contentType: string
 ) => {
-  return putObject(filepath, signInfo, token, contentType)
+  return putObject(filepath, signInfo, contentType, {
+    'x-cos-meta-uid': uid.toString(),
+  })
 }
 
 /**
@@ -80,5 +81,11 @@ export const requireUserSpaceUploadSecret = (
   if (!suffix) {
     throw new Error('无效的文件类型: ' + contentType)
   }
-  return getUserSpaceUploadSecret(count, '.' + suffix)
+  return getUserSpaceUploadSign(count, '.' + suffix)
 }
+
+/**
+ * 获取用户空间图片存放位置
+ */
+export const getUserspaceImagePath = (uid: number, filename: string) =>
+  `image/${uid}/${filename}`

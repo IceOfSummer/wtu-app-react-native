@@ -21,7 +21,7 @@ import NativeDialog, {
 import { getLogger } from '../../../utils/LoggerUtils'
 import useNav from '../../../hook/useNav'
 import { FULL_SCREEN_IMAGE_PAGE } from '../../../router'
-import { SignInfo, uploadFile } from '../../../api/server/cos'
+import { SignInfo, uploadImageToUserspace } from '../../../api/server/cos'
 
 const logger = getLogger('/component/Container/ImageUploadContainer')
 
@@ -34,6 +34,7 @@ interface ImageUploadContainerProps {
   tipMessage?: string
   tipTitle?: string
   imagePreviewResizeMode?: ImageResizeMode
+  uid: number
 }
 type ImageRes = ImageResource & {
   // 是否已经上传
@@ -57,7 +58,7 @@ type ImageResource = {
  * <p>
  * 在上传图片到服务器前，应该先调用`bindUploadSign()`来绑定上传签名，之后直接调用`uploadImage()`就可以开始自动上传了
  */
-export default class ImageUploadContainer extends React.Component<
+export default class FGImageUploadContainer extends React.Component<
   ImageUploadContainerProps,
   ImageUploadContainerState
 > {
@@ -91,18 +92,18 @@ export default class ImageUploadContainer extends React.Component<
   public getUploadedImageCount(): number {
     let count = 0
     for (let i = 0, len = this.state.selectedImage.length; i < len; i++) {
-      count += i
+      if (this.state.selectedImage[i].uploaded) {
+        count++
+      }
     }
     return count
   }
 
   /**
    * 上传所选的图片
-   * @param token token
    * @param progressCallback 进度条回调
    */
   public async uploadImage(
-    token: string,
     progressCallback?: (current: number, total: number) => void
   ) {
     logger.info('started upload image')
@@ -112,7 +113,12 @@ export default class ImageUploadContainer extends React.Component<
       logger.info('uploading image ' + i)
       if (value.sign) {
         progressCallback?.(i, images.length)
-        await uploadFile(value.uri, value.sign, token, value.filetype)
+        await uploadImageToUserspace(
+          this.props.uid,
+          value.uri,
+          value.sign,
+          value.filetype
+        )
         value.uploaded = true
       } else {
         logger.error('missing sign in image: ' + value + ', can not upload')

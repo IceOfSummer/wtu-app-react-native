@@ -8,9 +8,15 @@ import ColorfulButton from '../../component/Button/ColorfulButton'
 import { createCommodity, getSellingCount } from '../../api/server/commodity'
 import { getLogger } from '../../utils/LoggerUtils'
 import { useFormChecker } from '../../component/Input'
-import { requireUserSpaceUploadSecret } from '../../api/server/cos'
+import {
+  getUserspaceImagePath,
+  requireUserSpaceUploadSecret,
+} from '../../api/server/cos'
 import { quickShowErrorTip } from '../../native/modules/NativeDialog'
 import Loading from '../../component/Loading'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { GOODS_SUBMIT_PAGE, RouterTypes } from '../../router'
+import { getFilenameFromUrl } from '../../utils/PathUtils'
 
 const logger = getLogger('/views/GoodsSubmitPage')
 const MAX_DESCRIPTION_LENGTH = 100
@@ -21,6 +27,7 @@ const MAX_ACTIVE_COMMODITY = 10
  * 商品提交页面，需要提前保证用户已经登录
  */
 const GoodsSubmitPage: React.FC = () => {
+  const route = useRoute<RouteProp<RouterTypes, typeof GOODS_SUBMIT_PAGE>>()
   const [commodityName, setCommodityName] = useState('')
   const [commodityPrice, setCommodityPrice] = useState('')
   const [tradeLocation, setTradeLocation] = useState('')
@@ -78,27 +85,23 @@ const GoodsSubmitPage: React.FC = () => {
       return
     }
     let count = preview.length + detail.length
-    requireUserSpaceUploadSecret(count, 'image/png')
-      .then(async r => {
-        const infos = r.data.signs
-        previewImageRef.bindUploadSign(infos)
-        detailImageRef.bindUploadSign(infos, 1)
-        // start upload
-        Loading.showLoading('上传预览图中...')
-        await previewImageRef.uploadImage(r.data.token)
-        await detailImageRef.uploadImage(r.data.token, (current, total) => {
-          Loading.showLoading(`上传详细图中(${current}/${total})`)
-        })
-        // 图片上传完毕，上传整个表单
-        Loading.showLoading('发布商品中...')
-        await uploadCommodity()
+    try {
+      Loading.showLoading('准备上传图片')
+      const { data } = await requireUserSpaceUploadSecret(count, 'image/png')
+      previewImageRef.bindUploadSign(data)
+      detailImageRef.bindUploadSign(data, 1)
+      Loading.showLoading('上传预览图中')
+      await previewImageRef.uploadImage()
+      await detailImageRef.uploadImage((current, total) => {
+        Loading.showLoading(`上传详细图中(${current}/${total})`)
       })
-      .catch(e => {
-        quickShowErrorTip('上传图片失败', e.message)
-      })
-      .finally(() => {
-        Loading.hideLoading()
-      })
+      Loading.showLoading('发布商品中')
+      await uploadCommodity()
+    } catch (e: any) {
+      quickShowErrorTip('上传失败', e.message)
+    } finally {
+      Loading.hideLoading()
+    }
   }
 
   /**
@@ -110,11 +113,19 @@ const GoodsSubmitPage: React.FC = () => {
     const images = JSON.stringify(
       detailImageInput
         .current!.getSelectedImage()
-        .map(value => value.sign?.path)
+        .map(value =>
+          getUserspaceImagePath(
+            route.params.uid,
+            getFilenameFromUrl(value.sign?.path)
+          )
+        )
     )
     return createCommodity({
       name: commodityName,
-      previewImage: previewImage.sign!.path!,
+      previewImage: getUserspaceImagePath(
+        route.params.uid,
+        getFilenameFromUrl(previewImage.sign?.path)
+      ),
       images,
       price: Number.parseInt(commodityPrice, 10),
       description,
@@ -181,6 +192,7 @@ const GoodsSubmitPage: React.FC = () => {
         </Text>
       </SimpleInput>
       <ImageUploadContainer
+        uid={route.params.uid}
         title="预览图"
         limit={1}
         tipMessage="用户在搜索列表中最先看到的就是预览图了!图片会被压缩为正方形的图片，请提前确保尺寸"
@@ -189,6 +201,7 @@ const GoodsSubmitPage: React.FC = () => {
       />
       <Divider />
       <ImageUploadContainer
+        uid={route.params.uid}
         title="详细图"
         limit={6}
         ref={detailImageInput}
