@@ -9,8 +9,7 @@ import {
 import { append0Prefix } from '../../../../utils/DateUtils'
 import Icons from '../../../../component/Icons'
 import { EsCommodity } from '../../../../api/server/types'
-import FastImage from 'react-native-fast-image'
-import { appendCdnPrefix } from '../../../../utils/CdnUtil'
+import BetterImage from '../../../../component/Container/BetterImage'
 
 interface HorShopItemProps {
   onClick?: () => void
@@ -32,10 +31,14 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
         onPress={props.onClick}
         style={[styles.container, { height: len }]}>
         <View style={{ width: len, height: len, padding: 5 }}>
-          <FastImage
-            source={{ uri: appendCdnPrefix(props.image) }}
-            style={{ flex: 1, borderRadius: 8 }}
-            resizeMode="stretch"
+          <BetterImage
+            uri={props.image}
+            imageProp={{
+              style: { flex: 1, borderRadius: 8 },
+              resizeMode: 'stretch',
+            }}
+            width="100%"
+            height="100%"
           />
         </View>
         <View style={styles.descriptionContainer}>

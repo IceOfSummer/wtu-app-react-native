@@ -18,6 +18,11 @@ export const searchCommodity = (searchContent: string, page = 0) =>
   serverCancelOldAjax<EsCommodity[]>('/commodity/search', {
     s: searchContent,
     p: page,
+  }).then(result => {
+    result.data.forEach(value => {
+      value.image = appendCdnPrefix('/' + value.image)
+    })
+    return result
   })
 
 export type ProcessedCommodity = Omit<Commodity, 'images'> & {
@@ -32,8 +37,9 @@ export const getCommodityDetail = (commodityId: number) =>
           const data = resp.data
           if (data) {
             const arr = JSON.parse(data.images) as Array<string>
+            data.previewImage = appendCdnPrefix('/' + data.previewImage)
             for (let i = 0; i < arr.length; i++) {
-              arr[i] = appendCdnPrefix(arr[i])
+              arr[i] = appendCdnPrefix('/' + arr[i])
             }
             resolve({
               message: resp.message,

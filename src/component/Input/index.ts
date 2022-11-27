@@ -60,7 +60,6 @@ export const useFormChecker = <V extends string | string[]>(
           current.showErrorText(err.reason)
         }
       })
-      console.log(errors)
       return errors
     },
   }

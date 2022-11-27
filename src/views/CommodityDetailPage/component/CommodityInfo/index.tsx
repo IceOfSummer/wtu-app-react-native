@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import {
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -15,7 +14,6 @@ import {
   UseNavigationGeneric,
   USER_INFO_PAGE,
 } from '../../../../router'
-import FastImage from 'react-native-fast-image'
 import Icons from '../../../../component/Icons'
 import ColorfulButton from '../../../../component/Button/ColorfulButton'
 import { formatTimestamp } from '../../../../utils/DateUtils'
@@ -24,6 +22,8 @@ import NativeDialog from '../../../../native/modules/NativeDialog'
 import LockCommodityDrawer, {
   LockCommodityDrawerRefAttribute,
 } from '../LockCommodityDrawer'
+import BetterImage from '../../../../component/Container/BetterImage'
+import { SpringScrollView } from 'react-native-spring-scrollview'
 
 interface CommodityInfoProps {
   commodity: ProcessedCommodity
@@ -85,12 +85,14 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
 
   return (
     <View>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <SpringScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}>
         <View style={{ height: height / 2 }}>
           <Swiper style={styles.swiper} loop={false}>
             {commodity.images.map((uri, index) => (
               <Pressable key={index} onPress={() => viewImage(index)}>
-                <FastImage source={{ uri }} style={styles.image} />
+                <BetterImage uri={uri} imageProp={{ style: styles.image }} />
               </Pressable>
             ))}
           </Swiper>
@@ -133,7 +135,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
           </View>
         </View>
         <View style={{ padding: 50 }} />
-      </ScrollView>
+      </SpringScrollView>
       <Pressable
         style={styles.backButtonContainer}
         onPress={() => nav.goBack()}>

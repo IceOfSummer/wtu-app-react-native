@@ -38,6 +38,7 @@ const CommodityListPage: React.FC = () => {
           setEmpty(true)
           return
         }
+        console.log(resp)
         setCommodities(commodities.concat(resp.data))
         currentPage.current++
         setLoadFail(false)

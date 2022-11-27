@@ -117,14 +117,17 @@ const SubmitPage: React.FC = () => {
       detailImageInput
         .current!.getSelectedImage()
         .map(value =>
-          getUserspaceImagePath(uid, getFilenameFromUrl(value.sign?.path))
+          getUserspaceImagePath(
+            uid,
+            getFilenameFromUrl(value.sign?.path) + '.webp'
+          )
         )
     )
     return createCommodity({
       name: commodityName,
       previewImage: getUserspaceImagePath(
         uid,
-        getFilenameFromUrl(previewImage.sign?.path)
+        getFilenameFromUrl(previewImage.sign?.path) + '.webp'
       ),
       images,
       price: Number.parseInt(commodityPrice, 10),
