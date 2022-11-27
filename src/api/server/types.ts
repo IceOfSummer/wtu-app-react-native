@@ -15,8 +15,7 @@ export type EsCommodity = {
 
 export enum CommodityStatus {
   STATUS_ACTIVE,
-  STATUS_TRADING,
-  STATUS_DONE,
+  STATUS_INACTIVE,
 }
 export type Commodity = {
   commodityId: number
@@ -32,4 +31,5 @@ export type Commodity = {
    * 需要单独使用JSON进行二次解析
    */
   images: string
+  count: number
 }

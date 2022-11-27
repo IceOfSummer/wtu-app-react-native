@@ -12,7 +12,7 @@ type PostCommodityType = Omit<
  * @param commodity
  */
 export const createCommodity = (commodity: PostCommodityType) =>
-  serverNoRepeatAjax('/commodity/create', commodity, 'POST')
+  serverNoRepeatAjax<number>('/commodity/create', commodity, 'POST')
 
 export const searchCommodity = (searchContent: string, page = 0) =>
   serverCancelOldAjax<EsCommodity[]>('/commodity/search', {
@@ -60,6 +60,7 @@ export const lockCommodity = (commodityId: number, remark?: string) =>
 
 /**
  * 获取用户正在售卖的商品数量
+ * @deprecated
  */
 export const getSellingCount = () =>
   serverNoRepeatAjax<number>('/commodity/selling_count')

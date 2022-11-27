@@ -41,7 +41,7 @@ import { Theme } from '@react-navigation/native/lib/typescript/src/types'
 import { ThemeState } from '../redux/types/themeTypes'
 import ServerAuthPage from '../views/ServerAuthPage'
 import ChatPage from '../views/ChatPage'
-import GoodsSubmitPage from '../views/GoodsSubmitPage'
+import { GoodsSubmitPage } from '../views/GoodsSubmitPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -49,6 +49,7 @@ export const HOME_TABS = 'Home'
 export const PERSONAL_CENTER_TABS = 'PersonalCenter'
 export const CLASS_SCHEDULE_TABS = 'ClassSchedule'
 export const MESSAGE_TABS = 'MessageScreen'
+export const FLEA_MARKET_TABS = 'FleaMarket'
 export const SCHOOL_AUTH = 'SchoolAuth'
 export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
@@ -59,7 +60,6 @@ export const ABOUT_PAGE = 'AboutPage'
 export const WEB_PAGE = 'WebPage'
 export const SCORE_QUERY = 'ScoreQuery'
 export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
-export const FLEA_MARKET_TABS = 'FleaMarket'
 export const SEARCH_PAGE = 'SearchPage'
 export const COMMODITY_LIST_PAGE = 'CommodityListPage'
 export const COMMODITY_DETAIL_PAGE = 'CommodityDetailPage'
@@ -70,6 +70,7 @@ export const PENDING_RECEIVE_PAGE = 'PendingReceivePage'
 export const SERVER_AUTH_PAGE = 'ServerAuthPage'
 export const CHAT_PAGE = 'ChatPage'
 export const GOODS_SUBMIT_PAGE = 'GoodsSubmitPage'
+export const OPERATION_SUCCESS_PAGE = 'OperationSuccessPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -134,6 +135,11 @@ export interface RouterTypes extends ParamListBase {
      */
     uid: number
   }
+  [OPERATION_SUCCESS_PAGE]: {
+    title: string
+    messages: string[]
+    links?: Array<{ to: string; text: string }>
+  }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -152,7 +158,7 @@ const hideHeaderOptions: NativeStackNavigationOptions = {
   header: () => null,
 }
 
-const headerCommonOptionsWithTitle = (
+export const headerCommonOptionsWithTitle = (
   title: string
 ): NativeStackNavigationOptions => {
   return {
@@ -310,7 +316,7 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={GOODS_SUBMIT_PAGE}
           component={GoodsSubmitPage}
-          options={headerCommonOptionsWithTitle('发布商品')}
+          options={{ header: () => null }}
         />
       </Stack.Navigator>
       <DiyToast />

@@ -46,7 +46,7 @@ const TabBar = () => {
   useEffect(() => {
     pubsub.subscribe(NAVIGATION_EVENT_KEY, (message, data: Nav) => {
       // 在非组件内进行路由操作
-      nav.navigate(data.path, data.path)
+      nav.navigate(data.path, data.param)
     })
   }, [])
   return (

@@ -49,6 +49,7 @@ export default class SimpleInput
   }
 
   public showErrorText(errorText: string) {
+    console.log(errorText)
     this.setState({
       errorText,
     })

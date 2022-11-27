@@ -5,9 +5,6 @@ import { name as appName } from './app.json'
 import SQLite from 'react-native-sqlite-storage'
 import { login } from './src/api/server/auth'
 import './src/utils/LoggerUtils/index'
-import { store } from './src/redux/store'
-import { saveUserToCache } from './src/redux/counter/serverUserSlice'
-import DatabaseManager from './src/sqlite'
 
 SQLite.enablePromise(true)
 AppRegistry.registerComponent(appName, () => App)
@@ -25,22 +22,5 @@ if (__DEV__) {
     login('100001', 'abc123').then(resp => {
       console.log(resp)
     })
-  })
-  DevSettings.addMenuItem('insert users', () => {
-    for (let i = 4; i < 10; ++i) {
-      store.dispatch(
-        saveUserToCache({
-          uid: i,
-          nickname: 'Name-' + i,
-        })
-      )
-    }
-  })
-  DevSettings.addMenuItem('test sql', () => {
-    DatabaseManager.executeSql('SELECT * FROM message WHERE uid = 2').then(
-      result => {
-        console.log(result[0].rows.raw())
-      }
-    )
   })
 }

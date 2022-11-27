@@ -32,7 +32,7 @@ export const useFormChecker = <V extends string | string[]>(
             }
           }
         } else if (typeof val === 'string') {
-          const reason = item.check?.(val)
+          const reason = item.check?.(val, item.name)
           if (reason) {
             err = { item, reason }
           } else {
@@ -46,7 +46,7 @@ export const useFormChecker = <V extends string | string[]>(
             }
           } else {
             for (let i = 0; i < val.length; i++) {
-              const reason = item.check?.(val[i])
+              const reason = item.check?.(val[i], item.name)
               if (reason) {
                 err = { item, reason }
               } else {
@@ -60,6 +60,7 @@ export const useFormChecker = <V extends string | string[]>(
           current.showErrorText(err.reason)
         }
       })
+      console.log(errors)
       return errors
     },
   }
@@ -84,6 +85,11 @@ function checkStr<V extends string | string[]>(
   }
   return undefined
 }
+
+/**
+ * @return 错误原因, 返回undefined表示内容正确
+ */
+type CheckFunction = (text: string, name: string) => string | undefined
 
 /**
  * 需要注意长度包小不包大[min, maxLength)
@@ -113,8 +119,40 @@ type FormItem<InputRefType> = {
    * 自定义检查函数
    * @return 错误原因, 返回undefined表示内容正确
    */
-  check?: (text: string) => string | undefined
+  check?: CheckFunction
 }
+
+type CheckNumberConfig = {
+  min?: number
+  max?: number
+  noDecimal?: boolean
+}
+
+/**
+ * 检查是否为数字，并且是否在[min, max]范围内
+ */
+export const checkNumber =
+  ({ min, max, noDecimal }: CheckNumberConfig): CheckFunction =>
+  (text, name) => {
+    const num = Number.parseInt(text, 10)
+    if (Number.isNaN(num)) {
+      return '输入的数字无效'
+    }
+    if (min !== undefined && num < min) {
+      return name + '不可以小于' + min
+    }
+    if (max !== undefined && num > max) {
+      return name + '不可以大于' + max
+    }
+    if (noDecimal) {
+      for (let i = 0, len = text.length; i < len; i++) {
+        if (text[i] === '.') {
+          return name + '不可以包含小数'
+        }
+      }
+    }
+    return undefined
+  }
 
 type FormError<InputRefType> = {
   reason: string
