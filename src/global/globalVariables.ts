@@ -74,6 +74,12 @@ const gStyleSheet: StyleSheetTypes = {
     fontSize: gStyleValues.$font_size_sm,
     textAlign: 'center',
   },
+  successTipText: {
+    color: gStyleValues.$success_color,
+    paddingVertical: 4,
+    fontSize: gStyleValues.$font_size_sm,
+    textAlign: 'center',
+  },
   errorTipText: {
     color: gStyleValues.$error_color,
     fontSize: gStyleValues.$font_size_sm,

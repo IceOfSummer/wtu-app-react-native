@@ -36,6 +36,7 @@ export default class SimpleInput
   state = {
     errorText: '',
     placeholderColor: undefined,
+    rowTipTextStyle: global.styles.textContent,
   }
 
   _value = ''

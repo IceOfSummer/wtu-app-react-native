@@ -30,18 +30,18 @@ import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import SearchPage from '../views/SearchPage'
 import CommodityListPage from '../views/CommodityListPage'
 import WebSchoolAuth from '../views/SchoolAuth/WebSchoolAuth'
-import CommodityDetailPage from '../views/CommodityDetailPage'
 import FullScreenImagePage from '../views/FullScreenImagePage'
 import { IImageInfo } from 'react-native-image-zoom-viewer/src/image-viewer.type'
 import UserInfoPage from '../views/UserInfoPage'
-import OrderConfirmPage from '../views/OrderConfirmPage'
-import { ProcessedCommodity } from '../api/server/commodity'
 import PendingReceivePage from '../views/PendingReceivePage'
 import { Theme } from '@react-navigation/native/lib/typescript/src/types'
 import { ThemeState } from '../redux/types/themeTypes'
 import ServerAuthPage from '../views/ServerAuthPage'
 import ChatPage from '../views/ChatPage'
 import { GoodsSubmitPage } from '../views/GoodsSubmitPage'
+import commodityPage from '../views/CommodityPage'
+import { StackHeaderOptions } from '@react-navigation/stack/lib/typescript/src/types'
+import Icons from '../component/Icons'
 
 const Stack = createNativeStackNavigator()
 
@@ -62,15 +62,19 @@ export const SCORE_QUERY = 'ScoreQuery'
 export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
 export const SEARCH_PAGE = 'SearchPage'
 export const COMMODITY_LIST_PAGE = 'CommodityListPage'
-export const COMMODITY_DETAIL_PAGE = 'CommodityDetailPage'
+/**
+ * @deprecated
+ * @see COMMODITY_PAGE
+ */
+export const COMMODITY_DETAIL_PAGE = 'CommodityPage'
 export const FULL_SCREEN_IMAGE_PAGE = 'FullScreenImagePage'
 export const USER_INFO_PAGE = 'UserInfoPage'
-export const ORDER_CONFIRM_PAGE = 'OrderConfirmPage'
 export const PENDING_RECEIVE_PAGE = 'PendingReceivePage'
 export const SERVER_AUTH_PAGE = 'ServerAuthPage'
 export const CHAT_PAGE = 'ChatPage'
 export const GOODS_SUBMIT_PAGE = 'GoodsSubmitPage'
 export const OPERATION_SUCCESS_PAGE = 'OperationSuccessPage'
+export const COMMODITY_PAGE = 'CommodityPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -104,22 +108,12 @@ export interface RouterTypes extends ParamListBase {
   [COMMODITY_LIST_PAGE]: {
     search: string
   }
-  [COMMODITY_DETAIL_PAGE]: {
-    /**
-     * 商品id
-     */
-    id: number
-  }
   [FULL_SCREEN_IMAGE_PAGE]: {
     images: IImageInfo[]
     index?: number
   }
   [USER_INFO_PAGE]: {
     id: number
-  }
-  [ORDER_CONFIRM_PAGE]: {
-    commodity: ProcessedCommodity
-    remark: string
   }
   [PENDING_RECEIVE_PAGE]: undefined
   [MESSAGE_TABS]: undefined
@@ -139,6 +133,9 @@ export interface RouterTypes extends ParamListBase {
     title: string
     messages: string[]
     links?: Array<{ to: string; text: string }>
+  }
+  [COMMODITY_PAGE]: {
+    id: number
   }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
@@ -166,6 +163,16 @@ export const headerCommonOptionsWithTitle = (
     title,
   }
 }
+
+export const headerWithTitle = (title: string): StackHeaderOptions => ({
+  headerTitle: title,
+  headerShadowVisible: false,
+  headerBackImage: () => <Icons iconText="&#xe61d;" color="#000" size={40} />,
+  headerTitleAlign: 'center',
+  headerTitleStyle: {
+    fontSize: global.styles.$font_size_lg,
+  },
+})
 
 const Router: React.FC = () => {
   const theme = useSelector<ReducerTypes, ThemeState>(state => state.theme)
@@ -203,8 +210,12 @@ const Router: React.FC = () => {
   return (
     <NavigationContainer theme={navTheme}>
       <Stack.Navigator
+        defaultScreenOptions={{ header: () => null }}
         screenOptions={{
-          headerTitleStyle: { fontSize: global.styles.$font_size_lg },
+          headerTitleStyle: {
+            fontSize: global.styles.$font_size_lg,
+          },
+          header: () => null,
         }}>
         <Stack.Screen
           name={HOME_TABS}
@@ -275,11 +286,6 @@ const Router: React.FC = () => {
           options={{ header: () => null, animation: 'none' }}
         />
         <Stack.Screen
-          name={COMMODITY_DETAIL_PAGE}
-          component={CommodityDetailPage}
-          options={{ header: () => null }}
-        />
-        <Stack.Screen
           name={FULL_SCREEN_IMAGE_PAGE}
           component={FullScreenImagePage}
           options={{ header: () => null }}
@@ -288,11 +294,6 @@ const Router: React.FC = () => {
           name={USER_INFO_PAGE}
           component={UserInfoPage}
           options={headerCommonOptionsWithTitle('用户信息')}
-        />
-        <Stack.Screen
-          name={ORDER_CONFIRM_PAGE}
-          component={OrderConfirmPage}
-          options={headerCommonOptionsWithTitle('确认订单')}
         />
         <Stack.Screen
           name={PENDING_RECEIVE_PAGE}
@@ -317,6 +318,11 @@ const Router: React.FC = () => {
           name={GOODS_SUBMIT_PAGE}
           component={GoodsSubmitPage}
           options={{ header: () => null }}
+        />
+        <Stack.Screen
+          name={COMMODITY_PAGE}
+          component={commodityPage}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
       <DiyToast />

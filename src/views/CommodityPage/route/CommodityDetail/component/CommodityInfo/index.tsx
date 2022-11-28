@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import {
   Pressable,
   StyleSheet,
@@ -6,24 +6,24 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native'
-import { ProcessedCommodity } from '../../../../api/server/commodity'
 import Swiper from 'react-native-swiper'
 import { useNavigation } from '@react-navigation/native'
-import {
-  FULL_SCREEN_IMAGE_PAGE,
-  UseNavigationGeneric,
-  USER_INFO_PAGE,
-} from '../../../../router'
-import Icons from '../../../../component/Icons'
-import ColorfulButton from '../../../../component/Button/ColorfulButton'
-import { formatTimestamp } from '../../../../utils/DateUtils'
-import KVTextContainer from '../../../../component/Container/KVTextContainer'
-import NativeDialog from '../../../../native/modules/NativeDialog'
-import LockCommodityDrawer, {
-  LockCommodityDrawerRefAttribute,
-} from '../LockCommodityDrawer'
-import BetterImage from '../../../../component/Container/BetterImage'
 import { SpringScrollView } from 'react-native-spring-scrollview'
+import {
+  CHAT_PAGE,
+  FULL_SCREEN_IMAGE_PAGE,
+  RouterTypes,
+  USER_INFO_PAGE,
+} from '../../../../../../router'
+import { ProcessedCommodity } from '../../../../../../api/server/commodity'
+import NativeDialog from '../../../../../../native/modules/NativeDialog'
+import BetterImage from '../../../../../../component/Container/BetterImage'
+import KVTextContainer from '../../../../../../component/Container/KVTextContainer'
+import { formatTimestamp } from '../../../../../../utils/DateUtils'
+import Icons from '../../../../../../component/Icons'
+import ColorfulButton from '../../../../../../component/Button/ColorfulButton'
+import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
+import { CommodityPageRouteTypes, FORM_DRAWER_PAGE } from '../../../../index'
 
 interface CommodityInfoProps {
   commodity: ProcessedCommodity
@@ -32,8 +32,8 @@ interface CommodityInfoProps {
 const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   const { commodity } = props
   const { height } = useWindowDimensions()
-  const nav = useNavigation<UseNavigationGeneric>()
-  const bottomDrawer = useRef<LockCommodityDrawerRefAttribute>(null)
+  const nav =
+    useNavigation<NavigationProp<RouterTypes & CommodityPageRouteTypes>>()
   const viewImage = (index: number) => {
     const images = props.commodity.images.map(value => ({ url: value }))
     nav.navigate(FULL_SCREEN_IMAGE_PAGE, {
@@ -68,7 +68,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
 
   const doLockCommodity = () => {
     if (commodity.status === 0) {
-      bottomDrawer.current?.open()
+      nav.navigate(FORM_DRAWER_PAGE, { commodity })
     } else {
       NativeDialog.showDialog({
         title: '锁定失败',
@@ -79,12 +79,11 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   }
 
   const chatWithSeller = () => {
-    // TODO chat with seller
-    console.log('chat with seller')
+    nav.navigate(CHAT_PAGE, { uid: commodity.ownerId })
   }
 
   return (
-    <View>
+    <View style={{ height }}>
       <SpringScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}>
@@ -116,6 +115,12 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
               name="发布时间"
               style={{ marginVertical: 3 }}
               value={formatTimestamp(commodity.createTime)}
+            />
+            <KVTextContainer
+              icon="&#xe6e1;"
+              name="可用数量"
+              style={{ marginVertical: 3 }}
+              value={commodity.count}
             />
             <KVTextContainer
               icon="&#xe601;"
@@ -165,11 +170,9 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
           />
         </View>
       </View>
-      <LockCommodityDrawer ref={bottomDrawer} commodity={commodity} />
     </View>
   )
 }
-
 const styles = StyleSheet.create({
   image: {
     height: '100%',
@@ -245,7 +248,7 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: 'absolute',
-    top: 10,
+    top: 30,
     left: 10,
     padding: 4,
     backgroundColor: '#00000020',

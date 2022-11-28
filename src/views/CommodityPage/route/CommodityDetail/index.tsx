@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native'
-import {
-  COMMODITY_DETAIL_PAGE,
-  UseNavigationGeneric,
-  UseRouteGeneric,
-} from '../../router'
+import { RouteProp, useRoute } from '@react-navigation/native'
+
+import CommodityInfo from './component/CommodityInfo'
+import { CommodityPageRouteTypes, DETAIL_PAGE } from '../../index'
 import {
   getCommodityDetail,
   ProcessedCommodity,
-} from '../../api/server/commodity'
-import NativeDialog from '../../native/modules/NativeDialog'
-import LoadingView from '../../component/Loading/LoadingView'
-import CommodityInfo from './component/CommodityInfo'
+} from '../../../../api/server/commodity'
+import NativeDialog from '../../../../native/modules/NativeDialog'
+import LoadingView from '../../../../component/Loading/LoadingView'
+import { StatusBar } from 'react-native'
 
 /**
  * 商品详细界面
  */
 const CommodityDetailPage: React.FC = () => {
-  const route = useRoute<UseRouteGeneric<typeof COMMODITY_DETAIL_PAGE>>()
-  const nav = useNavigation<UseNavigationGeneric>()
+  const route =
+    useRoute<RouteProp<CommodityPageRouteTypes, typeof DETAIL_PAGE>>()
   const [commodity, setCommodity] = useState<ProcessedCommodity | null>(null)
   const [success, setSuccess] = useState(false)
   const [isLoading, setLoading] = useState(true)
@@ -34,11 +32,6 @@ const CommodityDetailPage: React.FC = () => {
             title: '商品不存在',
             message: '该商品不存在',
             hideCancelBtn: true,
-            onConfirm() {
-              if (nav.canGoBack()) {
-                nav.goBack()
-              }
-            },
           })
           return
         }
@@ -63,6 +56,7 @@ const CommodityDetailPage: React.FC = () => {
       loadCallback={loadData}
       success={success}
       isLoading={isLoading}>
+      <StatusBar translucent backgroundColor="transparent" />
       {commodity ? <CommodityInfo commodity={commodity} /> : null}
     </LoadingView>
   )

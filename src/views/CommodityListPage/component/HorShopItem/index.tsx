@@ -6,7 +6,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native'
-import { append0Prefix } from '../../../../utils/DateUtils'
+import { formatTimestamp } from '../../../../utils/DateUtils'
 import Icons from '../../../../component/Icons'
 import { EsCommodity } from '../../../../api/server/types'
 import BetterImage from '../../../../component/Container/BetterImage'
@@ -60,9 +60,7 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
                 size={12}
               />
               <Text style={global.styles.primaryTipText}>
-                {date.getFullYear()}-{append0Prefix(date.getMonth() + 1)}-
-                {append0Prefix(date.getDate())} {append0Prefix(date.getHours())}
-                :{date.getMinutes()}
+                {formatTimestamp(date.getTime())}
               </Text>
             </View>
             <View>

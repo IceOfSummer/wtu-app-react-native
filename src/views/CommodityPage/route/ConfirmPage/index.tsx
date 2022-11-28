@@ -1,37 +1,42 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { useRoute } from '@react-navigation/native'
-import {
-  ORDER_CONFIRM_PAGE,
-  PENDING_RECEIVE_PAGE,
-  UseRouteGeneric,
-} from '../../router'
-import BaseContainer from '../../component/Container/BaseContainer'
-import HorShopItem from '../CommodityListPage/component/HorShopItem'
-import BaseContainer2 from '../../component/Container/BaseContainer2'
-import UserSimpleInfo from '../UserInfoPage/component/UserSimpleInfo'
-import EnhancedLoadingView from '../../component/Loading/EnhancedLoadingView'
-import { getUserInfo, UserInfoView } from '../../api/server/user'
-import ColorfulButton from '../../component/Button/ColorfulButton'
-import { lockCommodity } from '../../api/server/commodity'
-import Loading from '../../component/Loading'
-import NativeDialog from '../../native/modules/NativeDialog'
-import useNav from '../../hook/useNav'
-import { SpringScrollView } from 'react-native-spring-scrollview'
+import { StatusBar, StyleSheet, Text, View } from 'react-native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 
-const OrderConfirmPage: React.FC = () => {
-  const route = useRoute<UseRouteGeneric<typeof ORDER_CONFIRM_PAGE>>()
-  const { commodity } = route.params
+import { SpringScrollView } from 'react-native-spring-scrollview'
+import {
+  CommodityPageRouteTypes,
+  CONFIRM_PAGE,
+  LOCK_SUCCESS_PAGE,
+} from '../../index'
+import { getUserInfo, UserInfoView } from '../../../../api/server/user'
+import Loading from '../../../../component/Loading'
+import { lockCommodity } from '../../../../api/server/commodity'
+import NativeDialog from '../../../../native/modules/NativeDialog'
+import BaseContainer from '../../../../component/Container/BaseContainer'
+import HorShopItem from '../../../CommodityListPage/component/HorShopItem'
+import BaseContainer2 from '../../../../component/Container/BaseContainer2'
+import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingView'
+import UserSimpleInfo from '../../../UserInfoPage/component/UserSimpleInfo'
+import ColorfulButton from '../../../../component/Button/ColorfulButton'
+import { NavigationProp } from '@react-navigation/core/src/types'
+
+const ConfirmPage: React.FC = () => {
+  const route =
+    useRoute<RouteProp<CommodityPageRouteTypes, typeof CONFIRM_PAGE>>()
+  const { commodity, remark, count } = route.params
   const [userInfo, setUserInfo] = useState<UserInfoView>()
-  const nav = useNav()
+  const nav = useNavigation<NavigationProp<CommodityPageRouteTypes>>()
 
   const loadUserInfo = () => getUserInfo(commodity.ownerId)
 
   const lock = () => {
     Loading.showLoading()
-    lockCommodity(commodity.commodityId, route.params.remark)
-      .then(() => {
-        nav.replace(PENDING_RECEIVE_PAGE)
+    lockCommodity(commodity.commodityId, count, route.params.remark)
+      .then(result => {
+        nav.navigate(LOCK_SUCCESS_PAGE, {
+          orderId: result.data,
+          sellerId: commodity.ownerId,
+        })
       })
       .catch(e => {
         NativeDialog.showDialog({
@@ -46,6 +51,10 @@ const OrderConfirmPage: React.FC = () => {
   }
   return (
     <View style={{ flex: 1 }}>
+      <StatusBar
+        translucent={false}
+        backgroundColor={global.colors.boxBackgroundColor}
+      />
       <SpringScrollView>
         <BaseContainer title="商品信息">
           <HorShopItem
@@ -58,7 +67,7 @@ const OrderConfirmPage: React.FC = () => {
           />
         </BaseContainer>
         <BaseContainer2 title="备注信息">
-          <Text>{route.params.remark ? route.params.remark : '无备注...'}</Text>
+          <Text>{remark || '无备注...'}</Text>
         </BaseContainer2>
         <BaseContainer title="卖家信息">
           <EnhancedLoadingView loadData={loadUserInfo} setData={setUserInfo}>
@@ -70,7 +79,9 @@ const OrderConfirmPage: React.FC = () => {
       <View style={styles.bottomBar}>
         <View style={global.styles.flexRow}>
           <Text>价格: </Text>
-          <Text style={styles.priceText}>{commodity.price}￥</Text>
+          <Text style={styles.priceText}>
+            {commodity.price * count}￥ ({count}件)
+          </Text>
         </View>
         <ColorfulButton
           onPress={lock}
@@ -103,4 +114,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
 })
-export default OrderConfirmPage
+export default ConfirmPage

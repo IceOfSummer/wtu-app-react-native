@@ -5,6 +5,7 @@ import { name as appName } from './app.json'
 import SQLite from 'react-native-sqlite-storage'
 import { login } from './src/api/server/auth'
 import './src/utils/LoggerUtils/index'
+import 'react-native-gesture-handler'
 
 SQLite.enablePromise(true)
 AppRegistry.registerComponent(appName, () => App)

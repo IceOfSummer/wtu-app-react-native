@@ -3,7 +3,7 @@ import { Image, ImageProps, View } from 'react-native'
 import LottieView from 'lottie-react-native'
 import CachedImage from './CachedImage'
 interface BetterImageProps {
-  imageProp?: ImageProps
+  imageProp?: Omit<ImageProps, 'source'>
   uri: string
   width?: number | string
   height?: number | string

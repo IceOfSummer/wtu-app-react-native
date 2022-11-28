@@ -1074,6 +1074,13 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@egjs/hammerjs@^2.0.17":
+  version "2.0.17"
+  resolved "https://registry.npmmirror.com/@egjs/hammerjs/-/hammerjs-2.0.17.tgz#5dc02af75a6a06e4c2db0202cae38c9263895124"
+  integrity sha512-XQsZgjm2EcVUiZQf11UBJQfmZeEmOW8DpI1gsFeln6w0ae0ii4dMQEQ0kjl6DspdWX1aGY1/loyXnP0JS06e/A==
+  dependencies:
+    "@types/hammerjs" "^2.0.36"
+
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"
   resolved "https://registry.npmmirror.com/@eslint/eslintrc/-/eslintrc-0.4.3.tgz#9e42981ef035beb3dd49add17acb96e8ff6f394c"
@@ -1635,6 +1642,11 @@
   resolved "https://registry.npmmirror.com/@react-navigation/elements/-/elements-1.3.1.tgz#aacb08fe0ca4db50f0ed16b72906869ce770edf4"
   integrity sha512-jIDRJaG8YPIinl4hZXJu/W3TnhDe8hLYmGSEdL1mxZ1aoNMiApCBYkgTy11oq0EfK/koZd3DPSkJNbzBAQmPJw==
 
+"@react-navigation/elements@^1.3.7":
+  version "1.3.7"
+  resolved "https://registry.npmmirror.com/@react-navigation/elements/-/elements-1.3.7.tgz#40d80a7f34d645b605289da10bc4b6c3a7667215"
+  integrity sha512-OZg2N/dd2tl6qkfrWvmUjFsYsbEyHEv4NbZSBuT+CR+d1pzmexN2IeVmi4cEMoR7U7GwhFcHRevF36yBsjU/dw==
+
 "@react-navigation/material-top-tabs@^6.2.4":
   version "6.2.4"
   resolved "https://registry.npmjs.org/@react-navigation/material-top-tabs/-/material-top-tabs-6.2.4.tgz#1db5a1bf32525e1c9dd8aa77cd549366034d4f77"
@@ -1667,6 +1679,15 @@
   integrity sha512-8xJL+djIzpFdRW/sGlKojQ06fWgFk1c5jER9501HYJ12LF5DIJFr/tqBI2TJ6bk+y+QFu0nbNyeRC80OjRlmkA==
   dependencies:
     nanoid "^3.1.23"
+
+"@react-navigation/stack@^6.3.5":
+  version "6.3.5"
+  resolved "https://registry.npmmirror.com/@react-navigation/stack/-/stack-6.3.5.tgz#c616ef78cbaa55938da993d871d9fc41801d41f4"
+  integrity sha512-G706Ow+8fhiLT5Cf48566YsjboU5h5ll9nva90xX3br7V6x0JMoGMvXjvbORZyzLuUytQO3mf0T3nVUuO52vZQ==
+  dependencies:
+    "@react-navigation/elements" "^1.3.7"
+    color "^4.2.3"
+    warn-once "^0.1.0"
 
 "@reduxjs/toolkit@^1.8.2":
   version "1.8.3"
@@ -1773,6 +1794,11 @@
   integrity sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==
   dependencies:
     "@types/node" "*"
+
+"@types/hammerjs@^2.0.36":
+  version "2.0.41"
+  resolved "https://registry.npmmirror.com/@types/hammerjs/-/hammerjs-2.0.41.tgz#f6ecf57d1b12d2befcce00e928a6a097c22980aa"
+  integrity sha512-ewXv/ceBaJprikMcxCmWU1FKyMAQ2X7a9Gtmzw8fcg2kIePI1crERDM818W+XYrxqdBBOdlf2rm137bU+BltCA==
 
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"
@@ -5316,7 +5342,7 @@ lodash.truncate@^4.4.2:
   resolved "https://registry.npmmirror.com/lodash.truncate/-/lodash.truncate-4.4.2.tgz#5a350da0b1113b837ecfffd5812cbe58d6eae193"
   integrity sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==
 
-lodash@^4.17.10, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.7.0:
+lodash@^4.17.10, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.21, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.npmmirror.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -6493,6 +6519,17 @@ react-native-fs@^2.20.0:
   dependencies:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
+
+react-native-gesture-handler@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.npmmirror.com/react-native-gesture-handler/-/react-native-gesture-handler-2.8.0.tgz#ef9857871c10663c95a51546225b6e00cd4740cf"
+  integrity sha512-poOSfz/w0IyD6Qwq7aaIRRfEaVTl1ecQFoyiIbpOpfNTjm2B1niY2FLrdVQIOtIOe+K9nH55Qal04nr4jGkHdQ==
+  dependencies:
+    "@egjs/hammerjs" "^2.0.17"
+    hoist-non-react-statics "^3.3.0"
+    invariant "^2.2.4"
+    lodash "^4.17.21"
+    prop-types "^15.7.2"
 
 react-native-gradle-plugin@^0.0.6:
   version "0.0.6"

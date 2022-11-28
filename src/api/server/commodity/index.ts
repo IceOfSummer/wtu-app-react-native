@@ -61,8 +61,16 @@ export const getCommodityDetail = (commodityId: number) =>
     }
   )
 
-export const lockCommodity = (commodityId: number, remark?: string) =>
-  serverNoRepeatAjax(`/commodity/${commodityId}/lock`, { r: remark }, 'POST')
+export const lockCommodity = (
+  commodityId: number,
+  count: number,
+  remark?: string
+) =>
+  serverNoRepeatAjax<number>(
+    `/commodity/${commodityId}/lock`,
+    { r: remark, c: count },
+    'POST'
+  )
 
 /**
  * 获取用户正在售卖的商品数量
