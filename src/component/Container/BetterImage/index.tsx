@@ -1,9 +1,9 @@
 import React from 'react'
-import FastImage, { FastImageProps } from 'react-native-fast-image'
-import { Image, View } from 'react-native'
+import { Image, ImageProps, View } from 'react-native'
 import LottieView from 'lottie-react-native'
+import CachedImage from './CachedImage'
 interface BetterImageProps {
-  imageProp: FastImageProps
+  imageProp?: ImageProps
   uri: string
   width?: number | string
   height?: number | string
@@ -38,18 +38,16 @@ export default class BetterImage extends React.Component<
     })
   }
 
-  onLoadEnd() {
-    if (this.state.status !== LoadingStatus.LOAD_FAIL) {
-      this.setState({
-        status: LoadingStatus.LOAD_DONE,
-      })
-    }
+  onLoadSuccess() {
+    this.setState({
+      status: LoadingStatus.LOAD_DONE,
+    })
   }
 
   constructor(props: BetterImageProps) {
     super(props)
     this.onLoadError = this.onLoadError.bind(this)
-    this.onLoadEnd = this.onLoadEnd.bind(this)
+    this.onLoadSuccess = this.onLoadSuccess.bind(this)
   }
 
   render() {
@@ -63,12 +61,12 @@ export default class BetterImage extends React.Component<
     return (
       <View style={style}>
         <View style={{ flex: 1 }}>
-          <FastImage
+          <CachedImage
             {...this.props.imageProp}
-            source={{ uri: this.props.uri, cache: FastImage.cacheControl.web }}
-            onError={this.onLoadError}
-            onLoadEnd={this.onLoadEnd}
-            style={[this.props.imageProp.style, style]}
+            uri={this.props.uri}
+            onLoadFail={this.onLoadError}
+            onLoadSuccess={this.onLoadSuccess}
+            style={[this.props.imageProp?.style, style]}
           />
         </View>
         {isLoading ? (
