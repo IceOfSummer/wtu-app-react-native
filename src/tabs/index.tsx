@@ -21,6 +21,11 @@ import MessageScreen from './MessageScreen'
 import pubsub from 'pubsub-js'
 import { useNavigation } from '@react-navigation/native'
 import { FunctionArgType } from '../hook/useNav'
+import { useDispatch, useSelector } from 'react-redux'
+import { ReducerTypes } from '../redux/counter'
+import DatabaseManager from '../sqlite'
+import { initMessage } from '../redux/counter/messageSlice'
+import NativeDialog from '../native/modules/NativeDialog'
 
 const Tab = createBottomTabNavigator()
 
@@ -43,6 +48,29 @@ export const navigationPush = <RouteName extends keyof RouterTypes>(
 
 const TabBar = () => {
   const nav = useNavigation<any>()
+  const uid = useSelector<ReducerTypes, number | undefined>(
+    state => state.serverUser.userInfo?.uid
+  )
+  const dispatch = useDispatch()
+  useEffect(() => {
+    if (!uid) {
+      return
+    }
+    DatabaseManager.loadDatabase(uid)
+      .then(() => {
+        // initMessage
+        dispatch(initMessage())
+      })
+      .catch(e => {
+        // 加载失败
+        NativeDialog.showDialog({
+          title: '加载本地消息失败',
+          message: '请寻求开发人员帮助或者稍后重试, ' + e.message,
+          hideCancelBtn: true,
+        })
+      })
+  }, [uid])
+
   useEffect(() => {
     pubsub.subscribe(NAVIGATION_EVENT_KEY, (message, data: Nav) => {
       // 在非组件内进行路由操作

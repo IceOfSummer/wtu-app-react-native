@@ -101,6 +101,7 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
     },
     markLoginInvalid(state) {
       state.authenticated = false
+      state.userInfo = undefined
     },
   },
   extraReducers: {

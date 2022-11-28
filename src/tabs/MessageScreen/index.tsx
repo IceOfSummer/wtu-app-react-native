@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { TabBar } from 'react-native-tab-view'
 import Chat from './tabs/Chat'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
 import { Image, Pressable, useWindowDimensions } from 'react-native'
 import {
@@ -15,9 +15,6 @@ import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs/lib/
 import Care from './tabs/Care'
 import useNav from '../../hook/useNav'
 import { SERVER_AUTH_PAGE } from '../../router'
-import DatabaseManager from '../../sqlite'
-import NativeDialog from '../../native/modules/NativeDialog'
-import { initMessage } from '../../redux/counter/messageSlice'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
 import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
@@ -54,27 +51,6 @@ const Tab = createMaterialTopTabNavigator()
  */
 const AuthenticatedView = () => {
   useAutoColorStatusBar(false, '#fff')
-  // 断言非空，可看userInfo的注释
-  const uid = useSelector<ReducerTypes, number>(
-    state => state.serverUser.userInfo!.uid
-  )
-  const dispatch = useDispatch()
-  useEffect(() => {
-    DatabaseManager.loadDatabase(uid)
-      .then(() => {
-        // initMessage
-        dispatch(initMessage())
-      })
-      .catch(e => {
-        // 加载失败
-        NativeDialog.showDialog({
-          title: '加载本地消息失败',
-          message: '请寻求开发人员帮助或者稍后重试, ' + e.message,
-          hideCancelBtn: true,
-        })
-      })
-  }, [])
-
   return (
     <Tab.Navigator tabBar={MyTabBar} screenOptions={{ lazy: true }}>
       <Tab.Screen name="消息" component={Chat} navigationKey="chat" />
