@@ -16,6 +16,7 @@ import Drawer from 'react-native-drawer'
 import { useClassScheduleTheme } from './Theme'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { ChineseWithLastDateHeader } from 'react-native-spring-scrollview/Customize'
+import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
 interface ClassScheduleProps {}
 
@@ -24,6 +25,7 @@ const ClassSchedule: React.FC<
 > = props => {
   const [todayLessons, setTodayLessons] = useState<Array<ClassInfo>>([])
   const scrollView = useRef<SpringScrollView>(null)
+  useAutoColorStatusBar(false, global.colors.boxBackgroundColor)
 
   useEffect(() => {
     if (props.lessons) {

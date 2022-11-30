@@ -1,118 +1,84 @@
 import React from 'react'
 import {
   Animated,
+  Dimensions,
   EmitterSubscription,
   Keyboard,
   LayoutChangeEvent,
   Modal,
   Pressable,
-  View,
+  ViewStyle,
 } from 'react-native'
 
-interface DrawerProps {
-  drawerRef?: React.RefObject<DrawerComponent>
-}
-
-interface DrawerState {
-  height?: number
-}
-
-/**
- * 提供高度自适应的DrawerComponent组件
- *
- * 子组件会被额外渲染一次用来策略高度，若子组件会动态更新，则不能使用该组件
- */
-export default class Drawer extends React.Component<DrawerProps, DrawerState> {
-  state = {
-    height: undefined,
-  }
-
-  onMenuLayout({ nativeEvent }: LayoutChangeEvent) {
-    this.setState({ height: nativeEvent.layout.height })
-  }
-
-  constructor(props: DrawerProps) {
-    super(props)
-    this.onMenuLayout = this.onMenuLayout.bind(this)
-  }
-
-  render() {
-    const { height } = this.state
-    return (
-      <View>
-        {height ? (
-          <DrawerComponent
-            {...this.props}
-            height={height}
-            ref={this.props.drawerRef}>
-            {this.props.children}
-          </DrawerComponent>
-        ) : (
-          <View
-            onLayout={this.onMenuLayout}
-            style={{ position: 'absolute', opacity: 0 }}>
-            {this.props.children}
-          </View>
-        )}
-      </View>
-    )
-  }
-}
-
 interface DrawerComponentProps {
-  height: number
+  style?: ViewStyle
 }
 
 interface DrawerComponentState {
   visible: boolean
-  maskVisible: boolean
   keyboardAvoidHeight: number
 }
 
-export class DrawerComponent extends React.Component<
+export default class Drawer extends React.Component<
   DrawerComponentProps,
   DrawerComponentState
 > {
   state = {
     visible: false,
-    maskVisible: true,
     keyboardAvoidHeight: 0,
   }
 
+  screenHeight = Dimensions.get('window').height
+
+  backgroundOpacity: Animated.Value
+
   modalOffset: Animated.Value
 
-  public openDrawer() {
-    this.modalOffset.setValue(this.props.height)
+  contentHeight: number = 0
+
+  isShowing: boolean = false
+
+  public showDrawer() {
     this.setState(
       {
         visible: true,
-        maskVisible: true,
       },
       () => {
-        Animated.spring(this.modalOffset, {
-          useNativeDriver: true,
-          toValue: 0,
-          bounciness: 0,
-        }).start()
+        Animated.parallel([
+          Animated.spring(this.modalOffset, {
+            useNativeDriver: true,
+            toValue: -this.contentHeight,
+            bounciness: 0,
+          }),
+          Animated.spring(this.backgroundOpacity, {
+            useNativeDriver: true,
+            toValue: 1,
+          }),
+        ]).start(() => {
+          this.isShowing = true
+        })
       }
     )
   }
 
   public closeDrawer() {
-    this.setState({
-      maskVisible: false,
-    })
-    Animated.spring(this.modalOffset, {
-      useNativeDriver: true,
-      toValue: this.props.height,
-      bounciness: 0,
-    }).start()
-    // 不能等动画放完再结束，不然mask已经消失了但用户仍然点击不了屏幕
+    Animated.parallel([
+      Animated.spring(this.modalOffset, {
+        useNativeDriver: true,
+        toValue: 0,
+        bounciness: 0,
+      }),
+      Animated.spring(this.backgroundOpacity, {
+        useNativeDriver: true,
+        toValue: 0,
+      }),
+    ]).start()
     setTimeout(() => {
       this.setState({
         visible: false,
       })
-    }, 150)
+      this.isShowing = false
+    }, 200)
   }
 
   keyboardDidShowKey?: EmitterSubscription
@@ -141,38 +107,57 @@ export class DrawerComponent extends React.Component<
     }
   }
 
+  onLayout({ nativeEvent }: LayoutChangeEvent) {
+    if (this.isShowing) {
+      Animated.spring(this.modalOffset, {
+        useNativeDriver: true,
+        toValue: -nativeEvent.layout.height,
+        bounciness: 0,
+      }).start()
+    }
+    this.contentHeight = nativeEvent.layout.height
+  }
+
   constructor(props: DrawerComponentProps) {
     super(props)
-    this.modalOffset = new Animated.Value(props.height)
+    this.modalOffset = new Animated.Value(0)
+    this.backgroundOpacity = new Animated.Value(1)
     this.closeDrawer = this.closeDrawer.bind(this)
+    this.onLayout = this.onLayout.bind(this)
   }
 
   render() {
     return (
       <Modal statusBarTranslucent transparent visible={this.state.visible}>
-        <Pressable
-          onPress={this.closeDrawer}
+        <Animated.View
           style={{
-            backgroundColor: this.state.maskVisible
-              ? global.styles.$bg_color_mask
-              : undefined,
-            flexDirection: 'column-reverse',
             flex: 1,
             paddingBottom: this.state.keyboardAvoidHeight,
+            backgroundColor: global.styles.$bg_color_mask,
+            opacity: this.backgroundOpacity,
           }}>
-          <Animated.View
+          <Pressable
+            onPress={this.closeDrawer}
             style={{
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              backgroundColor: global.colors.boxBackgroundColor,
-              width: '100%',
-              height: this.props.height,
-              transform: [{ translateY: this.modalOffset }],
+              flex: 1,
             }}>
-            {/*这里加一层，防止点了Drawer内的东西导致退出了*/}
-            <Pressable>{this.props.children}</Pressable>
-          </Animated.View>
-        </Pressable>
+            <Animated.View
+              style={{
+                position: 'absolute',
+                top: this.screenHeight - this.state.keyboardAvoidHeight,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+                backgroundColor: global.colors.boxBackgroundColor,
+                width: '100%',
+                paddingBottom: 30,
+                transform: [{ translateY: this.modalOffset }],
+              }}>
+              <Pressable onLayout={this.onLayout} style={this.props.style}>
+                {this.props.children}
+              </Pressable>
+            </Animated.View>
+          </Pressable>
+        </Animated.View>
       </Modal>
     )
   }

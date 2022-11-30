@@ -33,7 +33,7 @@ import WebSchoolAuth from '../views/SchoolAuth/WebSchoolAuth'
 import FullScreenImagePage from '../views/FullScreenImagePage'
 import { IImageInfo } from 'react-native-image-zoom-viewer/src/image-viewer.type'
 import UserInfoPage from '../views/UserInfoPage'
-import PendingReceivePage from '../views/PendingReceivePage'
+import PendingReceivePage from '../views/Order/route/PendingReceivePage'
 import { Theme } from '@react-navigation/native/lib/typescript/src/types'
 import { ThemeState } from '../redux/types/themeTypes'
 import ServerAuthPage from '../views/ServerAuthPage'
@@ -42,6 +42,8 @@ import { GoodsSubmitPage } from '../views/GoodsSubmitPage'
 import commodityPage from '../views/CommodityPage'
 import { StackHeaderOptions } from '@react-navigation/stack/lib/typescript/src/types'
 import Icons from '../component/Icons'
+import PendingDeliveryPage from '../views/Order/route/PendingDeliveryPage'
+import OrderPreviewPage from '../views/Order/route/OrderPreviewPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -70,11 +72,14 @@ export const COMMODITY_DETAIL_PAGE = 'CommodityPage'
 export const FULL_SCREEN_IMAGE_PAGE = 'FullScreenImagePage'
 export const USER_INFO_PAGE = 'UserInfoPage'
 export const PENDING_RECEIVE_PAGE = 'PendingReceivePage'
+export const PENDING_DELIVERY_PAGE = 'PendingDeliveryPage'
+export const ORDER_PREVIEW_PAGE = 'OrderPreviewPage'
 export const SERVER_AUTH_PAGE = 'ServerAuthPage'
 export const CHAT_PAGE = 'ChatPage'
 export const GOODS_SUBMIT_PAGE = 'GoodsSubmitPage'
 export const OPERATION_SUCCESS_PAGE = 'OperationSuccessPage'
 export const COMMODITY_PAGE = 'CommodityPage'
+export const ORDER_PAGE = 'OrderPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -137,6 +142,9 @@ export interface RouterTypes extends ParamListBase {
   [COMMODITY_PAGE]: {
     id: number
   }
+  [PENDING_DELIVERY_PAGE]: undefined
+  [ORDER_PREVIEW_PAGE]: undefined
+  [ORDER_PAGE]: undefined
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -167,6 +175,7 @@ export const headerCommonOptionsWithTitle = (
 export const headerWithTitle = (title: string): StackHeaderOptions => ({
   headerTitle: title,
   headerShadowVisible: false,
+  headerBackTitleVisible: true,
   headerBackImage: () => <Icons iconText="&#xe61d;" color="#000" size={40} />,
   headerTitleAlign: 'center',
   headerTitleStyle: {
@@ -215,7 +224,6 @@ const Router: React.FC = () => {
           headerTitleStyle: {
             fontSize: global.styles.$font_size_lg,
           },
-          header: () => null,
         }}>
         <Stack.Screen
           name={HOME_TABS}
@@ -299,6 +307,16 @@ const Router: React.FC = () => {
           name={PENDING_RECEIVE_PAGE}
           component={PendingReceivePage}
           options={headerCommonOptionsWithTitle('待收货')}
+        />
+        <Stack.Screen
+          name={PENDING_DELIVERY_PAGE}
+          component={PendingDeliveryPage}
+          options={headerCommonOptionsWithTitle('待发货')}
+        />
+        <Stack.Screen
+          name={ORDER_PREVIEW_PAGE}
+          component={OrderPreviewPage}
+          options={headerCommonOptionsWithTitle('我的订单')}
         />
         <Stack.Screen
           name={SERVER_AUTH_PAGE}

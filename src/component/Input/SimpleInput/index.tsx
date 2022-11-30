@@ -119,6 +119,7 @@ export default class SimpleInput
           <Text style={styles.errorText}>{this.state.errorText}</Text>
         ) : null}
         <AnimatedDivider
+          borderWidth={StyleSheet.hairlineWidth * 2}
           ref={this.divider}
           color={
             this.state.errorText

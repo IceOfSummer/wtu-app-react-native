@@ -110,6 +110,7 @@ interface GlobalStyleSheet {
   blobText: TextStyle
   primaryTipText: TextStyle
   successTipText: TextStyle
+  infoTipText: TextStyle
   errorTipText: TextStyle
   flexRowJustBetween: ViewStyle
   flexRowJustAround: ViewStyle

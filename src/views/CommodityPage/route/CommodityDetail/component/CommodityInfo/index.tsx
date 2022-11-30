@@ -1,11 +1,5 @@
 import React from 'react'
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  useWindowDimensions,
-  View,
-} from 'react-native'
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native'
 import Swiper from 'react-native-swiper'
 import { useNavigation } from '@react-navigation/native'
 import { SpringScrollView } from 'react-native-spring-scrollview'
@@ -31,7 +25,7 @@ interface CommodityInfoProps {
 
 const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   const { commodity } = props
-  const { height } = useWindowDimensions()
+  const height = Dimensions.get('screen').height
   const nav =
     useNavigation<NavigationProp<RouterTypes & CommodityPageRouteTypes>>()
   const viewImage = (index: number) => {
@@ -83,7 +77,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   }
 
   return (
-    <View style={{ height }}>
+    <View style={{ height: '100%', borderWidth: 1 }}>
       <SpringScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}>

@@ -86,6 +86,12 @@ const gStyleSheet: StyleSheetTypes = {
     paddingVertical: 4,
     textAlign: 'center',
   },
+  infoTipText: {
+    color: gStyleValues.$info_color,
+    fontSize: gStyleValues.$font_size_sm,
+    paddingVertical: 4,
+    textAlign: 'center',
+  },
   flexRowJustBetween: {
     flexDirection: 'row',
     alignItems: 'center',

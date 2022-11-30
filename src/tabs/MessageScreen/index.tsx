@@ -22,7 +22,7 @@ const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
     state => state.serverUser.authenticated
   )
-  useAutoColorStatusBar(false, global.colors.backgroundColor)
+  useAutoColorStatusBar(false, global.colors.boxBackgroundColor)
   const { width } = useWindowDimensions()
   const nav = useNav()
   if (authenticated) {

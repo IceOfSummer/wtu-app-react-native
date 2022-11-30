@@ -14,7 +14,7 @@ import {
   launchImageLibrary,
 } from 'react-native-image-picker'
 import BottomMenu from '../../Drawer/BottomMenu'
-import Drawer, { DrawerComponent } from '../../Drawer'
+import Drawer from '../../Drawer'
 import NativeDialog, {
   quickShowErrorTip,
 } from '../../../native/modules/NativeDialog'
@@ -66,7 +66,7 @@ export default class FGImageUploadContainer extends React.Component<
     selectedImage: [],
   }
 
-  drawer = React.createRef<DrawerComponent>()
+  drawer = React.createRef<Drawer>()
 
   static defaultProps: Partial<ImageUploadContainerProps> = {
     limit: 5,
@@ -141,7 +141,7 @@ export default class FGImageUploadContainer extends React.Component<
   }
 
   addImage() {
-    this.drawer.current?.openDrawer()
+    this.drawer.current?.showDrawer()
   }
 
   onBottomMenuSelect(index: number) {
@@ -252,7 +252,7 @@ export default class FGImageUploadContainer extends React.Component<
           )}
         </View>
         <View>{this.props.children}</View>
-        <Drawer drawerRef={this.drawer}>
+        <Drawer ref={this.drawer}>
           <BottomMenu
             onSelect={this.onBottomMenuSelect}
             items={[

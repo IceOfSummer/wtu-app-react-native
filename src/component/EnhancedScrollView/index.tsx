@@ -43,6 +43,9 @@ const getProps = createPropsGetter(defaultProps)
  * 必须要提供loading, fail和dataLength(当前的数据长度)三种状态
  *
  * 如果没有更多数据了，将empty属性设置为true即可
+ *
+ * @deprecated
+ * @see LoadingScrollView
  */
 const EnhancedScrollView: React.FC<
   EnhancedScrollViewProps & Partial<typeof defaultProps>

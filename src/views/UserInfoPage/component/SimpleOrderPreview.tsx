@@ -1,12 +1,12 @@
 import React from 'react'
-import { SimpleOrder } from '../../../api/server/order'
+import { OrderDetail, OrderStatus } from '../../../api/server/order'
 import { StyleSheet, Text, View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 import KVTextContainer from '../../../component/Container/KVTextContainer'
 import { formatTimestamp } from '../../../utils/DateUtils'
+import BetterImage from '../../../component/Container/BetterImage'
 
 interface SimpleOrderPreviewProps {
-  order: SimpleOrder
+  order: OrderDetail
 }
 
 /**
@@ -14,9 +14,23 @@ interface SimpleOrderPreviewProps {
  */
 const SimpleOrderPreview: React.FC<SimpleOrderPreviewProps> = props => {
   const { order } = props
+  let statusText = ''
+  switch (order.status) {
+    case OrderStatus.DONE:
+      statusText = '成功'
+      break
+    case OrderStatus.FAIL:
+      statusText = '失败'
+      break
+    case OrderStatus.TRADING:
+      statusText = '正在交易中'
+      break
+  }
   return (
     <View style={styles.container}>
-      <FastImage source={{ uri: order.previewImage }} style={styles.image} />
+      <View style={styles.image}>
+        <BetterImage uri={order.previewImage} />
+      </View>
       <View style={styles.infoContainer}>
         <View style={global.styles.flexRowJustBetween}>
           <Text
@@ -29,13 +43,10 @@ const SimpleOrderPreview: React.FC<SimpleOrderPreviewProps> = props => {
         </View>
         <View>
           <KVTextContainer
-            name="完成时间"
+            name="开始时间"
             value={formatTimestamp(order.createTime)}
           />
-          <KVTextContainer
-            name="交易结果"
-            value={order.fail ? '失败' : '成功'}
-          />
+          <KVTextContainer name="交易结果" value={statusText} />
           <KVTextContainer
             name="用户备注"
             value={order.remark ? order.remark : '无'}

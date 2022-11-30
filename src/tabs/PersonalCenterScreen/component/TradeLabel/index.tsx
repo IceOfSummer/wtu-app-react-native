@@ -4,8 +4,13 @@ import Icons from '../../../../component/Icons'
 import { getTradeStat, TradeStat } from '../../../../api/server/stat'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import KVTextContainer from '../../../../component/Container/KVTextContainer'
-import { useNavigation } from '@react-navigation/native'
-import { PENDING_RECEIVE_PAGE, UseNavigationGeneric } from '../../../../router'
+import { StackActions, useNavigation } from '@react-navigation/native'
+import {
+  ORDER_PREVIEW_PAGE,
+  PENDING_DELIVERY_PAGE,
+  PENDING_RECEIVE_PAGE,
+  UseNavigationGeneric,
+} from '../../../../router'
 
 const logger = getLogger('src/tabs/PersonalCenterScreen/component/TradeLabel')
 
@@ -39,17 +44,21 @@ const TradeLabel: React.FC = () => {
         />
       </View>
       <View style={styles.labelContainer}>
-        <View style={styles.appContainer}>
+        <Pressable
+          style={styles.appContainer}
+          onPress={() =>
+            nav.dispatch(StackActions.push(PENDING_DELIVERY_PAGE))
+          }>
           <Icons
             iconText="&#xe770;"
             size={30}
             color={global.styles.$primary_color}
           />
           <Text style={styles.iconText}>待发货</Text>
-        </View>
+        </Pressable>
         <Pressable
           style={styles.appContainer}
-          onPress={() => nav.navigate(PENDING_RECEIVE_PAGE)}>
+          onPress={() => nav.dispatch(StackActions.push(PENDING_RECEIVE_PAGE))}>
           <Icons
             iconText="&#xe771;"
             size={30}
@@ -57,22 +66,16 @@ const TradeLabel: React.FC = () => {
           />
           <Text style={styles.iconText}>待收货</Text>
         </Pressable>
-        <View style={styles.appContainer}>
-          <Icons
-            iconText="&#xe772;"
-            size={30}
-            color={global.styles.$primary_color}
-          />
-          <Text style={styles.iconText}>待评价</Text>
-        </View>
-        <View style={styles.appContainer}>
+        <Pressable
+          style={styles.appContainer}
+          onPress={() => nav.dispatch(StackActions.push(ORDER_PREVIEW_PAGE))}>
           <Icons
             iconText="&#xe748;"
             size={30}
             color={global.styles.$primary_color}
           />
           <Text style={styles.iconText}>我的订单</Text>
-        </View>
+        </Pressable>
       </View>
     </View>
   )

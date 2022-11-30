@@ -96,7 +96,9 @@ export default class SocketSessionManager {
       return
     }
     this._isPending = true
-    logger.info(`trying to connect to ${host}:${port}`)
+    if (!__DEV__) {
+      logger.info(`trying to connect to ${host}:${port}`)
+    }
     const client = TcpSockets.connectTLS(options, () => {
       logger.info(`successfully connected to ${host}:${port}`)
       this._isPending = false
@@ -110,7 +112,9 @@ export default class SocketSessionManager {
 
   private bindRetryEvent(client: TLSSocket) {
     client.on('error', error => {
-      logger.error('connect failed: ' + error)
+      if (!__DEV__) {
+        logger.error('connect failed: ' + error)
+      }
       this._isPending = false
       this._connection?.removeAllListeners('error')
       client.destroy()

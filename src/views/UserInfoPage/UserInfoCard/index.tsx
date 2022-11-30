@@ -3,7 +3,7 @@ import { UserInfoView } from '../../../api/server/user'
 import { StyleSheet, Text, View } from 'react-native'
 import BaseContainer from '../../../component/Container/BaseContainer'
 import EnhancedLoadingView from '../../../component/Loading/EnhancedLoadingView'
-import { getSoldOrderSimply, SimpleOrder } from '../../../api/server/order'
+import { getSoldOrderSimply, OrderDetail } from '../../../api/server/order'
 import SimpleOrderPreview from '../component/SimpleOrderPreview'
 import UserSimpleInfo from '../component/UserSimpleInfo'
 
@@ -13,7 +13,7 @@ interface UserInfoCardProps {
 
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { userInfo } = props
-  const [orders, setOrders] = useState<SimpleOrder[]>([])
+  const [orders, setOrders] = useState<OrderDetail[]>([])
   const loadUserSoldOrder = () => getSoldOrderSimply(props.userInfo.uid)
 
   return (
