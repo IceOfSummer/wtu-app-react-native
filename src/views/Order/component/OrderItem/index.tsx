@@ -108,7 +108,7 @@ const OrderItem: React.FC<OrderItemProps> = props => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 8,
+    marginVertical: 4,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 15,

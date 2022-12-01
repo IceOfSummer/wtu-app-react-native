@@ -1,21 +1,31 @@
 import React from 'react'
 import SuccessContainer from '../../../../component/Container/SuccessContainer'
 import { Text, View } from 'react-native'
-import { RouteProp, useRoute } from '@react-navigation/native'
+import {
+  RouteProp,
+  StackActions,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import { CommodityPageRouteTypes, LOCK_SUCCESS_PAGE } from '../../index'
-import { CHAT_PAGE, FLEA_MARKET_TABS } from '../../../../router'
-import useNav from '../../../../hook/useNav'
+import {
+  CHAT_PAGE,
+  FLEA_MARKET_TABS,
+  HOME_TABS,
+  RouterTypes,
+} from '../../../../router'
+import { NavigationProp } from '@react-navigation/core/src/types'
 
 const LockSuccessPage: React.FC = () => {
   const route =
     useRoute<RouteProp<CommodityPageRouteTypes, typeof LOCK_SUCCESS_PAGE>>()
-  const nav = useNav()
+  const nav = useNavigation<NavigationProp<RouterTypes>>()
   const backToHome = () => {
-    nav.replace(FLEA_MARKET_TABS)
+    nav.dispatch(StackActions.replace(HOME_TABS, { screen: FLEA_MARKET_TABS }))
   }
 
   const talkToSeller = () => {
-    nav.replace(CHAT_PAGE, { uid: route.params.sellerId })
+    nav.dispatch(StackActions.replace(CHAT_PAGE, { screen: FLEA_MARKET_TABS }))
   }
 
   return (

@@ -1,6 +1,12 @@
 import React from 'react'
-import { ActivityIndicator, StatusBar, Text, View } from 'react-native'
-import styles from './styles'
+import {
+  ActivityIndicator,
+  Modal,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 
 interface LoadingStates {
   loadingText: string
@@ -62,8 +68,8 @@ export default class Loading extends React.Component<any, LoadingStates> {
   }
 
   render() {
-    if (this.state.show) {
-      return (
+    return (
+      <Modal visible={this.state.show} transparent statusBarTranslucent>
         <View style={styles.loadMask}>
           <ActivityIndicator
             size="large"
@@ -71,9 +77,24 @@ export default class Loading extends React.Component<any, LoadingStates> {
           />
           <Text style={styles.loadingText}>{this.state.loadingText}</Text>
         </View>
-      )
-    } else {
-      return null
-    }
+      </Modal>
+    )
   }
 }
+
+const styles = StyleSheet.create({
+  loadMask: {
+    backgroundColor: '#00000040',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#fff',
+  },
+})

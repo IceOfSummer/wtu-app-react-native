@@ -33,12 +33,13 @@ const CommodityPage: React.FC = () => {
   const route = useRoute<UseRouteGeneric<typeof COMMODITY_PAGE>>()
   return (
     <Stack.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
-      <Stack.Group screenOptions={{ presentation: 'card' }}>
+      <Stack.Group
+        screenOptions={{ presentation: 'card', headerBackTitleVisible: false }}>
         <Stack.Screen
           name={DETAIL_PAGE}
           component={CommodityDetail}
           initialParams={{ id: route.params.id }}
-          options={{ header: () => null }}
+          options={{ headerShown: false, header: () => null }}
         />
         <Stack.Screen
           name={CONFIRM_PAGE}

@@ -16,6 +16,7 @@ const usePage = <T>(fun: LoadData<T>, size: number) => {
     data,
     loading,
     error,
+    setData,
     loadMore: async () => {
       if (loading) {
         return
@@ -24,6 +25,7 @@ const usePage = <T>(fun: LoadData<T>, size: number) => {
       try {
         const result = await fun(curPage.current, size)
         curPage.current++
+        console.log(result)
         setError(false)
         if (result.data.length < size) {
           setEmpty(true)

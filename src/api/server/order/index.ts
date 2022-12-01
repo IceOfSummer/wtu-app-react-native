@@ -31,7 +31,8 @@ export enum OrderType {
  * 查询用户出售记录
  */
 export const getSoldOrderSimply = (userId: number, page = 0) =>
-  serverNoRepeatAjax<OrderDetail[]>(`/order/${userId}/sold`, {
+  serverNoRepeatAjax<OrderDetail[]>('/order/sold', {
+    i: userId,
     p: page,
     s: 5,
   }).then(result => {
@@ -74,3 +75,23 @@ export const getAllOrder = (page: number, size: number = 6) =>
       return result
     }
   )
+
+/**
+ * 标记交易成功
+ */
+export const markTradeDone = (
+  orderId: number,
+  sellerId: number,
+  remark?: string
+) =>
+  serverNoRepeatAjax(
+    `/order/${orderId}/done`,
+    { s: sellerId, r: remark },
+    'POST'
+  )
+
+/**
+ * 取消订单
+ */
+export const cancelTrade = (orderId: number, remark?: string) =>
+  serverNoRepeatAjax(`/order/${orderId}/cancel`, { r: remark }, 'POST')

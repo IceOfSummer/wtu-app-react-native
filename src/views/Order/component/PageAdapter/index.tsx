@@ -45,6 +45,11 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
     previewDrawer.current?.showDrawer()
   }
 
+  const onOrderRemove = (order: OrderDetail) => {
+    const data = page.data
+    page.setData(data.filter(value => value.orderId !== order.orderId))
+  }
+
   useEffect(() => {
     loadData()
   }, [])
@@ -60,8 +65,16 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
           <OrderItem order={value} onCancel={onCancel} />
         </Pressable>
       ))}
-      <CancelOrderDrawer order={selectedOrder} drawerRef={cancelDrawer} />
-      <OrderDetailDrawer order={selectedOrder} drawerRef={previewDrawer} />
+      <CancelOrderDrawer
+        order={selectedOrder}
+        drawerRef={cancelDrawer}
+        onOrderCancel={onOrderRemove}
+      />
+      <OrderDetailDrawer
+        order={selectedOrder}
+        drawerRef={previewDrawer}
+        onRequireRemove={onOrderRemove}
+      />
       {page.empty ? (
         <Text style={[global.styles.infoTipText, { textAlign: 'center' }]}>
           没有更多数据了...

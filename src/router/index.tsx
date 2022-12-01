@@ -175,7 +175,7 @@ export const headerCommonOptionsWithTitle = (
 export const headerWithTitle = (title: string): StackHeaderOptions => ({
   headerTitle: title,
   headerShadowVisible: false,
-  headerBackTitleVisible: true,
+  headerBackTitleVisible: false,
   headerBackImage: () => <Icons iconText="&#xe61d;" color="#000" size={40} />,
   headerTitleAlign: 'center',
   headerTitleStyle: {
@@ -340,7 +340,7 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={COMMODITY_PAGE}
           component={commodityPage}
-          options={{ headerShown: false }}
+          options={{ headerShown: false, header: () => null }}
         />
       </Stack.Navigator>
       <DiyToast />
