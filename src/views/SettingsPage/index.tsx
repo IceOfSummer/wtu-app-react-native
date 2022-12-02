@@ -13,7 +13,7 @@ const SETTINGS_HOME = '/Settings/Home'
 const SettingsPage: React.FC = () => {
   return (
     <Stack.Navigator initialRouteName={SETTINGS_HOME}>
-      <Stack.Group screenOptions={{ animation: 'slide_from_right' }}>
+      <Stack.Group>
         <Stack.Screen
           name={SETTINGS_HOME}
           component={SettingsHome}

@@ -7,10 +7,10 @@ import './src/api'
 import './src/api/chat/MessageListener'
 import Loading from './src/component/Loading'
 import { SafeAreaView } from 'react-native'
-import useUpdateCheck from './src/hook/useUpdateCheck'
+import UpdateChecker from './src/utils/UpdateChecker'
 
 const App = () => {
-  useUpdateCheck()
+  UpdateChecker.checkUpdate()
 
   return (
     <Provider store={store}>

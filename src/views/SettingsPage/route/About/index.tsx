@@ -3,22 +3,30 @@ import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import { getVersion } from 'react-native-device-info'
 import CardContainer from '../../../../component/Cards/CardContainer'
 import NavigationCard from '../../../../component/Cards/NavigationCard'
-import NativeDialog from '../../../../native/modules/NativeDialog'
-import CodePush from 'react-native-code-push'
+import NativeDialog, {
+  quickShowErrorTip,
+} from '../../../../native/modules/NativeDialog'
+import SimpleCard from '../../../../component/Cards/SimpleCard'
+import UpdateChecker from '../../../../utils/UpdateChecker'
 
 const About: React.FC = () => {
   const version = getVersion()
   const [label, setLabel] = useState('')
   useEffect(() => {
-    CodePush.checkForUpdate('Nfcrb40ux-JDYQ1g73HmDYGIFKe7bHgT4wqQW').then(r => {
-      console.log(r)
-    })
-    CodePush.getUpdateMetadata().then(r => {
-      if (r) {
-        setLabel('-' + r.label)
+    UpdateChecker.getVersionLabel().then(l => {
+      if (l) {
+        setLabel(l)
       }
     })
   }, [])
+
+  const checkUpdate = () => {
+    UpdateChecker.checkUpdate(version).then(r => {
+      if (!r) {
+        quickShowErrorTip('检查更新', '您已经是最新版本了')
+      }
+    })
+  }
   return (
     <View style={{ height: '100%' }}>
       <View style={styles.iconImageContainer}>
@@ -39,13 +47,22 @@ const About: React.FC = () => {
         />
         <NavigationCard
           title="捐赠"
-          hideBorder
           onTap={() =>
             NativeDialog.showDialog({
               title: 'QAQ感谢您的好心',
               message: '目前暂时不需要暂时, 祝您用的开心',
               hideCancelBtn: true,
             })
+          }
+        />
+        <SimpleCard
+          title="检查更新"
+          hideBorder
+          onTap={checkUpdate}
+          rightContent={
+            UpdateChecker.newVersion === version
+              ? '已经是最新版本了'
+              : UpdateChecker.newVersion
           }
         />
       </CardContainer>
