@@ -12,11 +12,9 @@ import {
 import PersonalInfo from '../views/PersonalInfo'
 import DiyToast from '../component/DiyToast/NavToast'
 import { StatusBar } from 'react-native'
-import LessonsTableConfigPage from '../views/LessonsTableConfigPage'
 import LessonsDetail from '../views/LessonsDetail'
 import EmptyPage from '../views/EmptyPage'
 import SettingsPage from '../views/SettingsPage'
-import AboutPage from '../views/AboutPage'
 import { updateCurWeek } from '../redux/actions/lessonsTable'
 import Webpage from '../views/Webpage'
 import ScoreQueryPage from '../views/ScoreQueryPage'
@@ -54,11 +52,9 @@ export const MESSAGE_TABS = 'MessageScreen'
 export const FLEA_MARKET_TABS = 'FleaMarket'
 export const SCHOOL_AUTH = 'SchoolAuth'
 export const PERSONAL_INFO = 'PersonalInfo'
-export const LESSONS_TABLE_CONFIG_PAGE = 'LessonsTableConfigPage'
 export const LESSONS_DETAIL = 'LessonsDetail'
 export const EMPTY_PAGE = 'EmptyPage'
 export const SETTINGS_PAGE = 'SettingsPage'
-export const ABOUT_PAGE = 'AboutPage'
 export const WEB_PAGE = 'WebPage'
 export const SCORE_QUERY = 'ScoreQuery'
 export const SUBJECT_SELECT_PAGE = 'SubjectSelectPage'
@@ -87,7 +83,6 @@ export interface RouterTypes extends ParamListBase {
   [CLASS_SCHEDULE_TABS]: undefined
   [SCHOOL_AUTH]: undefined
   [PERSONAL_INFO]: undefined
-  [LESSONS_TABLE_CONFIG_PAGE]: undefined
   [LESSONS_DETAIL]: {
     /**
      * 第几周的课
@@ -100,7 +95,6 @@ export interface RouterTypes extends ParamListBase {
   }
   [EMPTY_PAGE]: undefined
   [SETTINGS_PAGE]: undefined
-  [ABOUT_PAGE]: undefined
   [WEB_PAGE]: {
     url: string
   }
@@ -241,11 +235,6 @@ const Router: React.FC = () => {
           options={headerCommonOptionsWithTitle('个人资料')}
         />
         <Stack.Screen
-          name={LESSONS_TABLE_CONFIG_PAGE}
-          component={LessonsTableConfigPage}
-          options={headerCommonOptionsWithTitle('课程表设置')}
-        />
-        <Stack.Screen
           name={LESSONS_DETAIL}
           component={LessonsDetail}
           options={headerCommonOptionsWithTitle('课程详细')}
@@ -254,16 +243,6 @@ const Router: React.FC = () => {
           name={EMPTY_PAGE}
           component={EmptyPage}
           options={headerCommonOptionsWithTitle('应用正在开发中')}
-        />
-        <Stack.Screen
-          name={SETTINGS_PAGE}
-          component={SettingsPage}
-          options={headerCommonOptionsWithTitle('设置')}
-        />
-        <Stack.Screen
-          name={ABOUT_PAGE}
-          component={AboutPage}
-          options={headerCommonOptionsWithTitle('关于')}
         />
         <Stack.Screen
           name={WEB_PAGE}
@@ -341,6 +320,11 @@ const Router: React.FC = () => {
           name={COMMODITY_PAGE}
           component={commodityPage}
           options={{ headerShown: false, header: () => null }}
+        />
+        <Stack.Screen
+          name={SETTINGS_PAGE}
+          component={SettingsPage}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
       <DiyToast />

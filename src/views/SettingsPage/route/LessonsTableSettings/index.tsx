@@ -1,19 +1,19 @@
 import React from 'react'
-import SimpleCard from '../../component/Cards/SimpleCard'
+import { ReducerTypes } from '../../../../redux/counter'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
-import { modifyOptions } from '../../redux/actions/lessonsTable'
-import CardContainer from '../../component/Cards/CardContainer'
-import { getCurWeekFromServer } from '../../api/edu/classes'
-import { Term } from '../../redux/types/lessonsTableTypes'
-import Loading from '../../component/Loading'
-import NativeDialog from '../../native/modules/NativeDialog'
-import PullDownPickerCard from '../../component/Cards/PullDownPickerCard'
+import { modifyOptions } from '../../../../redux/counter/lessonsTableSlice'
+import { Term } from '../../../../redux/types/lessonsTableTypes'
 import { View } from 'react-native'
-import BottomMenu from '../../native/modules/BottomMenu'
-import { useClassScheduleTheme } from '../../tabs/ClassScheduleScreen/Theme'
-import defaultTheme from '../../tabs/ClassScheduleScreen/Theme/defaultTheme'
-import remTheme from '../../tabs/ClassScheduleScreen/Theme/remTheme'
+import CardContainer from '../../../../component/Cards/CardContainer'
+import PullDownPickerCard from '../../../../component/Cards/PullDownPickerCard'
+import SimpleCard from '../../../../component/Cards/SimpleCard'
+import NativeDialog from '../../../../native/modules/NativeDialog'
+import BottomMenu from '../../../../native/modules/BottomMenu'
+import { useClassScheduleTheme } from '../../../../tabs/ClassScheduleScreen/Theme'
+import Loading from '../../../../component/Loading'
+import { getCurWeekFromServer } from '../../../../api/edu/classes'
+import defaultTheme from '../../../../tabs/ClassScheduleScreen/Theme/defaultTheme'
+import remTheme from '../../../../tabs/ClassScheduleScreen/Theme/remTheme'
 
 interface LessonsTableConfigPageProps {}
 
@@ -33,7 +33,7 @@ const CUR_WEEK_DATA = [
 ]
 const TERM_DATA = ['上学期', '下学期']
 
-const LessonsTableConfigPage: React.FC<
+const LessonsTableSettings: React.FC<
   LessonsTableConfigPageProps & StoreActions & StoreProps
 > = props => {
   const setCurWeek = (index: number) =>
@@ -164,4 +164,4 @@ export default connect<
   {
     modifyOptions,
   }
-)(LessonsTableConfigPage)
+)(LessonsTableSettings)

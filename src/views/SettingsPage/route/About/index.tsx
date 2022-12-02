@@ -1,22 +1,36 @@
-import React from 'react'
-import { Image, Linking, Pressable, Text, View } from 'react-native'
-import styles from './styles'
+import React, { useEffect, useState } from 'react'
+import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import { getVersion } from 'react-native-device-info'
-import CardContainer from '../../component/Cards/CardContainer'
-import NavigationCard from '../../component/Cards/NavigationCard'
-import NativeDialog from '../../native/modules/NativeDialog'
+import CardContainer from '../../../../component/Cards/CardContainer'
+import NavigationCard from '../../../../component/Cards/NavigationCard'
+import NativeDialog from '../../../../native/modules/NativeDialog'
+import CodePush from 'react-native-code-push'
 
-const AboutPage: React.FC = () => {
+const About: React.FC = () => {
   const version = getVersion()
+  const [label, setLabel] = useState('')
+  useEffect(() => {
+    CodePush.checkForUpdate('Nfcrb40ux-JDYQ1g73HmDYGIFKe7bHgT4wqQW').then(r => {
+      console.log(r)
+    })
+    CodePush.getUpdateMetadata().then(r => {
+      if (r) {
+        setLabel('-' + r.label)
+      }
+    })
+  }, [])
   return (
     <View style={{ height: '100%' }}>
       <View style={styles.iconImageContainer}>
         <Image
           style={styles.iconImage}
-          source={require('../../assets/img/icon.png')}
+          source={require('../../../../assets/img/icon.png')}
         />
         <Text>武纺智联</Text>
-        <Text>v{version}</Text>
+        <Text>
+          {version}
+          {label}
+        </Text>
       </View>
       <CardContainer>
         <NavigationCard
@@ -75,4 +89,15 @@ const AboutPage: React.FC = () => {
   )
 }
 
-export default AboutPage
+const styles = StyleSheet.create({
+  iconImage: {
+    width: 100,
+    height: 100,
+  },
+  iconImageContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+})
+
+export default About

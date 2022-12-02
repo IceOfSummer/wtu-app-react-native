@@ -1,49 +1,37 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
-import { modifyOptions } from '../../redux/actions/lessonsTable'
-import { ABOUT_PAGE, LESSONS_TABLE_CONFIG_PAGE } from '../../router'
-import CardContainer from '../../component/Cards/CardContainer'
-import NavigationCard from '../../component/Cards/NavigationCard'
-import { checkAppUpdate } from '../../hook/useUpdateCheck'
-import NativeDialog from '../../native/modules/NativeDialog'
+import SettingsHome from './route/SettingsHome'
+import LessonsTableSettings from './route/LessonsTableSettings'
+import About from './route/About'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { headerCommonOptionsWithTitle } from '../../router'
 
-interface SettingsPageProps {}
+const Stack = createNativeStackNavigator()
+export const LESSONS_TABLE_SETTINGS_PAGE = '/Settings/LessonsTable'
+export const ABOUT_PAGE = '/Settings/About'
+const SETTINGS_HOME = '/Settings/Home'
 
-const SettingsPage: React.FC<
-  SettingsPageProps & StoreStates & StoreActions
-> = () => {
-  const check = () => {
-    checkAppUpdate().then(status => {
-      if (status) {
-        NativeDialog.showDialog({
-          title: '检查更新',
-          hideCancelBtn: true,
-          message: '已经是最新版本了',
-        })
-      }
-    })
-  }
+const SettingsPage: React.FC = () => {
   return (
-    <CardContainer>
-      <NavigationCard title="课程表设置" to={LESSONS_TABLE_CONFIG_PAGE} />
-      <NavigationCard title="关于" to={ABOUT_PAGE} />
-      <NavigationCard title="检查更新" hideBorder onTap={check} />
-    </CardContainer>
+    <Stack.Navigator initialRouteName={SETTINGS_HOME}>
+      <Stack.Group screenOptions={{ animation: 'slide_from_right' }}>
+        <Stack.Screen
+          name={SETTINGS_HOME}
+          component={SettingsHome}
+          options={headerCommonOptionsWithTitle('设置')}
+        />
+        <Stack.Screen
+          name={LESSONS_TABLE_SETTINGS_PAGE}
+          component={LessonsTableSettings}
+          options={headerCommonOptionsWithTitle('课程表设置')}
+        />
+        <Stack.Screen
+          name={ABOUT_PAGE}
+          component={About}
+          options={headerCommonOptionsWithTitle('关于')}
+        />
+      </Stack.Group>
+    </Stack.Navigator>
   )
 }
 
-interface StoreStates {}
-
-interface StoreActions {
-  modifyLessonsTableConfig: (...args: Parameters<typeof modifyOptions>) => void
-}
-
-export default connect<
-  StoreStates,
-  StoreActions,
-  SettingsPageProps,
-  ReducerTypes
->(() => ({}), {
-  modifyLessonsTableConfig: modifyOptions,
-})(SettingsPage)
+export default SettingsPage

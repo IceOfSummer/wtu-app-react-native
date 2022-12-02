@@ -232,11 +232,15 @@ android {
     }
     buildTypes {
         debug {
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             resValue "string", "CodePushDeploymentKey", '""'
+            resValue "string", "app_name", '"武纺智联-开发版"'
         }
         releaseStaging {
             resValue "string", "CodePushDeploymentKey", '"Nfcrb40ux-JDYQ1g73HmDYGIFKe7bHgT4wqQW"'
+            resValue "string", "app_name", '"武纺智联-测试版"'
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".debug"
             // Note: It's a good idea to provide matchingFallbacks for the new buildType you create to prevent build issues
             // Add the following line if not already there
             matchingFallbacks = ['release']
@@ -244,10 +248,11 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             resValue "string", "CodePushDeploymentKey", '"oJeO75iI9jzrMMXs5EkRdoLpRcadB6EdK1Ydx"'
+                        resValue "string", "app_name", '"武纺智联"'
             crunchPngs false
         }
     }
