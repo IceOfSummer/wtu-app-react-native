@@ -3,11 +3,10 @@ import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import { getVersion } from 'react-native-device-info'
 import CardContainer from '../../../../component/Cards/CardContainer'
 import NavigationCard from '../../../../component/Cards/NavigationCard'
-import NativeDialog, {
-  quickShowErrorTip,
-} from '../../../../native/modules/NativeDialog'
+import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
 import SimpleCard from '../../../../component/Cards/SimpleCard'
 import UpdateChecker from '../../../../utils/UpdateChecker'
+import { LOGS_PAGE } from '../../index'
 
 const About: React.FC = () => {
   const version = getVersion()
@@ -45,16 +44,7 @@ const About: React.FC = () => {
           title="查看代码"
           onTap={() => Linking.openURL(global.constant.homePageUrl)}
         />
-        <NavigationCard
-          title="捐赠"
-          onTap={() =>
-            NativeDialog.showDialog({
-              title: 'QAQ感谢您的好心',
-              message: '目前暂时不需要暂时, 祝您用的开心',
-              hideCancelBtn: true,
-            })
-          }
-        />
+        <NavigationCard title="查看日志" to={LOGS_PAGE} />
         <SimpleCard
           title="检查更新"
           hideBorder

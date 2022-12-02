@@ -4,10 +4,12 @@ import LessonsTableSettings from './route/LessonsTableSettings'
 import About from './route/About'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { headerCommonOptionsWithTitle } from '../../router'
+import LogsPage from './route/LogsPage'
 
 const Stack = createNativeStackNavigator()
 export const LESSONS_TABLE_SETTINGS_PAGE = '/Settings/LessonsTable'
 export const ABOUT_PAGE = '/Settings/About'
+export const LOGS_PAGE = '/Settings/Logs'
 const SETTINGS_HOME = '/Settings/Home'
 
 const SettingsPage: React.FC = () => {
@@ -28,6 +30,11 @@ const SettingsPage: React.FC = () => {
           name={ABOUT_PAGE}
           component={About}
           options={headerCommonOptionsWithTitle('关于')}
+        />
+        <Stack.Screen
+          name={LOGS_PAGE}
+          component={LogsPage}
+          options={headerCommonOptionsWithTitle('日志')}
         />
       </Stack.Group>
     </Stack.Navigator>

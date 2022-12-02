@@ -1,8 +1,7 @@
 import { consoleTransport, fileAsyncTransport, logger } from 'react-native-logs'
 import { append0Prefix } from '../DateUtils'
 import fs from 'react-native-fs'
-import { configLoggerType } from 'react-native-logs/src/index'
-
+import { configLoggerType } from 'react-native-logs/src/'
 function getDayStr(time: number) {
   const date = new Date(time)
   return `${date.getFullYear()}-${append0Prefix(
@@ -34,13 +33,14 @@ const loggerConfig: configLoggerType = {
   },
 }
 const LOGGER = logger.createLogger(loggerConfig)
+const BASE_URL = `${fs.DocumentDirectoryPath}/logs`
 
 function getLogName(day = CURRENT_DAY_STR) {
   return `wtu-app-log ${day}.log`
 }
 
-function getLogPath(logName = getLogName()) {
-  return `${fs.DocumentDirectoryPath}/logs/${logName}`
+export function getLogPath(logName = getLogName()) {
+  return `${BASE_URL}/${logName}`
 }
 
 /**
@@ -65,6 +65,10 @@ function getLogPath(logName = getLogName()) {
 
 export const getLogger = (namespace: string) => {
   return LOGGER.extend(namespace)
+}
+
+export const getLogFiles = () => {
+  return fs.readdir(BASE_URL)
 }
 
 function removeLog(filename: string) {
