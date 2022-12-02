@@ -1,7 +1,6 @@
 import { AjaxResponseTypes } from 'axios-simple-wrapper/lib/common/betterAjax'
 import { ResponseTemplate } from './server/types'
 import { cancelOldAjax, noRepeatAjax } from 'axios-simple-wrapper'
-import serverConfig from './serverConfig'
 import { AxiosResponse, AxiosError } from 'axios'
 import { isAuthPage } from '../utils/AuthUtils'
 import Toast from 'react-native-toast-message'
@@ -10,6 +9,7 @@ import { store } from '../redux/store'
 import { markLoginExpired } from '../redux/actions/user'
 import { markLoginInvalid } from '../redux/counter/serverUserSlice'
 import { navigationPush } from '../tabs'
+import Environment from '../utils/Environment'
 
 const serverResponseInterceptor = (resp: AxiosResponse): any => {
   if (resp.data.code === undefined) {
@@ -46,7 +46,7 @@ export const serverNoRepeatAjax = <T>(
 ): AjaxResponseTypes<ResponseTemplate<T>, true> =>
   new Promise((resolve, reject) => {
     noRepeatAjax<AxiosResponse<ResponseTemplate<T>>, true>(
-      serverConfig.serverBaseUrl + url,
+      Environment.serverBaseUrl + url,
       data,
       method
     )
@@ -64,7 +64,7 @@ export const serverCancelOldAjax = <T>(
 ): AjaxResponseTypes<ResponseTemplate<T>, true> =>
   new Promise((resolve, reject) => {
     cancelOldAjax<AxiosResponse<ResponseTemplate<T>>, true>(
-      serverConfig.serverBaseUrl + url,
+      Environment.serverBaseUrl + url,
       data,
       method
     )

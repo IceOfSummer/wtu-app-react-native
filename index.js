@@ -6,6 +6,7 @@ import SQLite from 'react-native-sqlite-storage'
 import { login } from './src/api/server/auth'
 import './src/utils/LoggerUtils/index'
 import 'react-native-gesture-handler'
+import analytics from 'appcenter-analytics'
 
 SQLite.enablePromise(true)
 AppRegistry.registerComponent(appName, () => App)
@@ -22,6 +23,11 @@ if (__DEV__) {
   DevSettings.addMenuItem('login test account2', () => {
     login('100001', 'abc123').then(resp => {
       console.log(resp)
+    })
+  })
+  DevSettings.addMenuItem('check update', () => {
+    analytics.isEnabled().then(r2 => {
+      console.log(r2)
     })
   })
 }

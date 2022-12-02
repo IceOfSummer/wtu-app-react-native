@@ -25,6 +25,12 @@ target 'wtuapp' do
 
   pod 'RNFS', :path => '../node_modules/react-native-fs'
 
+  pod 'appcenter-analytics', :path => '../node_modules/appcenter-analytics'
+
+  pod 'appcenter-crashes', :path => '../node_modules/appcenter-crashes'
+
+  pod 'appcenter-core', :path => '../node_modules/appcenter'
+
   target 'wtuappTests' do
     inherit! :complete
     # Pods for testing

@@ -4,6 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.microsoft.appcenter.reactnative.crashes.AppCenterReactNativeCrashesPackage;
+import com.microsoft.appcenter.reactnative.analytics.AppCenterReactNativeAnalyticsPackage;
+import com.microsoft.appcenter.reactnative.appcenter.AppCenterReactNativePackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -12,6 +15,8 @@ import com.kongzue.dialogx.DialogX;
 import com.kongzue.dialogx.style.MIUIStyle;
 import com.wtuapp.nativepackage.NativeComponentPackages;
 import com.wtuapp.newarchitecture.MainApplicationReactNativeHost;
+
+import com.microsoft.codepush.react.CodePush;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -32,12 +37,20 @@ public class MainApplication extends Application implements ReactApplication {
                     packages.add(new NativeComponentPackages());
                     // Packages that cannot be autolinked yet can be added manually here, for example:
                     // packages.add(new MyReactNativePackage());
+//                     packages.add(new AppCenterReactNativeCrashesPackage(MainApplication.this, getResources().getString(R.string.appCenterCrashes_whenToSendCrashes)));
+//                     packages.add(new AppCenterReactNativeAnalyticsPackage(MainApplication.this, getResources().getString(R.string.appCenterAnalytics_whenToEnableAnalytics)));
+//                     packages.add(new AppCenterReactNativePackage(MainApplication.this));
                     return packages;
                 }
 
                 @Override
                 protected String getJSMainModuleName() {
                     return "index";
+                }
+
+                @Override
+                protected String getJSBundleFile() {
+                    return CodePush.getJSBundleFile();
                 }
 
             };
