@@ -48,7 +48,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = props => {
     nav.navigate(app.path, app.routeParams)
   }
   return (
-    <BaseContainer innerPadding={0} padding={0}>
+    <BaseContainer>
       <View style={styles.appOuter}>
         {props.applications.map((app, index) => (
           <Pressable

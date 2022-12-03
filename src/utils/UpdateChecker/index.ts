@@ -50,7 +50,11 @@ export default class UpdateChecker {
             update
               .download()
               .then(resource => {
-                resource.install(CodePush.InstallMode.ON_NEXT_RESTART).then()
+                resource
+                  .install(CodePush.InstallMode.ON_NEXT_RESTART)
+                  .then(() => {
+                    CodePush.notifyAppReady().then()
+                  })
               })
               .catch(e => {
                 logger.error('download hot update failed: ' + e.message)
