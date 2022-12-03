@@ -9,7 +9,9 @@ function getDayStr(time: number) {
   )}-${append0Prefix(date.getDate())}`
 }
 
+const PATH_PREFIX = fs.ExternalDirectoryPath
 const CURRENT_DAY_STR = getDayStr(Date.now())
+const BASE_URL = `${PATH_PREFIX}/logs`
 
 const loggerConfig: configLoggerType = {
   levels: {
@@ -28,15 +30,14 @@ const loggerConfig: configLoggerType = {
       debug: 'greenBright',
     },
     FS: fs,
-    filePath: fs.DocumentDirectoryPath,
+    filePath: PATH_PREFIX,
     fileName: 'logs/' + getLogName(),
   },
 }
 const LOGGER = logger.createLogger(loggerConfig)
-const BASE_URL = `${fs.DocumentDirectoryPath}/logs`
 
 function getLogName(day = CURRENT_DAY_STR) {
-  return `wtu-app-log ${day}.log`
+  return `wtu-app-log ${day}.txt`
 }
 
 export function getLogPath(logName = getLogName()) {
@@ -48,9 +49,9 @@ export function getLogPath(logName = getLogName()) {
  */
 // eslint-disable-next-line no-extra-semi
 ;(function () {
-  fs.exists(fs.DocumentDirectoryPath + '/logs').then(ex => {
+  fs.exists(PATH_PREFIX + '/logs').then(ex => {
     if (!ex) {
-      fs.mkdir(fs.DocumentDirectoryPath + '/logs').catch(e => console.error(e))
+      fs.mkdir(PATH_PREFIX + '/logs').catch(e => console.error(e))
     }
     fs.exists(getLogPath()).then(exi => {
       if (!exi) {

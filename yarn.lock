@@ -6991,6 +6991,11 @@ react-native-screens@^3.12.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-share@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.npmmirror.com/react-native-share/-/react-native-share-8.0.0.tgz#95520a16fca151822ce8a3b00240cf3a17eacb97"
+  integrity sha512-IFUKcWQ1/VgtsQmuC3EKaIPMhKqssTblwCojtTB4dehWJ2ZUPsIstPXJGqcmWqg7/S3cLNfCLvxf/tVaZvptxw==
+
 react-native-spring-scrollview@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/react-native-spring-scrollview/-/react-native-spring-scrollview-3.0.2.tgz#fb4d28c4afe26eba6b16718f56524d1d798b4563"

@@ -1,39 +1,43 @@
-import React, { useEffect, useState } from 'react'
-import { Share, StyleSheet, Text, View } from 'react-native'
-import { getLogFiles, getLogPath } from '../../../../utils/LoggerUtils'
+import React, { useEffect, useRef, useState } from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import { getLogFiles } from '../../../../utils/LoggerUtils'
 import Button from 'react-native-button'
 import { SpringScrollView } from 'react-native-spring-scrollview'
-import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
+import Drawer from '../../../../component/Drawer'
+import LogPreview from '../../component/LogPreview'
 
 const LogsPage: React.FC = () => {
   const [logs, setLogs] = useState<Array<string>>([])
+  const [logName, setLogName] = useState('')
+  const drawer = useRef<Drawer>(null)
+
+  const checkLog = (_logName: string) => {
+    setLogName(_logName)
+    drawer.current?.showDrawer()
+  }
+
   useEffect(() => {
     getLogFiles().then(files => {
       setLogs(files)
     })
   }, [])
 
-  const onPress = (logname: string) => {
-    Share.share({
-      url: getLogPath(logname),
-      message: '查看日志',
-    }).catch(e => {
-      quickShowErrorTip('查看失败', e.message)
-    })
-  }
   return (
     <SpringScrollView>
       {logs.map(value => (
         <Button
           key={value}
           containerStyle={styles.buttonContainer}
-          onPress={() => onPress(value)}>
+          onPress={() => checkLog(value)}>
           <View style={styles.buttonInner}>
             <Text style={styles.text}>{value}</Text>
           </View>
         </Button>
       ))}
       <Text style={global.styles.infoTipText}>30天前的日志会自动删除</Text>
+      <Drawer ref={drawer}>
+        <LogPreview logName={logName} />
+      </Drawer>
     </SpringScrollView>
   )
 }
