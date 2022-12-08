@@ -9,7 +9,7 @@ function getDayStr(time: number) {
   )}-${append0Prefix(date.getDate())}`
 }
 
-const PATH_PREFIX = fs.ExternalDirectoryPath
+const PATH_PREFIX = fs.DocumentDirectoryPath
 const CURRENT_DAY_STR = getDayStr(Date.now())
 const BASE_URL = `${PATH_PREFIX}/logs`
 
@@ -30,8 +30,8 @@ const loggerConfig: configLoggerType = {
       debug: 'greenBright',
     },
     FS: fs,
-    filePath: PATH_PREFIX,
-    fileName: 'logs/' + getLogName(),
+    filePath: PATH_PREFIX + '/logs',
+    fileName: getLogName(),
   },
 }
 const LOGGER = logger.createLogger(loggerConfig)

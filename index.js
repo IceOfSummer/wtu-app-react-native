@@ -6,7 +6,10 @@ import SQLite from 'react-native-sqlite-storage'
 import { login } from './src/api/server/auth'
 import './src/utils/LoggerUtils/index'
 import 'react-native-gesture-handler'
+import fs from 'react-native-fs'
 
+// 初始化日志文件夹(应该用同步方法，但是没有相关的库)
+fs.mkdir(fs.DocumentDirectoryPath + '/logs').catch(e => console.error(e))
 SQLite.enablePromise(true)
 AppRegistry.registerComponent(appName, () => App)
 
