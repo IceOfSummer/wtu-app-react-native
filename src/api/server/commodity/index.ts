@@ -8,10 +8,16 @@ type PostCommodityType = Omit<
 >
 
 function castOne(commodity: Commodity): ProcessedCommodity {
-  const imgs = JSON.parse(commodity.images) as Array<string>
   if (commodity.previewImage) {
     commodity.previewImage = appendCdnPrefix(commodity.previewImage)
   }
+  if (!commodity.images) {
+    return {
+      ...commodity,
+      images: [],
+    }
+  }
+  const imgs = JSON.parse(commodity.images) as Array<string>
   for (let i = 0; i < imgs.length; i++) {
     imgs[i] = appendCdnPrefix(imgs[i])
   }
@@ -54,7 +60,7 @@ export type ProcessedCommodity = Omit<Commodity, 'images'> & {
 export const getCommodityDetail = (commodityId: number) =>
   new Promise<ResponseTemplate<ProcessedCommodity | null>>(
     (resolve, reject) => {
-      serverNoRepeatAjax<Commodity | undefined>(`/commodity/${commodityId}`)
+      serverNoRepeatAjax<Commodity | undefined>(`/commodity/op/${commodityId}`)
         .then(resp => {
           resolve({
             data: resp.data ? castOne(resp.data) : null,
@@ -72,7 +78,7 @@ export const lockCommodity = (
   remark?: string
 ) =>
   serverNoRepeatAjax<number>(
-    `/commodity/${commodityId}/lock`,
+    `/commodity/op/${commodityId}/lock`,
     { r: remark, c: count },
     'POST'
   )
@@ -105,10 +111,24 @@ export const getUploadedCommodity = (page: number = 0, size = 5) =>
 export const updateCommodity = (
   commodityId: number,
   commodity: Partial<Commodity>
-) => serverNoRepeatAjax(`/commodity/${commodityId}/update`, commodity, 'POST')
+) =>
+  serverNoRepeatAjax(`/commodity/op/${commodityId}/update`, commodity, 'POST')
 
 /**
  * 下架商品
  */
 export const takeDownCommodity = (commodityId: number) =>
-  serverNoRepeatAjax(`/commodity/${commodityId}/close`, undefined, 'POST')
+  serverNoRepeatAjax(`/commodity/op/${commodityId}/close`, undefined, 'POST')
+
+/**
+ * 该返回值某些属性可能为空
+ */
+export const getSuggestCommodity = (maxId?: number) =>
+  serverNoRepeatAjax<Commodity[]>('/commodity/suggest', { m: maxId }).then(
+    r => {
+      return {
+        ...r,
+        data: castArray(r.data),
+      }
+    }
+  )

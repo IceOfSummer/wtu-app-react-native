@@ -1,34 +1,38 @@
 import React from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { ProcessedCommodity } from '../../../../api/server/commodity'
+import BetterImage from '../../../../component/Container/BetterImage'
+import useNav from '../../../../hook/useNav'
+import { COMMODITY_PAGE } from '../../../../router'
 
 export interface ShowItemProps {
-  id: number
-  previewImage: any
-  name: string
-  price: number | string
   width: number
+  commodity: ProcessedCommodity
 }
 
 /**
  * 商品展示组件
  */
 const ShopItem: React.FC<ShowItemProps> = props => {
+  const { commodity } = props
+  const nav = useNav()
+  const goItem = () => {
+    nav.push(COMMODITY_PAGE, { id: commodity.commodityId })
+  }
   return (
-    <View style={[styles.container, { width: props.width }]}>
-      <Image
-        source={props.previewImage}
-        style={[
-          styles.image,
-          { resizeMode: 'stretch', width: props.width, height: props.width },
-        ]}
-      />
+    <Pressable
+      style={[styles.container, { width: props.width }]}
+      onPress={goItem}>
+      <View style={[styles.image, { width: props.width, height: props.width }]}>
+        <BetterImage uri={commodity.previewImage} />
+      </View>
       <View style={styles.textContainer}>
         <Text style={styles.nameText} numberOfLines={2} ellipsizeMode="tail">
-          {props.name}
+          {commodity.name}
         </Text>
-        <Text style={styles.priceText}>￥{props.price}</Text>
+        <Text style={styles.priceText}>￥{commodity.price}</Text>
       </View>
-    </View>
+    </Pressable>
   )
 }
 

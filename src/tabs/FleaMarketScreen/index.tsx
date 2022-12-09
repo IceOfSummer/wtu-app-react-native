@@ -1,70 +1,17 @@
 import React, { useState } from 'react'
-import { SceneMap, TabBar, TabView } from 'react-native-tab-view'
 import MainTab from './tabs/MainTab'
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
-import NewItemTab from './tabs/NewItemTab'
+import { StyleSheet, View } from 'react-native'
 import RoundSearchBar from '../../component/SearchBar/RoundSearchBar'
 import { SEARCH_PAGE, UseNavigationGeneric } from '../../router'
 import { useNavigation } from '@react-navigation/native'
 import Icons from '../../component/Icons'
-import {
-  NavigationState,
-  SceneRendererProps,
-} from 'react-native-tab-view/lib/typescript/types'
 import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
-const renderScene = SceneMap({
-  main: MainTab,
-  newItem: NewItemTab,
-  newItem1: NewItemTab,
-  newItem2: NewItemTab,
-})
-
-const routes = [
-  { key: 'main', title: '精选' },
-  { key: 'newItem', title: '最新' },
-  { key: 'newItem1', title: '跑腿' },
-  { key: 'newItem2', title: '拼单' },
-]
-
-const renderTabBar = (
-  props: SceneRendererProps & {
-    navigationState: NavigationState<any>
-  }
-) => (
-  <TabBar
-    {...props}
-    indicatorStyle={{ backgroundColor: global.styles.$bg_color_grey }}
-    style={{
-      backgroundColor: global.styles.$bg_color_grey,
-      shadowColor: '#00000000',
-      marginTop: -5,
-    }}
-    inactiveColor={global.styles.$text_placeholder}
-    activeColor={global.styles.$primary_color}
-    contentContainerStyle={{
-      shadowOpacity: 0,
-    }}
-    renderLabel={({ route, focused, color }) => (
-      <Text
-        style={{
-          color,
-          fontWeight: focused ? 'bold' : 'normal',
-          fontSize: 16,
-        }}>
-        {route.title}
-      </Text>
-    )}
-    bounces
-  />
-)
 /**
  * 跳蚤市场
  */
 const FleaMarketScreen: React.FC = () => {
   const nav = useNavigation<UseNavigationGeneric>()
-  const layout = useWindowDimensions()
-  const [tabIndex, setTabIndex] = useState(0)
   const [searchBarPlaceholder] = useState('搜索您喜欢的商品')
   // 是否显示消息的红点
   const [showMessageRedPoint] = useState(true)
@@ -90,13 +37,7 @@ const FleaMarketScreen: React.FC = () => {
           <MessageBoxIcon showRedPoint={showMessageRedPoint} />
         </View>
       </View>
-      <TabView
-        onIndexChange={setTabIndex}
-        navigationState={{ index: tabIndex, routes }}
-        renderScene={renderScene}
-        renderTabBar={renderTabBar}
-        initialLayout={{ width: layout.width }}
-      />
+      <MainTab />
     </View>
   )
 }
