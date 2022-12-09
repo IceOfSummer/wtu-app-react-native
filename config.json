@@ -6,8 +6,8 @@
     "cdnServer": "cdn.xds.fit"
   },
   "debug": {
-    "serverBaseUrl": "http://10.181.18.14:8080",
-    "chatServerHost": "10.181.18.14",
+    "serverBaseUrl": "http://192.168.1.103:8080",
+    "chatServerHost": "192.168.1.103",
     "chatServerPort": 7001,
     "cdnServer": "cdn.xds.fit"
   },

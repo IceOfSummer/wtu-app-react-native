@@ -7,6 +7,28 @@ type PostCommodityType = Omit<
   'commodityId' | 'ownerId' | 'createTime' | 'status'
 >
 
+function castOne(commodity: Commodity): ProcessedCommodity {
+  const imgs = JSON.parse(commodity.images) as Array<string>
+  if (commodity.previewImage) {
+    commodity.previewImage = appendCdnPrefix(commodity.previewImage)
+  }
+  for (let i = 0; i < imgs.length; i++) {
+    imgs[i] = appendCdnPrefix(imgs[i])
+  }
+  return {
+    ...commodity,
+    images: imgs,
+  }
+}
+
+function castArray(commodity: Commodity[]): ProcessedCommodity[] {
+  const r: ProcessedCommodity[] = []
+  commodity.forEach(value => {
+    r.push(castOne(value))
+  })
+  return r
+}
+
 /**
  * 创建一个商品
  * @param commodity
@@ -34,28 +56,11 @@ export const getCommodityDetail = (commodityId: number) =>
     (resolve, reject) => {
       serverNoRepeatAjax<Commodity | undefined>(`/commodity/${commodityId}`)
         .then(resp => {
-          const data = resp.data
-          if (data) {
-            const arr = JSON.parse(data.images) as Array<string>
-            data.previewImage = appendCdnPrefix('/' + data.previewImage)
-            for (let i = 0; i < arr.length; i++) {
-              arr[i] = appendCdnPrefix('/' + arr[i])
-            }
-            resolve({
-              message: resp.message,
-              code: resp.code,
-              data: {
-                ...data,
-                images: arr,
-              },
-            })
-          } else {
-            resolve({
-              data: null,
-              code: resp.code,
-              message: resp.message,
-            })
-          }
+          resolve({
+            data: resp.data ? castOne(resp.data) : null,
+            code: resp.code,
+            message: resp.message,
+          })
         })
         .catch(reject)
     }
@@ -78,3 +83,32 @@ export const lockCommodity = (
  */
 export const getSellingCount = () =>
   serverNoRepeatAjax<number>('/commodity/selling_count')
+
+export const getUploadedCommodity = (page: number = 0, size = 5) =>
+  serverNoRepeatAjax<Commodity[]>('/commodity/uploaded', {
+    p: page,
+    s: size,
+  }).then(r => {
+    return {
+      ...r,
+      data: castArray(r.data),
+    }
+  })
+
+/**
+ * 更新货物。
+ * <p>
+ * 仅可更新{@link Commodity#name}, {@link Commodity#price},
+ * {@link Commodity#tradeLocation}, {@link Commodity#description}。
+ * 更新其他字段可能会导致Bad Request
+ */
+export const updateCommodity = (
+  commodityId: number,
+  commodity: Partial<Commodity>
+) => serverNoRepeatAjax(`/commodity/${commodityId}/update`, commodity, 'POST')
+
+/**
+ * 下架商品
+ */
+export const takeDownCommodity = (commodityId: number) =>
+  serverNoRepeatAjax(`/commodity/${commodityId}/close`, undefined, 'POST')

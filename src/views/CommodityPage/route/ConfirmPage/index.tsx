@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { StatusBar, StyleSheet, Text, View } from 'react-native'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import {
+  RouteProp,
+  StackActions,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import {
@@ -33,10 +38,12 @@ const ConfirmPage: React.FC = () => {
     Loading.showLoading()
     lockCommodity(commodity.commodityId, count, route.params.remark)
       .then(result => {
-        nav.navigate(LOCK_SUCCESS_PAGE, {
-          orderId: result.data,
-          sellerId: commodity.ownerId,
-        })
+        nav.dispatch(
+          StackActions.replace(LOCK_SUCCESS_PAGE, {
+            orderId: result.data,
+            sellerId: commodity.ownerId,
+          })
+        )
       })
       .catch(e => {
         NativeDialog.showDialog({

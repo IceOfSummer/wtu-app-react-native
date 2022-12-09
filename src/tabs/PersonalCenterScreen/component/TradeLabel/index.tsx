@@ -5,12 +5,13 @@ import { getTradeStat, TradeStat } from '../../../../api/server/stat'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import KVTextContainer from '../../../../component/Container/KVTextContainer'
 import { StackActions, useNavigation } from '@react-navigation/native'
+import { ORDER_PAGE, UseNavigationGeneric } from '../../../../router'
 import {
   ORDER_PREVIEW_PAGE,
   PENDING_DELIVERY_PAGE,
   PENDING_RECEIVE_PAGE,
-  UseNavigationGeneric,
-} from '../../../../router'
+  SELLING_ITEM_PAGE,
+} from '../../../../views/Order'
 
 const logger = getLogger('src/tabs/PersonalCenterScreen/component/TradeLabel')
 
@@ -47,7 +48,9 @@ const TradeLabel: React.FC = () => {
         <Pressable
           style={styles.appContainer}
           onPress={() =>
-            nav.dispatch(StackActions.push(PENDING_DELIVERY_PAGE))
+            nav.dispatch(
+              StackActions.push(ORDER_PAGE, { screen: PENDING_DELIVERY_PAGE })
+            )
           }>
           <Icons
             iconText="&#xe770;"
@@ -58,7 +61,11 @@ const TradeLabel: React.FC = () => {
         </Pressable>
         <Pressable
           style={styles.appContainer}
-          onPress={() => nav.dispatch(StackActions.push(PENDING_RECEIVE_PAGE))}>
+          onPress={() =>
+            nav.dispatch(
+              StackActions.push(ORDER_PAGE, { screen: PENDING_RECEIVE_PAGE })
+            )
+          }>
           <Icons
             iconText="&#xe771;"
             size={30}
@@ -68,7 +75,25 @@ const TradeLabel: React.FC = () => {
         </Pressable>
         <Pressable
           style={styles.appContainer}
-          onPress={() => nav.dispatch(StackActions.push(ORDER_PREVIEW_PAGE))}>
+          onPress={() =>
+            nav.dispatch(
+              StackActions.push(ORDER_PAGE, { screen: SELLING_ITEM_PAGE })
+            )
+          }>
+          <Icons
+            iconText="&#xe767;"
+            size={30}
+            color={global.styles.$primary_color}
+          />
+          <Text style={styles.iconText}>我的商品</Text>
+        </Pressable>
+        <Pressable
+          style={styles.appContainer}
+          onPress={() =>
+            nav.dispatch(
+              StackActions.push(ORDER_PAGE, { screen: ORDER_PREVIEW_PAGE })
+            )
+          }>
           <Icons
             iconText="&#xe748;"
             size={30}

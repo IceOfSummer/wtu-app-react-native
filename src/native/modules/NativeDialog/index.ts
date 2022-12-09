@@ -95,6 +95,10 @@ const NativeDialog: NativeDialogMethod = (function () {
   return dialog
 })()
 
+/**
+ * @deprecated 该函数在非错误情况下也可以使用
+ * @see showSingleBtnTip
+ */
 export const quickShowErrorTip = (title: string, message: string) => {
   NativeDialog.showDialog({
     title,
@@ -102,5 +106,11 @@ export const quickShowErrorTip = (title: string, message: string) => {
     hideCancelBtn: true,
   })
 }
-
+export const showSingleBtnTip = (title: string, message: string) => {
+  NativeDialog.showDialog({
+    title,
+    message,
+    hideCancelBtn: true,
+  })
+}
 export default NativeDialog

@@ -17,7 +17,7 @@ import NativeDialog, {
   quickShowErrorTip,
 } from '../../../../native/modules/NativeDialog'
 
-interface OrderDetailDrawerProps {
+export interface OrderDetailDrawerProps {
   order?: OrderDetail
   drawerRef: React.RefObject<Drawer>
   onRequireRemove: (order: OrderDetail) => void

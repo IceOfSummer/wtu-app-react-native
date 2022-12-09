@@ -89,6 +89,7 @@ export default class SimpleInput
     this.onFocus = this.onFocus.bind(this)
     this.onBlur = this.onBlur.bind(this)
     this.onChangeText = this.onChangeText.bind(this)
+    this._value = props.textInputProps?.value ?? ''
   }
 
   render() {

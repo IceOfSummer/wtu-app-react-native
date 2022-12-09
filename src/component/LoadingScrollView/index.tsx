@@ -18,6 +18,11 @@ interface LoadingScrollViewProps {
 
 interface LoadingScrollViewState {}
 
+/**
+ * 用于加载的容器，会自动显示加载骨架以及失败重试等操作。
+ * <p>
+ * 不负责渲染列表，请自己渲染。
+ */
 export class LoadingScrollView extends React.Component<
   LoadingScrollViewProps,
   LoadingScrollViewState

@@ -5,7 +5,7 @@ type LoadData<T> = (
   page: number,
   size: number
 ) => Promise<ResponseTemplate<T[]>>
-const usePage = <T>(fun: LoadData<T>, size: number) => {
+const usePage = <T>(fun: LoadData<T>, size: number, loadOnce?: boolean) => {
   const curPage = useRef(0)
   const [data, setData] = useState<T[]>([])
   const [empty, setEmpty] = useState(false)
@@ -21,11 +21,13 @@ const usePage = <T>(fun: LoadData<T>, size: number) => {
       if (loading) {
         return
       }
+      if (loadOnce && data.length > 0) {
+        return
+      }
       setLoading(true)
       try {
         const result = await fun(curPage.current, size)
         curPage.current++
-        console.log(result)
         setError(false)
         if (result.data.length < size) {
           setEmpty(true)

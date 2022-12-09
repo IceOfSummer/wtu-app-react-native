@@ -1,4 +1,4 @@
-import { Text, View, ViewStyle } from 'react-native'
+import { Pressable, Text, View, ViewStyle } from 'react-native'
 import React from 'react'
 
 export interface BaseContainerProps {
@@ -8,6 +8,7 @@ export interface BaseContainerProps {
   style?: ViewStyle
   darkBackground?: boolean
   title?: string
+  onPress?: () => void
 }
 
 /**
@@ -16,7 +17,8 @@ export interface BaseContainerProps {
  */
 const BaseContainer: React.FC<BaseContainerProps> = props => {
   return (
-    <View
+    <Pressable
+      onPress={props.onPress}
       style={{
         paddingHorizontal: global.util.assert(
           props.padding,
@@ -47,7 +49,7 @@ const BaseContainer: React.FC<BaseContainerProps> = props => {
         ) : null}
         {props.children}
       </View>
-    </View>
+    </Pressable>
   )
 }
 
