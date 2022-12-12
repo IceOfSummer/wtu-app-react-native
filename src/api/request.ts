@@ -1,6 +1,9 @@
-import { AjaxResponseTypes } from 'axios-simple-wrapper/lib/common/betterAjax'
+import {
+  Ajax,
+  AjaxResponseTypes,
+} from 'axios-simple-wrapper/lib/common/betterAjax'
 import { ResponseTemplate } from './server/types'
-import { cancelOldAjax, noRepeatAjax } from 'axios-simple-wrapper'
+import { cancelOldAjax, noRepeatAjax, normalAjax } from 'axios-simple-wrapper'
 import { AxiosResponse, AxiosError } from 'axios'
 import { isAuthPage } from '../utils/AuthUtils'
 import Toast from 'react-native-toast-message'
@@ -36,41 +39,35 @@ const serverRequestErrorInterceptor = (error: AxiosError): Error => {
   }
 }
 
-/**
- * 发送给跳蚤市场服务器的ajax
- */
-export const serverNoRepeatAjax = <T>(
-  url: string,
-  data?: Record<string, any>,
-  method?: 'GET' | 'POST'
-): AjaxResponseTypes<ResponseTemplate<T>, true> =>
-  new Promise((resolve, reject) => {
-    noRepeatAjax<AxiosResponse<ResponseTemplate<T>>, true>(
-      Environment.serverBaseUrl + url,
-      data,
-      method
-    )
-      .then(resp => resolve(serverResponseInterceptor(resp)))
-      .catch(e => reject(serverRequestErrorInterceptor(e)))
-  })
+function createServerAjax(ajax: Ajax) {
+  return <T>(
+    url: string,
+    data?: Record<string, any>,
+    method?: 'GET' | 'POST'
+  ): AjaxResponseTypes<ResponseTemplate<T>, true> =>
+    new Promise((resolve, reject) => {
+      ajax<AxiosResponse<ResponseTemplate<T>>, true>(
+        Environment.serverBaseUrl + url,
+        data,
+        method
+      )
+        .then(resp => resolve(serverResponseInterceptor(resp)))
+        .catch(e => reject(serverRequestErrorInterceptor(e)))
+    })
+}
 
 /**
  * 发送给跳蚤市场服务器的ajax
  */
-export const serverCancelOldAjax = <T>(
-  url: string,
-  data?: Record<string, any>,
-  method?: 'GET' | 'POST'
-): AjaxResponseTypes<ResponseTemplate<T>, true> =>
-  new Promise((resolve, reject) => {
-    cancelOldAjax<AxiosResponse<ResponseTemplate<T>>, true>(
-      Environment.serverBaseUrl + url,
-      data,
-      method
-    )
-      .then(resp => resolve(serverResponseInterceptor(resp)))
-      .catch(e => reject(serverRequestErrorInterceptor(e)))
-  })
+export const serverNoRepeatAjax = createServerAjax(noRepeatAjax)
+
+/**
+ * 发送给跳蚤市场服务器的ajax
+ */
+export const serverCancelOldAjax = createServerAjax(cancelOldAjax)
+
+export const serverNormalAjax = createServerAjax(normalAjax)
+
 // 当登录过期后, 不显示Toast
 export const IGNORE_LOGIN_EXPIRE = 'ignoreLoginExpire;'
 const IGNORE_LOGIN_EXPIRE_REGX = /#.*ignoreLoginExpire/

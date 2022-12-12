@@ -40,6 +40,9 @@ import commodityPage from '../views/CommodityPage'
 import { StackHeaderOptions } from '@react-navigation/stack/lib/typescript/src/types'
 import Icons from '../component/Icons'
 import Order from '../views/Order'
+import PostArticlePage from '../views/PostArticlePage'
+import ArticleDetailPage from '../views/ArticleDetailPage'
+import { CommunityMessageQueryType } from '../api/server/community'
 
 const Stack = createNativeStackNavigator()
 
@@ -71,6 +74,8 @@ export const GOODS_SUBMIT_PAGE = 'GoodsSubmitPage'
 export const OPERATION_SUCCESS_PAGE = 'OperationSuccessPage'
 export const COMMODITY_PAGE = 'CommodityPage'
 export const ORDER_PAGE = 'OrderPage'
+export const POST_ARTICLE_PAGE = 'PostArticlePage'
+export const ARTICLE_DETAIL_PAGE = 'ArticleDetailPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -131,6 +136,7 @@ export interface RouterTypes extends ParamListBase {
     id: number
   }
   [ORDER_PAGE]: undefined
+  [ARTICLE_DETAIL_PAGE]: CommunityMessageQueryType
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -307,6 +313,16 @@ const Router: React.FC = () => {
           name={ORDER_PAGE}
           component={Order}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={POST_ARTICLE_PAGE}
+          component={PostArticlePage}
+          options={headerCommonOptionsWithTitle('发布帖子')}
+        />
+        <Stack.Screen
+          name={ARTICLE_DETAIL_PAGE}
+          component={ArticleDetailPage}
+          options={headerCommonOptionsWithTitle('帖子详细')}
         />
       </Stack.Navigator>
       <DiyToast />

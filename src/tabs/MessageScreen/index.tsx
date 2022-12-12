@@ -12,11 +12,11 @@ import { StyleSheet, Text, View } from 'react-native'
 import Icons from '../../component/Icons'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs/lib/typescript/src/types'
-import Care from './tabs/Care'
 import useNav from '../../hook/useNav'
 import { SERVER_AUTH_PAGE } from '../../router'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
 import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
+import Square from './tabs/Square'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
@@ -54,7 +54,7 @@ const AuthenticatedView = () => {
   return (
     <Tab.Navigator tabBar={MyTabBar} screenOptions={{ lazy: true }}>
       <Tab.Screen name="消息" component={Chat} navigationKey="chat" />
-      <Tab.Screen name="关注" component={Care} navigationKey="care" />
+      <Tab.Screen name="广场" component={Square} navigationKey="square" />
     </Tab.Navigator>
   )
 }

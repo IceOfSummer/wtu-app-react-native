@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { View } from 'react-native'
+import { ColorValue, View, ViewStyle } from 'react-native'
 import RetryView from '../../EnhancedScrollView/RetryView'
 import CenterLoadingIndicator from '../../EnhancedScrollView/CenterLoadingIndicator'
 
@@ -12,6 +12,8 @@ interface LoadingViewProps {
   skeleton?: ReactElement
   success: boolean
   isLoading: boolean
+  style?: ViewStyle
+  backgroundColor?: ColorValue
 }
 
 /**
@@ -19,8 +21,10 @@ interface LoadingViewProps {
  */
 const LoadingView: React.FC<LoadingViewProps> = props => {
   return (
-    <View>
-      {props.isLoading ? <CenterLoadingIndicator /> : null}
+    <View style={props.style}>
+      {props.isLoading ? (
+        <CenterLoadingIndicator backgroundColor={props.backgroundColor} />
+      ) : null}
       {props.success && !props.isLoading ? <View>{props.children}</View> : null}
       {!props.success && !props.isLoading ? (
         <RetryView onRetry={props.loadCallback} show />
