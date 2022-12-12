@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Icons from '../../../../component/Icons'
 import useNav from '../../../../hook/useNav'
 import { POST_ARTICLE_PAGE } from '../../../../router'
@@ -10,6 +10,8 @@ import {
 } from '../../../../api/server/community'
 import ArticleItem from '../../components/ArticleItem'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
+import Toast from 'react-native-root-toast'
+import MessageRefreshHeader from '../../components/MessageRefreshHeader'
 
 const Square: React.FC = () => {
   const [messages, setMessages] = useState<CommunityMessageQueryType[]>([])
@@ -17,12 +19,36 @@ const Square: React.FC = () => {
   const [empty, setEmpty] = useState(false)
   const [error, setError] = useState(false)
   const maxId = useRef<number | undefined>()
+  const scroll = useRef<LoadingScrollView>(null)
+
+  const refresh = () => {
+    if (loading) {
+      return
+    }
+    setLoading(true)
+    queryNewlyCommunityMessage({ minId: messages[0].id })
+      .then(r => {
+        if (r.data.length === 0) {
+          Toast.show('暂时没有新消息了')
+          return
+        }
+        setMessages(r.data.concat(messages))
+      })
+      .catch(e => {
+        Toast.show('刷新失败: ' + e.message)
+      })
+      .finally(() => {
+        setLoading(false)
+        scroll.current?.endRefresh()
+      })
+  }
+
   const loadMore = () => {
     if (loading) {
       return
     }
     setLoading(true)
-    queryNewlyCommunityMessage(maxId.current)
+    queryNewlyCommunityMessage({ maxId: maxId.current })
       .then(r => {
         setError(false)
         if (r.data.length === 0) {
@@ -33,6 +59,8 @@ const Square: React.FC = () => {
         if (lastId === 1) {
           setEmpty(true)
         }
+        console.log(r.data)
+        console.log(lastId)
         maxId.current = lastId - 1
         setMessages(messages.concat(r.data))
       })
@@ -42,6 +70,7 @@ const Square: React.FC = () => {
       })
       .finally(() => {
         setLoading(false)
+        scroll.current?.endLoading()
       })
   }
 
@@ -51,14 +80,18 @@ const Square: React.FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <LoadingScrollView
+        ref={scroll}
+        onRefresh={refresh}
         loading={loading}
         onRequireLoad={loadMore}
+        refreshHeader={MessageRefreshHeader}
         empty={empty}
         dataLength={messages.length}
         error={error}>
         {messages.map(value => (
           <ArticleItem item={value} key={value.id} />
         ))}
+        {empty ? <Text style={global.styles.infoTipText}>到底了~</Text> : null}
       </LoadingScrollView>
       <PostButton />
     </View>

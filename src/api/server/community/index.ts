@@ -29,9 +29,13 @@ export type CommunityMessageQueryType = CommunityMessage & {
 export const postArticle = (post: PostArticleType) =>
   serverNoRepeatAjax<number>('/community/post', post, 'POST')
 
-export const queryNewlyCommunityMessage = (maxId?: number) =>
+export const queryNewlyCommunityMessage = (param: {
+  maxId?: number
+  minId?: number
+}) =>
   serverNoRepeatAjax<CommunityMessageQueryType[]>('/community/newly_message', {
-    m: maxId,
+    mi: param.minId,
+    mx: param.maxId,
   })
 
 export const queryReply = (pid: number, page = 0, size = 5) =>

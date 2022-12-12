@@ -33,7 +33,7 @@ const RootArticle: React.FC = () => {
   const scroll = useRef<SpringScrollView>(null)
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(false)
-  const [empty, setEmpty] = useState(false)
+  const [empty, setEmpty] = useState(item.replyCount === 0)
   const page = useRef(1)
   const replyDrawer = useRef<ReplyDrawer>(null)
   const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
@@ -41,6 +41,10 @@ const RootArticle: React.FC = () => {
   )
 
   const loadComment = async () => {
+    if (item.replyTo === 0) {
+      logger.info('no reply available')
+      return
+    }
     logger.info('started loading comment')
     if (loading) {
       logger.info('comment is loading exit!')

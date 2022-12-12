@@ -21,7 +21,7 @@
     "appcenter": "4.4.5",
     "appcenter-analytics": "4.4.5",
     "appcenter-crashes": "4.4.5",
-    "axios-simple-wrapper": "^1.0.3",
+    "axios-simple-wrapper": "^1.0.4",
     "bytebuffer": "^5.0.1",
     "deprecated-react-native-prop-types": "^2.3.0",
     "lottie-ios": "3.2.3",

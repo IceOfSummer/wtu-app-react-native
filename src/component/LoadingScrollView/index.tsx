@@ -1,5 +1,9 @@
 import React from 'react'
-import { SpringScrollView } from 'react-native-spring-scrollview'
+import {
+  RefreshHeaderPropType,
+  RefreshHeaderStateType,
+  SpringScrollView,
+} from 'react-native-spring-scrollview'
 import LottieLoadingHeader from './LottieLoadingHeader'
 import RetryView from '../EnhancedScrollView/RetryView'
 import { View } from 'react-native'
@@ -14,6 +18,11 @@ interface LoadingScrollViewProps {
   loading: boolean
   error: boolean
   dataLength: number
+  onRefresh?: () => void
+  refreshHeader?: React.ComponentClass<
+    RefreshHeaderPropType,
+    RefreshHeaderStateType
+  >
 }
 
 interface LoadingScrollViewState {}
@@ -35,6 +44,10 @@ export class LoadingScrollView extends React.Component<
     this.scroll.current?.endLoading(true)
   }
 
+  public endRefresh() {
+    this.scroll.current?.endRefresh()
+  }
+
   retry() {
     this.props.onRequireLoad()
   }
@@ -47,7 +60,9 @@ export class LoadingScrollView extends React.Component<
   render() {
     return (
       <SpringScrollView
+        onRefresh={this.props.onRefresh}
         ref={this.scroll}
+        refreshHeader={this.props.refreshHeader}
         allLoaded={this.props.empty}
         loadingFooter={LottieLoadingHeader}
         onLoading={this.props.onRequireLoad}>
