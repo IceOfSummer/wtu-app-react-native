@@ -103,8 +103,10 @@ const RootArticle: React.FC = () => {
       })
       const result: Comment[] = []
       reply.forEach(value => {
+        const replyTo = value.replyTo as number
         result.push({
           ...value,
+          replyTo,
           replyPreview: map.get(value.id),
         })
       })

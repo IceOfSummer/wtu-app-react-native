@@ -24,11 +24,13 @@ export interface ArticleDetailRouteType extends ParamListBase {
 type Context = {
   uidMapToNickname: Map<number, string>
   msgIdMapToUser: Map<number, { uid: number; nickname: string }>
+  messageAttitude: Map<number, 0 | 1>
 }
 
 const context: Context = {
   msgIdMapToUser: new Map(),
   uidMapToNickname: new Map(),
+  messageAttitude: new Map(),
 }
 
 export const MsgInfoContext = React.createContext<Context>(context)

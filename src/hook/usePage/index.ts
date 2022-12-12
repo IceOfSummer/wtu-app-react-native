@@ -6,7 +6,7 @@ type LoadData<T> = (
   size: number
 ) => Promise<ResponseTemplate<T[]>>
 const usePage = <T>(fun: LoadData<T>, size: number, loadOnce?: boolean) => {
-  const curPage = useRef(0)
+  const curPage = useRef(1)
   const [data, setData] = useState<T[]>([])
   const [empty, setEmpty] = useState(false)
   const [loading, setLoading] = useState(false)

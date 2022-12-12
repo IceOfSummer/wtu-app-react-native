@@ -49,3 +49,13 @@ export const querySubReplyPreview = (pids: string) =>
   serverNormalAjax<CommunityMessageQueryType[]>('/community/reply/preview', {
     p: pids,
   })
+
+export const feedbackMessage = (
+  messageId: number,
+  attitude: 0 | 1 | undefined
+) =>
+  serverNoRepeatAjax(
+    '/community/feedback',
+    { i: messageId, l: attitude },
+    'POST'
+  )

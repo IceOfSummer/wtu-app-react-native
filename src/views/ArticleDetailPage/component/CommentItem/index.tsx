@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import RowAvatar from '../../../../tabs/MessageScreen/components/RowAvatar'
-import JudgeComponent from '../../../../tabs/MessageScreen/components/JudgeComponent'
+import JudgeComponent from '../JudgeComponent'
 import {
   ArticleDetailRouteType,
   COMMENT_DETAIL_PAGE,
@@ -23,6 +23,7 @@ const CommentItem: React.FC<CommentItemProps> = props => {
   const { item } = props
   const subReply: CommunityMessageQueryType[] = item.replyPreview ?? []
   const nav = useNavigation<NavigationProp<ArticleDetailRouteType>>()
+  const replyTo = item.replyTo ?? item.pid
   const toSubReplyDetail = () => {
     const copy = { ...item }
     copy.replyPreview = undefined
@@ -31,8 +32,8 @@ const CommentItem: React.FC<CommentItemProps> = props => {
 
   let contentPrefix: string | undefined
   if (item.replyTo !== item.pid) {
-    const user = msgIdMapToUser.get(item.replyTo)
-    contentPrefix = user ? user.nickname : uidMapToNickname.get(item.replyTo)
+    const user = msgIdMapToUser.get(replyTo)
+    contentPrefix = user ? user.nickname : uidMapToNickname.get(replyTo)
   }
   return (
     <Pressable
@@ -75,12 +76,13 @@ const SubReply: React.FC<SubReplyProps> = props => {
   const { uidMapToNickname, msgIdMapToUser } = useContext(MsgInfoContext)
   const { item } = props
   const senderName = uidMapToNickname.get(item.author) ?? item.id
-  let replyTo: string | number
+  const replyTo = item.replyTo ?? item.pid
+  let replyToText: string | number
   if (item.replyTo === item.pid) {
-    replyTo = ''
+    replyToText = ''
   } else {
-    const user = msgIdMapToUser.get(item.replyTo)
-    replyTo = user ? user.nickname : uidMapToNickname.get(item.replyTo) ?? ''
+    const user = msgIdMapToUser.get(replyTo)
+    replyToText = user ? user.nickname : uidMapToNickname.get(replyTo) ?? ''
   }
 
   return (
@@ -88,9 +90,9 @@ const SubReply: React.FC<SubReplyProps> = props => {
       <Text numberOfLines={3}>
         <Text style={styles.name}>{senderName}</Text>
         <Text style={{ color: global.colors.textColor }}>
-          {replyTo ? '@' : ''}
+          {replyToText ? '@' : ''}
         </Text>
-        <Text style={styles.name}>{replyTo}</Text>: {item.content}
+        <Text style={styles.name}>{replyToText}</Text>: {item.content}
       </Text>
     </View>
   )
