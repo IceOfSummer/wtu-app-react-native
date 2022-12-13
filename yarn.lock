@@ -830,6 +830,13 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.16.7"
 
+"@babel/plugin-transform-object-assign@^7.16.7":
+  version "7.18.6"
+  resolved "https://registry.npmjs.org/@babel/plugin-transform-object-assign/-/plugin-transform-object-assign-7.18.6.tgz#7830b4b6f83e1374a5afb9f6111bcfaea872cdd2"
+  integrity sha512-mQisZ3JfqWh2gVXvfqYCAAyRs6+7oev+myBsTwW5RnPhYXOTuCEw2oe3YgxlXMViXUS53lG8koulI7mJ+8JE+A==
+  dependencies:
+    "@babel/helper-plugin-utils" "^7.18.6"
+
 "@babel/plugin-transform-object-super@^7.0.0":
   version "7.16.7"
   resolved "https://registry.npmmirror.com/@babel/plugin-transform-object-super/-/plugin-transform-object-super-7.16.7.tgz#ac359cf8d32cf4354d27a46867999490b6c32a94"
@@ -967,7 +974,7 @@
     "@babel/helper-validator-option" "^7.18.6"
     "@babel/plugin-transform-flow-strip-types" "^7.18.6"
 
-"@babel/preset-typescript@^7.13.0":
+"@babel/preset-typescript@^7.13.0", "@babel/preset-typescript@^7.16.7":
   version "7.18.6"
   resolved "https://registry.npmjs.org/@babel/preset-typescript/-/preset-typescript-7.18.6.tgz#ce64be3e63eddc44240c6358daefac17b3186399"
   integrity sha512-s9ik86kXBAnD760aybBucdpnLsAt0jK1xqJn2juOn9lkOvSHV60os5hxoVJsPzMQxvnUJFAlkont2DvvaYEBtQ==
@@ -1637,10 +1644,24 @@
     query-string "^7.0.0"
     react-is "^16.13.0"
 
+"@react-navigation/drawer@^6.5.5":
+  version "6.5.5"
+  resolved "https://registry.npmjs.org/@react-navigation/drawer/-/drawer-6.5.5.tgz#7e65201435bd23d8418878210a670e8598337436"
+  integrity sha512-dkmbkv7nc7EWOqns6AlewTHIIAIa3RMwmzbucjqPBnJNJEv76YxUmYpiSQ8TBH9R3czA/Km6eGodyYmkP+3o5Q==
+  dependencies:
+    "@react-navigation/elements" "^1.3.11"
+    color "^4.2.3"
+    warn-once "^0.1.0"
+
 "@react-navigation/elements@^1.3.1":
   version "1.3.1"
   resolved "https://registry.npmmirror.com/@react-navigation/elements/-/elements-1.3.1.tgz#aacb08fe0ca4db50f0ed16b72906869ce770edf4"
   integrity sha512-jIDRJaG8YPIinl4hZXJu/W3TnhDe8hLYmGSEdL1mxZ1aoNMiApCBYkgTy11oq0EfK/koZd3DPSkJNbzBAQmPJw==
+
+"@react-navigation/elements@^1.3.11":
+  version "1.3.11"
+  resolved "https://registry.npmjs.org/@react-navigation/elements/-/elements-1.3.11.tgz#135c2cb3ae4a31bc835bb731110fd1ef9c38e237"
+  integrity sha512-o4J0g4ofJbbn68e4TpuGkuZLtq5mLll7Ndz9C4O4RvD2chchLuGQ5TycIPTKP428cz8JzuTCFqUe/ZhOPSsudw==
 
 "@react-navigation/elements@^1.3.7":
   version "1.3.7"
@@ -1808,6 +1829,11 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
+"@types/invariant@^2.2.35":
+  version "2.2.35"
+  resolved "https://registry.npmjs.org/@types/invariant/-/invariant-2.2.35.tgz#cd3ebf581a6557452735688d8daba6cf0bd5a3be"
+  integrity sha512-DxX1V9P8zdJPYQat1gHyY0xj3efl8gnMVjiM9iCY6y27lj+PoQWkgjt8jDqmovPqULkKVpKRg8J36iQiA+EtEg==
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.4"
   resolved "https://registry.npmmirror.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.4.tgz#8467d4b3c087805d63580480890791277ce35c44"
@@ -1879,14 +1905,6 @@
   version "3.0.1"
   resolved "https://registry.npmmirror.com/@types/react-native-button/-/react-native-button-3.0.1.tgz#079cb4ddb6d69b310d6aa539ada4bae8aaa0cccc"
   integrity sha512-USLDAsa0Ytlrj1k/vSVBhIQC5pW/Ka/xSqyu281G0T0oWtPKKxviN4coLj3sjtlplkN4IHRWC+Y57CCgXeV70A==
-  dependencies:
-    "@types/react" "*"
-    "@types/react-native" "*"
-
-"@types/react-native-drawer@^2.5.5":
-  version "2.5.5"
-  resolved "https://registry.npmjs.org/@types/react-native-drawer/-/react-native-drawer-2.5.5.tgz#1d99341bd6bc2bd8537dee348c5a898195375148"
-  integrity sha512-aJ0J2ayMfUSIvhRKg4GuKWF4XB5JCWaD8mTtM2aF4tPrG5c9aSPhREuZvKfbjBXY5EAvhrt4hwc8CxWiPOZhYQ==
   dependencies:
     "@types/react" "*"
     "@types/react-native" "*"
@@ -5605,6 +5623,11 @@ lodash.debounce@^4.0.8:
   resolved "https://registry.npmmirror.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
 
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.npmjs.org/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+  integrity sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==
+
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.npmmirror.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
@@ -6716,7 +6739,7 @@ prompts@^2.0.1, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@*, prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@*, prop-types@^15.5.10, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -6884,14 +6907,6 @@ react-native-device-info@^8.5.1:
   resolved "https://registry.npmjs.org/react-native-device-info/-/react-native-device-info-8.7.1.tgz#fbb06f87dbbc4423abe713874699fb2e6e99fd15"
   integrity sha512-cVMZztFa2Qn6qpQa601W61CtUwZQ1KXfqCOeltejAWEXmgIWivC692WGSdtGudj4upSi1UgMSaGcvKjfcpdGjg==
 
-react-native-drawer@^2.5.1:
-  version "2.5.1"
-  resolved "https://registry.npmjs.org/react-native-drawer/-/react-native-drawer-2.5.1.tgz#08b9314184f48c724f1b467f8859797369798654"
-  integrity sha512-cxcQNbSWy5sbGi7anSVp6EDr6JarOBMY9lbFOeLFeVYbONiudoqRKbgEsSDgSw3/LFCLvUXK5zdjXCOedeytxQ==
-  dependencies:
-    prop-types "^15.5.8"
-    tween-functions "^1.0.1"
-
 react-native-fast-image@^8.6.1:
   version "8.6.1"
   resolved "https://registry.npmjs.org/react-native-fast-image/-/react-native-fast-image-8.6.1.tgz#6a3a11b8ebc7629919265d33a420a04d13c897e0"
@@ -6970,6 +6985,19 @@ react-native-raw-bottom-sheet@^2.2.0:
   version "2.2.0"
   resolved "https://registry.npmjs.org/react-native-raw-bottom-sheet/-/react-native-raw-bottom-sheet-2.2.0.tgz#d11dabb86aadb014273767ef7b554924b13633c5"
   integrity sha512-qL4JKIqvbcVxbkKzeh51hjV7suoJN3ouxzvLmOg0FBUV1yiJAfEbacjQdtRCI6+OU5pyGFBIifLsTXcFDwHggg==
+
+react-native-reanimated@^2.13.0:
+  version "2.13.0"
+  resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-2.13.0.tgz#d64c1386626822d4dc22094b4efe028ff2c49cc9"
+  integrity sha512-yUHyYVIegWWIza4+nVyS3CSmI/Mc8kLFVHw2c6gnSHaYhYA4LeEjH/jBkoMzHk9Xd0Ra3cwtjYKAMG8OTp6JVg==
+  dependencies:
+    "@babel/plugin-transform-object-assign" "^7.16.7"
+    "@babel/preset-typescript" "^7.16.7"
+    "@types/invariant" "^2.2.35"
+    invariant "^2.2.4"
+    lodash.isequal "^4.5.0"
+    setimmediate "^1.0.5"
+    string-hash-64 "^1.0.3"
 
 react-native-root-siblings@^4.0.0:
   version "4.1.1"
@@ -7601,6 +7629,11 @@ set-value@^2.0.0, set-value@^2.0.1:
     is-plain-object "^2.0.3"
     split-string "^3.0.1"
 
+setimmediate@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz#290cbb232e306942d7d7ea9b83732ab7856f8285"
+  integrity sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==
+
 setprototypeof@1.2.0:
   version "1.2.0"
   resolved "https://registry.npmmirror.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
@@ -7885,6 +7918,11 @@ strict-uri-encode@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmmirror.com/strict-uri-encode/-/strict-uri-encode-2.0.0.tgz#b9c7330c7042862f6b142dc274bbcc5866ce3546"
   integrity sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==
+
+string-hash-64@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/string-hash-64/-/string-hash-64-1.0.3.tgz#0deb56df58678640db5c479ccbbb597aaa0de322"
+  integrity sha512-D5OKWKvDhyVWWn2x5Y9b+37NUllks34q1dCDhk/vYcso9fmhs+Tl3KR/gE4v5UNj2UA35cnX4KdVVGkG1deKqw==
 
 string-length@^4.0.1:
   version "4.0.2"
@@ -8234,11 +8272,6 @@ tsutils@^3.17.1, tsutils@^3.21.0:
   integrity sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==
   dependencies:
     tslib "^1.8.1"
-
-tween-functions@^1.0.1:
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/tween-functions/-/tween-functions-1.2.0.tgz#1ae3a50e7c60bb3def774eac707acbca73bbc3ff"
-  integrity sha512-PZBtLYcCLtEcjL14Fzb1gSxPBeL7nWvGhO5ZFPGqziCcr8uvHp0NDmdjBchp6KHL+tExcg0m3NISmKxhU394dA==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

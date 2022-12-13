@@ -115,7 +115,7 @@ const Lessons: React.FC<LessonsProps> = props => {
     )
   } else if (props.lessons.length === 0) {
     return (
-      <View style={{ height: deviceHeight }}>
+      <View style={{ height: deviceHeight, marginTop: 20 }}>
         <Text style={styles.tipText}>当前设置下没有课程哦!</Text>
         <Text style={styles.tipText}>请检查当前设置</Text>
         <Text style={styles.tipText}>点击右上角齿轮可以进入设置</Text>
@@ -266,6 +266,7 @@ const LessonItem: React.FC<LessonItemProps> = props => {
   }
 
   const height = props.lesson.duration * PER_CLASS_HEIGHT
+
   return (
     <TappableView
       style={[
@@ -283,7 +284,6 @@ const LessonItem: React.FC<LessonItemProps> = props => {
           width: perBlockWidth,
           padding: 2,
           borderRadius: 4,
-          overflow: 'hidden',
           position: 'relative',
         }}>
         <ThemedContainer status={status} width={perBlockWidth} height={height}>

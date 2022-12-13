@@ -1,7 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { ImageBackground, PanResponder, Text, View } from 'react-native'
-import styles from './styles'
-import LessonCard from './LessonCard'
+import React, { useState } from 'react'
+import { RefreshControl, ScrollView } from 'react-native'
 import LessonsTable from './LessonsTable'
 import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { connect } from 'react-redux'
@@ -11,11 +9,6 @@ import { SCHOOL_AUTH } from '../../router'
 import { getLessons } from '../../api/edu/classes'
 import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
 import NativeDialog from '../../native/modules/NativeDialog'
-import { splitTodayLessons } from '../../utils/LessonsUtils'
-import Drawer from 'react-native-drawer'
-import { useClassScheduleTheme } from './Theme'
-import { SpringScrollView } from 'react-native-spring-scrollview'
-import { ChineseWithLastDateHeader } from 'react-native-spring-scrollview/Customize'
 import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
 interface ClassScheduleProps {}
@@ -23,15 +16,8 @@ interface ClassScheduleProps {}
 const ClassSchedule: React.FC<
   ClassScheduleProps & StoreActions & StoreStates
 > = props => {
-  const [todayLessons, setTodayLessons] = useState<Array<ClassInfo>>([])
-  const scrollView = useRef<SpringScrollView>(null)
   useAutoColorStatusBar(false, global.colors.boxBackgroundColor)
-
-  useEffect(() => {
-    if (props.lessons) {
-      setTodayLessons(splitTodayLessons(props.week, props.lessons))
-    }
-  }, [])
+  const [refreshing, setRefreshing] = useState(false)
 
   /**
    * 自动加载数据, 返回true表示加载成功, false表示失败
@@ -59,35 +45,14 @@ const ClassSchedule: React.FC<
               hideCancelBtn: true,
             })
             return
-          } else {
-            setTodayLessons(splitTodayLessons(props.week, resp))
           }
         })
         .catch(() => resolve(false))
     })
   }
 
-  /**
-   * 计算并格式化当前时间
-   */
-  function getCurTime(): string {
-    const date = new Date()
-    const hour = date.getHours()
-    let curTime = ''
-    if (hour < 10) {
-      curTime += '0'
-    }
-    curTime += `${hour}:`
-    const minute = date.getMinutes()
-    if (minute < 10) {
-      curTime += '0'
-    }
-    curTime += minute
-    return curTime
-  }
-  const curTime = getCurTime()
-
   const onPullDownRefresh = () => {
+    setRefreshing(true)
     loadData()
       .then(result => {
         console.log(result)
@@ -96,95 +61,22 @@ const ClassSchedule: React.FC<
         console.log(e)
       })
       .finally(() => {
-        scrollView.current?.endRefresh()
+        setRefreshing(false)
       })
   }
 
-  /**
-   * drawer 逻辑
-   */
-  const drawer = useRef<Drawer>(null)
-  const TOGGLE_DRAWER_DISTANCE = 100
-  const MIN_TOGGLE_SPEED = 1
-  const isDrawerOpen = useRef(false)
-  const lessonsTableControlPan = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderRelease(evt, state) {
-        if (Math.abs(state.vy) < MIN_TOGGLE_SPEED) {
-          return
-        }
-        if (state.dy < 0 && -state.dy > TOGGLE_DRAWER_DISTANCE) {
-          // open
-          isDrawerOpen.current = true
-          drawer.current?.open()
-        } else if (state.dy > 0 && state.dy > TOGGLE_DRAWER_DISTANCE) {
-          // close
-          isDrawerOpen.current = false
-          drawer.current?.close()
-        }
-      },
-    })
-  ).current
-
-  const theme = useClassScheduleTheme().getTheme()
   return (
-    <View {...lessonsTableControlPan.panHandlers}>
-      <ImageBackground
-        style={[
-          styles.classScheduleContainer,
-          { backgroundColor: theme.background.color },
-        ]}
-        source={theme.background.image}>
-        <Drawer
-          ref={drawer}
-          type="overlay"
-          content={<LessonsTable />}
-          tweenDuration={200}
-          tweenEasing="easeOutSine"
-          side="bottom">
-          <SpringScrollView
-            onRefresh={onPullDownRefresh}
-            ref={scrollView}
-            refreshHeader={ChineseWithLastDateHeader}>
-            <View style={styles.blockOuter}>
-              <View style={styles.cardContainer}>
-                <View>
-                  <Text style={styles.cardTitleText}>今日课程</Text>
-                </View>
-                <View>
-                  {todayLessons.length === 0 ? (
-                    <Text style={{ textAlign: 'center', padding: 30 }}>
-                      今天没有课哦!
-                    </Text>
-                  ) : (
-                    todayLessons.map((value, index) => (
-                      <LessonCard
-                        curTime={curTime}
-                        classInfo={value}
-                        key={index}
-                      />
-                    ))
-                  )}
-                </View>
-              </View>
-              <View>
-                <Text
-                  style={[
-                    {
-                      color: theme.infoTextColor,
-                      fontSize: global.styles.$font_size_sm,
-                    },
-                    global.styles.centerText,
-                  ]}>
-                  下滑可以显示课程表哦!
-                </Text>
-              </View>
-            </View>
-          </SpringScrollView>
-        </Drawer>
-      </ImageBackground>
-    </View>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: global.colors.boxBackgroundColor }}
+      refreshControl={
+        <RefreshControl
+          colors={[global.colors.primaryColor]}
+          refreshing={refreshing}
+          onRefresh={onPullDownRefresh}
+        />
+      }>
+      <LessonsTable />
+    </ScrollView>
   )
 }
 
