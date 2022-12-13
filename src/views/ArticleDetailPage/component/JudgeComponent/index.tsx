@@ -7,6 +7,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import Icons from '../../../../component/Icons'
 import Toast from 'react-native-root-toast'
 import { MsgInfoContext } from '../../index'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../../redux/counter'
 
 interface JudgeComponentProps {
   item: CommunityMessageQueryType
@@ -25,6 +27,7 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
   const [likeCount, setLikeCount] = useState(item.like)
   const [dislikeCount, setDislikeCount] = useState(item.dislike)
   const { messageAttitude } = useContext(MsgInfoContext)
+  const store = useStore<ReducerTypes>()
   const [attitude, setAttitude] = useState<Attitude>(() =>
     messageAttitude.get(item.id)
   )
@@ -39,9 +42,16 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
       }
     }
   }, [])
+  function checkIsNotLogin() {
+    if (!store.getState().serverUser.authenticated) {
+      Toast.show('请先登录')
+      return true
+    }
+    return false
+  }
 
   const like = () => {
-    if (loading.current) {
+    if (loading.current || checkIsNotLogin()) {
       return
     }
     loading.current = true
@@ -81,7 +91,7 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
   }
 
   const dislike = () => {
-    if (loading.current) {
+    if (loading.current || checkIsNotLogin()) {
       return
     }
     messageAttitude.set(item.id, 0)

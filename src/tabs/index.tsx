@@ -11,7 +11,6 @@ import {
   CLASS_SCHEDULE_TABS,
   FLEA_MARKET_TABS,
   HOME_TABS,
-  LESSONS_TABLE_CONFIG_PAGE,
   MESSAGE_TABS,
   PERSONAL_CENTER_TABS,
   RouterTypes,
@@ -26,6 +25,8 @@ import { ReducerTypes } from '../redux/counter'
 import DatabaseManager from '../sqlite'
 import { initMessage } from '../redux/counter/messageSlice'
 import NativeDialog from '../native/modules/NativeDialog'
+import { CONFIRM_PAGE } from '../views/CommodityPage'
+import { LESSONS_TABLE_SETTINGS_PAGE } from '../views/SettingsPage'
 
 const Tab = createBottomTabNavigator()
 
@@ -126,18 +127,18 @@ const TabBar = () => {
 const messageOptions: BottomTabNavigationOptions = {
   tabBarLabel: '聊天',
   title: '聊天',
-  header: () => null,
+  headerShown: false,
 }
 
 const fleaMarketOptions: BottomTabNavigationOptions = {
   tabBarLabel: '跳蚤市场',
   title: '跳蚤市场',
-  header: () => null,
+  headerShown: false,
 }
 
 const HOME_OPTIONS: BottomTabNavigationOptions = {
-  header: () => null,
-  tabBarLabel: '首页',
+  headerShown: false,
+  tabBarLabel: '广场',
 }
 
 const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
@@ -150,7 +151,9 @@ const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
       size={20}
       style={{ marginRight: 10 }}
       onPress={() => {
-        nav.navigation.navigate(LESSONS_TABLE_CONFIG_PAGE)
+        nav.navigation.navigate(CONFIRM_PAGE, {
+          screen: LESSONS_TABLE_SETTINGS_PAGE,
+        })
       }}
     />
   ),
@@ -159,4 +162,5 @@ const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
   header: () => null,
   tabBarLabel: '个人中心',
 }
+
 export default TabBar

@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
-import { View } from 'react-native'
+import { Pressable } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import config from '../../../../config.json'
 
 const cdn = __DEV__ ? config.debug.cdnServer : config.release.cdnServer
 
 interface AvatarProps {
-  uri: string
+  uri?: string
   size?: number
+  onPress?: () => void
 }
 
 const LENGTH = 50
@@ -17,7 +18,8 @@ const Avatar: React.FC<AvatarProps> = props => {
     setFail(true)
   }
   return (
-    <View
+    <Pressable
+      onPress={props.onPress}
       style={{
         width: global.util.assert(props.size, LENGTH),
         height: global.util.assert(props.size, LENGTH),
@@ -26,17 +28,21 @@ const Avatar: React.FC<AvatarProps> = props => {
       }}>
       {fail ? (
         <FastImage
-          source={require('../../../assets/img/avatar-boy.png')}
+          source={require('../../../assets/img/avatar.png')}
           style={{ width: '100%', height: '100%' }}
         />
       ) : (
         <FastImage
           onError={onError}
-          source={{ uri: props.uri }}
+          source={
+            props.uri
+              ? { uri: props.uri }
+              : require('../../../assets/img/avatar.png')
+          }
           style={{ width: '100%', height: '100%' }}
         />
       )}
-    </View>
+    </Pressable>
   )
 }
 

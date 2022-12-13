@@ -8,10 +8,12 @@ import {
   CommunityMessageQueryType,
   queryNewlyCommunityMessage,
 } from '../../../../api/server/community'
-import ArticleItem from '../../components/ArticleItem'
+import ArticleItem from '../../component/ArticleItem'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import Toast from 'react-native-root-toast'
-import MessageRefreshHeader from '../../components/MessageRefreshHeader'
+import MessageRefreshHeader from '../../component/MessageRefreshHeader'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../../redux/counter'
 
 const Square: React.FC = () => {
   const [messages, setMessages] = useState<CommunityMessageQueryType[]>([])
@@ -22,7 +24,8 @@ const Square: React.FC = () => {
   const scroll = useRef<LoadingScrollView>(null)
 
   const refresh = () => {
-    if (loading) {
+    if (loading || messages[0] === undefined) {
+      scroll.current?.endRefresh()
       return
     }
     setLoading(true)
@@ -45,6 +48,7 @@ const Square: React.FC = () => {
 
   const loadMore = () => {
     if (loading) {
+      scroll.current?.endLoading()
       return
     }
     setLoading(true)
@@ -100,7 +104,13 @@ const Square: React.FC = () => {
 
 const PostButton: React.FC = () => {
   const nav = useNav()
+  const store = useStore<ReducerTypes>()
   const toArticlePost = () => {
+    const auth = store.getState().serverUser.authenticated
+    if (!auth) {
+      Toast.show('请先登录')
+      return
+    }
     nav.push(POST_ARTICLE_PAGE)
   }
   return (
