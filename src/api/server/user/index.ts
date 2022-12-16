@@ -63,3 +63,44 @@ export const getMultiUserInfo = async (
   )
   return responseArrayParser<UserInfoView>(userInfoMapping, resp)
 }
+
+export type WtuAuthInitParam = {
+  salt: string
+  lt: string
+  cookies: Record<string, string>
+  captcha: string
+}
+
+export const getRegisterInitParam = (username: string) =>
+  serverNoRepeatAjax<WtuAuthInitParam>('/user/register/init', {
+    u: username,
+  }).then(r => {
+    r.data.captcha = 'data:image/jpeg;base64,' + r.data.captcha
+    return r
+  })
+
+type RegisterParam = {
+  wtuUsername: string
+  wtuPassword: string
+  wtuCaptcha: string
+  lt: string
+  registerUsername: string
+  registerPassword: string
+  cookies: Record<string, string>
+}
+
+export const register = (param: RegisterParam) =>
+  serverNoRepeatAjax(
+    '/user/register/do',
+    {
+      ru: param.registerUsername,
+      rp: param.registerPassword,
+      un: param.wtuUsername,
+      wp: param.wtuPassword,
+      wc: param.wtuCaptcha,
+      lt: param.lt,
+      sid: param.cookies.JSESSIONID_auth,
+      route: param.cookies.route,
+    },
+    'POST'
+  )

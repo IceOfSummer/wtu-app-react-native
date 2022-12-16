@@ -9,7 +9,6 @@ import {
   queryNewlyCommunityMessage,
 } from '../../../../api/server/community'
 import ArticleItem from '../../component/ArticleItem'
-import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import Toast from 'react-native-root-toast'
 import MessageRefreshHeader from '../../component/MessageRefreshHeader'
 import { useStore } from 'react-redux'
@@ -69,7 +68,7 @@ const Square: React.FC = () => {
         setMessages(messages.concat(r.data))
       })
       .catch(e => {
-        showSingleBtnTip('请求失败', e.message)
+        Toast.show('加载失败: ' + e.message)
         setError(true)
       })
       .finally(() => {

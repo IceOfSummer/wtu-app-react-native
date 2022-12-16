@@ -9,6 +9,10 @@ type Env = {
   serverBaseUrl: string
   chatServerHost: string
   chatServerPort: number
+  /**
+   * 邮箱地址
+   */
+  support: string
 }
 
 let Environment: Env
@@ -24,6 +28,7 @@ if (__DEV__) {
     chatServerHost: config.debug.chatServerHost,
     chatServerPort: config.debug.chatServerPort,
     serverBaseUrl: config.debug.serverBaseUrl,
+    support: config.common.support,
   }
 } else {
   Environment = {
@@ -36,6 +41,7 @@ if (__DEV__) {
     chatServerHost: config.release.chatServerHost,
     chatServerPort: config.release.chatServerPort,
     serverBaseUrl: config.release.serverBaseUrl,
+    support: config.common.support,
   }
 }
 

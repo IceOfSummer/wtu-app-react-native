@@ -157,3 +157,21 @@ type FormError<InputRefType> = {
   reason: string
   item: FormItem<InputRefType>
 }
+
+type CheckLengthParam = {
+  name: string
+  value: string
+  min?: number
+  max?: number
+}
+
+export const checkLength = (param: CheckLengthParam) => {
+  const len = param.value.length
+  if (param.min && len < param.min) {
+    return param.name + '长度至少为' + param.min
+  }
+  if (param.max && len >= param.max) {
+    return param.name + '长度不能超过' + param.max
+  }
+  return undefined
+}

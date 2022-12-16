@@ -94,7 +94,7 @@ export interface RouterTypes extends ParamListBase {
     startTime: number
   }
   [EMPTY_PAGE]: undefined
-  [SETTINGS_PAGE]: undefined
+  [SETTINGS_PAGE]: undefined | { screen: string }
   [WEB_PAGE]: {
     url: string
   }

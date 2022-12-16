@@ -1,9 +1,13 @@
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, ViewStyle } from 'react-native'
 
-const CardContainer: React.FC = props => {
+interface CardContainerProps {
+  style?: ViewStyle
+}
+
+const CardContainer: React.FC<CardContainerProps> = props => {
   return (
-    <View style={styles.blockOuter}>
+    <View style={[styles.blockOuter, props.style]}>
       <View style={styles.cardContainer}>{props.children}</View>
     </View>
   )

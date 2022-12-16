@@ -7,6 +7,7 @@ import {
   TextInputProps,
   TextStyle,
   View,
+  ViewStyle,
 } from 'react-native'
 import AnimatedDivider from '../../Container/AnimatedDivider'
 import { InputComponent } from '../index'
@@ -17,6 +18,7 @@ interface SimpleInputProps {
   rowTipTextStyle?: TextStyle
   autoClearErrorText?: boolean
   onChangeText?: (text: string) => void
+  style?: ViewStyle
 }
 
 interface SimpleInputState {
@@ -95,7 +97,7 @@ export default class SimpleInput
   render() {
     const { textInputProps, rowTipText, rowTipTextStyle } = this.props
     return (
-      <View>
+      <View style={this.props.style}>
         <View
           style={{
             flexDirection: 'row',

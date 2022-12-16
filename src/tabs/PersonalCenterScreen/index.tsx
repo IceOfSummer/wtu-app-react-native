@@ -1,14 +1,20 @@
 import React from 'react'
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
-import { connect } from 'react-redux'
+import {
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
+import { connect, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import Icons from '../../component/Icons'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import {
-  PERSONAL_INFO,
   RouterTypes,
   SERVER_AUTH_PAGE,
   SETTINGS_PAGE,
+  UseNavigationGeneric,
 } from '../../router'
 import Applications from './ApplicationsScreen'
 import BaseContainer from '../../component/Container/BaseContainer'
@@ -18,6 +24,10 @@ import WtuLoginValidCard from './component/WtuLoginValidCard'
 import WtuLoginInvalidCard from './component/WtuLoginInvalidCard'
 import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 import { SpringScrollView } from 'react-native-spring-scrollview'
+import { useNavigation } from '@react-navigation/native'
+import Avatar, { getAvatarUrl } from '../../component/Container/Avatar'
+import { ServerUserInfo } from '../../redux/types/serverUserTypes'
+import { USER_SETTINGS_PAGE } from '../../views/SettingsPage'
 
 interface StoreProps {
   authenticated: boolean
@@ -31,49 +41,73 @@ interface PersonalCenterProps
     NativeStackScreenProps<RouterTypes> {}
 
 const PersonalCenter: React.FC<PersonalCenterProps> = props => {
-  useAutoColorStatusBar(false, '#fff')
+  const nav = useNavigation<UseNavigationGeneric>()
+  const auth = useSelector<ReducerTypes, boolean>(
+    state => state.serverUser.authenticated
+  )
+  const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
+    state => state.serverUser.userInfo
+  )
+  const toUserSettingPage = () => {
+    if (auth) {
+      nav.navigate(SETTINGS_PAGE, { screen: USER_SETTINGS_PAGE })
+    }
+  }
+
+  const toAuthPage = () => {
+    if (!auth) {
+      nav.navigate(SERVER_AUTH_PAGE)
+    }
+  }
+
+  let userNickname
+  if (auth) {
+    userNickname = userInfo ? userInfo.nickname : '用户'
+  } else {
+    userNickname = '未登录'
+  }
+  useAutoColorStatusBar({ translucent: true })
   return (
     <View style={{ flexDirection: 'column', flex: 1 }}>
-      <View style={[styles.header, { zIndex: 9999 }]}>
-        <View style={styles.headerTextView}>
-          <Image
-            source={require('../../assets/img/studyCenter.png')}
-            style={{ width: 26, height: 26 }}
-          />
-          {props.authenticated ? (
-            <Pressable onPress={() => props.navigation.navigate(PERSONAL_INFO)}>
-              <Text
-                style={{
-                  fontSize: global.styles.$font_size_lg,
-                  color: global.styles.$text_color,
-                  paddingStart: global.styles.$spacing_row_base,
-                }}>
-                {props.username}
-              </Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              onPress={() => props.navigation.navigate(SERVER_AUTH_PAGE)}>
-              <Text
-                style={{
-                  fontSize: global.styles.$font_size_lg,
-                  color: global.styles.$text_color,
-                  paddingStart: global.styles.$spacing_row_base,
-                }}>
-                未登录
-              </Text>
-            </Pressable>
-          )}
-        </View>
-        <Pressable onPress={() => props.navigation.navigate(SETTINGS_PAGE)}>
-          <Icons
-            iconText="&#xe600;"
-            color={global.styles.$text_color}
-            size={global.styles.$font_size_lg}
-          />
-        </Pressable>
-      </View>
       <SpringScrollView contentStyle={{ flex: 1 }}>
+        <ImageBackground
+          source={require('../../assets/img/user_banner.jpg')}
+          style={styles.imageBackground}
+        />
+        <LinearGradient
+          colors={['#ffffff00', '#ffffff']}
+          style={styles.imageBackground}
+        />
+        <View style={styles.headerContainer}>
+          <View style={global.styles.flexRow}>
+            <Avatar
+              size={60}
+              uri={userInfo ? getAvatarUrl(userInfo.uid) : undefined}
+            />
+            <View style={styles.userInfoContainer}>
+              <View style={global.styles.flexRow}>
+                <Text style={styles.nicknameText} onPress={toAuthPage}>
+                  {userNickname}
+                </Text>
+                {auth ? (
+                  <Icons
+                    iconText="&#xe610;"
+                    size={20}
+                    onPress={toUserSettingPage}
+                  />
+                ) : null}
+              </View>
+              <Text>{userInfo ? userInfo.uid : ''}</Text>
+            </View>
+          </View>
+          <Pressable onPress={() => props.navigation.navigate(SETTINGS_PAGE)}>
+            <Icons
+              iconText="&#xe600;"
+              color={global.styles.$text_color}
+              size={global.styles.$font_size_lg}
+            />
+          </Pressable>
+        </View>
         <LinearGradient
           style={styles.wtuBox}
           colors={['#36D1DC', '#5B86E5']}
@@ -110,12 +144,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: global.styles.$font_size_lg,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: global.styles.$bg_color,
-    padding: global.styles.$spacing_col_sm,
+  imageBackground: {
+    width: '100%',
+    height: 300,
+    position: 'absolute',
+    top: 0,
   },
   flexRow: {
     flexDirection: 'row',
@@ -124,6 +157,19 @@ const styles = StyleSheet.create({
   headerTextView: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    marginTop: 30,
+    justifyContent: 'space-between',
+  },
+  userInfoContainer: {
+    marginLeft: 6,
+  },
+  nicknameText: {
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_lg,
   },
 })
 
