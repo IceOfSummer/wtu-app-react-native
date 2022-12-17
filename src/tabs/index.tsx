@@ -27,6 +27,7 @@ import { initMessage } from '../redux/counter/messageSlice'
 import NativeDialog from '../native/modules/NativeDialog'
 import { CONFIRM_PAGE } from '../views/CommodityPage'
 import { LESSONS_TABLE_SETTINGS_PAGE } from '../views/SettingsPage'
+import NavigationHeader from '../component/Container/NavigationHeader'
 
 const Tab = createBottomTabNavigator()
 
@@ -143,23 +144,30 @@ const HOME_OPTIONS: BottomTabNavigationOptions = {
 
 const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
   tabBarLabel: '课程表',
-  headerTitle: '课程表',
-  headerTitleAlign: 'center',
-  headerRight: () => (
-    <Icons
-      iconText="&#xe600;"
-      size={20}
-      style={{ marginRight: 10 }}
-      onPress={() => {
-        nav.navigation.navigate(CONFIRM_PAGE, {
-          screen: LESSONS_TABLE_SETTINGS_PAGE,
-        })
-      }}
+  header: props => (
+    <NavigationHeader
+      {...props}
+      title="课程表"
+      hideBackButton
+      showSplitLine
+      backgroundColor={global.colors.boxBackgroundColor}
+      headerRight={() => (
+        <Icons
+          iconText="&#xe600;"
+          size={20}
+          style={{ marginRight: 10 }}
+          onPress={() => {
+            nav.navigation.navigate(CONFIRM_PAGE, {
+              screen: LESSONS_TABLE_SETTINGS_PAGE,
+            })
+          }}
+        />
+      )}
     />
   ),
 })
 const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
-  header: () => null,
+  headerShown: false,
   tabBarLabel: '个人中心',
 }
 

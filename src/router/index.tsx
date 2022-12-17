@@ -11,7 +11,6 @@ import {
 } from '@react-navigation/native'
 import PersonalInfo from '../views/PersonalInfo'
 import DiyToast from '../component/DiyToast/NavToast'
-import { StatusBar } from 'react-native'
 import LessonsDetail from '../views/LessonsDetail'
 import EmptyPage from '../views/EmptyPage'
 import SettingsPage from '../views/SettingsPage'
@@ -43,6 +42,7 @@ import Order from '../views/Order'
 import PostArticlePage from '../views/PostArticlePage'
 import ArticleDetailPage from '../views/ArticleDetailPage'
 import { CommunityMessageQueryType } from '../api/server/community'
+import NavigationHeader from '../component/Container/NavigationHeader'
 
 const Stack = createNativeStackNavigator()
 
@@ -159,8 +159,7 @@ export const headerCommonOptionsWithTitle = (
   title: string
 ): NativeStackNavigationOptions => {
   return {
-    ...headerCommonOptions,
-    title,
+    header: props => <NavigationHeader {...props} title={title} />,
   }
 }
 
@@ -326,10 +325,6 @@ const Router: React.FC = () => {
         />
       </Stack.Navigator>
       <DiyToast />
-      <StatusBar
-        backgroundColor={theme.colors.statusBarColor}
-        barStyle="dark-content"
-      />
     </NavigationContainer>
   )
 }

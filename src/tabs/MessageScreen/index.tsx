@@ -7,14 +7,13 @@ import Icons from '../../component/Icons'
 import useNav from '../../hook/useNav'
 import { SERVER_AUTH_PAGE } from '../../router'
 import getDefaultHeaderHeight from 'react-native-screens/src/native-stack/utils/getDefaultHeaderHeight'
-import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 import Chat from './tabs/Chat'
+import CustomStatusBar from '../../component/Container/CustomStatusBar'
 
 const MessageScreen: React.FC = () => {
   const authenticated = useSelector<ReducerTypes, boolean>(
     state => state.serverUser.authenticated
   )
-  useAutoColorStatusBar(false, global.colors.boxBackgroundColor)
   const { width } = useWindowDimensions()
   const nav = useNav()
   if (authenticated) {
@@ -40,11 +39,11 @@ const MessageScreen: React.FC = () => {
  * 用户登录后显示消息界面
  */
 const AuthenticatedView = () => {
-  useAutoColorStatusBar(false, '#fff')
   const { width, height } = useWindowDimensions()
   const headerHeight = getDefaultHeaderHeight({ width, height }, 0, 'formSheet')
   return (
     <View style={{ flex: 1 }}>
+      <CustomStatusBar backgroundColor={global.colors.boxBackgroundColor} />
       <View style={[styles.topTabBarContainer, { height: headerHeight }]}>
         <Pressable>
           <Icons

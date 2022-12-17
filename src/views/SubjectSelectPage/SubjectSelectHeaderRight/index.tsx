@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { Pressable, StatusBar } from 'react-native'
+import { Pressable } from 'react-native'
 import Icons from '../../../component/Icons'
 import PubSub from 'pubsub-js'
 import { BROAD_OPEN_DIALOG_TIP } from '../index'
@@ -49,7 +49,6 @@ const SubjectSelectHeaderRight: React.FC = () => {
   }
   return (
     <Pressable onPress={showBottomMenu}>
-      <StatusBar translucent={true} />
       <Icons iconText="&#xe8af;" size={25} />
       <RBSheet
         ref={drawer}

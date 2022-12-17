@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StatusBar, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import {
   RouteProp,
   StackActions,
@@ -24,6 +24,7 @@ import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingVi
 import UserSimpleInfo from '../../../UserInfoPage/component/UserSimpleInfo'
 import ColorfulButton from '../../../../component/Button/ColorfulButton'
 import { NavigationProp } from '@react-navigation/core/src/types'
+import CustomStatusBar from '../../../../component/Container/CustomStatusBar'
 
 const ConfirmPage: React.FC = () => {
   const route =
@@ -58,10 +59,8 @@ const ConfirmPage: React.FC = () => {
   }
   return (
     <View style={{ flex: 1 }}>
-      <StatusBar
-        translucent={false}
-        backgroundColor={global.colors.boxBackgroundColor}
-      />
+      <CustomStatusBar backgroundColor={global.colors.boxBackgroundColor} />
+
       <SpringScrollView>
         <BaseContainer title="商品信息">
           <HorShopItem

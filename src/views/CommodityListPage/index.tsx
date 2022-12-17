@@ -16,6 +16,7 @@ import { searchCommodity } from '../../api/server/commodity'
 import HorShopItem from './component/HorShopItem'
 import NativeDialog from '../../native/modules/NativeDialog'
 import CommoditySkeleton from './component/CommoditySkeleton'
+import CustomStatusBar from '../../component/Container/CustomStatusBar'
 
 /**
  * 商品搜索结果展示页面
@@ -66,6 +67,7 @@ const CommodityListPage: React.FC = () => {
 
   return (
     <View>
+      <CustomStatusBar />
       <View style={styles.headerContainer}>
         <Pressable onPress={nav.goBack}>
           <Icons iconText="&#xe61d;" size={28} />

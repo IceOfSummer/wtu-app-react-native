@@ -1,5 +1,4 @@
 import React from 'react'
-import { StatusBar } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import LoginPage from './tabs/LoginPage'
@@ -26,7 +25,6 @@ const ServerAuthPage: React.FC = () => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={{ width: '100%', height: '100%', paddingTop: 12 }}>
-      <StatusBar translucent={true} backgroundColor="transparent" />
       <Tab.Navigator
         sceneContainerStyle={{ backgroundColor: 'transparent' }}
         tabBar={() => null}

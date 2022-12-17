@@ -53,22 +53,9 @@ function fixViewPropTypesDeprecated(path, targetLine, insertAt) {
   console.log(`fix error: ${path} has already fixed`)
 }
 
-/**
- * 修复废弃的钩子函数
- * @param path {string} 路径
- */
-function fixDeprecatedHook(path) {
-  console.log('=========fixDeprecatedHook=========')
-  console.log('we can not fix it automatically')
-  console.log(
-    `you have to run 'npx react-codemod rename-unsafe-lifecycles ${path}' to fix it by yourself`
-  )
-}
-
 rawBottomSheetLibFix()
 fixViewPropTypesDeprecated(
   './node_modules/react-native-button/Button.js',
   9,
   11
 )
-fixDeprecatedHook('./node_modules/react-native-drawer/index.js')

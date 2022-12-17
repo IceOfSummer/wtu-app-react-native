@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { RefreshControl, ScrollView } from 'react-native'
+import { RefreshControl, ScrollView, View } from 'react-native'
 import LessonsTable from './LessonsTable'
 import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { connect } from 'react-redux'
@@ -9,14 +9,12 @@ import { SCHOOL_AUTH } from '../../router'
 import { getLessons } from '../../api/edu/classes'
 import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
 import NativeDialog from '../../native/modules/NativeDialog'
-import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
 interface ClassScheduleProps {}
 
 const ClassSchedule: React.FC<
   ClassScheduleProps & StoreActions & StoreStates
 > = props => {
-  useAutoColorStatusBar(false, global.colors.boxBackgroundColor)
   const [refreshing, setRefreshing] = useState(false)
 
   /**
@@ -64,19 +62,20 @@ const ClassSchedule: React.FC<
         setRefreshing(false)
       })
   }
-
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: global.colors.boxBackgroundColor }}
-      refreshControl={
-        <RefreshControl
-          colors={[global.colors.primaryColor]}
-          refreshing={refreshing}
-          onRefresh={onPullDownRefresh}
-        />
-      }>
-      <LessonsTable />
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        style={{ backgroundColor: global.colors.boxBackgroundColor }}
+        refreshControl={
+          <RefreshControl
+            colors={[global.colors.primaryColor]}
+            refreshing={refreshing}
+            onRefresh={onPullDownRefresh}
+          />
+        }>
+        <LessonsTable />
+      </ScrollView>
+    </View>
   )
 }
 

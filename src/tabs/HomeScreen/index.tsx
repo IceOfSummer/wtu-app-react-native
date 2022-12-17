@@ -5,7 +5,6 @@ import Avatar, { getAvatarUrl } from '../../component/Container/Avatar'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
 import { ServerUserInfo } from '../../redux/types/serverUserTypes'
-import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 import RoundSearchBar from '../../component/SearchBar/RoundSearchBar'
 import { useNavigation } from '@react-navigation/native'
 import {
@@ -13,6 +12,7 @@ import {
   SEARCH_PAGE,
   UseNavigationGeneric,
 } from '../../router'
+import CustomStatusBar from '../../component/Container/CustomStatusBar'
 
 // 原本打算做个侧拉Drawer的，结果好像有点难实现? 主要是不好把下面的Tabs顶走
 const HomeScreen: React.FC = () => {
@@ -20,7 +20,6 @@ const HomeScreen: React.FC = () => {
   const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
     state => state.serverUser.userInfo
   )
-  useAutoColorStatusBar(false, global.colors.boxBackgroundColor)
 
   const goSearch = () => {
     console.log('tap')
@@ -33,6 +32,7 @@ const HomeScreen: React.FC = () => {
   }
   return (
     <View style={{ flex: 1 }}>
+      <CustomStatusBar backgroundColor={global.colors.boxBackgroundColor} />
       <View style={styles.header}>
         <Avatar
           onPress={toPersonalCenter}

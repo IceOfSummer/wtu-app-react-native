@@ -22,7 +22,6 @@ import TradeLabel from './component/TradeLabel'
 import LinearGradient from 'react-native-linear-gradient'
 import WtuLoginValidCard from './component/WtuLoginValidCard'
 import WtuLoginInvalidCard from './component/WtuLoginInvalidCard'
-import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { useNavigation } from '@react-navigation/native'
 import Avatar, { getAvatarUrl } from '../../component/Container/Avatar'
@@ -66,7 +65,6 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
   } else {
     userNickname = '未登录'
   }
-  useAutoColorStatusBar({ translucent: true })
   return (
     <View style={{ flexDirection: 'column', flex: 1 }}>
       <SpringScrollView contentStyle={{ flex: 1 }}>

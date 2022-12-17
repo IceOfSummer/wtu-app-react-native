@@ -18,6 +18,7 @@ import {
 import NativeDialog from '../../native/modules/NativeDialog'
 import useForceUpdate from '../../hook/useForceUpdate'
 import Icons from '../../component/Icons'
+import CustomStatusBar from '../../component/Container/CustomStatusBar'
 
 /**
  * 搜索页面
@@ -72,6 +73,7 @@ const SearchPage: React.FC = () => {
 
   return (
     <View style={styles.headerContainer}>
+      <CustomStatusBar />
       <View style={global.styles.flexRowJustBetween}>
         <Pressable onPress={nav.goBack}>
           <Icons iconText="&#xe61d;" size={28} />

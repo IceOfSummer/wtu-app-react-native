@@ -6,7 +6,7 @@ import { useFormChecker } from '../../component/Input'
 import { postArticle } from '../../api/server/community'
 import Loading from '../../component/Loading'
 import { showSingleBtnTip } from '../../native/modules/NativeDialog'
-import { useNavigation } from '@react-navigation/native'
+import { StackActions, useNavigation } from '@react-navigation/native'
 import { ARTICLE_DETAIL_PAGE, UseNavigationGeneric } from '../../router'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
@@ -46,18 +46,20 @@ const PostArticlePage: React.FC = () => {
         if (!info) {
           nav.goBack()
         } else {
-          nav.navigate(ARTICLE_DETAIL_PAGE, {
-            title,
-            content,
-            pid: 0,
-            nickname: info.nickname,
-            id: r.data,
-            author: info.uid,
-            createTime: Date.now(),
-            dislike: 0,
-            like: 0,
-            replyCount: 0,
-          })
+          nav.dispatch(
+            StackActions.replace(ARTICLE_DETAIL_PAGE, {
+              title,
+              content,
+              pid: 0,
+              nickname: info.nickname,
+              id: r.data,
+              author: info.uid,
+              createTime: Date.now(),
+              dislike: 0,
+              like: 0,
+              replyCount: 0,
+            })
+          )
         }
       })
       .catch(e => {

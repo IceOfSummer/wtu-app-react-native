@@ -8,7 +8,6 @@ import {
   headerCommonOptionsWithTitle,
   UseRouteGeneric,
 } from '../../router'
-import useAutoColorStatusBar from '../../hook/useAutoColorStatusBar'
 
 const Stack = createNativeStackNavigator()
 
@@ -23,7 +22,6 @@ export interface SubmitPageRouteTypes extends ParamListBase {
 
 export const GoodsSubmitPage: React.FC = () => {
   const route = useRoute<UseRouteGeneric<typeof GOODS_SUBMIT_PAGE>>()
-  useAutoColorStatusBar(false, '#fff')
   return (
     <Stack.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
       <Stack.Screen

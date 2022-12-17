@@ -115,7 +115,7 @@ const Lessons: React.FC<LessonsProps> = props => {
     )
   } else if (props.lessons.length === 0) {
     return (
-      <View style={{ height: deviceHeight, marginTop: 20 }}>
+      <View style={{ flex: 1, paddingTop: 50 }}>
         <Text style={styles.tipText}>当前设置下没有课程哦!</Text>
         <Text style={styles.tipText}>请检查当前设置</Text>
         <Text style={styles.tipText}>点击右上角齿轮可以进入设置</Text>

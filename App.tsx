@@ -6,7 +6,7 @@ import Router from './src/router'
 import './src/api'
 import './src/api/chat/MessageListener'
 import Loading from './src/component/Loading'
-import { SafeAreaView } from 'react-native'
+import { StatusBar, View } from 'react-native'
 import UpdateChecker from './src/utils/UpdateChecker'
 import { getLogger } from './src/utils/LoggerUtils'
 
@@ -20,10 +20,15 @@ const App = () => {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>
+          <StatusBar
+            translucent
+            backgroundColor="transparent"
+            barStyle="dark-content"
+          />
           <Router />
           <Loading />
-        </SafeAreaView>
+        </View>
       </PersistGate>
     </Provider>
   )

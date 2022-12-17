@@ -9,7 +9,6 @@ import {
 } from '../../../../api/server/commodity'
 import NativeDialog from '../../../../native/modules/NativeDialog'
 import LoadingView from '../../../../component/Loading/LoadingView'
-import { StatusBar } from 'react-native'
 
 /**
  * 商品详细界面
@@ -56,7 +55,6 @@ const CommodityDetailPage: React.FC = () => {
       loadCallback={loadData}
       success={success}
       isLoading={isLoading}>
-      <StatusBar translucent backgroundColor="transparent" />
       {commodity ? <CommodityInfo commodity={commodity} /> : null}
     </LoadingView>
   )
