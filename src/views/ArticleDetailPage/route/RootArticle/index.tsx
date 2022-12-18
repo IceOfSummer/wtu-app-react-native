@@ -41,7 +41,7 @@ const RootArticle: React.FC = () => {
   )
 
   const loadComment = async () => {
-    if (item.replyTo === 0) {
+    if (item.replyCount === 0) {
       logger.info('no reply available')
       return
     }

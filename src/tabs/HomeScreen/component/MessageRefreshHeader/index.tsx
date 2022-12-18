@@ -3,7 +3,7 @@ import LottieView from 'lottie-react-native'
 import React from 'react'
 import { View } from 'react-native'
 export default class MessageRefreshHeader extends RefreshHeader {
-  static height = 100
+  static height = 80
 
   render() {
     let progress

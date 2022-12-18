@@ -13,7 +13,7 @@ import {
   CONFIRM_PAGE,
   LOCK_SUCCESS_PAGE,
 } from '../../index'
-import { getUserInfo, UserInfoView } from '../../../../api/server/user'
+import { getUserInfo, UserInfoQueryType } from '../../../../api/server/user'
 import Loading from '../../../../component/Loading'
 import { lockCommodity } from '../../../../api/server/commodity'
 import NativeDialog from '../../../../native/modules/NativeDialog'
@@ -30,7 +30,7 @@ const ConfirmPage: React.FC = () => {
   const route =
     useRoute<RouteProp<CommodityPageRouteTypes, typeof CONFIRM_PAGE>>()
   const { commodity, remark, count } = route.params
-  const [userInfo, setUserInfo] = useState<UserInfoView>()
+  const [userInfo, setUserInfo] = useState<UserInfoQueryType>()
   const nav = useNavigation<NavigationProp<CommodityPageRouteTypes>>()
 
   const loadUserInfo = () => getUserInfo(commodity.ownerId)

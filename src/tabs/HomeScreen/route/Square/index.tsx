@@ -62,8 +62,6 @@ const Square: React.FC = () => {
         if (lastId === 1) {
           setEmpty(true)
         }
-        console.log(r.data)
-        console.log(lastId)
         maxId.current = lastId - 1
         setMessages(messages.concat(r.data))
       })

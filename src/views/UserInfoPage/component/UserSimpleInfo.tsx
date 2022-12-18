@@ -1,11 +1,11 @@
 import React from 'react'
-import { UserInfoView } from '../../../api/server/user'
+import { UserInfoQueryType } from '../../../api/server/user'
 import BaseContainer from '../../../component/Container/BaseContainer'
 import { StyleSheet, Text, View } from 'react-native'
-import Avatar, { getAvatarUrl } from '../../../component/Container/Avatar'
+import Avatar from '../../../component/Container/Avatar'
 
 interface UserSimpleInfoProps {
-  userInfo: UserInfoView
+  userInfo: UserInfoQueryType
 }
 
 const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
@@ -22,7 +22,7 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
   return (
     <BaseContainer>
       <View style={styles.avatar}>
-        <Avatar uri={getAvatarUrl(props.userInfo.uid)} size={64} />
+        <Avatar uid={props.userInfo.userId} size={64} />
       </View>
       <View
         style={{
@@ -30,7 +30,7 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
           alignSelf: 'center',
           alignItems: 'center',
         }}>
-        <Text style={global.styles.blobText}>{userInfo.nickname}</Text>
+        <Text style={styles.name}>{userInfo.nickname}</Text>
       </View>
       <View style={styles.infoContainer}>
         <View style={styles.infoDetailContainer}>
@@ -39,17 +39,21 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
         </View>
         <View style={styles.infoDetailContainer}>
           <Text style={styles.labelText}>真实姓名: </Text>
-          <Text>{userInfo.name ?? '用户未上传真实姓名'}</Text>
+          <Text>{userInfo.name}</Text>
         </View>
         <View style={styles.infoDetailContainer}>
-          <Text style={styles.labelText}>居住寝室: </Text>
-          <Text>{userInfo.bedroom ?? '用户未上传居住寝室'}</Text>
+          <Text style={styles.labelText}>班级: </Text>
+          <Text>{userInfo.className}</Text>
         </View>
       </View>
     </BaseContainer>
   )
 }
 const styles = StyleSheet.create({
+  name: {
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_base,
+  },
   avatar: {
     resizeMode: 'stretch',
     alignSelf: 'center',
@@ -58,7 +62,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   infoContainer: {
-    marginTop: 10,
+    marginTop: 4,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -1,7 +1,7 @@
 import React from 'react'
 import Square from './route/Square'
 import { StyleSheet, View } from 'react-native'
-import Avatar, { getAvatarUrl } from '../../component/Container/Avatar'
+import Avatar from '../../component/Container/Avatar'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
 import { ServerUserInfo } from '../../redux/types/serverUserTypes'
@@ -22,7 +22,6 @@ const HomeScreen: React.FC = () => {
   )
 
   const goSearch = () => {
-    console.log('tap')
     // 这里直接去商品的搜索, 以后再填坑
     nav.navigate(SEARCH_PAGE, { placeholder: '' })
   }
@@ -34,11 +33,7 @@ const HomeScreen: React.FC = () => {
     <View style={{ flex: 1 }}>
       <CustomStatusBar backgroundColor={global.colors.boxBackgroundColor} />
       <View style={styles.header}>
-        <Avatar
-          onPress={toPersonalCenter}
-          uri={userInfo ? getAvatarUrl(userInfo.uid) : undefined}
-          size={45}
-        />
+        <Avatar onPress={toPersonalCenter} uid={userInfo?.uid} size={45} />
         <RoundSearchBar
           onContainerPress={goSearch}
           containerStyle={styles.searchBar}

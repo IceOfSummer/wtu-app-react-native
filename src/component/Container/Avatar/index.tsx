@@ -1,25 +1,38 @@
 import React, { useState } from 'react'
 import { Pressable } from 'react-native'
 import FastImage from 'react-native-fast-image'
-import config from '../../../../config.json'
+import { useNavigation } from '@react-navigation/native'
+import { UseNavigationGeneric, USER_INFO_PAGE } from '../../../router'
+import Environment from '../../../utils/Environment'
 
-const cdn = __DEV__ ? config.debug.cdnServer : config.release.cdnServer
-
+const URL_PREFIX = Environment.cdnUrl + '/avatar/'
 interface AvatarProps {
-  uri?: string
+  /**
+   * @deprecated 请使用uid属性
+   */
+  uri?: number
   size?: number
   onPress?: () => void
+  uid?: number
 }
 
 const LENGTH = 50
 const Avatar: React.FC<AvatarProps> = props => {
   const [fail, setFail] = useState(false)
+  const nav = useNavigation<UseNavigationGeneric>()
+  const uid = props.uri ? props.uri : props.uid
   const onError = () => {
     setFail(true)
   }
+  const toUserInfo = () => {
+    if (uid) {
+      nav.navigate(USER_INFO_PAGE, { id: uid })
+    }
+  }
+  const uri = uid ? URL_PREFIX + uid + '.webp' : undefined
   return (
     <Pressable
-      onPress={props.onPress}
+      onPress={props.onPress ?? toUserInfo}
       style={{
         width: global.util.assert(props.size, LENGTH),
         height: global.util.assert(props.size, LENGTH),
@@ -34,11 +47,7 @@ const Avatar: React.FC<AvatarProps> = props => {
       ) : (
         <FastImage
           onError={onError}
-          source={
-            props.uri
-              ? { uri: props.uri }
-              : require('../../../assets/img/avatar.png')
-          }
+          source={uri ? { uri } : require('../../../assets/img/avatar.png')}
           style={{ width: '100%', height: '100%' }}
         />
       )}
@@ -46,6 +55,9 @@ const Avatar: React.FC<AvatarProps> = props => {
   )
 }
 
-export const getAvatarUrl = (uid: number) => `http://${cdn}/avatar/${uid}.webp`
+/**
+ * @deprecated
+ */
+export const getAvatarUrl = (uid: number) => uid
 
 export default Avatar

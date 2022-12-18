@@ -1,5 +1,6 @@
 import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
 import { ServerUser } from '../../sqlite/user'
+import { UserInfoQueryType } from '../../api/server/user'
 
 export type ServerUserState = {
   /**
@@ -52,7 +53,7 @@ export interface ServerUserReducers extends SliceCaseReducers<ServerUserState> {
   /**
    * 保存用户信息
    */
-  saveUserToCache: Reducer<ServerUser>
+  saveUserToCache: Reducer<UserInfoQueryType>
   /**
    * 合并用户信息缓存
    */

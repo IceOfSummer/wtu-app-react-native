@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { UserInfoView } from '../../../api/server/user'
+import { UserInfoQueryType } from '../../../api/server/user'
 import { StyleSheet, Text, View } from 'react-native'
 import BaseContainer from '../../../component/Container/BaseContainer'
 import EnhancedLoadingView from '../../../component/Loading/EnhancedLoadingView'
@@ -8,13 +8,13 @@ import SimpleOrderPreview from '../component/SimpleOrderPreview'
 import UserSimpleInfo from '../component/UserSimpleInfo'
 
 interface UserInfoCardProps {
-  userInfo: UserInfoView
+  userInfo: UserInfoQueryType
 }
 
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { userInfo } = props
   const [orders, setOrders] = useState<OrderDetail[]>([])
-  const loadUserSoldOrder = () => getSoldOrderSimply(props.userInfo.uid)
+  const loadUserSoldOrder = () => getSoldOrderSimply(props.userInfo.userId)
 
   return (
     <View>
@@ -29,7 +29,9 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
             <SimpleOrderPreview order={value} key={value.orderId} />
           ))}
           {orders.length === 0 ? (
-            <Text style={global.styles.primaryTipText}>暂时没有记录哦!</Text>
+            <View style={{ paddingVertical: 50 }}>
+              <Text style={global.styles.primaryTipText}>暂时没有记录哦!</Text>
+            </View>
           ) : null}
         </EnhancedLoadingView>
       </BaseContainer>

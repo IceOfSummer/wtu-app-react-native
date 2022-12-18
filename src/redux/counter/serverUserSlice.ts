@@ -40,7 +40,7 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
       argCheckPointer++
     ) {
       const userInfo = info[infoPointer]
-      if (userInfo.uid === arg[argCheckPointer]) {
+      if (userInfo.userId === arg[argCheckPointer]) {
         cachedUser[arg[argCheckPointer]] = userInfo
         infoPointer++
         continue
@@ -68,7 +68,7 @@ export const loadUserCacheFromServer = createAsyncThunk<CachedUser, number[]>(
     logger.debug(info)
     const cachedUser: CachedUser = {}
     info.data.forEach(value => {
-      cachedUser[value.uid] = value
+      cachedUser[value.userId] = value
     })
     // 存数据库
     insertOrUpdateMultiUsers(info.data).catch(e =>
@@ -87,13 +87,13 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
       state.userInfo = payload
     },
     saveUserToCache(state, { payload }) {
-      const str = JSON.stringify(payload)
-      logger.info('saving user: ' + str)
-      state.cachedUser[payload.uid] = payload
+      logger.info('saving user: ')
+      logger.info(payload)
+      state.cachedUser[payload.userId] = payload
       // FIXME 该操作应该提到外面
       // 保存到数据库
       insertOrUpdateUser(payload).catch(e => {
-        logger.error('saving user: ' + str + ' fail, ' + e.message)
+        logger.error('saving user failed: ' + e.message)
       })
     },
     combineUserCache(state, { payload }) {

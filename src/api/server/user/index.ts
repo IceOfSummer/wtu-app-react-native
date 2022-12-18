@@ -1,31 +1,11 @@
 import { serverNoRepeatAjax } from '../../request'
-import { ResponseTemplate } from '../types'
-import { responseArrayParser, responseParser } from '../../util'
 
-export type UserInfoView = {
-  uid: number
-  username: string
-  name?: string
-  bedroom?: string
+export type UserInfoQueryType = {
+  userId: number
+  name: string
   credit: number
-  nickname?: string
-}
-
-type UglyUserInfo = {
-  u: number
-  n?: string
-  b?: string
-  c: number
-  i?: string
-}
-
-const userInfoMapping = {
-  u: 'uid',
-  un: 'username',
-  n: 'name',
-  b: 'bedroom',
-  c: 'credit',
-  i: 'nickname',
+  nickname: string
+  className: string
 }
 
 /**
@@ -33,17 +13,13 @@ const userInfoMapping = {
  * @param id
  */
 export const getUserInfo = (id: number) =>
-  serverNoRepeatAjax<UglyUserInfo | undefined>(`/user/info/${id}`).then(resp =>
-    responseParser<UserInfoView>(userInfoMapping, resp)
-  )
+  serverNoRepeatAjax<UserInfoQueryType | undefined>(`/user/info/${id}`)
 
 /**
  * 查询多个用户的信息
  * @param ids 要查询的用户id
  */
-export const getMultiUserInfo = async (
-  ids: number[]
-): Promise<ResponseTemplate<Array<UserInfoView>>> => {
+export const getMultiUserInfo = async (ids: number[]) => {
   if (ids.length === 0) {
     return {
       message: 'success',
@@ -57,11 +33,10 @@ export const getMultiUserInfo = async (
   })
   param = param.replace(/,$/, '')
   console.log(param)
-  const resp = await serverNoRepeatAjax<Array<UglyUserInfo>>(
+  return serverNoRepeatAjax<Array<UserInfoQueryType>>(
     '/user/info/multi_query',
     { i: param }
   )
-  return responseArrayParser<UserInfoView>(userInfoMapping, resp)
 }
 
 export type WtuAuthInitParam = {
