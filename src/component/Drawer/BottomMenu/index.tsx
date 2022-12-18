@@ -1,5 +1,5 @@
 import React from 'react'
-import { LayoutChangeEvent, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import Icons from '../../Icons'
 import Button from 'react-native-button'
 
@@ -7,7 +7,6 @@ interface BottomMenuProps {
   onSelect: OnSelect
   items: Array<MenuItem>
   title: string
-  onLayout?: (event: LayoutChangeEvent) => void
 }
 export type OnSelect = (index: number, item?: MenuItem) => void
 
@@ -30,7 +29,7 @@ const BottomMenu: React.FC<BottomMenuProps> = props => {
   }
 
   return (
-    <View style={{ paddingVertical: 10 }} onLayout={props.onLayout}>
+    <View style={{ paddingVertical: 10 }}>
       <View
         style={{
           flexDirection: 'row',
@@ -67,12 +66,18 @@ const BottomMenu: React.FC<BottomMenuProps> = props => {
                 paddingHorizontal: 20,
                 borderColor: global.styles.$border_color,
               }}>
-              <Icons iconText={value.icon} size={26} parseUnicode />
+              <Icons
+                iconText={value.icon}
+                size={26}
+                parseUnicode
+                color={global.colors.textColor}
+              />
               <Text
                 style={{
                   fontSize: 16,
                   marginStart: 10,
                   fontWeight: 'normal',
+                  color: global.colors.textColor,
                 }}>
                 {value.name}
               </Text>

@@ -9,8 +9,8 @@ import { RouterTypes } from '../../../router'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import Toast from 'react-native-toast-message'
 import useGlobalState from '../useGlobalState'
-import RBSheet from 'react-native-raw-bottom-sheet'
 import BottomMenu, { MenuItem } from '../../../component/Drawer/BottomMenu'
+import Drawer from '../../../component/Drawer'
 
 const menuItems: Array<MenuItem> = [
   { name: '帮助', icon: '&#xe601;' },
@@ -20,13 +20,13 @@ const menuItems: Array<MenuItem> = [
 const SubjectSelectHeaderRight: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RouterTypes>>()
   const globalState = useGlobalState()
-  const drawer = useRef<RBSheet>(null)
+  const drawer = useRef<Drawer>(null)
   const showBottomMenu = () => {
-    drawer.current?.open()
+    drawer.current?.showDrawer()
   }
 
   const onSelect = (index: number) => {
-    drawer.current?.close()
+    drawer.current?.closeDrawer()
     if (index === 0) {
       PubSub.publish(BROAD_OPEN_DIALOG_TIP)
     } else {
@@ -50,14 +50,9 @@ const SubjectSelectHeaderRight: React.FC = () => {
   return (
     <Pressable onPress={showBottomMenu}>
       <Icons iconText="&#xe8af;" size={25} />
-      <RBSheet
-        ref={drawer}
-        height={160}
-        customStyles={{
-          container: { borderTopLeftRadius: 10, borderTopRightRadius: 10 },
-        }}>
+      <Drawer ref={drawer}>
         <BottomMenu onSelect={onSelect} items={menuItems} title="选项" />
-      </RBSheet>
+      </Drawer>
     </Pressable>
   )
 }

@@ -7,6 +7,7 @@ import {
   LayoutChangeEvent,
   Modal,
   Pressable,
+  View,
   ViewStyle,
 } from 'react-native'
 
@@ -140,23 +141,23 @@ export default class Drawer extends React.Component<
             onPress={this.closeDrawer}
             style={{
               flex: 1,
+            }}
+          />
+          <Animated.View
+            style={{
+              position: 'absolute',
+              top: this.screenHeight - this.state.keyboardAvoidHeight,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              backgroundColor: global.colors.boxBackgroundColor,
+              width: '100%',
+              paddingBottom: 30,
+              transform: [{ translateY: this.modalOffset }],
             }}>
-            <Animated.View
-              style={{
-                position: 'absolute',
-                top: this.screenHeight - this.state.keyboardAvoidHeight,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                backgroundColor: global.colors.boxBackgroundColor,
-                width: '100%',
-                paddingBottom: 30,
-                transform: [{ translateY: this.modalOffset }],
-              }}>
-              <Pressable onLayout={this.onLayout} style={this.props.style}>
-                {this.props.children}
-              </Pressable>
-            </Animated.View>
-          </Pressable>
+            <View onLayout={this.onLayout} style={this.props.style}>
+              {this.props.children}
+            </View>
+          </Animated.View>
         </Animated.View>
       </Modal>
     )

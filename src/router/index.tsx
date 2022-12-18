@@ -21,7 +21,6 @@ import { checkLogin } from '../redux/actions/user'
 import { markCheckLoginDone } from '../redux/actions/temporaryData'
 import { ReducerTypes } from '../redux/reducers'
 import SubjectSelectPage from '../views/SubjectSelectPage'
-import SubjectSelectHeaderRight from '../views/SubjectSelectPage/SubjectSelectHeaderRight'
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import SearchPage from '../views/SearchPage'
@@ -255,8 +254,7 @@ const Router: React.FC = () => {
           name={SUBJECT_SELECT_PAGE}
           component={SubjectSelectPage}
           options={{
-            ...headerCommonOptionsWithTitle('选课工具'),
-            headerRight: () => <SubjectSelectHeaderRight />,
+            headerShown: false,
           }}
         />
         <Stack.Screen

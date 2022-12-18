@@ -10,14 +10,15 @@ import { connect, useStore } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import Tabs from './Tabs'
 import SubjectSelectTip from './SubjectSelectTip'
-import FullScreenDialog, {
-  FullScreenDialogRefAttribute,
-} from '../../native/component/FullScreenDialog'
 import { BaseQueryParam, getBaseQueryParam } from '../../api/edu/subjectSelect'
 import NativeDialog from '../../native/modules/NativeDialog'
 import PubSub from 'pubsub-js'
 import useGlobalState from './useGlobalState'
 import { modifyCommonOptions } from '../../redux/counter/commonOptionsSlice'
+import NavigationHeader from '../../component/Container/NavigationHeader'
+import { useNavigation } from '@react-navigation/native'
+import Drawer from '../../component/Drawer'
+import SubjectSelectHeaderRight from './SubjectSelectHeaderRight'
 
 export const BROAD_OPEN_DIALOG_TIP = 'openDialogTip'
 
@@ -117,24 +118,26 @@ const Content = connect<StoreStates, StoreActions, {}, ReducerTypes>(
 )(SubjectSelectPage)
 
 const PageContainer: React.FC = () => {
-  const layout = useWindowDimensions()
-  const fullScreenDialog = useRef<FullScreenDialogRefAttribute>(null)
+  const fullScreenDialog = useRef<Drawer>(null)
   const store = useStore<ReducerTypes>()
+  const nav = useNavigation()
 
-  const onConfirm = () => {
-    store.dispatch(modifyCommonOptions({ autoHideSubjectSelectPageTips: true }))
-    // props.modifyCommonOptions({ autoHideSubjectSelectPageTips: true })
-  }
   useEffect(() => {
     /**
      * 订阅头部传来的消息
      */
     const token = PubSub.subscribe(BROAD_OPEN_DIALOG_TIP, () => {
-      fullScreenDialog.current?.open()
+      fullScreenDialog.current?.showDrawer()
+      store.dispatch(
+        modifyCommonOptions({ autoHideSubjectSelectPageTips: true })
+      )
     })
     setTimeout(() => {
       if (!store.getState().commonOptions.autoHideSubjectSelectPageTips) {
-        fullScreenDialog.current?.open()
+        fullScreenDialog.current?.showDrawer()
+        store.dispatch(
+          modifyCommonOptions({ autoHideSubjectSelectPageTips: true })
+        )
       }
     }, 2000)
     return () => {
@@ -143,16 +146,16 @@ const PageContainer: React.FC = () => {
   }, [])
 
   return (
-    <View style={{ height: layout.height }}>
+    <View style={{ flex: 1 }}>
+      <NavigationHeader
+        title="选课工具"
+        navigation={nav}
+        headerRight={() => <SubjectSelectHeaderRight />}
+      />
       <Content />
-      <FullScreenDialog
-        uniqueId="SubjectSelectTip1"
-        showButton
-        buttonText="我已知晓, 不再提醒"
-        ref={fullScreenDialog}
-        onConfirm={onConfirm}>
+      <Drawer ref={fullScreenDialog}>
         <SubjectSelectTip />
-      </FullScreenDialog>
+      </Drawer>
     </View>
   )
 }

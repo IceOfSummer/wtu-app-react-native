@@ -8,13 +8,11 @@ import { queryStudentScore, SubjectScore } from '../../api/edu/applications'
 import ScoreBlock, { Subjects } from './ScoreBlock'
 import Loading from '../../component/Loading'
 import NativeDialog from '../../native/modules/NativeDialog'
-import FullScreenDialog, {
-  FullScreenDialogRefAttribute,
-} from '../../native/component/FullScreenDialog'
-import BounceScrollView from '../../native/component/BounceScrollView'
 import ScoreDetailDrawerContent from './ScoreDetailDrawerContent'
 import Icons from '../../component/Icons'
-import PickDialog from '../../native/modules/PickDialog'
+import Drawer from '../../component/Drawer'
+import { SpringScrollView } from 'react-native-spring-scrollview'
+import Picker from '../../component/Drawer/Picker'
 
 const curYear = new Date().getFullYear()
 const TERM_STR = [
@@ -60,10 +58,12 @@ const ScoreQueryPage: React.FC<StoreStates & StoreActions> = props => {
   const [curSelectIndex, setSelectIndex] = useState(defaultSelectIndex)
   const [scores, setScores] = useState<ScoreList>([])
   const [curTapSubject, setCurTapSubject] = useState<SubjectScore>()
-  const drawer = useRef<FullScreenDialogRefAttribute>(null)
+  const scoreDetailDrawer = useRef<Drawer>(null)
+  const termDrawer = useRef<Drawer>(null)
 
   const onSelect = (index: number) => {
     setSelectIndex(index)
+    termDrawer.current?.closeDrawer()
   }
 
   /**
@@ -110,19 +110,14 @@ const ScoreQueryPage: React.FC<StoreStates & StoreActions> = props => {
 
   const subjectPressEvent = (subjectScore: SubjectScore) => {
     setCurTapSubject(subjectScore)
-    drawer.current?.open()
+    scoreDetailDrawer.current?.showDrawer()
   }
 
   const showTermPicker = () => {
-    PickDialog.showPicker({
-      title: '选择学期',
-      recipes: TERM_STR,
-      onSelect,
-      activeIndex: curSelectIndex,
-    })
+    termDrawer.current?.showDrawer()
   }
   return (
-    <BounceScrollView>
+    <SpringScrollView>
       <Pressable
         onPress={showTermPicker}
         style={{
@@ -147,10 +142,18 @@ const ScoreQueryPage: React.FC<StoreStates & StoreActions> = props => {
             : ' 成绩大于等于75分用绿色标记, 60分到75分为橙色, 小于60分为红色'}
         </Text>
       </View>
-      <FullScreenDialog uniqueId="TestComponent" ref={drawer}>
+      <Drawer ref={scoreDetailDrawer}>
         <ScoreDetailDrawerContent subject={curTapSubject} />
-      </FullScreenDialog>
-    </BounceScrollView>
+      </Drawer>
+      <Drawer ref={termDrawer}>
+        <Picker
+          items={TERM_STR}
+          title="选择学期"
+          initSelect={curSelectIndex}
+          onSelect={onSelect}
+        />
+      </Drawer>
+    </SpringScrollView>
   )
 }
 

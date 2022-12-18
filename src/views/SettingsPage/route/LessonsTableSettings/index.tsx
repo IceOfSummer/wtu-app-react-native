@@ -8,12 +8,8 @@ import CardContainer from '../../../../component/Cards/CardContainer'
 import PullDownPickerCard from '../../../../component/Cards/PullDownPickerCard'
 import SimpleCard from '../../../../component/Cards/SimpleCard'
 import NativeDialog from '../../../../native/modules/NativeDialog'
-import BottomMenu from '../../../../native/modules/BottomMenu'
-import { useClassScheduleTheme } from '../../../../tabs/ClassScheduleScreen/Theme'
 import Loading from '../../../../component/Loading'
 import { getCurWeekFromServer } from '../../../../api/edu/classes'
-import defaultTheme from '../../../../tabs/ClassScheduleScreen/Theme/defaultTheme'
-import remTheme from '../../../../tabs/ClassScheduleScreen/Theme/remTheme'
 
 interface LessonsTableConfigPageProps {}
 
@@ -83,28 +79,6 @@ const LessonsTableSettings: React.FC<
 
   const termStr = props.term === 3 ? '上学期' : '下学期'
 
-  const theme = useClassScheduleTheme()
-  const showCheckThemeDialog = () => {
-    BottomMenu.showMenu(['默认主题', '蕾姆主题'], (index, name) => {
-      let tarTheme
-      if (index === 0) {
-        tarTheme = defaultTheme
-      } else if (index === 1) {
-        tarTheme = remTheme
-      } else {
-        console.log('unknown theme index: ' + index)
-        return
-      }
-      theme.setTheme(tarTheme)
-      const desc = tarTheme.description + '(刷新后生效)'
-      NativeDialog.showDialog({
-        title: `成功切换为${name}`,
-        message: desc ? desc : '暂无描述',
-        hideCancelBtn: true,
-      })
-    })
-  }
-
   return (
     <View style={{ height: '100%' }}>
       <CardContainer>
@@ -112,24 +86,23 @@ const LessonsTableSettings: React.FC<
           title="当前周"
           pickerTitle="选择当前周"
           pickerData={CUR_WEEK_DATA}
-          pickerCurrent={props.week}
+          text={props.week}
           onSelect={setCurWeek}
         />
         <PullDownPickerCard
           title="当前学年"
           pickerTitle="选择当前学年"
           pickerData={YEAR_DATA}
-          pickerCurrent={props.year}
+          text={props.year}
           onSelect={setCurYear}
         />
         <PullDownPickerCard
           title="当前学期"
           pickerTitle="选择当前学期"
           pickerData={TERM_DATA}
-          pickerCurrent={termStr}
+          text={termStr}
           onSelect={setCurTerm}
         />
-        <SimpleCard title="切换主题(试验性)" onTap={showCheckThemeDialog} />
         <SimpleCard
           title="校准当前周"
           hideBorder

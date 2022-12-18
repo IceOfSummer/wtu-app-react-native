@@ -8,7 +8,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../redux/reducers'
 import NativeDialog from '../../../native/modules/NativeDialog'
-import BounceScrollView from '../../../native/component/BounceScrollView'
+import { SpringScrollView } from 'react-native-spring-scrollview'
 
 interface ScoreDetailDrawerContentProps {
   subject?: SubjectScore
@@ -56,7 +56,7 @@ const ScoreDetailDrawerContent: React.FC<
     )
   } else if (props.subject) {
     return (
-      <BounceScrollView>
+      <SpringScrollView style={{ paddingVertical: 20 }}>
         <View style={styles.drawerContainer}>
           <View>
             <View style={{ marginBottom: 10 }}>
@@ -123,7 +123,7 @@ const ScoreDetailDrawerContent: React.FC<
             </View>
           </View>
         </View>
-      </BounceScrollView>
+      </SpringScrollView>
     )
   } else {
     return <Text>Loading</Text>

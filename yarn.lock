@@ -6986,11 +6986,6 @@ react-native-pell-rich-editor@^1.8.8:
   resolved "https://registry.npmjs.org/react-native-pell-rich-editor/-/react-native-pell-rich-editor-1.8.8.tgz#c6299635de49d8facfded7175d064c0ff89dbc7d"
   integrity sha512-pPpj3rVEbmOcGbUMiutuQhpxp5HzOQlhVGhZ6B7aWlsliWWDtsi+lu3RXNV+g62PcQ07qDDtZwKOx1fSzff6HQ==
 
-react-native-raw-bottom-sheet@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/react-native-raw-bottom-sheet/-/react-native-raw-bottom-sheet-2.2.0.tgz#d11dabb86aadb014273767ef7b554924b13633c5"
-  integrity sha512-qL4JKIqvbcVxbkKzeh51hjV7suoJN3ouxzvLmOg0FBUV1yiJAfEbacjQdtRCI6+OU5pyGFBIifLsTXcFDwHggg==
-
 react-native-reanimated@^2.13.0:
   version "2.13.0"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-2.13.0.tgz#d64c1386626822d4dc22094b4efe028ff2c49cc9"

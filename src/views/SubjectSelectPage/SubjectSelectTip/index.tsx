@@ -3,7 +3,7 @@ import { Text, View } from 'react-native'
 
 const SubjectSelectTip: React.FC = () => {
   return (
-    <View>
+    <View style={{ paddingBottom: 20 }}>
       <View>
         <Text style={global.styles.h1}>使用须知</Text>
       </View>
@@ -32,8 +32,7 @@ const SubjectSelectTip: React.FC = () => {
           在某些情况下, 缓存的数据可能不是最新的, 从而导致选课失败.
         </Text>
         <Text style={global.styles.textContent}>
-          这个时候可以考虑清除缓存, 点击右上角三个点即可看到相关选项,
-          不建议一下全部都清除掉.
+          这个时候可以考虑清除缓存, 点击右上角三个点即可看到相关选项.
         </Text>
       </View>
     </View>
