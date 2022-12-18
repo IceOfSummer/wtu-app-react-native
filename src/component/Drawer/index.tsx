@@ -154,7 +154,9 @@ export default class Drawer extends React.Component<
               paddingBottom: 30,
               transform: [{ translateY: this.modalOffset }],
             }}>
-            <View onLayout={this.onLayout} style={this.props.style}>
+            <View
+              onLayout={this.onLayout}
+              style={[this.props.style, { overflow: 'hidden' }]}>
               {this.props.children}
             </View>
           </Animated.View>
