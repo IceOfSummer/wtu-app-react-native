@@ -24,6 +24,7 @@ const Square: React.FC = () => {
 
   const refresh = () => {
     if (loading || messages[0] === undefined) {
+      Toast.show('暂时没有新消息了')
       scroll.current?.endRefresh()
       return
     }

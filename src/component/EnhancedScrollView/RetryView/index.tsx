@@ -8,8 +8,11 @@ interface RetryViewProps {
 }
 
 const RetryView: React.FC<RetryViewProps> = props => {
+  if (!props.show) {
+    return null
+  }
   return (
-    <View style={[style.container, { opacity: props.show ? 1 : 0 }]}>
+    <View style={style.container}>
       <Image source={require('../image/cry.png')} style={style.image} />
       <Text style={global.styles.errorTipText}>请求失败了</Text>
       <ColorfulButton
