@@ -15,6 +15,17 @@ const getUserSpaceUploadSign = (count: number, type?: string) =>
   serverNoRepeatAjax<Array<SignInfo>>('/cos/secret/userspace', { count, type })
 
 /**
+ * 获取头像上传签名
+ * @param type 图片类型，如`png`
+ */
+export const requireAvatarUploadSign = (type: string) => {
+  if (type[0] !== '.') {
+    type = '.' + type
+  }
+  return serverNoRepeatAjax<SignInfo>('/cos/secret/avatar', { t: type })
+}
+
+/**
  * 上传文件到cos桶
  */
 function putObject(
@@ -62,6 +73,17 @@ export const uploadImageToUserspace = (
   filepath: string,
   signInfo: SignInfo,
   contentType: string
+) => {
+  return putObject(filepath, signInfo, contentType, {
+    'x-cos-meta-uid': uid.toString(),
+  })
+}
+
+export const uploadAvatar = (
+  uid: number,
+  signInfo: SignInfo,
+  contentType: string,
+  filepath: string
 ) => {
   return putObject(filepath, signInfo, contentType, {
     'x-cos-meta-uid': uid.toString(),

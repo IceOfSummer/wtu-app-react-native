@@ -96,6 +96,9 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
         logger.error('saving user failed: ' + e.message)
       })
     },
+    updateServerUserInfo(state, { payload }) {
+      Object.assign(state.userInfo, payload)
+    },
     combineUserCache(state, { payload }) {
       Object.assign(state.cachedUser, payload)
     },
@@ -127,7 +130,11 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
   },
 })
 
-export const { markLogin, saveUserToCache, markLoginInvalid } =
-  serverUserSlice.actions
+export const {
+  markLogin,
+  saveUserToCache,
+  markLoginInvalid,
+  updateServerUserInfo,
+} = serverUserSlice.actions
 
 export default serverUserSlice.reducer

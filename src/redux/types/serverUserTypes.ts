@@ -31,21 +31,39 @@ export type ServerUserInfo = {
   uid: number
   /**
    * 用户名
+   * @deprecated 该值一定为空字符串或undefined
    */
   username: string
   /**
    * 昵称
    */
   nickname: string
+  /**
+   * 真实姓名
+   */
+  name: string
+  /**
+   * 班级名
+   */
+  className: string
+  email?: string
+  /**
+   * 教务系统学号
+   */
+  wtuId: string
 }
 
 type Reducer<T> = CaseReducer<ServerUserState, PayloadAction<T>>
 
 export interface ServerUserReducers extends SliceCaseReducers<ServerUserState> {
   /**
-   * 标记用户登录成功
+   * 标记用户登录成功并保存其uid
    */
   markLogin: Reducer<ServerUserInfo>
+  /**
+   * 更新用户信息
+   */
+  updateServerUserInfo: Reducer<Partial<ServerUserInfo>>
   /**
    * 标记用户的登录失效
    */

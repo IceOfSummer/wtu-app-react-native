@@ -12,7 +12,7 @@ import { login } from '../../../../api/server/auth'
 import { useDispatch } from 'react-redux'
 import { markLogin } from '../../../../redux/counter/serverUserSlice'
 import { getLogger } from '../../../../utils/LoggerUtils'
-import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
+import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import Loading from '../../../../component/Loading'
 import Toast from 'react-native-toast-message'
 
@@ -59,9 +59,13 @@ const LoginPage: React.FC = () => {
         logger.debug('login to server success, userid: ' + data)
         dispatch(
           markLogin({
-            uid: data,
-            username: username,
-            nickname: 'TODO',
+            uid: data.userId,
+            nickname: data.nickname,
+            username: '',
+            name: data.name,
+            className: data.className,
+            email: data.email,
+            wtuId: data.wtuId,
           })
         )
         Toast.show({
@@ -72,7 +76,7 @@ const LoginPage: React.FC = () => {
         nav.goBack()
       })
       .catch(e => {
-        quickShowErrorTip('登录失败', e.message)
+        showSingleBtnTip('登录失败', e.message)
       })
       .finally(() => {
         Loading.hideLoading()

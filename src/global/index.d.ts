@@ -139,6 +139,11 @@ interface UtilFunction {
   assert: <T = any>(data?: T, backup: T) => T
 }
 
+/**
+ * 可用使用Text组件展示的类型
+ */
+type Displayable = string | number | undefined
+
 declare var colors: ThemeColors
 declare var styles: GlobalStyleValues & GlobalStyleSheet
 declare var constant: AppConstant

@@ -34,7 +34,7 @@ const SimpleCard: React.FC<SimpleCardProps> = props => {
     <Cards {...props}>
       <View style={{ flexGrow: 1 }}>
         {props.children}
-        <Text style={{ ...styles.text, color: textColor }}>{props.title}</Text>
+        <Text style={[styles.text, { color: textColor }]}>{props.title}</Text>
       </View>
       <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
         {props.right ? (

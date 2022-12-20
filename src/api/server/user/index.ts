@@ -79,3 +79,16 @@ export const register = (param: RegisterParam) =>
     },
     'POST'
   )
+
+export type UserUpdate = {
+  nickname?: string
+}
+
+export const updateUserInfo = (user: UserUpdate) =>
+  serverNoRepeatAjax('/user/update', user, 'POST')
+
+export const requireEmailUpdateCaptcha = (email: string) =>
+  serverNoRepeatAjax('/user/update/email/captcha', { e: email }, 'POST')
+
+export const updateEmail = (captcha: string) =>
+  serverNoRepeatAjax('/user/update/email/bind', { c: captcha }, 'POST')

@@ -10,6 +10,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
+import Toast, { ToastContainer } from 'react-native-root-toast'
 
 interface DrawerComponentProps {
   style?: ViewStyle
@@ -18,17 +19,14 @@ interface DrawerComponentProps {
 interface DrawerComponentState {
   visible: boolean
   keyboardAvoidHeight: number
+  toastVisible: boolean
+  toastMessage: string
 }
 
 export default class Drawer extends React.Component<
   DrawerComponentProps,
   DrawerComponentState
 > {
-  state = {
-    visible: false,
-    keyboardAvoidHeight: 0,
-  }
-
   screenHeight = Dimensions.get('window').height
 
   backgroundOpacity: Animated.Value
@@ -58,6 +56,25 @@ export default class Drawer extends React.Component<
         ]).start(() => {
           this.isShowing = true
         })
+      }
+    )
+  }
+
+  /**
+   * 处理Toast模块不能显示在Drawer之上的问题
+   */
+  public showToast(text: string) {
+    this.setState(
+      {
+        toastVisible: true,
+        toastMessage: text,
+      },
+      () => {
+        setTimeout(() => {
+          this.setState({
+            toastVisible: false,
+          })
+        }, Toast.durations.LONG)
       }
     )
   }
@@ -121,6 +138,12 @@ export default class Drawer extends React.Component<
 
   constructor(props: DrawerComponentProps) {
     super(props)
+    this.state = {
+      visible: false,
+      keyboardAvoidHeight: 0,
+      toastVisible: false,
+      toastMessage: '',
+    }
     this.modalOffset = new Animated.Value(0)
     this.backgroundOpacity = new Animated.Value(1)
     this.closeDrawer = this.closeDrawer.bind(this)
@@ -160,6 +183,9 @@ export default class Drawer extends React.Component<
               {this.props.children}
             </View>
           </Animated.View>
+          <ToastContainer visible={this.state.toastVisible}>
+            {this.state.toastMessage}
+          </ToastContainer>
         </Animated.View>
       </Modal>
     )
