@@ -42,8 +42,9 @@ let invoked = false
       ImService.INSTANCE.updateMsgId(message.msgId)
       return
     }
-    logger.warn(`unknown message type: ${m.messageType}, content: `)
-    logger.warn(m)
+    logger.warn(
+      `unknown message type: ${m.messageType}, content: ${JSON.stringify(m)}`
+    )
   })
 })()
 

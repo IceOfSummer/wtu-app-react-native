@@ -3,7 +3,6 @@ import {
   ChatResponseMessage as ChatResponseMessageProto,
   decodeChatResponseMessage,
 } from '../../proto/ChatResponseMessage'
-import ChatRequestMessage from '../request/ChatRequestMessage'
 
 export default class ChatResponseMessage extends ResponseMessage {
   public static readonly MESSAGE_TYPE = 4
@@ -20,7 +19,7 @@ export default class ChatResponseMessage extends ResponseMessage {
   }
 
   get messageType(): number {
-    return ChatRequestMessage.MESSAGE_TYPE
+    return ChatResponseMessage.MESSAGE_TYPE
   }
 }
 

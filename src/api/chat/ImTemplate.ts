@@ -153,6 +153,7 @@ export default class ImTemplate {
       this.frameDecoder.append(data)
       while (this.frameDecoder.isNotEmpty()) {
         const bufData = this.frameDecoder.pop()
+        logger.debug(bufData)
         const message = parseMessage(bufData)
         if (!message) {
           continue
