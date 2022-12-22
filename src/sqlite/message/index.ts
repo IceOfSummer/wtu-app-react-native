@@ -56,14 +56,17 @@ export const insertMessage = (message: SqliteMessage) =>
  */
 export const insertMultiplyMessage = (messages: SqliteMessage[]) => {
   let sql = 'REPLACE INTO message VALUES'
+  const args: Array<any> = []
   for (let i = 0, len = messages.length; i < len; i++) {
     const msg = messages[i]
-    sql += `(${msg.messageId}, ${msg.uid}, '${msg.content}', ${msg.createTime}, ${msg.type})`
+    // eslint-disable-next-line
+    sql += "(?,?,'?',?,?)"
     if (i < len - 1) {
       sql += ','
     }
+    args.push(msg.messageId, msg.uid, msg.content, msg.createTime, msg.type)
   }
-  return DatabaseManager.executeSql(sql)
+  return DatabaseManager.executeSql(sql, args)
 }
 
 /**
