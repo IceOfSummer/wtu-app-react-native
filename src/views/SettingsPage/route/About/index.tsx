@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Image, Linking, StyleSheet, Text, View } from 'react-native'
 import { getVersion } from 'react-native-device-info'
 import CardContainer from '../../../../component/Cards/CardContainer'
 import NavigationCard from '../../../../component/Cards/NavigationCard'
@@ -7,6 +7,8 @@ import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
 import SimpleCard from '../../../../component/Cards/SimpleCard'
 import UpdateChecker from '../../../../utils/UpdateChecker'
 import { LOGS_PAGE } from '../../index'
+import Environment from '../../../../utils/Environment'
+import Toast from 'react-native-root-toast'
 
 const About: React.FC = () => {
   const version = getVersion()
@@ -26,6 +28,13 @@ const About: React.FC = () => {
       }
     })
   }
+
+  const openUrl = (url: string) => {
+    Linking.openURL(url).catch(e => {
+      Toast.show('打开失败: ' + e.message)
+    })
+  }
+
   return (
     <View style={{ height: '100%' }}>
       <View style={styles.iconImageContainer}>
@@ -41,8 +50,18 @@ const About: React.FC = () => {
       </View>
       <CardContainer>
         <NavigationCard
-          title="查看代码"
-          onTap={() => Linking.openURL(global.constant.homePageUrl)}
+          title="反馈问题(Github)"
+          onTap={() => openUrl(global.constant.homePageUrl)}
+        />
+        <NavigationCard
+          title="反馈问题(Gitee)"
+          onTap={() =>
+            openUrl('https://gitee.com/hupeng333/wtu-app-react-native')
+          }
+        />
+        <NavigationCard
+          title="反馈问题(Email)"
+          onTap={() => openUrl('mailto:' + Environment.support)}
         />
         <NavigationCard title="查看日志" to={LOGS_PAGE} />
         <SimpleCard
@@ -56,42 +75,6 @@ const About: React.FC = () => {
           }
         />
       </CardContainer>
-      <View
-        style={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            position: 'absolute',
-            bottom: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-          }}>
-          <Text
-            style={{
-              color: global.styles.$info_color,
-              fontSize: global.styles.$font_size_sm,
-            }}>
-            Powered by
-          </Text>
-          <Pressable
-            onPress={() =>
-              Linking.openURL('https://github.com/facebook/react-native')
-            }>
-            <Text
-              style={{
-                color: global.styles.$primary_color,
-                fontSize: global.styles.$font_size_sm,
-              }}>
-              &nbsp;React Native
-            </Text>
-          </Pressable>
-        </View>
-      </View>
     </View>
   )
 }

@@ -37,7 +37,7 @@ const loggerConfig: configLoggerType = {
 const LOGGER = logger.createLogger(loggerConfig)
 
 function getLogName(day = CURRENT_DAY_STR) {
-  return `wtu-app-log ${day}.txt`
+  return `wtu-app-log ${day}.log`
 }
 
 export function getLogPath(logName = getLogName()) {
