@@ -6,6 +6,11 @@ import EnhancedLoadingView from '../../../component/Loading/EnhancedLoadingView'
 import { getSoldOrderSimply, OrderDetail } from '../../../api/server/order'
 import SimpleOrderPreview from '../component/SimpleOrderPreview'
 import UserSimpleInfo from '../component/UserSimpleInfo'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../redux/counter'
+import NavigationHeader from '../../../component/Container/NavigationHeader'
+import { useNavigation } from '@react-navigation/native'
+import { UseNavigationGeneric } from '../../../router'
 
 interface UserInfoCardProps {
   userInfo: UserInfoQueryType
@@ -15,9 +20,17 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { userInfo } = props
   const [orders, setOrders] = useState<OrderDetail[]>([])
   const loadUserSoldOrder = () => getSoldOrderSimply(props.userInfo.userId)
-
+  const nav = useNavigation<UseNavigationGeneric>()
+  const selfUid =
+    useStore<ReducerTypes>().getState().serverUser.userInfo?.uid ?? -1
   return (
     <View>
+      <NavigationHeader
+        title="用户信息"
+        navigation={nav}
+        backgroundColor={global.colors.boxBackgroundColor}>
+        <ChatText show={selfUid !== userInfo.userId} />
+      </NavigationHeader>
       <UserSimpleInfo userInfo={userInfo} />
       <BaseContainer>
         <View>
@@ -38,6 +51,22 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
     </View>
   )
 }
+
+interface ChatTextProps {
+  show?: boolean
+}
+const ChatText: React.FC<ChatTextProps> = props => {
+  if (props.show) {
+    return (
+      <View>
+        <Text style={styles.chatText}>私聊</Text>
+      </View>
+    )
+  } else {
+    return null
+  }
+}
+
 const styles = StyleSheet.create({
   recentActiveText: {
     color: '#000',
@@ -45,6 +74,11 @@ const styles = StyleSheet.create({
   },
   tipText: {
     fontSize: 12,
+  },
+  chatText: {
+    marginRight: 10,
+    fontSize: global.styles.$font_size_base,
+    color: global.colors.primaryColor,
   },
 })
 export default UserInfoCard

@@ -275,7 +275,7 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={USER_INFO_PAGE}
           component={UserInfoPage}
-          options={headerCommonOptionsWithTitle('用户信息')}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name={SERVER_AUTH_PAGE}

@@ -12,6 +12,9 @@ interface NavigationHeaderProps {
   backgroundColor?: ColorValue
   title: string
   hideBackButton?: boolean
+  /**
+   * @deprecated 直接作为子组件传递即可
+   */
   headerRight?: (props: NavigationHeaderProps) => Element
   navigation: NavigationLike
   showSplitLine?: boolean
@@ -22,6 +25,8 @@ interface NavigationHeaderProps {
  */
 const NavigationHeader: React.FC<NavigationHeaderProps> = props => {
   const canBack = !props.hideBackButton && props.navigation.canGoBack()
+  const children = props.children ?? props.headerRight?.(props)
+  console.log(children)
   return (
     <View
       style={[
@@ -44,7 +49,7 @@ const NavigationHeader: React.FC<NavigationHeaderProps> = props => {
           ) : null}
         </View>
         <Text style={styles.title}>{props.title}</Text>
-        <View style={styles.rightContainer}>{props.headerRight?.(props)}</View>
+        <View style={styles.rightContainer}>{children}</View>
       </View>
     </View>
   )
