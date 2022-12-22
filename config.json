@@ -1,15 +1,13 @@
 {
   "release": {
-    "serverBaseUrl": "",
-    "chatServerHost": "",
-    "chatServerPort": 7001,
-    "cdnServer": "cdn.xds.fit"
+    "serverBaseUrl": "https://wtu.cool/app-web",
+    "chatServerHost": "106.52.246.132",
+    "chatServerPort": 7001
   },
   "debug": {
-    "serverBaseUrl": "http://192.168.1.103:8080",
-    "chatServerHost": "192.168.1.103",
-    "chatServerPort": 7001,
-    "cdnServer": "cdn.xds.fit"
+    "serverBaseUrl": "http://192.168.43.40:8080",
+    "chatServerHost": "192.168.43.40",
+    "chatServerPort": 7001
   },
   "common": {
     "bucket": "wtuapp-cdn-1310819360",

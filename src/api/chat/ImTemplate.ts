@@ -122,14 +122,24 @@ export default class ImTemplate {
       const msg = buildMessage(message)
       logger.debug('sending message:')
       logger.debug(message)
-      connection.write(msg, undefined, err => {
-        // 当err为空时，代表服务器已经接收到相关消息了
-        // 这里的回调只代表服务器成功收到了消息，但还没有回应
-        if (err) {
-          this.requestManager.reject(message.requestId, err)
-          return
+      try {
+        connection.write(msg, undefined, err => {
+          // 当err为空时，代表服务器已经接收到相关消息了
+          // 这里的回调只代表服务器成功收到了消息，但还没有回应
+          if (err) {
+            this.requestManager.reject(message.requestId, err)
+            return
+          }
+        })
+      } catch (e: any) {
+        if (e.message === 'Socket is closed.') {
+          // try reconnect
+          this.socketSessionManager.reset()
+          this.socketSessionManager.getConnection()
+          throw new Error('正在重新连接服务器中...')
         }
-      })
+        throw e
+      }
     })
   }
 

@@ -21,8 +21,9 @@ const options: ConnectionOptions & TLSSocketOptions = {
   port,
   host,
   reuseAddress: true,
-  // TODO 开发环境替换证书
-  ca: require('./cert.pem'),
+  ca: __DEV__
+    ? require('./cert.pem')
+    : require('../../../cert/wtu.cool_bundle.pem'),
 }
 
 /**
@@ -87,7 +88,11 @@ export default class SocketSessionManager {
     if (this._isPending) {
       return null
     }
-    this.tryConnect()
+    try {
+      this.tryConnect()
+    } catch (e: any) {
+      logger.error('try connect failed: ' + e.message)
+    }
     return null
   }
 
@@ -96,9 +101,7 @@ export default class SocketSessionManager {
       return
     }
     this._isPending = true
-    if (!__DEV__) {
-      logger.info(`trying to connect to ${host}:${port}`)
-    }
+    logger.info(`trying to connect to ${host}:${port}`)
     const client = TcpSockets.connectTLS(options, () => {
       logger.info(`successfully connected to ${host}:${port}`)
       this._isPending = false
@@ -112,20 +115,23 @@ export default class SocketSessionManager {
 
   private bindRetryEvent(client: TLSSocket) {
     client.on('error', error => {
-      if (!__DEV__) {
-        logger.error('connect failed: ' + error)
-      }
+      logger.error('connect failed: ' + error)
       this._isPending = false
       this._connection?.removeAllListeners('error')
       client.destroy()
       this.setConnectFlag(true)
-      setTimeout(() => {
-        this.tryConnect()
-      }, 8000)
+      if (!__DEV__) {
+        setTimeout(() => {
+          this.tryConnect()
+        }, 8000)
+      }
     })
   }
 
-  private reset() {
+  /**
+   * 重置连接, 当连接断开后进行重置
+   */
+  public reset() {
     this._connection = null
     this._isPending = false
     this.onConnectionReset?.()

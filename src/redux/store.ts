@@ -7,7 +7,6 @@ import { PersistConfig } from 'redux-persist/es/types'
 const persistConfig: PersistConfig<any> = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: [''],
 }
 
 const persistedReducer = persistReducer(persistConfig, reducer)

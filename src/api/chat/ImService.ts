@@ -71,6 +71,7 @@ export class ImService {
     const response = await this.imTemplate.sendMessage(
       new ChatRequestMessage(to, content)
     )
+
     if (!response.success) {
       throw new Error('消息发送失败')
     }

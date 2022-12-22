@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, ViewStyle } from 'react-native'
 import Button from 'react-native-button'
 import { ImService } from '../../../../api/chat/ImService'
+import { getLogger } from '../../../../utils/LoggerUtils'
+import Toast from 'react-native-root-toast'
 
+const logger = getLogger('/views/ChatPage/component/ToolBar')
 interface ToolBarProps {
   styles?: ViewStyle
   talkingTo: number
@@ -15,8 +18,10 @@ const ToolBar: React.FC<ToolBarProps> = props => {
   const [text, setText] = useState('')
 
   const sendMessage = () => {
+    logger.info('send message: ' + text)
     ImService.INSTANCE.sendChatMessage(props.talkingTo, text).catch(e => {
-      console.error(e)
+      logger.error('send message failed: ' + e.message)
+      Toast.show('发送失败: ' + e.message)
     })
     setText('')
   }

@@ -13,6 +13,9 @@ import { markLoginExpired } from '../redux/actions/user'
 import { markLoginInvalid } from '../redux/counter/serverUserSlice'
 import { navigationPush } from '../tabs'
 import Environment from '../utils/Environment'
+import { getLogger } from '../utils/LoggerUtils'
+
+const logger = getLogger('/api/request')
 
 const serverResponseInterceptor = (resp: AxiosResponse): any => {
   if (resp.data.code === undefined) {
@@ -25,6 +28,7 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
 }
 
 const serverRequestErrorInterceptor = (error: AxiosError): Error => {
+  logger.error(`request failed: ${error.request._url}: ${error.message}`)
   const data = error.response?.data as any
   if (data && data.message) {
     if (data.code === 1) {
@@ -46,11 +50,12 @@ function createServerAjax(ajax: Ajax) {
     method?: 'GET' | 'POST'
   ): AjaxResponseTypes<ResponseTemplate<T>, true> =>
     new Promise((resolve, reject) => {
-      ajax<AxiosResponse<ResponseTemplate<T>>, true>(
-        Environment.serverBaseUrl + url,
-        data,
-        method
-      )
+      const fullUrl = Environment.serverBaseUrl + url
+      logger.info(`${method ?? 'GET'}: ${fullUrl};${data ? ' data: ' : ''}`)
+      if (data) {
+        logger.info(data)
+      }
+      ajax<AxiosResponse<ResponseTemplate<T>>, true>(fullUrl, data, method)
         .then(resp => resolve(serverResponseInterceptor(resp)))
         .catch(e => reject(serverRequestErrorInterceptor(e)))
     })

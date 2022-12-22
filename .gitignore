@@ -64,3 +64,5 @@ config.gradle
 # sqlite
 identifier.sqlite
 appcenter-config.json
+
+/cert/**

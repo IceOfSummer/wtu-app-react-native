@@ -22,31 +22,37 @@ import serverUserSlice from './serverUserSlice'
 const userPersistConfig: PersistConfig<UserState> = {
   key: 'user',
   storage: AsyncStorage,
+  timeout: 3000,
 }
 
 const lessonsTablePersistConfig: PersistConfig<LessonsTableStates> = {
   key: 'lessons',
   storage: AsyncStorage,
+  timeout: 3000,
 }
 
 const commonOptionsPersistConfig: PersistConfig<CommonOptionsStates> = {
   key: 'commonOptions',
   storage: AsyncStorage,
+  timeout: 3000,
 }
 const commonPersistPConfig: PersistConfig<CommonPersistenceState> = {
   key: 'commonPersist',
   storage: AsyncStorage,
+  timeout: 3000,
 }
 
 const themePersistConfig: PersistConfig<ThemeState> = {
   key: 'theme',
   storage: AsyncStorage,
+  timeout: 3000,
 }
 
 const serverUserPersistConfig: PersistConfig<ServerUserState> = {
   key: 'serverUser',
   storage: AsyncStorage,
   blacklist: ['cachedUser'],
+  timeout: 3000,
 }
 
 const reducer = combineReducers({
