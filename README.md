@@ -1,34 +1,46 @@
 # wtu-app-react-native
 
-使用 [ReactNative](https://reactnative.cn/) 重构的[wtu-app](https://github.com/HuPeng333/WTU-APP)
+使用 [ReactNative](https://reactnative.cn/) 重构的[wtu-app](https://github.com/HuPeng333/WTU-APP).
 
-## 为什么要重构?
+*摸了一年的鱼，终于写完了！*
 
-之前的 [app](https://github.com/HuPeng333/WTU-APP) 是基于 [uni-app](https://uniapp.dcloud.io/) 构建的, 由于 [uni-app](https://uniapp.dcloud.io/)
-的原生开发生态实在太差！很多东西都很难实现，相比之下 [ReactNative](https://reactnative.cn/) 的生态十分完美。
+🚀[Gitee](https://gitee.com/hupeng333/wtu-app-react-native)
 
-而且之前的 [app](https://github.com/HuPeng333/WTU-APP) 代码实在过于臃肿，不是很好维护! 因此借此机会重构一般APP!
+🚀[Github](https://github.com/IceOfSummer/wtu-app-react-native)
+
+📩[Email](mailto:support@mail.wtu.cool)
 
 ## 下载
 
-[点我前往下载页面](https://xds.fit/wtuapp/app/)
+[点我前往下载页面](https://xds.asia/common/app.apk)
 
-**RELEASE中的内容可能不是最新的，最新版本请以上方链接为准**
+仅有安卓版本，~~IOS目测是有生之年~~。
 
-## 介绍
+## 已有功能
 
-### 已有功能
-- 成绩查询
-- 课程表查询
-- 选课工具
-- 登录教务系统
+### 跳蚤市场
 
-之后会制作视频介绍(*所以到视频发出之前都还不是正式版QAQ*)
+该功能为APP以后主打方向，相关服务 **<u>完全免费</u>**，APP只提供一个平台，之后的交易过程完全由各位自己线下交易。
 
-### 未来计划
+为此手撸了一套IM(即时通讯)系统，不过**目前**看来不是很稳定(可能会丢消息、没有后台通知)，发布商品的时候请尽量留下QQ等额外通信方式。
+
+为了弥补IM系统的缺点，在注册APP后可以选择绑定邮箱，在其他人选中你的商品后将会发送邮件通知你。
+
+### 成绩查询
+
+学校教务系统基本没有兼容手机端，查成绩的时候基本是一个很长的横线滚动条，看了后面忘了前面，非常的难受。
+
+所以在APP里，我们为手机端设计了更舒服的布局，并且操作也更方便!
+
+### 选课工具
+
+该工具能够缓存你选课时候的参数，在登录被挤掉后"原地复活"，帮助你快速抢课。
+
+### 课程表查询
+这个功能算是做烂了2333，基本打算摆烂，尽量还是用`超级课程表`吧
+
+## 未来计划
 
 [未来计划](https://github.com/IceOfSummer/wtu-app-react-native/issues/2)
 
-## 其它
 
-如果你使用 WebStorm 等重量级编译器打开该项目，请确保给IDE至少`8G`的运行内存(内存分配过少代码提示会卡死，实测给`10G`都能吃满)
