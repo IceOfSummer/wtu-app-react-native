@@ -51,10 +51,7 @@ function createServerAjax(ajax: Ajax) {
   ): AjaxResponseTypes<ResponseTemplate<T>, true> =>
     new Promise((resolve, reject) => {
       const fullUrl = Environment.serverBaseUrl + url
-      logger.info(`${method ?? 'GET'}: ${fullUrl};${data ? ' data: ' : ''}`)
-      if (data) {
-        logger.info(data)
-      }
+      logger.info(`${method ?? 'GET'}: ${fullUrl};`)
       ajax<AxiosResponse<ResponseTemplate<T>>, true>(fullUrl, data, method)
         .then(resp => resolve(serverResponseInterceptor(resp)))
         .catch(e => reject(serverRequestErrorInterceptor(e)))

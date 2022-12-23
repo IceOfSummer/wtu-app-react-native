@@ -66,10 +66,10 @@ export class LoadingScrollView extends React.Component<
         allLoaded={this.props.empty}
         loadingFooter={LottieLoadingHeader}
         onLoading={this.props.onRequireLoad}>
+        {this.props.children}
         {this.props.dataLength === 0 && this.props.loading ? (
           <Skeleton />
         ) : null}
-        {this.props.children}
         <RetryView
           onRetry={this.retry}
           show={!this.props.loading && this.props.error}
