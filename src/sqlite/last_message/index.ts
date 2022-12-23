@@ -43,14 +43,16 @@ export const insertMultiLastMessage = (
   confirm: 1 | 0
 ) => {
   let sql = 'REPLACE INTO last_message VALUES'
+  const args: Array<string | number> = []
   for (let i = 0, len = messages.length; i < len; ++i) {
     const msg = messages[i]
-    sql += `(${msg.uid}, ${msg.messageId}, ${confirm})`
+    sql += `(?,?,${confirm})`
     if (i < len - 1) {
       sql += ','
     }
+    args.push(msg.uid, msg.messageId)
   }
-  return DatabaseManager.executeSql(sql)
+  return DatabaseManager.executeSql(sql, ...args)
 }
 
 /**

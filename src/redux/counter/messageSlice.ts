@@ -21,7 +21,10 @@ import {
   queryLastMessage,
 } from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
-import { quickShowErrorTip } from '../../native/modules/NativeDialog'
+import {
+  quickShowErrorTip,
+  showSingleBtnTip,
+} from '../../native/modules/NativeDialog'
 import { loadMultiUserCache, loadUserCacheFromServer } from './serverUserSlice'
 import { ReducerTypes } from './index'
 import { MultiChatResponseMessage } from '../../api/chat/message/response/MultiChatResponseMessage'
@@ -254,6 +257,10 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     },
     [syncMessage.rejected.type](state, { error }) {
       logger.error('sync message failed: ' + error.message)
+      showSingleBtnTip(
+        '消息保存失败!',
+        '这可能是很严重的BUG，为了您的使用体验，建议立刻导出日志并反馈给我们'
+      )
     },
     [markMessageRead.rejected.type](state, { error }) {
       logger.error('mark message read failed: ' + error.message)
