@@ -22,13 +22,13 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
     throw new Error(resp.data)
   }
   if (resp.data.code !== 0) {
+    logger.error(`request failed: ${resp.request._url}: ${resp.data.message}`)
     throw new Error(resp.data.message)
   }
   return resp.data
 }
 
 const serverRequestErrorInterceptor = (error: AxiosError): Error => {
-  logger.error(`request failed: ${error.request._url}: ${error.message}`)
   const data = error.response?.data as any
   if (data && data.message) {
     if (data.code === 1) {

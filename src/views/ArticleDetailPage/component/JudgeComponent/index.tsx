@@ -57,10 +57,10 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
     loading.current = true
     if (attitude === 1) {
       // 取消点赞
-      setAttitude(undefined)
-      setLikeCount(likeCount - 1)
       feedbackMessage(item.id, undefined)
         .then(() => {
+          setAttitude(undefined)
+          setLikeCount(likeCount - 1)
           Toast.show('取消点赞〒▽〒')
           messageAttitude.delete(item.id)
         })
@@ -75,10 +75,10 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
     if (attitude === 0) {
       setDislikeCount(dislikeCount - 1)
     }
-    setAttitude(1)
-    setLikeCount(likeCount + 1)
     feedbackMessage(item.id, 1)
       .then(() => {
+        setAttitude(1)
+        setLikeCount(likeCount + 1)
         Toast.show('点赞成功(╯ε╰)')
         messageAttitude.set(item.id, 1)
       })
@@ -98,10 +98,10 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
     loading.current = true
     if (attitude === 0) {
       // 取消踩
-      setDislikeCount(dislikeCount - 1)
-      setAttitude(undefined)
       feedbackMessage(item.id, undefined)
         .then(() => {
+          setDislikeCount(dislikeCount - 1)
+          setAttitude(undefined)
           Toast.show('取消踩(*/ω＼*)')
           messageAttitude.delete(item.id)
         })
@@ -116,10 +116,10 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
     if (attitude === 1) {
       setLikeCount(likeCount - 1)
     }
-    setDislikeCount(dislikeCount + 1)
-    setAttitude(0)
     feedbackMessage(item.id, 0)
       .then(() => {
+        setDislikeCount(dislikeCount + 1)
+        setAttitude(0)
         Toast.show('不喜欢|_・)')
         messageAttitude.set(item.id, 0)
       })
