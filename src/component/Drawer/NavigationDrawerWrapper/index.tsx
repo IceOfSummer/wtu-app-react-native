@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigation, useTheme } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/src/types'
 import {
   Animated,
   Dimensions,
+  Keyboard,
   LayoutChangeEvent,
   Pressable,
   StyleSheet,
@@ -15,6 +16,7 @@ const NavigationDrawerWrapper: React.FC = props => {
   const { colors } = useTheme()
   const deviceHeight = Dimensions.get('window').height
   const transY = useRef(new Animated.Value(0)).current
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
   const onLayout = ({ nativeEvent }: LayoutChangeEvent) => {
     Animated.spring(transY, {
       toValue: -nativeEvent.layout.height,
@@ -24,14 +26,26 @@ const NavigationDrawerWrapper: React.FC = props => {
     }).start()
   }
   useEffect(() => {
-    navigation.addListener('beforeRemove', () => {
+    const beforeRemoveCb = () => {
       Animated.spring(transY, {
         toValue: 0,
         speed: 18,
         useNativeDriver: true,
         bounciness: 0,
       }).start()
+    }
+    navigation.addListener('beforeRemove', beforeRemoveCb)
+    const key1 = Keyboard.addListener('keyboardDidShow', evt => {
+      setKeyboardHeight(evt.endCoordinates.height)
     })
+    const key2 = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardHeight(0)
+    })
+    return () => {
+      navigation.removeListener('beforeRemove', beforeRemoveCb)
+      key1.remove()
+      key2.remove()
+    }
   }, [])
   return (
     <View
@@ -48,7 +62,7 @@ const NavigationDrawerWrapper: React.FC = props => {
       <Animated.View
         style={{
           position: 'absolute',
-          top: deviceHeight,
+          top: deviceHeight - keyboardHeight,
           width: '100%',
           borderTopRightRadius: 18,
           borderTopLeftRadius: 18,
