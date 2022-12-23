@@ -29,7 +29,7 @@ const BottomMenu: React.FC<BottomMenuProps> = props => {
   }
 
   return (
-    <View style={{ paddingVertical: 10 }}>
+    <View style={{ paddingTop: 10 }}>
       <View
         style={{
           flexDirection: 'row',

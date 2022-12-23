@@ -16,6 +16,7 @@ import BaseContainer from '../../../../component/Container/BaseContainer'
 interface OrderItemProps {
   order: OrderDetail
   onCancel?: (order: OrderDetail) => void
+  onPress?: () => void
 }
 
 /**
@@ -53,7 +54,7 @@ const OrderItem: React.FC<OrderItemProps> = props => {
   }
 
   return (
-    <BaseContainer style={styles.container}>
+    <BaseContainer style={styles.container} onPress={props.onPress}>
       <View style={styles.image}>
         <BetterImage uri={order.previewImage} />
       </View>
@@ -114,9 +115,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 90,
+    height: 90,
+    borderRadius: 4,
+    overflow: 'hidden',
     resizeMode: 'stretch',
+    alignSelf: 'flex-start',
   },
   rightTextContainer: {
     flex: 1,

@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { OrderDetail } from '../../../../api/server/order'
 import { LoadingScrollView } from '../../../../component/LoadingScrollView'
-import { Pressable, Text } from 'react-native'
+import { Text, View } from 'react-native'
 import OrderItem from '../OrderItem'
 import CancelOrderDrawer from '../CancelOrderDrawer'
 import OrderDetailDrawer from '../OrderDetailDrawer'
 import usePage from '../../../../hook/usePage'
 import Drawer from '../../../../component/Drawer'
-import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
+import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import { ResponseTemplate } from '../../../../api/server/types'
 
 interface PageAdapterProps {
@@ -28,7 +28,7 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
     page
       .loadMore()
       .catch(e => {
-        quickShowErrorTip('加载失败', e.message)
+        showSingleBtnTip('加载失败', e.message)
       })
       .finally(() => {
         loading.current?.endLoading()
@@ -55,16 +55,26 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
   }, [])
 
   return (
-    <LoadingScrollView
-      ref={loading}
-      {...page}
-      dataLength={page.data.length}
-      onRequireLoad={loadData}>
-      {page.data.map(value => (
-        <Pressable onPress={() => checkOrder(value)} key={value.orderId}>
-          <OrderItem order={value} onCancel={onCancel} />
-        </Pressable>
-      ))}
+    <View style={{ flex: 1 }}>
+      <LoadingScrollView
+        ref={loading}
+        {...page}
+        dataLength={page.data.length}
+        onRequireLoad={loadData}>
+        {page.data.map(value => (
+          <OrderItem
+            order={value}
+            onCancel={onCancel}
+            onPress={() => checkOrder(value)}
+            key={value.orderId}
+          />
+        ))}
+        {page.empty ? (
+          <Text style={[global.styles.infoTipText, { textAlign: 'center' }]}>
+            没有更多数据了...
+          </Text>
+        ) : null}
+      </LoadingScrollView>
       <CancelOrderDrawer
         order={selectedOrder}
         drawerRef={cancelDrawer}
@@ -75,12 +85,7 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
         drawerRef={previewDrawer}
         onRequireRemove={onOrderRemove}
       />
-      {page.empty ? (
-        <Text style={[global.styles.infoTipText, { textAlign: 'center' }]}>
-          没有更多数据了...
-        </Text>
-      ) : null}
-    </LoadingScrollView>
+    </View>
   )
 }
 

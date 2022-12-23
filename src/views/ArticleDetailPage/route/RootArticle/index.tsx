@@ -155,34 +155,29 @@ const RootArticle: React.FC = () => {
         />
         <View style={styles.commentsContainer}>
           <Text style={styles.commentTitle}>评论 {item.replyCount}</Text>
-          <SpringScrollView
-            onLoading={loadComment}
-            allLoaded={empty}
-            loadingFooter={LottieLoadingHeader}>
-            {comments.length === 0 && loading ? (
-              <CenterLoadingIndicator
-                backgroundColor={global.colors.boxBackgroundColor}
-              />
-            ) : null}
-            {comments.map(value => (
-              <CommentItem
-                style={styles.comment}
-                item={value}
-                key={value.id}
-                onPress={() =>
-                  replyDrawer.current?.openReplyDrawer({
-                    message: value.content,
-                    pid: item.isSubReply ? item.id : value.id,
-                    replyTo: value.id,
-                    replyToUserId: value.author,
-                  })
-                }
-              />
-            ))}
-            {empty ? (
-              <Text style={global.styles.infoTipText}>到底了哦</Text>
-            ) : null}
-          </SpringScrollView>
+          {comments.length === 0 && loading ? (
+            <CenterLoadingIndicator
+              backgroundColor={global.colors.boxBackgroundColor}
+            />
+          ) : null}
+          {comments.map(value => (
+            <CommentItem
+              style={styles.comment}
+              item={value}
+              key={value.id}
+              onPress={() =>
+                replyDrawer.current?.openReplyDrawer({
+                  message: value.content,
+                  pid: item.isSubReply ? item.id : value.id,
+                  replyTo: value.id,
+                  replyToUserId: value.author,
+                })
+              }
+            />
+          ))}
+          {empty ? (
+            <Text style={global.styles.infoTipText}>到底了哦</Text>
+          ) : null}
         </View>
       </SpringScrollView>
       <ReplyDrawer

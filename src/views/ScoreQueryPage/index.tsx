@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import { Term } from '../../redux/types/lessonsTableTypes'
@@ -142,7 +142,7 @@ const ScoreQueryPage: React.FC<StoreStates & StoreActions> = props => {
             : ' 成绩大于等于75分用绿色标记, 60分到75分为橙色, 小于60分为红色'}
         </Text>
       </View>
-      <Drawer ref={scoreDetailDrawer}>
+      <Drawer ref={scoreDetailDrawer} style={styles.detailDrawer}>
         <ScoreDetailDrawerContent subject={curTapSubject} />
       </Drawer>
       <Drawer ref={termDrawer}>
@@ -164,6 +164,9 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingBottom: 50,
+  },
+  detailDrawer: {
+    height: Dimensions.get('window').height / 1.2,
   },
 })
 

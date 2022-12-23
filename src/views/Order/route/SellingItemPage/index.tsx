@@ -178,8 +178,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 90,
+    height: 90,
+    borderRadius: 4,
+    overflow: 'hidden',
     resizeMode: 'stretch',
   },
   rightContent: {
@@ -205,6 +207,7 @@ const styles = StyleSheet.create({
   linkText: {
     color: global.colors.primaryColor,
     textDecorationLine: 'underline',
+    fontSize: 12,
     marginHorizontal: global.styles.$spacing_row_base,
   },
 })

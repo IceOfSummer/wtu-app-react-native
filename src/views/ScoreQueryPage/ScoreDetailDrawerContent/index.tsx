@@ -56,7 +56,9 @@ const ScoreDetailDrawerContent: React.FC<
     )
   } else if (props.subject) {
     return (
-      <SpringScrollView style={{ paddingVertical: 20 }}>
+      <SpringScrollView
+        style={{ paddingVertical: 20 }}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.drawerContainer}>
           <View>
             <View style={{ marginBottom: 10 }}>
