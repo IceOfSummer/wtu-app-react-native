@@ -31,8 +31,29 @@ function fixViewPropTypesDeprecated(path, targetLine, insertAt) {
   console.log(`fix error: ${path} has already fixed`)
 }
 
+/**
+ * 修复SpringScrollView滚动时会误触发点击事件
+ */
+function fixSpringScrollViewClickBug() {
+  console.log('=========fixSpringScrollViewClickBug=========')
+  const insertProperty =
+    '        onMoveShouldSetResponder={() => this._dragging}'
+  const path =
+    './node_modules/react-native-spring-scrollview/SpringScrollView.js'
+  const data = fs.readFileSync(path, 'utf8').split(/\r\n|\n|\r/gm)
+  const targetLine = 87
+  if (data[targetLine] === insertProperty) {
+    console.log('already fixed! skip.')
+    return
+  }
+  data.splice(targetLine, 0, insertProperty)
+  fs.writeFileSync(path, data.join('\r\n'))
+  console.log('fix done.')
+}
+
 fixViewPropTypesDeprecated(
   './node_modules/react-native-button/Button.js',
   9,
   11
 )
+fixSpringScrollViewClickBug()
