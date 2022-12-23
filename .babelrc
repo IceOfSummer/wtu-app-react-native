@@ -3,6 +3,5 @@
     "production": {
       "plugins": ["./plugin/remove-logger-debug.js"]
     }
-  },
-  "plugins": ["react-native-reanimated/plugin"]
+  }
 }
