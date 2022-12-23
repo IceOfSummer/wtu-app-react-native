@@ -18,6 +18,9 @@ import Icons from '../../../../../../component/Icons'
 import ColorfulButton from '../../../../../../component/Button/ColorfulButton'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import { CommodityPageRouteTypes, FORM_DRAWER_PAGE } from '../../../../index'
+import { useSelector } from 'react-redux'
+import { ReducerTypes } from '../../../../../../redux/counter'
+import Toast from 'react-native-root-toast'
 
 interface CommodityInfoProps {
   commodity: ProcessedCommodity
@@ -28,6 +31,9 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   const height = Dimensions.get('screen').height
   const nav =
     useNavigation<NavigationProp<RouterTypes & CommodityPageRouteTypes>>()
+  const authenticated = useSelector<ReducerTypes, boolean>(
+    state => state.serverUser.authenticated
+  )
   const viewImage = (index: number) => {
     const images = props.commodity.images.map(value => ({ url: value }))
     nav.navigate(FULL_SCREEN_IMAGE_PAGE, {
@@ -61,6 +67,10 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   }
 
   const doLockCommodity = () => {
+    if (!authenticated) {
+      Toast.show('请先登录')
+      return
+    }
     if (commodity.status === 0) {
       nav.navigate(FORM_DRAWER_PAGE, { commodity })
     } else {
@@ -73,6 +83,10 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   }
 
   const chatWithSeller = () => {
+    if (!authenticated) {
+      Toast.show('请先登录')
+      return
+    }
     nav.navigate(CHAT_PAGE, { uid: commodity.ownerId })
   }
 

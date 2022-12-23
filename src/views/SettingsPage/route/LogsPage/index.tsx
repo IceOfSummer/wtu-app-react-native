@@ -1,24 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { getLogFiles } from '../../../../utils/LoggerUtils'
+import { getLogFiles, getLogPath } from '../../../../utils/LoggerUtils'
 import Button from 'react-native-button'
 import { SpringScrollView } from 'react-native-spring-scrollview'
-import Drawer from '../../../../component/Drawer'
-import LogPreview from '../../component/LogPreview'
+import Share from 'react-native-share'
+import Toast from 'react-native-root-toast'
 
 const LogsPage: React.FC = () => {
   const [logs, setLogs] = useState<Array<string>>([])
-  const [logName, setLogName] = useState('')
-  const drawer = useRef<Drawer>(null)
 
   const checkLog = (_logName: string) => {
-    setLogName(_logName)
-    drawer.current?.showDrawer()
+    Share.open({
+      title: '日志',
+      url: 'file://' + getLogPath(_logName),
+      failOnCancel: true,
+      type: 'text/plain',
+    }).catch(e => {
+      const msg = e.message as string
+      if (msg === 'User did not share') {
+        return
+      }
+      Toast.show('分享失败: ' + e.message)
+    })
   }
 
   useEffect(() => {
     getLogFiles().then(files => {
-      setLogs(files)
+      setLogs(files.sort((b, a) => a.localeCompare(b)))
     })
   }, [])
 
@@ -35,9 +43,6 @@ const LogsPage: React.FC = () => {
         </Button>
       ))}
       <Text style={global.styles.infoTipText}>30天前的日志会自动删除</Text>
-      <Drawer ref={drawer}>
-        <LogPreview logName={logName} />
-      </Drawer>
     </SpringScrollView>
   )
 }
