@@ -10,7 +10,8 @@ import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../redux/counter'
 import NavigationHeader from '../../../component/Container/NavigationHeader'
 import { useNavigation } from '@react-navigation/native'
-import { UseNavigationGeneric } from '../../../router'
+import { CHAT_PAGE, UseNavigationGeneric } from '../../../router'
+import Toast from 'react-native-root-toast'
 
 interface UserInfoCardProps {
   userInfo: UserInfoQueryType
@@ -29,7 +30,10 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
         title="用户信息"
         navigation={nav}
         backgroundColor={global.colors.boxBackgroundColor}>
-        <ChatText show={selfUid !== userInfo.userId} />
+        <ChatText
+          show={selfUid !== userInfo.userId}
+          targetId={userInfo.userId}
+        />
       </NavigationHeader>
       <UserSimpleInfo userInfo={userInfo} />
       <BaseContainer>
@@ -54,12 +58,24 @@ const UserInfoCard: React.FC<UserInfoCardProps> = props => {
 
 interface ChatTextProps {
   show?: boolean
+  targetId: number
 }
 const ChatText: React.FC<ChatTextProps> = props => {
+  const nav = useNavigation<UseNavigationGeneric>()
+  const store = useStore<ReducerTypes>()
+  const chat = () => {
+    if (!store.getState().serverUser.authenticated) {
+      Toast.show('请先登录')
+      return
+    }
+    nav.navigate(CHAT_PAGE, { uid: props.targetId })
+  }
   if (props.show) {
     return (
       <View>
-        <Text style={styles.chatText}>私聊</Text>
+        <Text style={styles.chatText} onPress={chat}>
+          私聊
+        </Text>
       </View>
     )
   } else {
