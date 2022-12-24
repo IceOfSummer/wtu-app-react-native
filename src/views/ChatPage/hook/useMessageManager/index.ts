@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { queryMessage } from '../../../../sqlite/message'
+import { queryMessage, SqliteMessage } from '../../../../sqlite/message'
 import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import AbstractMessage from '../../message/AbstractMessage'
@@ -29,7 +29,15 @@ const useMessageManager = (chatWith: number) => {
     logger.info(
       `loading message with uid ${chatWith}, current page: ${curPage.current}`
     )
-    return queryMessage(chatWith, curPage.current)
+    let sqliteMsg: SqliteMessage | undefined
+    for (let i = messages.length - 1; i >= 0; i--) {
+      sqliteMsg = messages[i].message
+      if (!sqliteMsg) {
+        break
+      }
+    }
+    let minId = sqliteMsg ? sqliteMsg.messageId : 2e9
+    return queryMessage(chatWith, minId, curPage.current)
       .then(msg => {
         logger.info(`successfully loaded ${msg.length} messages`)
         if (msg.length === 0) {

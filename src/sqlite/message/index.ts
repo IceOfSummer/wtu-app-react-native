@@ -24,12 +24,18 @@ const PAGE_SIZE = 10
 /**
  * 获取用户的消息
  * @param uid 和谁聊天
+ * @param maxId 所查询消息的最大id(不包括)
  * @param page 第几页
  */
-export const queryMessage = (uid: number, page = 0): Promise<SqliteMessage[]> =>
+export const queryMessage = (
+  uid: number,
+  maxId: number,
+  page = 0
+): Promise<SqliteMessage[]> =>
   DatabaseManager.executeSql(
-    'SELECT uid, content, createTime, type FROM message WHERE uid = ? ORDER BY createTime DESC LIMIT ?, ?',
+    'SELECT uid, content, createTime, type FROM message WHERE uid = ? AND messageId < ? ORDER BY createTime DESC LIMIT ?, ?',
     uid,
+    maxId,
     page * 10,
     PAGE_SIZE
   ).then(result => {
