@@ -166,6 +166,16 @@ export default class ImTemplate {
           ImTemplate.publishMessage(message)
         } else {
           logger.debug(message)
+          if (message.messageType === ServerResponseMessage.MESSAGE_TYPE) {
+            const serverRespMsg = message as ServerResponseMessage
+            if (!serverRespMsg.success) {
+              this.requestManager.reject(
+                message.requestId,
+                new Error(serverRespMsg.data)
+              )
+              return
+            }
+          }
           this.requestManager.resolve(message.requestId, message)
         }
       }
