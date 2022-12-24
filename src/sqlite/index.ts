@@ -1,4 +1,5 @@
 import SQLite, {
+  ResultSet,
   SQLiteDatabase,
   Transaction,
 } from 'react-native-sqlite-storage'
@@ -10,6 +11,20 @@ const logger = getLogger('/src/sqlite')
  * 数据库版本号，相关信息保存在metadata表中，若版本号不一致，则会调用{@link DatabaseManager.updateDatabase}
  */
 const version = 1
+
+export const EMPTY_RESULT_SET: ResultSet = {
+  rowsAffected: 0,
+  insertId: 0,
+  rows: {
+    raw(): any[] {
+      return []
+    },
+    item(): any {
+      return undefined
+    },
+    length: 0,
+  },
+}
 
 const sql = `
 DROP TABLE IF EXISTS message;

@@ -1,5 +1,5 @@
 import { SqliteMessage } from '../message'
-import DatabaseManager from '../index'
+import DatabaseManager, { EMPTY_RESULT_SET } from '../index'
 import { ServerUser } from '../user'
 
 export type LastMessageExactly = LastMessageQueryType & ServerUser
@@ -42,6 +42,9 @@ export const insertMultiLastMessage = (
   messages: SqliteMessage[],
   confirm: 1 | 0
 ) => {
+  if (messages.length === 0) {
+    return Promise.resolve([EMPTY_RESULT_SET])
+  }
   let sql = 'REPLACE INTO last_message VALUES'
   const args: Array<string | number> = []
   for (let i = 0, len = messages.length; i < len; ++i) {
