@@ -46,6 +46,7 @@ export const initMessage = createAsyncThunk<MessageState, undefined>(
     ImTemplate.instance.isReady()
     ImService.INSTANCE
     // 加载聊天面板上的最后聊天记录
+    logger.info('querying last message')
     const lastMsg = await queryLastMessage()
     let messageLabels: MessageLabel = {}
     lastMsg.forEach(value => {
@@ -79,8 +80,9 @@ export const insertSingleMessage = createAsyncThunk<
   'message/insertSingleMessage',
   async ({ msg, confirm }, { dispatch, getState }) => {
     const re = await insertMessage(msg)
-    logger.debug('insert message to database success: ' + re)
+    logger.info('insert message to database success: ' + re)
     await insertLastMessage(msg, confirm)
+    logger.info('insert last message success!')
     const state = getState() as ReducerTypes
     if (!state.serverUser.cachedUser[msg.uid]) {
       // 拉取用户信息
@@ -122,7 +124,9 @@ export const syncMessage = createAsyncThunk<void, SyncMessageParam>(
     msg.sort((a, b) => a.messageId - b.messageId)
     // 保存到数据库
     await insertMultiplyMessage(msg)
+    logger.info('insert multiply message success')
     await insertMultiLastMessage(msg, 0)
+    logger.info('insert last message success')
     // 保存到新消息中
     if (confirmed) {
       dispatch(messageSlice.actions.insertOnlineMessage(msg))

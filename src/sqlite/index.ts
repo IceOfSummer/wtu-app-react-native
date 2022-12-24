@@ -183,8 +183,8 @@ class DatabaseManager {
    * 执行普通sql
    */
   public static executeSql(statement: string, ...args: any[]) {
-    logger.debug(
-      'SQL RUNNING\nSQL: ' + statement + '\nARGS: ' + args.toString()
+    logger.info(
+      'SQL RUNNING\nSQL: ' + statement + '\nARGS: ' + args.toString?.()
     )
     if (DatabaseManager._database) {
       return DatabaseManager._database.executeSql(statement, args)
