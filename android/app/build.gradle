@@ -137,8 +137,8 @@ android {
         applicationId "com.wtuapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
-        versionName "2.0-prerelease0"
+        versionCode 13
+        versionName "2.0.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         if (isNewArchitectureEnabled()) {
             // We configure the NDK build only if you decide to opt-in for the New Architecture.
@@ -250,6 +250,7 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
+            applicationIdSuffix ".release"
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             resValue "string", "CodePushDeploymentKey", '"oJeO75iI9jzrMMXs5EkRdoLpRcadB6EdK1Ydx"'
                         resValue "string", "app_name", '"武纺智联"'
