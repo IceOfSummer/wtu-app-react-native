@@ -41,10 +41,6 @@ const RootArticle: React.FC = () => {
   )
 
   const loadComment = async () => {
-    if (item.replyCount === 0) {
-      logger.info('no reply available')
-      return
-    }
     logger.info('started loading comment')
     if (loading) {
       logger.info('comment is loading exit!')
