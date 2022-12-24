@@ -68,8 +68,9 @@ export class ImService {
     if (!this.isInitDone) {
       throw new Error('正在加载中')
     }
+    const encodedContent = encodeContent(NormalMessage.MESSAGE_TYPE, content)
     const response = await this.imTemplate.sendMessage(
-      new ChatRequestMessage(to, content)
+      new ChatRequestMessage(to, encodedContent)
     )
 
     if (!response.success) {
@@ -84,7 +85,7 @@ export class ImService {
           uid: to,
           type: MessageType.SEND,
           messageId,
-          content: encodeContent(NormalMessage.MESSAGE_TYPE, content),
+          content: encodedContent,
           createTime: Date.now(),
         },
         confirm: 1,
