@@ -45,16 +45,24 @@ const MessageTipCheckPage: React.FC = () => {
           style={styles.tipContainer}
           hide={newlyTip.length === 0}>
           <Text style={styles.title}>新消息</Text>
-          {newlyTip.map(value => (
-            <TipMessageItem tip={value} key={value.message_id} />
+          {newlyTip.map((value, index) => (
+            <TipMessageItem
+              tip={value}
+              key={value.message_id}
+              hideBorder={index === historyTip.length - 1}
+            />
           ))}
         </ConditionHideContainer>
         <ConditionHideContainer
           style={styles.tipContainer}
           hide={historyTip.length === 0}>
           <Text style={styles.title}>历史消息</Text>
-          {historyTip.map(value => (
-            <TipMessageItem tip={value} key={value.message_id} />
+          {historyTip.map((value, index) => (
+            <TipMessageItem
+              tip={value}
+              key={value.message_id}
+              hideBorder={index === historyTip.length - 1}
+            />
           ))}
         </ConditionHideContainer>
         <ConditionHideContainer
@@ -68,17 +76,17 @@ const MessageTipCheckPage: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: global.colors.boxBackgroundColor,
     flex: 1,
   },
   title: {
     color: global.colors.textColor,
     borderBottomColor: global.colors.borderColor,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginHorizontal: 4,
+    padding: 8,
   },
   tipContainer: {
-    marginVertical: 5,
+    marginBottom: 4,
+    backgroundColor: global.colors.boxBackgroundColor,
   },
 })
 

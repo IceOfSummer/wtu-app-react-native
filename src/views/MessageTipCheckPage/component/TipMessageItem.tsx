@@ -9,6 +9,7 @@ import { COMMENT_DETAIL_PAGE } from '../../ArticleDetailPage'
 
 interface TipMessageItemProps {
   tip: MessageTipTable
+  hideBorder?: boolean
 }
 
 const TipMessageItem: React.FC<TipMessageItemProps> = props => {
@@ -36,15 +37,23 @@ const TipMessageItem: React.FC<TipMessageItemProps> = props => {
     <Button onPress={navToMessageDetail}>
       <View style={styles.container}>
         <Avatar uid={tip.last_reply_uid} />
-        <View style={styles.textContainer}>
-          <View>
+        <View
+          style={[
+            styles.textContainer,
+            {
+              borderBottomWidth: props.hideBorder
+                ? 0
+                : StyleSheet.hairlineWidth,
+            },
+          ]}>
+          <View style={{ flex: 4 }}>
             <Text>
               <Text style={styles.nameText}>{tip.last_reply_nickname}</Text>
               {extraStr}评论了你
             </Text>
-            <Text>{tip.title}</Text>
+            <Text style={styles.content}>{tip.count}</Text>
           </View>
-          <Text style={styles.rightText}>{tip.content}</Text>
+          <Text style={styles.rightText}>{tip.title}</Text>
         </View>
       </View>
     </Button>
@@ -52,19 +61,25 @@ const TipMessageItem: React.FC<TipMessageItemProps> = props => {
 }
 
 const styles = StyleSheet.create({
+  content: {
+    color: global.colors.textColor,
+  },
+  outer: {
+    paddingHorizontal: 15,
+  },
   nameText: {
     color: global.colors.textColor,
+    fontWeight: 'bold',
   },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
     paddingHorizontal: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: global.colors.borderColor,
+    marginVertical: 4,
   },
   rightText: {
     textAlign: 'right',
+    flex: 1,
   },
   textContainer: {
     flexDirection: 'row',
@@ -72,6 +87,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     marginHorizontal: 6,
+    borderBottomColor: global.colors.borderColor,
+    height: '100%',
+    paddingVertical: 10,
   },
 })
 
