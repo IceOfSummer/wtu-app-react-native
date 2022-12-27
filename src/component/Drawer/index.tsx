@@ -152,7 +152,11 @@ export default class Drawer extends React.Component<
 
   render() {
     return (
-      <Modal statusBarTranslucent transparent visible={this.state.visible}>
+      <Modal
+        statusBarTranslucent
+        transparent
+        visible={this.state.visible}
+        onRequestClose={this.closeDrawer}>
         <Animated.View
           style={{
             flex: 1,
