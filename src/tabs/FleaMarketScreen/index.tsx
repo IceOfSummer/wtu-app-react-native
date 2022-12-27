@@ -4,7 +4,6 @@ import { StyleSheet, View } from 'react-native'
 import RoundSearchBar from '../../component/SearchBar/RoundSearchBar'
 import { SEARCH_PAGE, UseNavigationGeneric } from '../../router'
 import { useNavigation } from '@react-navigation/native'
-import Icons from '../../component/Icons'
 import CustomStatusBar from '../../component/Container/CustomStatusBar'
 
 /**
@@ -13,8 +12,7 @@ import CustomStatusBar from '../../component/Container/CustomStatusBar'
 const FleaMarketScreen: React.FC = () => {
   const nav = useNavigation<UseNavigationGeneric>()
   const [searchBarPlaceholder] = useState('搜索您喜欢的商品')
-  // 是否显示消息的红点
-  const [showMessageRedPoint] = useState(true)
+
   /**
    * 当点击搜索框后，跳转到专门的搜索页面
    */
@@ -34,31 +32,9 @@ const FleaMarketScreen: React.FC = () => {
             onContainerPress={onSearchBarPress}
             disable
           />
-          <MessageBoxIcon showRedPoint={showMessageRedPoint} />
         </View>
       </View>
       <MainTab />
-    </View>
-  )
-}
-
-interface MessageBoxIconProps {
-  showRedPoint?: boolean
-}
-
-/**
- * 右上角的消息图标
- */
-const MessageBoxIcon: React.FC<MessageBoxIconProps> = props => {
-  return (
-    <View style={{ position: 'relative' }}>
-      <Icons iconText="&#xe8bd;" size={28} />
-      <View
-        style={[
-          styles.redPoint,
-          { display: props.showRedPoint ? 'flex' : 'none' },
-        ]}
-      />
     </View>
   )
 }
@@ -70,15 +46,6 @@ const styles = StyleSheet.create({
   },
   searchBarStyle: {
     opacity: 0.9,
-  },
-  redPoint: {
-    width: 8,
-    height: 8,
-    borderRadius: 20,
-    backgroundColor: 'red',
-    position: 'absolute',
-    right: 0,
-    top: 0,
   },
 })
 

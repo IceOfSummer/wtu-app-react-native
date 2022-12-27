@@ -9,12 +9,15 @@ import { useNavigation } from '@react-navigation/native'
 import { NavigationType, REGISTER_PAGE } from '../../index'
 import useFormManager from '../../../../hook/useFormManager'
 import { login } from '../../../../api/server/auth'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useStore } from 'react-redux'
 import { markLogin } from '../../../../redux/counter/serverUserSlice'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import Loading from '../../../../component/Loading'
 import Toast from 'react-native-toast-message'
+import AppEvents from '../../../../AppEvents'
+import { ReducerTypes } from '../../../../redux/counter'
+import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
 
 const logger = getLogger('views/ServerAuthPage/tabs/LoginPage')
 
@@ -25,6 +28,7 @@ const LoginPage: React.FC = () => {
   const passwordInput = useRef<AniInputRefAttribute>(null)
   const nav = useNavigation<NavigationType>()
   const dispatch = useDispatch()
+  const store = useStore<ReducerTypes>()
   const formManager = useFormManager<React.RefObject<AniInputRefAttribute>>({
     formItems: [
       {
@@ -57,17 +61,20 @@ const LoginPage: React.FC = () => {
     login(username, password)
       .then(({ data }) => {
         logger.debug('login to server success, userid: ' + data)
-        dispatch(
-          markLogin({
-            uid: data.userId,
-            nickname: data.nickname,
-            username: '',
-            name: data.name,
-            className: data.className,
-            email: data.email,
-            wtuId: data.wtuId,
-          })
-        )
+        const userInfo: ServerUserInfo = {
+          uid: data.userId,
+          nickname: data.nickname,
+          username: '',
+          name: data.name,
+          className: data.className,
+          email: data.email,
+          wtuId: data.wtuId,
+        }
+        AppEvents.trigger('onLoginDone', {
+          previousUserInfo: store.getState().serverUser.userInfo,
+          currentUserInfo: userInfo,
+        })
+        dispatch(markLogin(userInfo))
         Toast.show({
           text1: '登录成功',
           text2: '感谢您使用本APP',

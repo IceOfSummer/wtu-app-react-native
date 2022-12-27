@@ -16,7 +16,7 @@ interface AvatarProps {
   uid?: number
 }
 
-const LENGTH = 50
+const LENGTH = 48
 const Avatar: React.FC<AvatarProps> = props => {
   const [fail, setFail] = useState(false)
   const nav = useNavigation<UseNavigationGeneric>()

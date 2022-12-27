@@ -42,6 +42,7 @@ import PostArticlePage from '../views/PostArticlePage'
 import ArticleDetailPage from '../views/ArticleDetailPage'
 import { CommunityMessageQueryType } from '../api/server/community'
 import NavigationHeader from '../component/Container/NavigationHeader'
+import MessageTipCheckPage from '../views/MessageTipCheckPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -75,6 +76,7 @@ export const COMMODITY_PAGE = 'CommodityPage'
 export const ORDER_PAGE = 'OrderPage'
 export const POST_ARTICLE_PAGE = 'PostArticlePage'
 export const ARTICLE_DETAIL_PAGE = 'ArticleDetailPage'
+export const MESSAGE_TIP_CHECK_PAGE = 'MessageTipCheckPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -135,7 +137,12 @@ export interface RouterTypes extends ParamListBase {
     id: number
   }
   [ORDER_PAGE]: undefined
-  [ARTICLE_DETAIL_PAGE]: CommunityMessageQueryType
+  [ARTICLE_DETAIL_PAGE]: {
+    prepared?: CommunityMessageQueryType
+    // 只传消息id，然后发送请求查询
+    manual?: number
+  }
+  [MESSAGE_TIP_CHECK_PAGE]: undefined
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -155,10 +162,17 @@ const hideHeaderOptions: NativeStackNavigationOptions = {
 }
 
 export const headerCommonOptionsWithTitle = (
-  title: string
+  title: string,
+  backgroundColor?: string
 ): NativeStackNavigationOptions => {
   return {
-    header: props => <NavigationHeader {...props} title={title} />,
+    header: props => (
+      <NavigationHeader
+        {...props}
+        title={title}
+        backgroundColor={backgroundColor}
+      />
+    ),
   }
 }
 
@@ -320,6 +334,14 @@ const Router: React.FC = () => {
           name={ARTICLE_DETAIL_PAGE}
           component={ArticleDetailPage}
           options={headerCommonOptionsWithTitle('帖子详细')}
+        />
+        <Stack.Screen
+          name={MESSAGE_TIP_CHECK_PAGE}
+          component={MessageTipCheckPage}
+          options={headerCommonOptionsWithTitle(
+            '消息提醒',
+            global.colors.boxBackgroundColor
+          )}
         />
       </Stack.Navigator>
       <DiyToast />

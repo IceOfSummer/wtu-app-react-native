@@ -59,3 +59,21 @@ export const feedbackMessage = (
     { i: messageId, l: attitude },
     'POST'
   )
+
+export type CommunityTipQueryType = {
+  messageId: number
+  uid: number
+  lastReplyUid: number
+  count: number
+  lastReplyTime: number
+  nickname: string
+  messageTitle: string
+  lastReplyContent: string
+  type: number
+}
+
+/**
+ * 查询消息提醒(比如谁评论了自己)
+ */
+export const queryMessageTip = () =>
+  serverNoRepeatAjax<CommunityTipQueryType[]>('/community/tip')

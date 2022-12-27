@@ -4,13 +4,14 @@ import SQLite, {
   Transaction,
 } from 'react-native-sqlite-storage'
 import { getLogger } from '../utils/LoggerUtils'
+import AppEvents from '../AppEvents'
 
 const logger = getLogger('/src/sqlite')
 
 /**
  * 数据库版本号，相关信息保存在metadata表中，若版本号不一致，则会调用{@link DatabaseManager.updateDatabase}
  */
-const version = 1
+const version = 2
 
 export const EMPTY_RESULT_SET: ResultSet = {
   rowsAffected: 0,
@@ -27,8 +28,7 @@ export const EMPTY_RESULT_SET: ResultSet = {
 }
 
 const sql = `
-DROP TABLE IF EXISTS message;
-CREATE TABLE message(
+CREATE TABLE IF NOT EXISTS message(
     messageId INTEGER PRIMARY KEY,
     uid INT NOT NULL,
     content CHAR(500) NOT NULL,
@@ -37,28 +37,75 @@ CREATE TABLE message(
 );
 CREATE INDEX IF NOT EXISTS message_username_index ON message(uid);
 
-DROP TABLE IF EXISTS last_message;
-CREATE TABLE last_message(
+CREATE TABLE IF NOT EXISTS last_message(
     uid INT PRIMARY KEY NOT NULL,
     messageId INT NOT NULL,
     confirmed TINYINT DEFAULT 0
 );
 
-DROP TABLE IF EXISTS app_metadata;
-CREATE TABLE app_metadata (
+CREATE TABLE IF NOT EXISTS app_metadata (
     name CHAR(10) PRIMARY KEY,
     value CHAR(50) NOT NULL 
 );
 INSERT INTO app_metadata VALUES ('version', '${version}');
 
-DROP TABLE IF EXISTS user;
-CREATE TABLE user (
+CREATE TABLE IF NOT EXISTS user (
     uid INTEGER PRIMARY KEY NOT NULL ,
     nickname CHAR(20),
     name CHAR(10),
     bedroom CHAR(10),
     credit INT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS message_tip(
+    message_id PRIMARY KEY NOT NULL ,
+    last_reply_uid INT NOT NULL,
+    count INT NOT NULL DEFAULT 1,
+    last_reply_time INT NOT NULL,
+    last_reply_nickname CHAR(30) NOT NULL,
+    title CHAR(30) NOT NULL,
+    content CHAR(40) NOT NULL,
+    type INT DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS unread_message_tip(
+     message_id PRIMARY KEY NOT NULL ,
+     last_reply_uid INT NOT NULL,
+     count INT NOT NULL DEFAULT 1,
+     last_reply_time INT NOT NULL,
+     last_reply_nickname CHAR(30) NOT NULL,
+     title CHAR(30) NOT NULL,
+     content CHAR(40) NOT NULL,
+     type INT DEFAULT 0
+);
+`
+/**
+ * 从v1升级到v2的sql
+ */
+const update_v2_sql = `
+CREATE TABLE IF NOT EXISTS message_tip(
+    message_id PRIMARY KEY NOT NULL ,
+    last_reply_uid INT NOT NULL,
+    count INT NOT NULL DEFAULT 1,
+    last_reply_time INT NOT NULL,
+    last_reply_nickname CHAR(30) NOT NULL,
+    title CHAR(30) NOT NULL,
+    content CHAR(40) NOT NULL,
+    type INT
+);
+
+CREATE TABLE IF NOT EXISTS unread_message_tip(
+     message_id PRIMARY KEY NOT NULL ,
+     last_reply_uid INT NOT NULL,
+     count INT NOT NULL DEFAULT 1,
+     last_reply_time INT NOT NULL,
+     last_reply_nickname CHAR(30) NOT NULL,
+     title CHAR(30) NOT NULL,
+     content CHAR(40) NOT NULL,
+     type INT
+);
+
+UPDATE app_metadata SET value = '${version}' WHERE name = 'version'
 `
 
 class DatabaseManager {
@@ -90,7 +137,10 @@ class DatabaseManager {
     )
     logger.info('starting init database')
     await DatabaseManager.initDatabase()
-    logger.info('init database over')
+    AppEvents.trigger('onDatabaseInitDone')
+    const [r] = await this._database.executeSql('SELECT sqlite_version()')
+    console.log(r.rows.raw())
+    logger.info('init database done')
   }
 
   /**
@@ -134,8 +184,9 @@ class DatabaseManager {
       const gap = version - Number.parseInt(versionMeta.value, 10)
       if (gap === 1) {
         // 版本号差1才进行更新, 跨度太大不更新
-        logger.info('database is old version, updating')
-        DatabaseManager.updateDatabase()
+        logger.info('database need update')
+        logger.info('updating database to ' + version)
+        await DatabaseManager.updateDatabase()
         resolve()
         return
       } else if (gap > 1) {
@@ -143,7 +194,7 @@ class DatabaseManager {
         reject(new Error('您当前APP版本过低，请重新下载最新版本'))
         return
       }
-      logger.info('current local database is usable!')
+      logger.info('current local database is the latest version!')
       resolve()
     })
   }
@@ -160,6 +211,7 @@ class DatabaseManager {
       const trimmedStr = sqlArr[i].trim()
       if (trimmedStr) {
         await db.executeSql(trimmedStr)
+        logger.debug(trimmedStr)
       }
     }
   }
@@ -199,7 +251,9 @@ class DatabaseManager {
    * 从上一个版本的数据库升级到新版本
    * @private
    */
-  private static updateDatabase() {}
+  private static async updateDatabase() {
+    await this.parseAndRunMultiSql(DatabaseManager._database, update_v2_sql)
+  }
 }
 
 type MetadataType = {

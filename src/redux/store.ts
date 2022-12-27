@@ -3,6 +3,7 @@ import { persistReducer, persistStore } from 'redux-persist'
 import { configureStore } from '@reduxjs/toolkit'
 import reducer from './counter'
 import { PersistConfig } from 'redux-persist/es/types'
+import PubSub from 'pubsub-js'
 
 const persistConfig: PersistConfig<any> = {
   key: 'root',
@@ -28,5 +29,11 @@ export const store = configureStore({
 // export const store = __DEV__
 //   ? createStore(persistedReducer, composeWithDevTools(applyMiddleware(thunk)))
 //   : createStore(persistedReducer, applyMiddleware(thunk))
+
+const PUBSUB_KEY = 'ReduxStoreDispatch'
+
+PubSub.subscribe(PUBSUB_KEY, (message, data) => {
+  store.dispatch(data)
+})
 
 export const persistor = persistStore(store)
