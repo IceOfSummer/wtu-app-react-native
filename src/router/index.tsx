@@ -139,8 +139,11 @@ export interface RouterTypes extends ParamListBase {
   [ORDER_PAGE]: undefined
   [ARTICLE_DETAIL_PAGE]: {
     prepared?: CommunityMessageQueryType
-    // 只传消息id，然后发送请求查询
-    manual?: number
+    manual?: {
+      rootMessageId: number
+    }
+    isSubReply: boolean
+    screen?: string
   }
   [MESSAGE_TIP_CHECK_PAGE]: undefined
 }

@@ -26,7 +26,6 @@ interface NavigationHeaderProps {
 const NavigationHeader: React.FC<NavigationHeaderProps> = props => {
   const canBack = !props.hideBackButton && props.navigation.canGoBack()
   const children = props.children ?? props.headerRight?.(props)
-  console.log(children)
   return (
     <View
       style={[

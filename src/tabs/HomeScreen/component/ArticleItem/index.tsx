@@ -1,7 +1,7 @@
 import React from 'react'
 import { CommunityMessageQueryType } from '../../../../api/server/community'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
+import Avatar from '../../../../component/Container/Avatar'
 import Icons from '../../../../component/Icons'
 import { useNavigation } from '@react-navigation/native'
 import { ARTICLE_DETAIL_PAGE, UseNavigationGeneric } from '../../../../router'
@@ -15,13 +15,16 @@ const ArticleItem: React.FC<ArticleItemProps> = props => {
   const { item } = props
   const nav = useNavigation<UseNavigationGeneric>()
   const toDetail = () => {
-    nav.navigate(ARTICLE_DETAIL_PAGE, item)
+    nav.navigate(ARTICLE_DETAIL_PAGE, {
+      isSubReply: false,
+      manual: { rootMessageId: item.id },
+    })
   }
 
   return (
     <Pressable style={styles.container} onPress={toDetail}>
       <View style={styles.messageHeader}>
-        <Avatar uri={getAvatarUrl(item.author)} />
+        <Avatar uid={item.author} />
         <Text style={styles.nickname}>{item.nickname}</Text>
       </View>
       <View style={styles.articleContainer}>

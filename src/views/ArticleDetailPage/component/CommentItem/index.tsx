@@ -27,7 +27,7 @@ const CommentItem: React.FC<CommentItemProps> = props => {
   const toSubReplyDetail = () => {
     const copy = { ...item }
     copy.replyPreview = undefined
-    nav.navigate(COMMENT_DETAIL_PAGE, { ...copy, isSubReply: true })
+    nav.navigate(COMMENT_DETAIL_PAGE, { isSubReply: true, prepared: copy })
   }
 
   let contentPrefix: string | undefined

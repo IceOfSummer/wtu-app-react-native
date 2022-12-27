@@ -2,8 +2,7 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import RootArticle from './route/RootArticle'
 import { ParamListBase, useRoute } from '@react-navigation/native'
-import { ARTICLE_DETAIL_PAGE, UseRouteGeneric } from '../../router'
-import { CommunityMessageQueryType } from '../../api/server/community'
+import { ARTICLE_DETAIL_PAGE, RouterTypes, UseRouteGeneric } from '../../router'
 import { StyleSheet, Text, View } from 'react-native'
 import Icons from '../../component/Icons'
 import { StackHeaderProps } from '@react-navigation/stack/src/types'
@@ -13,12 +12,11 @@ const Stack = createStackNavigator()
 export const ROOT_ARTICLE_PAGE = '/ArticleDetailPage/RootArticle'
 export const COMMENT_DETAIL_PAGE = '/ArticleDetailPage/CommentDetailPage'
 
-export type ArticleDetailRouteParam = CommunityMessageQueryType & {
-  isSubReply?: boolean
-}
+type RouteParam = Pick<RouterTypes, 'ArticleDetailPage'>['ArticleDetailPage']
+
 export interface ArticleDetailRouteType extends ParamListBase {
-  [COMMENT_DETAIL_PAGE]: ArticleDetailRouteParam
-  [ROOT_ARTICLE_PAGE]: ArticleDetailRouteParam
+  [COMMENT_DETAIL_PAGE]: RouteParam
+  [ROOT_ARTICLE_PAGE]: RouteParam
 }
 
 type Context = {

@@ -1,4 +1,4 @@
-import { serverNoRepeatAjax, serverNormalAjax } from '../../request'
+import { serverNoRepeatAjax } from '../../request'
 
 type CommunityMessage = {
   id: number
@@ -23,11 +23,25 @@ export type PostArticleType = {
   replyTo?: number
 }
 
+export type PostReply = {
+  reply: CommunityMessageQueryType[]
+  subReply: CommunityMessageQueryType[]
+}
+
 export type CommunityMessageQueryType = CommunityMessage & {
   nickname: string
 }
-export const postArticle = (post: PostArticleType) =>
-  serverNoRepeatAjax<number>('/community/post', post, 'POST')
+
+type CommunityMessagePost = CommunityMessageQueryType
+export const postArticle = (
+  post: PostArticleType,
+  enableNotification?: boolean
+) =>
+  serverNoRepeatAjax<number>(
+    '/community/post',
+    { ...post, n: enableNotification ? '1' : undefined },
+    'POST'
+  )
 
 export const queryNewlyCommunityMessage = (param: {
   maxId?: number
@@ -38,17 +52,27 @@ export const queryNewlyCommunityMessage = (param: {
     mx: param.maxId,
   })
 
-export const queryReply = (pid: number, page = 0, size = 5) =>
-  serverNoRepeatAjax<CommunityMessageQueryType[]>('/community/reply/query', {
-    pi: pid,
+/**
+ * 获取评论，只会获取一级或二级的评论
+ */
+export const queryReplyOneLevel = (pid: number, page = 1, size = 5) =>
+  serverNoRepeatAjax<CommunityMessageQueryType[]>(
+    `/community/article/${pid}/reply/level`,
+    {
+      pi: pid,
+      p: page,
+      s: size,
+    }
+  )
+
+export const queryReply = (messageId: number, page = 1, size?: number) =>
+  serverNoRepeatAjax<PostReply>(`/community/article/${messageId}/reply`, {
     p: page,
     s: size,
   })
 
-export const querySubReplyPreview = (pids: string) =>
-  serverNormalAjax<CommunityMessageQueryType[]>('/community/reply/preview', {
-    p: pids,
-  })
+export const queryArticleById = (id: number) =>
+  serverNoRepeatAjax<CommunityMessagePost>(`/community/article/${id}`)
 
 export const feedbackMessage = (
   messageId: number,

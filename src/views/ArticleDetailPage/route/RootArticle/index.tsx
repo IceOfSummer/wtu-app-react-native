@@ -5,18 +5,22 @@ import { SpringScrollView } from 'react-native-spring-scrollview'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import {
   CommunityMessageQueryType,
+  queryArticleById,
   queryReply,
-  querySubReplyPreview,
+  queryReplyOneLevel,
 } from '../../../../api/server/community'
 import ReplyDrawer from '../../component/ReplyDrawer'
 import Toast from 'react-native-root-toast'
 import LottieLoadingHeader from '../../../../component/LoadingScrollView/LottieLoadingHeader'
 import CommentItem from '../../component/CommentItem'
-import { ArticleDetailRouteParam, MsgInfoContext } from '../../index'
+import { MsgInfoContext } from '../../index'
 import CenterLoadingIndicator from '../../../../component/EnhancedScrollView/CenterLoadingIndicator'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
+import useForceUpdate from '../../../../hook/useForceUpdate'
+import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingView'
+import { UseRouteGeneric } from '../../../../router'
 
 const logger = getLogger('/views/ArticleDetailPage')
 
@@ -24,21 +28,59 @@ export type Comment = CommunityMessageQueryType & {
   replyPreview?: CommunityMessageQueryType[]
 }
 
-const PAGE_SIZE = 5
+const RootArticleWrapper: React.FC = () => {
+  const { params } = useRoute<UseRouteGeneric<'ArticleDetailPage'>>()
+  const [data, setData] = useState<CommunityMessageQueryType | null>(null)
+  const loadPost = async () => {
+    if (params.prepared) {
+      return { code: 0, data: params.prepared, message: '' }
+    } else if (params.manual) {
+      return await queryArticleById(params.manual.rootMessageId)
+    } else {
+      throw new Error('消息加载失败，未传入根消息任何信息')
+    }
+  }
 
-const RootArticle: React.FC = () => {
+  return (
+    <EnhancedLoadingView
+      loadData={loadPost}
+      setData={setData}
+      style={{ flex: 1 }}>
+      <RootArticle article={data!} isSubReply={params.isSubReply} />
+    </EnhancedLoadingView>
+  )
+}
+
+interface RootArticleProps {
+  article: CommunityMessageQueryType
+  isSubReply: boolean
+}
+
+const SIZE = 5
+
+const RootArticle: React.FC<RootArticleProps> = props => {
   const { uidMapToNickname, msgIdMapToUser } = useContext(MsgInfoContext)
-  const route = useRoute()
-  const item = route.params as ArticleDetailRouteParam
+  const item = props.article
   const scroll = useRef<SpringScrollView>(null)
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(item.replyCount === 0)
   const page = useRef(1)
   const replyDrawer = useRef<ReplyDrawer>(null)
+  const update = useForceUpdate()
   const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
     state => state.serverUser.userInfo
   )
+
+  function saveState(message: CommunityMessageQueryType[]) {
+    message.forEach(value => {
+      uidMapToNickname.set(value.author, value.nickname)
+      msgIdMapToUser.set(value.id, {
+        uid: value.author,
+        nickname: value.nickname,
+      })
+    })
+  }
 
   const loadComment = async () => {
     logger.info('started loading comment')
@@ -47,44 +89,27 @@ const RootArticle: React.FC = () => {
       return
     }
     setLoading(true)
-    let reply: CommunityMessageQueryType[] | undefined
     try {
-      reply = (await queryReply(item.id, page.current, PAGE_SIZE)).data
-      logger.info('query reply success, length: ' + reply.length)
-      logger.debug(reply)
-      page.current++
-      if (reply.length < PAGE_SIZE) {
+      if (props.isSubReply) {
+        // 仅加载二级评论
+        const reply = await queryReplyOneLevel(item.id, page.current, SIZE)
+        if (reply.data.length < SIZE) {
+          setEmpty(true)
+        }
+        setComments(comments.concat(reply.data))
+        saveState(reply.data)
+        page.current++
+        return
+      }
+      const { data } = await queryReply(item.id, page.current, SIZE)
+      if (data.reply.length < SIZE) {
         setEmpty(true)
       }
-      // 加载评论预览(二级评论)
-      if (item.isSubReply) {
-        setComments(comments.concat(reply))
-        return
-      }
-      let pids = ''
-      for (let i = 0, len = reply.length; i < len; i++) {
-        const r = reply[i]
-        uidMapToNickname.set(r.author, r.nickname)
-        msgIdMapToUser.set(r.id, { uid: r.author, nickname: r.nickname })
-        if (r.replyCount > 0) {
-          // 有回复才去查
-          pids += r.id
-          if (i < len - 1) {
-            pids += ','
-          }
-        }
-      }
-      logger.debug('pids: ' + pids)
-      if (!pids) {
-        setComments(comments.concat(reply))
-        return
-      }
-      const { data: subReply } = await querySubReplyPreview(pids)
-      logger.info('query sub reply success!')
-      logger.debug(subReply)
+      saveState(data.reply)
+      saveState(data.subReply)
       // 映射一级评论
       const map = new Map<number, CommunityMessageQueryType[]>()
-      subReply.forEach(value => {
+      data.subReply.forEach(value => {
         uidMapToNickname.set(value.author, value.nickname)
         msgIdMapToUser.set(value.id, {
           uid: value.author,
@@ -98,7 +123,7 @@ const RootArticle: React.FC = () => {
         }
       })
       const result: Comment[] = []
-      reply.forEach(value => {
+      data.reply.forEach(value => {
         const replyTo = value.replyTo as number
         result.push({
           ...value,
@@ -107,14 +132,10 @@ const RootArticle: React.FC = () => {
         })
       })
       setComments(comments.concat(result))
+      page.current++
     } catch (e: any) {
       logger.error('load comment failed: ' + e.message)
-      if (reply) {
-        setComments(comments.concat(reply))
-        Toast.show('二级评论加载失败: ' + e.message)
-      } else {
-        Toast.show('评论加载失败: ' + e.message)
-      }
+      Toast.show('评论加载失败: ' + e.message)
     } finally {
       scroll.current?.endLoading(true)
       setLoading(false)
@@ -128,7 +149,21 @@ const RootArticle: React.FC = () => {
   }, [])
 
   const onReplySend = (article: CommunityMessageQueryType) => {
-    setComments(comments.concat(article))
+    if (article.pid !== item.id) {
+      // 回复为二级消息
+      const target = comments.find(value => value.id === article.pid)
+      if (target) {
+        if (target.replyPreview) {
+          target.replyPreview.push(article)
+        } else {
+          target.replyPreview = [article]
+        }
+        update()
+        return
+      }
+    }
+    // 直接回复根消息
+    setComments([article, ...comments])
   }
 
   return (
@@ -164,7 +199,7 @@ const RootArticle: React.FC = () => {
               onPress={() =>
                 replyDrawer.current?.openReplyDrawer({
                   message: value.content,
-                  pid: item.isSubReply ? item.id : value.id,
+                  pid: props.isSubReply ? item.id : value.id,
                   replyTo: value.id,
                   replyToUserId: value.author,
                 })
@@ -186,7 +221,7 @@ const RootArticle: React.FC = () => {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {},
   commentArea: {
     backgroundColor: global.colors.boxBackgroundColor,
   },
@@ -206,4 +241,4 @@ const styles = StyleSheet.create({
     fontSize: global.styles.$font_size_base,
   },
 })
-export default RootArticle
+export default RootArticleWrapper

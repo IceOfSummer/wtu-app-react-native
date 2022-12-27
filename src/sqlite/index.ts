@@ -138,8 +138,6 @@ class DatabaseManager {
     logger.info('starting init database')
     await DatabaseManager.initDatabase()
     AppEvents.trigger('onDatabaseInitDone')
-    const [r] = await this._database.executeSql('SELECT sqlite_version()')
-    console.log(r.rows.raw())
     logger.info('init database done')
   }
 

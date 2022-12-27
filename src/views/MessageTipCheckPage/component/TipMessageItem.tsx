@@ -5,6 +5,7 @@ import Button from 'react-native-button'
 import Avatar from '../../../component/Container/Avatar'
 import { useNavigation } from '@react-navigation/native'
 import { ARTICLE_DETAIL_PAGE, UseNavigationGeneric } from '../../../router'
+import { COMMENT_DETAIL_PAGE } from '../../ArticleDetailPage'
 
 interface TipMessageItemProps {
   tip: MessageTipTable
@@ -17,10 +18,18 @@ const TipMessageItem: React.FC<TipMessageItemProps> = props => {
   const navToMessageDetail = () => {
     if (tip.type === TipType.TYPE_POST_REPLY) {
       // 直接加载帖子
+      nav.navigate(ARTICLE_DETAIL_PAGE, {
+        isSubReply: false,
+        manual: { rootMessageId: tip.message_id },
+      })
     } else {
       // 加载二级评论
+      nav.navigate(ARTICLE_DETAIL_PAGE, {
+        screen: COMMENT_DETAIL_PAGE,
+        isSubReply: true,
+        manual: { rootMessageId: tip.message_id },
+      })
     }
-    nav.navigate(ARTICLE_DETAIL_PAGE, {})
   }
 
   return (

@@ -5,7 +5,7 @@ import {
 } from '../../../../api/server/community'
 import Drawer from '../../../../component/Drawer'
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
-import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
+import Avatar from '../../../../component/Container/Avatar'
 import Icons from '../../../../component/Icons'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import Loading from '../../../../component/Loading'
@@ -59,10 +59,14 @@ export default class ReplyDrawer extends React.Component<
       ...this.state.reply,
       content: this.state.replyText,
     }
+    const uid = this.props.userInfo?.uid
     logger.info('start submitting message...')
     logger.debug(param)
     Loading.showLoading()
-    postArticle(param)
+    postArticle(
+      param,
+      uid !== undefined && uid !== this.state.reply.replyToUserId
+    )
       .then(r => {
         const userInfo = this.props.userInfo
         if (!userInfo) {
@@ -82,6 +86,7 @@ export default class ReplyDrawer extends React.Component<
           replyTo: param.replyTo,
           title: '',
         })
+        Toast.show('评论成功!')
       })
       .catch(e => {
         logger.error('submit message failed: ' + e.message)
@@ -96,7 +101,6 @@ export default class ReplyDrawer extends React.Component<
 
   constructor(props: ReplyDrawerProps) {
     super(props)
-    console.log(props)
     this.onChangeText = this.onChangeText.bind(this)
     this.submitReply = this.submitReply.bind(this)
   }
@@ -107,7 +111,7 @@ export default class ReplyDrawer extends React.Component<
       <Drawer ref={this.drawer}>
         <View style={styles.container}>
           <View style={styles.replyPreviewContainer}>
-            <Avatar uri={getAvatarUrl(reply.replyToUserId)} size={35} />
+            <Avatar uid={reply.replyToUserId} size={35} />
             <Text numberOfLines={1} style={styles.replyText}>
               {reply.message}
             </Text>
