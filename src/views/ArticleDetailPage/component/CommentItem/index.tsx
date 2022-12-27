@@ -42,12 +42,14 @@ const CommentItem: React.FC<CommentItemProps> = props => {
       {item.title ? <Text style={styles.titleText}>{item.title}</Text> : null}
       <RowAvatar {...item} />
       <View style={styles.contentContainer}>
-        {contentPrefix ? (
-          <Text style={{ color: global.colors.textColor }}>
-            <Text style={styles.name}>回复@{contentPrefix}: </Text>
-          </Text>
-        ) : null}
-        <Text style={styles.content}>{item.content}</Text>
+        <Text>
+          {contentPrefix ? (
+            <Text style={{ color: global.colors.textColor }}>
+              <Text style={styles.name}>回复@{contentPrefix}: </Text>
+            </Text>
+          ) : null}
+          <Text style={styles.content}>{item.content}</Text>
+        </Text>
       </View>
       <JudgeComponent item={item} />
       {subReply.length === 0 ? null : (

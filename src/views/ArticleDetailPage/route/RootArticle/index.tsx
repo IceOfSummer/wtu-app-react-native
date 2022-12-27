@@ -14,7 +14,6 @@ import Toast from 'react-native-root-toast'
 import LottieLoadingHeader from '../../../../component/LoadingScrollView/LottieLoadingHeader'
 import CommentItem from '../../component/CommentItem'
 import { MsgInfoContext } from '../../index'
-import CenterLoadingIndicator from '../../../../component/EnhancedScrollView/CenterLoadingIndicator'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
@@ -187,10 +186,8 @@ const RootArticle: React.FC<RootArticleProps> = props => {
         />
         <View style={styles.commentsContainer}>
           <Text style={styles.commentTitle}>评论 {item.replyCount}</Text>
-          {comments.length === 0 && loading ? (
-            <CenterLoadingIndicator
-              backgroundColor={global.colors.boxBackgroundColor}
-            />
+          {loading && comments.length === 0 ? (
+            <Text style={global.styles.primaryTipText}>加载评论中...</Text>
           ) : null}
           {comments.map(value => (
             <CommentItem
@@ -229,7 +226,6 @@ const styles = StyleSheet.create({
   commentsContainer: {
     marginTop: 4,
     backgroundColor: global.colors.boxBackgroundColor,
-    flex: 1,
   },
   comment: {
     borderBottomWidth: StyleSheet.hairlineWidth,

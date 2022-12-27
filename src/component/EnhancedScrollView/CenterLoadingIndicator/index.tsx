@@ -1,14 +1,15 @@
 import React from 'react'
-import { ColorValue, StyleSheet, View } from 'react-native'
+import { ColorValue, StyleSheet, View, ViewStyle } from 'react-native'
 import LottieView from 'lottie-react-native'
 
 interface CenterLoadingIndicatorProps {
   backgroundColor?: ColorValue
+  style?: ViewStyle
 }
 
 const CenterLoadingIndicator: React.FC<CenterLoadingIndicatorProps> = props => {
   return (
-    <View>
+    <View style={props.style}>
       <View>{props.children}</View>
       <LottieView
         autoPlay
