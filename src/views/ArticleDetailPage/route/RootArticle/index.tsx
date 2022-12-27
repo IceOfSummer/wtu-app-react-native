@@ -31,6 +31,7 @@ export type Comment = CommunityMessageQueryType & {
 const RootArticleWrapper: React.FC = () => {
   const { params } = useRoute<UseRouteGeneric<'ArticleDetailPage'>>()
   const [data, setData] = useState<CommunityMessageQueryType | null>(null)
+  console.log(params)
   const loadPost = async () => {
     if (params.prepared) {
       return { code: 0, data: params.prepared, message: '' }

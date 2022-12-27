@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS message_tip(
     count INT NOT NULL DEFAULT 1,
     last_reply_time INT NOT NULL,
     last_reply_nickname CHAR(30) NOT NULL,
-    title CHAR(30) NOT NULL,
+    title CHAR(30) ,
     content CHAR(40) NOT NULL,
     type INT DEFAULT 0
 );
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS unread_message_tip(
      count INT NOT NULL DEFAULT 1,
      last_reply_time INT NOT NULL,
      last_reply_nickname CHAR(30) NOT NULL,
-     title CHAR(30) NOT NULL,
+     title CHAR(30) ,
      content CHAR(40) NOT NULL,
      type INT DEFAULT 0
 );
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS message_tip(
     count INT NOT NULL DEFAULT 1,
     last_reply_time INT NOT NULL,
     last_reply_nickname CHAR(30) NOT NULL,
-    title CHAR(30) NOT NULL,
+    title CHAR(30) ,
     content CHAR(40) NOT NULL,
     type INT
 );
@@ -100,7 +100,7 @@ CREATE TABLE IF NOT EXISTS unread_message_tip(
      count INT NOT NULL DEFAULT 1,
      last_reply_time INT NOT NULL,
      last_reply_nickname CHAR(30) NOT NULL,
-     title CHAR(30) NOT NULL,
+     title CHAR(30) ,
      content CHAR(40) NOT NULL,
      type INT
 );

@@ -48,6 +48,7 @@ const ArticleDetailPage: React.FC = () => {
           name={COMMENT_DETAIL_PAGE}
           component={RootArticle}
           options={{ header: Header }}
+          initialParams={route.params}
         />
       </Stack.Navigator>
     </MsgInfoContext.Provider>
@@ -69,6 +70,8 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     justifyContent: 'space-between',
     backgroundColor: global.colors.boxBackgroundColor,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: global.colors.borderColor,
   },
   title: {
     color: global.colors.textColor,

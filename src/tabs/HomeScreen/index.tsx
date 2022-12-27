@@ -47,6 +47,7 @@ const HomeScreen: React.FC = () => {
       return
     }
     queryMessageTip().then(r => {
+      console.log(r.data)
       dispatch(saveMessageTip(r.data))
     })
   }
