@@ -27,7 +27,9 @@ interface NormalMessageComponentProps {
 const NormalMessageComponent: React.FC<NormalMessageComponentProps> = props => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{props.content}</Text>
+      <Text style={styles.text} selectable>
+        {props.content}
+      </Text>
     </View>
   )
 }

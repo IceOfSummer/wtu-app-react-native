@@ -64,7 +64,8 @@ export const insertMultiplyMessage = (messages: SqliteMessage[]) => {
   if (messages.length === 0) {
     return Promise.resolve([EMPTY_RESULT_SET])
   }
-  let sql = 'REPLACE INTO message VALUES'
+  let sql =
+    'INSERT INTO message(messageId, uid, content, createTime, type) VALUES'
   const args: Array<string | number> = []
   for (let i = 0, len = messages.length; i < len; i++) {
     const msg = messages[i]
@@ -72,7 +73,13 @@ export const insertMultiplyMessage = (messages: SqliteMessage[]) => {
     if (i < len - 1) {
       sql += ','
     }
-    args.push(msg.messageId, msg.uid, msg.content, msg.createTime, msg.type)
+    args.push(
+      msg.messageId,
+      msg.uid,
+      msg.content ?? '',
+      msg.createTime,
+      msg.type
+    )
   }
   return DatabaseManager.executeSql(sql, ...args)
 }

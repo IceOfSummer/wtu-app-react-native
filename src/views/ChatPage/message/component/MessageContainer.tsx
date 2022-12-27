@@ -3,7 +3,7 @@ import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
-import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
+import Avatar from '../../../../component/Container/Avatar'
 
 export interface MessageContainerOptionalProps {
   /**
@@ -52,7 +52,7 @@ const Container: React.FC<SqliteMessage> = props => {
     nickname = userInfo.nickname
   } else if (state.serverUser.cachedUser[props.uid]) {
     const temp = state.serverUser.cachedUser[props.uid]
-    nickname = temp.nickname ? temp.nickname : temp.username
+    nickname = temp.nickname ? temp.nickname : '用户' + temp.userId
   } else {
     // TODO 用户信息缺省时发送请求获取
     nickname = 'NAME'
@@ -67,22 +67,23 @@ const Container: React.FC<SqliteMessage> = props => {
   }
   return (
     <View
-      style={{
-        flexDirection: props.type === MessageType.SEND ? 'row-reverse' : 'row',
-        marginVertical: global.styles.$spacing_col_base,
-        transform: [{ rotateX: '180deg' }],
-      }}>
-      <View style={styles.avatarContainer}>
-        <Avatar uri={getAvatarUrl(uid)} />
-      </View>
+      style={[
+        {
+          flexDirection:
+            props.type === MessageType.SEND ? 'row-reverse' : 'row',
+        },
+        styles.container,
+      ]}>
+      <Avatar uid={uid} />
       <View
-        style={{
-          alignItems:
-            props.type === MessageType.SEND ? 'flex-end' : 'flex-start',
-        }}>
-        <View>
-          <Text style={styles.nameText}>{nickname}</Text>
-        </View>
+        style={[
+          {
+            alignItems:
+              props.type === MessageType.SEND ? 'flex-end' : 'flex-start',
+          },
+          styles.contentContainer,
+        ]}>
+        <Text style={styles.nameText}>{nickname}</Text>
         <View>{props.children}</View>
       </View>
     </View>
@@ -90,11 +91,18 @@ const Container: React.FC<SqliteMessage> = props => {
 }
 
 const styles = StyleSheet.create({
-  avatarContainer: {
+  container: {
+    marginVertical: global.styles.$spacing_col_base,
+    transform: [{ rotateX: '180deg' }],
     marginHorizontal: global.styles.$spacing_row_base,
   },
   nameText: {
     fontSize: global.styles.$font_size_sm,
+    marginBottom: 3,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 8,
   },
 })
 

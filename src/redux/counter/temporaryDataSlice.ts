@@ -48,7 +48,7 @@ export const saveMessageTip = createAsyncThunk<void, CommunityTipQueryType[]>(
     if (arg.length === 0) {
       return
     }
-    console.log(arg)
+
     const messageArr: Array<MessageTipTable> = []
     for (let value of arg) {
       messageArr.push({

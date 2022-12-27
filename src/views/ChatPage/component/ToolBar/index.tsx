@@ -4,6 +4,7 @@ import Button from 'react-native-button'
 import { ImService } from '../../../../api/chat/ImService'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import Toast from 'react-native-root-toast'
+import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
 
 const logger = getLogger('/views/ChatPage/component/ToolBar')
 interface ToolBarProps {
@@ -31,18 +32,21 @@ const ToolBar: React.FC<ToolBarProps> = props => {
         <TextInput
           style={styles.textInput}
           onChangeText={setText}
+          maxLength={300}
           value={text}
           selectionColor={global.colors.primaryColor}
         />
       </View>
-      <Button
-        style={styles.button}
-        containerStyle={styles.buttonContainer}
-        onPress={sendMessage}>
-        <View style={styles.buttonInnerContainer}>
-          <Text style={styles.buttonText}>发送</Text>
-        </View>
-      </Button>
+      <ConditionHideContainer hide={text.length === 0}>
+        <Button
+          style={styles.button}
+          containerStyle={styles.buttonContainer}
+          onPress={sendMessage}>
+          <View style={styles.buttonInnerContainer}>
+            <Text style={styles.buttonText}>发送</Text>
+          </View>
+        </Button>
+      </ConditionHideContainer>
     </View>
   )
 }
@@ -69,6 +73,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     height: COMPONENT_HEIGHT,
     justifyContent: 'center',
+    flex: 1,
   },
   button: {
     width: '18%',

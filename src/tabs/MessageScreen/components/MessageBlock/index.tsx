@@ -10,7 +10,7 @@ import {
 import { formatTimestampSimply } from '../../../../utils/DateUtils'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
-import Avatar, { getAvatarUrl } from '../../../../component/Container/Avatar'
+import Avatar from '../../../../component/Container/Avatar'
 import Button from 'react-native-button'
 import {
   markMessageRead,
@@ -86,11 +86,15 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
         onPress={onPress}
         onLongPress={onLongPress}>
         <View style={styles.msgContainer}>
-          <View style={{ flexDirection: 'row' }}>
-            <Avatar uri={getAvatarUrl(props.uid)} />
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+            }}>
+            <Avatar uid={props.uid} />
             <View style={styles.nameMsgContainer}>
               <Text style={styles.nameText}>{nickname}</Text>
-              <Text>{props.content}</Text>
+              <Text numberOfLines={1}>{props.content}</Text>
             </View>
           </View>
           <View style={styles.timeContainer}>
@@ -146,6 +150,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: global.styles.$spacing_row_lg,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    flex: 1,
   },
   nameText: {
     color: global.colors.textColor,
@@ -154,6 +159,7 @@ const styles = StyleSheet.create({
   nameMsgContainer: {
     justifyContent: 'space-between',
     marginLeft: global.styles.$spacing_row_sm,
+    flex: 1,
   },
   timeContainer: {
     alignSelf: 'center',
