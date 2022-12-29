@@ -27,9 +27,6 @@ export default class UpdateChecker {
       UpdateChecker._newVersion &&
       UpdateChecker._newVersion === currentVersion
     ) {
-      UpdateChecker.downLoadNewVersion(UpdateChecker._newVersion).catch(e => {
-        logger.error('download new version failed: ' + e.message)
-      })
       return Promise.resolve(true)
     }
     return new Promise<boolean>(resolve => {
@@ -38,7 +35,7 @@ export default class UpdateChecker {
       CodePush.checkForUpdate(undefined, async r => {
         logger.info('new version found: ' + r.appVersion)
         this._newVersion = r.appVersion
-        await UpdateChecker.downLoadNewVersion(r.appVersion)
+        await UpdateChecker.downLoadNewVersion(r.appVersion, r.description)
         if (flag) {
           resolve(true)
           flag = false
@@ -74,10 +71,10 @@ export default class UpdateChecker {
     })
   }
 
-  private static async downLoadNewVersion(version: string) {
+  private static async downLoadNewVersion(version: string, message: string) {
     NativeDialog.showDialog({
-      title: '当前版本过低',
-      message: '是否下载新版本?',
+      title: '有新版本了!',
+      message,
       onConfirm: () => {
         Linking.openURL(`${Environment.cdnUrl}/app/${version}.apk`)
       },
