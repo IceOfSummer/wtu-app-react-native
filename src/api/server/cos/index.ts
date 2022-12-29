@@ -106,6 +106,22 @@ export const requireUserSpaceUploadSecret = (
   return getUserSpaceUploadSign(count, '.' + suffix)
 }
 
+export const requirePublicSpaceUploadSecret = (contentType: string) => {
+  const suffix = contentType.substring(contentType.lastIndexOf('/') + 1)
+  if (!suffix) {
+    throw new Error('无效的文件类型: ' + contentType)
+  }
+  return serverNoRepeatAjax<SignInfo>('/cos/secret/public', { t: '.' + suffix })
+}
+
+export const uploadFileToPublicSpace = (
+  signInfo: SignInfo,
+  filepath: string,
+  contentType: string
+) => {
+  return putObject(filepath, signInfo, contentType)
+}
+
 /**
  * 获取用户空间图片存放位置
  */

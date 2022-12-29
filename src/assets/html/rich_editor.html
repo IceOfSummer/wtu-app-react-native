@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <!-- Include stylesheet -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+  <link href="https://xds.asia/static/quill/quill.snow.css" rel="stylesheet">
+  <script src="https://xds.asia/static/quill/quill.min.js"></script>
+</head>
+<body style="margin: 0">
+<div id="editor" style="z-index: 1"></div>
+<script>
+  const toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike', 'image'],        // toggled buttons
+    ['blockquote', 'code-block'],
+
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+    [{ 'direction': 'rtl' }],                         // text direction
+
+    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'align': [] }],
+
+    ['clean']                                         // remove formatting button
+  ]
+  const quill = new Quill('#editor', {
+    modules: {
+      toolbar: toolbarOptions
+    },
+    theme: 'snow',
+    placeholder: '请输入内容'
+  })
+
+  /**
+   * 给RN发消息
+   * @param message {{type: string, data?: string}}
+   */
+  function postMessage(message) {
+    window.ReactNativeWebView.postMessage(JSON.stringify(message))
+  }
+
+  /**
+   * 追加图片
+   */
+  function insertImage(url) {
+    quill.insertEmbed(quill.getSelection().index, 'image', url)
+  }
+
+  /**
+   * 向rn发送文本内容
+   */
+  function rnGetContent() {
+    const data = {text: quill.getText(), content: JSON.stringify(quill.getContents())}
+    postMessage({type: 'content', data: data})
+  }
+  const toolbar = quill.getModule('toolbar')
+  toolbar.container.style="position:sticky;width:100%;top:0;z-index:2;background-color:#fff"
+  toolbar.addHandler('image', () => {
+    postMessage({type: 'image'})
+  })
+
+
+</script>
+</body>
+</html>

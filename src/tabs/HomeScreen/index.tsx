@@ -18,6 +18,7 @@ import Icons from '../../component/Icons'
 import { queryMessageTip } from '../../api/server/community'
 import { saveMessageTip } from '../../redux/counter/temporaryDataSlice'
 import AppEvents from '../../AppEvents'
+import Toast from 'react-native-root-toast'
 
 // 原本打算做个侧拉Drawer的，结果好像有点难实现? 主要是不好把下面的Tabs顶走
 const HomeScreen: React.FC = () => {
@@ -46,10 +47,13 @@ const HomeScreen: React.FC = () => {
     if (!authenticated) {
       return
     }
-    queryMessageTip().then(r => {
-      console.log(r.data)
-      dispatch(saveMessageTip(r.data))
-    })
+    queryMessageTip()
+      .then(r => {
+        dispatch(saveMessageTip(r.data))
+      })
+      .catch(e => {
+        Toast.show('加载消息提醒失败: ' + e.message)
+      })
   }
 
   const onMessageBoxPress = () => {

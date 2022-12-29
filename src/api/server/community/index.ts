@@ -11,6 +11,7 @@ type CommunityMessage = {
   dislike: number
   replyTo?: number
   replyCount: number
+  contentPreview: string
 }
 
 export type PostArticleType = {
@@ -21,6 +22,7 @@ export type PostArticleType = {
   title?: string
   content: string
   replyTo?: number
+  contentPreview: string
 }
 
 export type PostReply = {

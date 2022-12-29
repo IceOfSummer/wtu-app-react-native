@@ -20,6 +20,7 @@ import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
 import useForceUpdate from '../../../../hook/useForceUpdate'
 import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingView'
 import { UseRouteGeneric } from '../../../../router'
+import RootArticleContent from '../../component/RootArticleContent'
 
 const logger = getLogger('/views/ArticleDetailPage')
 
@@ -71,6 +72,7 @@ const RootArticle: React.FC<RootArticleProps> = props => {
   const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
     state => state.serverUser.userInfo
   )
+  const RootComponent = props.isSubReply ? CommentItem : RootArticleContent
 
   function saveState(message: CommunityMessageQueryType[]) {
     message.forEach(value => {
@@ -167,17 +169,17 @@ const RootArticle: React.FC<RootArticleProps> = props => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ height: '100%' }}>
       <SpringScrollView
         ref={scroll}
         allLoaded={empty}
         loadingFooter={LottieLoadingHeader}
         onLoading={loadComment}>
-        <CommentItem
+        <RootComponent
           item={item}
-          onPress={() =>
+          onPress={(content?: string) =>
             replyDrawer.current?.openReplyDrawer({
-              message: item.content,
+              message: content ?? item.content,
               pid: item.id,
               replyTo: item.id,
               replyToUserId: item.author,
@@ -205,7 +207,9 @@ const RootArticle: React.FC<RootArticleProps> = props => {
             />
           ))}
           {empty ? (
-            <Text style={global.styles.infoTipText}>到底了哦</Text>
+            <Text style={[global.styles.infoTipText, { paddingVertical: 25 }]}>
+              到底了哦
+            </Text>
           ) : null}
         </View>
       </SpringScrollView>
