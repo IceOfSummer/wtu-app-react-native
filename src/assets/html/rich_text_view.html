@@ -18,6 +18,7 @@
     theme: 'snow',
     readOnly: true
   })
+  const editor = document.getElementById("editor")
 
   /**
    * 给RN发消息
@@ -29,9 +30,30 @@
 
   function setContents(content) {
     quill.setContents(content)
-    const editor = document.getElementById("editor")
-    postMessage({type: 'height', data: editor.clientHeight})
+    setTimeout(() => {
+      postMessage({type: 'height', data: editor.clientHeight})
+      intervalCheck()
+    }, 50)
   }
+
+  /**
+   * 防止图片加载慢导致高度错误。由于目前没有找到有效在该场景下监控clientHeight变化的API，只能这样了。
+   */
+  function intervalCheck() {
+    let times = 0
+    let lastHeight = editor.clientHeight
+    const interval = setInterval(() => {
+      if (lastHeight !== editor.clientHeight) {
+        lastHeight = editor.clientHeight
+        postMessage({type: 'height', data: editor.clientHeight})
+      }
+      times++
+      if (times > 20) {
+        clearInterval(interval)
+      }
+    }, 200)
+  }
+
 </script>
 </body>
 </html>

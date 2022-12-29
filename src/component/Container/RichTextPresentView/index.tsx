@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Image, ViewStyle } from 'react-native'
+import { Image, PixelRatio, ViewStyle } from 'react-native'
 import WebView from 'react-native-webview'
 import { WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes'
 
@@ -34,7 +34,7 @@ const RichTextPresentView: React.FC<RichTextPresentView> = props => {
   const onMessage = ({ nativeEvent }: WebViewMessageEvent) => {
     const message = JSON.parse(nativeEvent.data) as WebViewMessage
     if (message.type === 'height') {
-      setHeight(message.data + 10)
+      setHeight(PixelRatio.roundToNearestPixel(message.data))
     }
   }
 
