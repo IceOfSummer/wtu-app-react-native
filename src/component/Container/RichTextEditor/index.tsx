@@ -137,14 +137,18 @@ export default class RichTextEditor extends React.Component<
     this.onMessage = this.onMessage.bind(this)
     this.onImagePick = this.onImagePick.bind(this)
     this.onWebViewError = this.onWebViewError.bind(this)
-    fetch(
-      Image.resolveAssetSource(require('../../../assets/html/rich_editor.html'))
-        .uri
-    )
-      .then(resp => resp.text())
-      .then(html => {
-        this.setState({ html })
-      })
+
+    if (__DEV__) {
+      fetch(
+        Image.resolveAssetSource(
+          require('../../../assets/html/rich_editor.html')
+        ).uri
+      )
+        .then(resp => resp.text())
+        .then(html => {
+          this.setState({ html })
+        })
+    }
   }
 
   render() {
@@ -153,7 +157,11 @@ export default class RichTextEditor extends React.Component<
         <WebView
           ref={this.webView}
           containerStyle={styles.webView}
-          source={{ html: this.state.html }}
+          source={
+            __DEV__
+              ? { html: this.state.html }
+              : { uri: Environment.cdnUrl + '/static/html/rich_editor.html' }
+          }
           originWhitelist={['*']}
           onMessage={this.onMessage}
           scrollEnabled={false}

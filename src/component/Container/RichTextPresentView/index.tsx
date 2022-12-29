@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Image, PixelRatio, ViewStyle } from 'react-native'
 import WebView from 'react-native-webview'
 import { WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes'
+import Environment from '../../../utils/Environment'
 
 interface RichTextPresentView {
   style?: ViewStyle
@@ -18,15 +19,18 @@ const RichTextPresentView: React.FC<RichTextPresentView> = props => {
   const [html, setHtml] = useState<string | undefined>()
   const [height, setHeight] = useState(0)
   const webView = useRef<WebView>(null)
-  useEffect(() => {
-    fetch(
-      Image.resolveAssetSource(
-        require('../../../assets/html/rich_text_view.html')
-      ).uri
-    )
-      .then(resp => resp.text())
-      .then(_html => setHtml(_html))
-  })
+  if (__DEV__) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      fetch(
+        Image.resolveAssetSource(
+          require('../../../assets/html/rich_text_view.html')
+        ).uri
+      )
+        .then(resp => resp.text())
+        .then(_html => setHtml(_html))
+    })
+  }
   const onLoad = () => {
     webView.current?.injectJavaScript(`setContents(${props.content})`)
   }
@@ -48,7 +52,11 @@ const RichTextPresentView: React.FC<RichTextPresentView> = props => {
       onMessage={onMessage}
       style={[{ height, width: '100%' }, props.style]}
       containerStyle={props.containerStyle}
-      source={{ html }}
+      source={
+        __DEV__
+          ? { html }
+          : { uri: Environment.cdnUrl + '/static/html/rich_text_view.html' }
+      }
       originWhitelist={['*']}
     />
   )

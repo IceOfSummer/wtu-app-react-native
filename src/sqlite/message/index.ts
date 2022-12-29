@@ -65,10 +65,13 @@ export const insertMultiplyMessage = (messages: SqliteMessage[]) => {
     return Promise.resolve([EMPTY_RESULT_SET])
   }
   let sql =
-    'INSERT INTO message(messageId, uid, content, createTime, type) VALUES'
+    'REPLACE INTO message(messageId, uid, content, createTime, type) VALUES'
   const args: Array<string | number> = []
   for (let i = 0, len = messages.length; i < len; i++) {
     const msg = messages[i]
+    if (!msg.messageId) {
+      console.log(msg)
+    }
     sql += '(?,?,?,?,?)'
     if (i < len - 1) {
       sql += ','
