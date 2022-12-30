@@ -6,6 +6,7 @@ import { ARTICLE_DETAIL_PAGE, RouterTypes, UseRouteGeneric } from '../../router'
 import { StyleSheet, Text, View } from 'react-native'
 import Icons from '../../component/Icons'
 import { StackHeaderProps } from '@react-navigation/stack/src/types'
+import SubReplyDetail from './route/SubReplyDetail'
 
 const Stack = createStackNavigator()
 
@@ -48,7 +49,7 @@ const ArticleDetailPage: React.FC = () => {
         />
         <Stack.Screen
           name={COMMENT_DETAIL_PAGE}
-          component={RootArticle}
+          component={SubReplyDetail}
           options={{ header: Header }}
           initialParams={route.params}
         />

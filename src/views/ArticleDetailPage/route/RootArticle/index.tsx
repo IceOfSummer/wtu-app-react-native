@@ -1,26 +1,23 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { useRoute } from '@react-navigation/native'
-import { StyleSheet, Text, View } from 'react-native'
+import { View } from 'react-native'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import {
   CommunityMessageQueryType,
-  queryArticleById,
   queryReply,
-  queryReplyOneLevel,
 } from '../../../../api/server/community'
 import ReplyDrawer from '../../component/ReplyDrawer'
 import Toast from 'react-native-root-toast'
 import LottieLoadingHeader from '../../../../component/LoadingScrollView/LottieLoadingHeader'
-import CommentItem from '../../component/CommentItem'
 import { MsgInfoContext } from '../../index'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
 import useForceUpdate from '../../../../hook/useForceUpdate'
-import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingView'
-import { UseRouteGeneric } from '../../../../router'
 import RootArticleContent from '../../component/RootArticleContent'
+import ArticleWrapper from '../../component/ArticleWrapper'
+import CommentContainer from '../../component/CommentContainer'
+import BottomReplyToolbar from '../../component/BottomReplyToolbar'
 
 const logger = getLogger('/views/ArticleDetailPage')
 
@@ -29,32 +26,11 @@ export type Comment = CommunityMessageQueryType & {
 }
 
 const RootArticleWrapper: React.FC = () => {
-  const { params } = useRoute<UseRouteGeneric<'ArticleDetailPage'>>()
-  const [data, setData] = useState<CommunityMessageQueryType | null>(null)
-
-  const loadPost = async () => {
-    if (params.prepared) {
-      return { code: 0, data: params.prepared, message: '' }
-    } else if (params.manual) {
-      return await queryArticleById(params.manual.rootMessageId)
-    } else {
-      throw new Error('消息加载失败，未传入根消息任何信息')
-    }
-  }
-
-  return (
-    <EnhancedLoadingView
-      loadData={loadPost}
-      setData={setData}
-      style={{ flex: 1 }}>
-      <RootArticle article={data!} isSubReply={params.isSubReply} />
-    </EnhancedLoadingView>
-  )
+  return <ArticleWrapper content={RootArticle} />
 }
 
 interface RootArticleProps {
   article: CommunityMessageQueryType
-  isSubReply: boolean
 }
 
 const SIZE = 5
@@ -72,7 +48,6 @@ const RootArticle: React.FC<RootArticleProps> = props => {
   const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
     state => state.serverUser.userInfo
   )
-  const RootComponent = props.isSubReply ? CommentItem : RootArticleContent
 
   function saveState(message: CommunityMessageQueryType[]) {
     message.forEach(value => {
@@ -87,22 +62,11 @@ const RootArticle: React.FC<RootArticleProps> = props => {
   const loadComment = async () => {
     logger.info('started loading comment')
     if (loading) {
-      logger.info('comment is loading exit!')
+      logger.info('comment is loading')
       return
     }
     setLoading(true)
     try {
-      if (props.isSubReply) {
-        // 仅加载二级评论
-        const reply = await queryReplyOneLevel(item.id, page.current, SIZE)
-        if (reply.data.length < SIZE) {
-          setEmpty(true)
-        }
-        setComments(comments.concat(reply.data))
-        saveState(reply.data)
-        page.current++
-        return
-      }
       const { data } = await queryReply(item.id, page.current, SIZE)
       if (data.reply.length < SIZE) {
         setEmpty(true)
@@ -175,71 +139,40 @@ const RootArticle: React.FC<RootArticleProps> = props => {
         allLoaded={empty}
         loadingFooter={LottieLoadingHeader}
         onLoading={loadComment}>
-        <RootComponent
-          item={item}
-          onPress={(content?: string) =>
+        <RootArticleContent item={item} />
+        <CommentContainer
+          comments={comments}
+          loading={loading}
+          empty={empty}
+          rootItem={item}
+          onCommentPress={comment =>
             replyDrawer.current?.openReplyDrawer({
-              message: content ?? item.content,
-              pid: item.id,
-              replyTo: item.id,
-              replyToUserId: item.author,
+              message: comment.content,
+              pid: comment.id,
+              replyTo: comment.id,
+              replyToUserId: comment.author,
             })
           }
         />
-        <View style={styles.commentsContainer}>
-          <Text style={styles.commentTitle}>评论 {item.replyCount}</Text>
-          {loading && comments.length === 0 ? (
-            <Text style={global.styles.primaryTipText}>加载评论中...</Text>
-          ) : null}
-          {comments.map(value => (
-            <CommentItem
-              style={styles.comment}
-              item={value}
-              key={value.id}
-              onPress={() =>
-                replyDrawer.current?.openReplyDrawer({
-                  message: value.content,
-                  pid: props.isSubReply ? item.id : value.id,
-                  replyTo: value.id,
-                  replyToUserId: value.author,
-                })
-              }
-            />
-          ))}
-          {empty ? (
-            <Text style={[global.styles.infoTipText, { paddingVertical: 25 }]}>
-              到底了哦
-            </Text>
-          ) : null}
-        </View>
       </SpringScrollView>
       <ReplyDrawer
         ref={replyDrawer}
         onReplySend={onReplySend}
         userInfo={userInfo}
       />
+      <BottomReplyToolbar
+        item={item}
+        onPress={() =>
+          replyDrawer.current?.openReplyDrawer({
+            message: item.title,
+            pid: item.id,
+            replyTo: item.id,
+            replyToUserId: item.author,
+          })
+        }
+      />
     </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {},
-  commentArea: {
-    backgroundColor: global.colors.boxBackgroundColor,
-  },
-  commentsContainer: {
-    marginTop: 4,
-    backgroundColor: global.colors.boxBackgroundColor,
-  },
-  comment: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: global.colors.borderColor,
-  },
-  commentTitle: {
-    color: global.colors.textColor,
-    marginTop: 8,
-    marginLeft: 10,
-    fontSize: global.styles.$font_size_base,
-  },
-})
 export default RootArticleWrapper

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Comment } from '../../route/RootArticle'
-import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native'
+import { StyleSheet, Text, View, ViewStyle } from 'react-native'
 
 import RowAvatar from '../../../../tabs/MessageScreen/components/RowAvatar'
 import JudgeComponent from '../JudgeComponent'
@@ -8,7 +8,6 @@ import RichTextPresentView from '../../../../component/Container/RichTextPresent
 
 interface RootArticleContentProps {
   item: Comment
-  onPress?: (content: string) => void
   style?: ViewStyle
 }
 
@@ -16,14 +15,12 @@ const RootArticleContent: React.FC<RootArticleContentProps> = props => {
   const { item } = props
 
   return (
-    <Pressable
-      style={[styles.topContainer, props.style]}
-      onPress={() => props.onPress?.(item.title)}>
+    <View style={[styles.topContainer, props.style]}>
       <Text style={styles.titleText}>{item.title}</Text>
       <RowAvatar {...item} />
       <RichTextPresentView content={item.content} />
       <JudgeComponent item={item} />
-    </Pressable>
+    </View>
   )
 }
 

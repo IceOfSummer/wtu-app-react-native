@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import Clipboard from '@react-native-clipboard/clipboard'
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import RowAvatar from '../../../../tabs/MessageScreen/components/RowAvatar'
 import JudgeComponent from '../JudgeComponent'
@@ -11,6 +12,7 @@ import { CommunityMessageQueryType } from '../../../../api/server/community'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/src/types'
 import { Comment } from '../../route/RootArticle'
+import Toast from 'react-native-root-toast'
 
 interface CommentItemProps {
   item: Comment
@@ -35,8 +37,15 @@ const CommentItem: React.FC<CommentItemProps> = props => {
     const user = msgIdMapToUser.get(replyTo)
     contentPrefix = user ? user.nickname : uidMapToNickname.get(replyTo)
   }
+
+  const copyContentToClipboard = () => {
+    Clipboard.setString(item.content)
+    Toast.show(`已复制${item.nickname}的评论`)
+  }
+
   return (
     <Pressable
+      onLongPress={copyContentToClipboard}
       style={[styles.topContainer, props.style]}
       onPress={props.onPress}>
       {item.title ? <Text style={styles.titleText}>{item.title}</Text> : null}

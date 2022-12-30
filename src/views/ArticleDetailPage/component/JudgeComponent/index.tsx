@@ -179,7 +179,7 @@ const JudgeComponent: React.FC<JudgeComponentProps> = props => {
 const styles = StyleSheet.create({
   actionContainer: {
     flexDirection: 'row',
-    alignSelf: 'flex-end',
+    justifyContent: 'flex-end',
   },
   action: {
     backgroundColor: global.colors.shallowBoxBackgroundColor,

@@ -45,6 +45,9 @@ export default class ReplyDrawer extends React.Component<
   public openReplyDrawer(param: OpenDrawerParam) {
     this.setState({ reply: param, replyText: '' }, () => {
       this.drawer.current?.showDrawer()
+      setTimeout(() => {
+        this.textInput.current?.focus()
+      }, 300)
     })
   }
 
@@ -63,8 +66,12 @@ export default class ReplyDrawer extends React.Component<
     logger.info('start submitting message...')
     logger.debug(param)
     Loading.showLoading()
+    const contentPreview =
+      param.content.length < 30
+        ? param.content
+        : param.content.substring(0, 31) + '...'
     postArticle(
-      param,
+      { ...param, contentPreview },
       uid !== undefined && uid !== this.state.reply.replyToUserId
     )
       .then(r => {
@@ -85,6 +92,7 @@ export default class ReplyDrawer extends React.Component<
           replyCount: 0,
           replyTo: param.replyTo,
           title: '',
+          contentPreview,
         })
         Toast.show('评论成功!')
       })
@@ -98,6 +106,8 @@ export default class ReplyDrawer extends React.Component<
         this.drawer.current?.closeDrawer()
       })
   }
+
+  textInput = React.createRef<TextInput>()
 
   constructor(props: ReplyDrawerProps) {
     super(props)
@@ -120,6 +130,7 @@ export default class ReplyDrawer extends React.Component<
             <View style={styles.inputContainer}>
               <TextInput
                 maxLength={499}
+                ref={this.textInput}
                 style={styles.input}
                 placeholder={this.props.placeholder ?? '留下你的评论'}
                 onChangeText={this.onChangeText}
