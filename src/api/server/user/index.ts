@@ -2,7 +2,6 @@ import { serverNoRepeatAjax } from '../../request'
 
 export type UserInfoQueryType = {
   userId: number
-  name: string
   credit: number
   nickname: string
   className: string

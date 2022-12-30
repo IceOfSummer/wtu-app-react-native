@@ -14,7 +14,7 @@ export const insertOrUpdateUser = (user: ServerUser) => {
     'REPLACE INTO user VALUES(?, ?, ?, ?, ?)',
     user.userId,
     user.nickname,
-    user.name,
+    '',
     '',
     user.credit
   )
@@ -33,9 +33,9 @@ export const insertOrUpdateMultiUsers = (user: ServerUser[]) => {
 }
 
 function getInlineSql(user: ServerUser): string {
-  return `(${user.userId},${preventNull(user.nickname)},${preventNull(
-    user.name
-  )},${preventNull('')},${user.credit})`
+  return `(${user.userId},${preventNull(user.nickname)},'',${preventNull('')},${
+    user.credit
+  })`
 }
 
 function preventNull(val?: string): string {

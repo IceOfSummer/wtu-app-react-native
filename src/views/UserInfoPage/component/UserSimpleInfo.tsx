@@ -38,10 +38,6 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
           <Text style={{ color: getCreditColor() }}>{userInfo.credit}</Text>
         </View>
         <View style={styles.infoDetailContainer}>
-          <Text style={styles.labelText}>真实姓名: </Text>
-          <Text>{userInfo.name}</Text>
-        </View>
-        <View style={styles.infoDetailContainer}>
           <Text style={styles.labelText}>班级: </Text>
           <Text>{userInfo.className}</Text>
         </View>

@@ -7,7 +7,6 @@ import { login } from './src/api/server/auth'
 import './src/utils/LoggerUtils/index'
 import 'react-native-gesture-handler'
 import fs from 'react-native-fs'
-import { postArticle } from './src/api/server/community'
 
 // 初始化日志文件夹(应该用同步方法，但是没有相关的库)
 fs.mkdir(fs.DocumentDirectoryPath + '/logs').catch(e => console.error(e))
@@ -26,15 +25,6 @@ if (__DEV__) {
   DevSettings.addMenuItem('login test account2', () => {
     login('100001', 'abc123').then(resp => {
       console.log(resp)
-    })
-  })
-  DevSettings.addMenuItem('post test article', () => {
-    postArticle({
-      pid: 0,
-      content: 'hello world' + Date.now(),
-      title: '你好世界!',
-    }).then(() => {
-      console.log('success')
     })
   })
 }
