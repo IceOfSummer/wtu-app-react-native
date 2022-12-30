@@ -43,16 +43,24 @@ const PostArticlePage: React.FC = () => {
     let editorData: EditorData
     try {
       editorData = await editor.getContent()
+      const contentPreview =
+        editorData.text.length <= 30
+          ? editorData.text
+          : editorData.text.substring(0, 31) + '...'
       logger.info('get content success!')
+      logger.info('content preview: ' + contentPreview)
+      console.log({
+        title,
+        content: editorData.content,
+        pid: 0,
+        contentPreview,
+      })
       messageId = (
         await postArticle({
           title,
           content: editorData.content,
           pid: 0,
-          contentPreview:
-            editorData.text.length <= 30
-              ? editorData.text
-              : editorData.text.substring(0, 31) + '...',
+          contentPreview,
         })
       ).data
     } catch (e: any) {

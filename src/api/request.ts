@@ -30,6 +30,7 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
 
 const serverRequestErrorInterceptor = (error: AxiosError): Error => {
   const data = error.response?.data as any
+  logger.error(error)
   if (data && data.message) {
     if (data.code === 1) {
       // 标记登录失效
