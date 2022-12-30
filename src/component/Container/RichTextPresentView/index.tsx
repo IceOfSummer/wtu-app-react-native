@@ -1,10 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React from 'react'
 import { Image, PixelRatio, ViewStyle } from 'react-native'
 import WebView from 'react-native-webview'
-import { WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes'
+import {
+  WebViewMessageEvent,
+  WebViewSource,
+} from 'react-native-webview/lib/WebViewTypes'
 import Environment from '../../../utils/Environment'
+import { getLogger } from '../../../utils/LoggerUtils'
 
-interface RichTextPresentView {
+const logger = getLogger('/component/Container/RichTextPresentView')
+
+interface RichTextPresentViewProps {
   style?: ViewStyle
   containerStyle?: ViewStyle
   content: string
@@ -14,52 +20,75 @@ type WebViewMessage = {
   type: 'height'
   data: any
 }
-
-const RichTextPresentView: React.FC<RichTextPresentView> = props => {
-  const [html, setHtml] = useState<string | undefined>()
-  const [height, setHeight] = useState(0)
-  const webView = useRef<WebView>(null)
+async function getSource(): Promise<WebViewSource> {
   if (__DEV__) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      fetch(
-        Image.resolveAssetSource(
-          require('../../../assets/html/rich_text_view.html')
-        ).uri
-      )
-        .then(resp => resp.text())
-        .then(_html => setHtml(_html))
-    })
+    const source = await fetch(
+      Image.resolveAssetSource(
+        require('../../../assets/html/rich_text_view.html')
+      ).uri
+    )
+    return {
+      html: await source.text(),
+    }
+  } else {
+    return {
+      uri: Environment.cdnUrl + '/static/html/rich_text_view.html',
+    }
   }
-  const onLoad = () => {
-    webView.current?.injectJavaScript(`setContents(${props.content})`)
+}
+
+interface RichTextPresentViewState {
+  height: number
+  source?: WebViewSource
+}
+
+export default class RichTextPresentView extends React.Component<
+  RichTextPresentViewProps,
+  RichTextPresentViewState
+> {
+  webView = React.createRef<WebView>()
+
+  onLoad = () => {
+    this.webView.current?.injectJavaScript(`setContents(${this.props.content})`)
   }
 
-  const onMessage = ({ nativeEvent }: WebViewMessageEvent) => {
+  onMessage = ({ nativeEvent }: WebViewMessageEvent) => {
     const message = JSON.parse(nativeEvent.data) as WebViewMessage
     if (message.type === 'height') {
-      setHeight(PixelRatio.roundToNearestPixel(message.data))
+      const hei = PixelRatio.roundToNearestPixel(message.data)
+      this.setState({ height: hei })
+      logger.info('webView height: ' + hei)
     }
   }
 
-  if (!html) {
-    return null
+  constructor(
+    props: Readonly<RichTextPresentViewProps> | RichTextPresentViewProps
+  ) {
+    super(props)
+    this.state = { height: 0 }
+    getSource()
+      .then(s => {
+        this.setState({
+          source: s,
+        })
+      })
+      .catch(e => {
+        logger.error('load source failed: ' + e.message)
+      })
   }
-  return (
-    <WebView
-      onLoad={onLoad}
-      ref={webView}
-      onMessage={onMessage}
-      style={[{ height, width: '100%' }, props.style]}
-      containerStyle={props.containerStyle}
-      source={
-        __DEV__
-          ? { html }
-          : { uri: Environment.cdnUrl + '/static/html/rich_text_view.html' }
-      }
-      originWhitelist={['*']}
-    />
-  )
-}
 
-export default RichTextPresentView
+  render() {
+    return (
+      <WebView
+        onLoad={this.onLoad}
+        ref={this.webView}
+        onMessage={this.onMessage}
+        style={[{ height: this.state.height, width: '100%' }, this.props.style]}
+        containerStyle={this.props.containerStyle}
+        renderToHardwareTextureAndroid
+        source={this.state.source}
+        originWhitelist={['*']}
+      />
+    )
+  }
+}

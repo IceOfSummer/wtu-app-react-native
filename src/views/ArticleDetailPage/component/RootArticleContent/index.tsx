@@ -1,6 +1,6 @@
 import React from 'react'
 import { Comment } from '../../route/RootArticle'
-import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
+import { Pressable, StyleSheet, Text, ViewStyle } from 'react-native'
 
 import RowAvatar from '../../../../tabs/MessageScreen/components/RowAvatar'
 import JudgeComponent from '../JudgeComponent'
@@ -21,9 +21,7 @@ const RootArticleContent: React.FC<RootArticleContentProps> = props => {
       onPress={() => props.onPress?.(item.title)}>
       <Text style={styles.titleText}>{item.title}</Text>
       <RowAvatar {...item} />
-      <View style={styles.contentContainer}>
-        <RichTextPresentView content={item.content} />
-      </View>
+      <RichTextPresentView content={item.content} />
       <JudgeComponent item={item} />
     </Pressable>
   )
@@ -42,7 +40,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     marginVertical: 15,
-    flexDirection: 'row',
   },
 })
 

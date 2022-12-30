@@ -336,7 +336,10 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={ARTICLE_DETAIL_PAGE}
           component={ArticleDetailPage}
-          options={headerCommonOptionsWithTitle('帖子详细')}
+          options={{
+            ...headerCommonOptionsWithTitle('帖子详细'),
+            animation: 'slide_from_right',
+          }}
         />
         <Stack.Screen
           name={MESSAGE_TIP_CHECK_PAGE}

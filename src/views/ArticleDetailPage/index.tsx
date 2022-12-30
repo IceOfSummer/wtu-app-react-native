@@ -37,7 +37,9 @@ const ArticleDetailPage: React.FC = () => {
   const route = useRoute<UseRouteGeneric<typeof ARTICLE_DETAIL_PAGE>>()
   return (
     <MsgInfoContext.Provider value={context}>
-      <Stack.Navigator initialRouteName={ROOT_ARTICLE_PAGE}>
+      <Stack.Navigator
+        initialRouteName={ROOT_ARTICLE_PAGE}
+        screenOptions={{ animationEnabled: false }}>
         <Stack.Screen
           name={ROOT_ARTICLE_PAGE}
           component={RootArticle}
