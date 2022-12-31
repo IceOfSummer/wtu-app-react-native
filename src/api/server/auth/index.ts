@@ -11,3 +11,5 @@ type UserInfo = {
 
 export const login = (username: string, password: string) =>
   serverNoRepeatAjax<UserInfo>('/login', { username, password }, 'POST')
+
+export const logout = () => serverNoRepeatAjax('/logout')

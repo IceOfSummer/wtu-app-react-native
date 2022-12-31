@@ -8,12 +8,12 @@ import { markLoginExpired, saveUserInfo } from '../../redux/actions/user'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import styles from './styles'
 import CenterTextCard from '../../component/Cards/CenterTextCard'
-import Toast from 'react-native-toast-message'
-import CookieManager from '@react-native-cookies/cookies'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RouterTypes } from '../../router'
 import Loading from '../../component/Loading'
 import NativeDialog from '../../native/modules/NativeDialog'
+import { logout } from '../../api/server/auth'
+import Toast from 'react-native-root-toast'
 
 interface PersonalInfoProps {}
 
@@ -52,13 +52,14 @@ const PersonalInfo: React.FC<
       type: 'warn',
       onConfirm() {
         Loading.showLoading()
-        CookieManager.clearAll()
+        logout()
           .then(() => {
             props.logOut()
-            Toast.show({
-              text1: '登出成功',
-            })
+            Toast.show('登出成功')
             props.navigation.goBack()
+          })
+          .catch(e => {
+            Toast.show('注销失败: ' + e.message)
           })
           .finally(() => {
             Loading.hideLoading()
