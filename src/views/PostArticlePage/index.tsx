@@ -14,6 +14,7 @@ import RichTextEditor, {
   EditorData,
 } from '../../component/Container/RichTextEditor'
 import { getLogger } from '../../utils/LoggerUtils'
+import { processHtml } from '../../utils/XssUtil'
 
 const logger = getLogger('/views/PostArticlePage')
 
@@ -52,7 +53,7 @@ const PostArticlePage: React.FC = () => {
       messageId = (
         await postArticle({
           title,
-          content: editorData.content,
+          content: processHtml(editorData.content),
           pid: 0,
           contentPreview,
         })

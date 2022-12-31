@@ -7,6 +7,7 @@ import {
 } from 'react-native-webview/lib/WebViewTypes'
 import Environment from '../../../utils/Environment'
 import { getLogger } from '../../../utils/LoggerUtils'
+import { processHtml } from '../../../utils/XssUtil'
 
 const logger = getLogger('/component/Container/RichTextPresentView')
 
@@ -49,15 +50,9 @@ export default class RichTextPresentView extends React.Component<
   webView = React.createRef<WebView>()
 
   onLoad = () => {
-    if (this.props.content[0] === '{') {
-      this.webView.current?.injectJavaScript(
-        `setContents(${this.props.content})`
-      )
-    } else {
-      this.webView.current?.injectJavaScript(
-        `setContents('${this.props.content}')`
-      )
-    }
+    this.webView.current?.injectJavaScript(
+      `setContents('${processHtml(this.props.content)}')`
+    )
   }
 
   onMessage = ({ nativeEvent }: WebViewMessageEvent) => {
