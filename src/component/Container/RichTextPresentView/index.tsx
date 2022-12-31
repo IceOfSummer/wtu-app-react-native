@@ -49,7 +49,15 @@ export default class RichTextPresentView extends React.Component<
   webView = React.createRef<WebView>()
 
   onLoad = () => {
-    this.webView.current?.injectJavaScript(`setContents(${this.props.content})`)
+    if (this.props.content[0] === '{') {
+      this.webView.current?.injectJavaScript(
+        `setContents(${this.props.content})`
+      )
+    } else {
+      this.webView.current?.injectJavaScript(
+        `setContents('${this.props.content}')`
+      )
+    }
   }
 
   onMessage = ({ nativeEvent }: WebViewMessageEvent) => {
@@ -85,9 +93,8 @@ export default class RichTextPresentView extends React.Component<
         onMessage={this.onMessage}
         style={[{ height: this.state.height, width: '100%' }, this.props.style]}
         containerStyle={this.props.containerStyle}
-        renderToHardwareTextureAndroid
         source={this.state.source}
-        originWhitelist={['*']}
+        showsVerticalScrollIndicator={false}
       />
     )
   }

@@ -8,9 +8,12 @@
   <link href="https://xds.asia/static/quill/quill.snow.css" rel="stylesheet">
   <script src="https://xds.asia/static/quill/quill.min.js"></script>
 </head>
-<body style="margin: 0">
+<body style="margin: 0;">
 <div id="editor" style="border: none"></div>
 <script>
+  Quill.prototype.setHtml = function(content) {
+    this.container.querySelector('.ql-editor').innerHTML = content
+  }
   const quill = new Quill('#editor', {
     modules: {
       toolbar: false
@@ -29,7 +32,11 @@
   }
 
   function setContents(content) {
-    quill.setContents(content)
+    if (typeof content === 'string') {
+      quill.setHtml(content)
+    } else {
+      quill.setContents(content)
+    }
     setTimeout(() => {
       postMessage({type: 'height', data: editor.clientHeight})
       intervalCheck()

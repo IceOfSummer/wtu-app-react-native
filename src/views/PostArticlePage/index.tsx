@@ -49,12 +49,6 @@ const PostArticlePage: React.FC = () => {
           : editorData.text.substring(0, 31) + '...'
       logger.info('get content success!')
       logger.info('content preview: ' + contentPreview)
-      console.log({
-        title,
-        content: editorData.content,
-        pid: 0,
-        contentPreview,
-      })
       messageId = (
         await postArticle({
           title,

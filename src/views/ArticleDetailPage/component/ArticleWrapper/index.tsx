@@ -15,8 +15,6 @@ const ArticleWrapper: React.FC<ArticleWrapperProps> = props => {
   const [data, setData] = useState<CommunityMessageQueryType | null>(null)
   const Component = props.content
   const loadPost = async () => {
-    console.log('param')
-    console.log(params)
     if (params.prepared) {
       return { code: 0, data: params.prepared, message: '' }
     } else if (params.manual) {
@@ -25,7 +23,6 @@ const ArticleWrapper: React.FC<ArticleWrapperProps> = props => {
       throw new Error('消息加载失败，未传入根消息任何信息')
     }
   }
-  console.log(data)
   return (
     <EnhancedLoadingView
       loadData={loadPost}
