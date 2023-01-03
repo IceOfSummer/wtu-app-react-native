@@ -17,6 +17,10 @@ export type ServerUserState = {
    * <b>不要使用redux-priests来持久化该属性！因为它可能会很大</b>
    */
   cachedUser: CachedUser
+  /**
+   * 请求时需要携带的token
+   */
+  token?: string
 }
 
 export type CachedUser = Record<number, ServerUser>
@@ -76,4 +80,8 @@ export interface ServerUserReducers extends SliceCaseReducers<ServerUserState> {
    * 合并用户信息缓存
    */
   combineUserCache: Reducer<CachedUser>
+  /**
+   * 修改请求token
+   */
+  modifyRequestToken: Reducer<string | undefined>
 }

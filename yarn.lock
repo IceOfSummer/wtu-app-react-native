@@ -2422,10 +2422,10 @@ atob@^2.1.2:
   resolved "https://registry.npmmirror.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-axios-simple-wrapper@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/axios-simple-wrapper/-/axios-simple-wrapper-1.0.4.tgz#695dfe5a53186ebe8d31a3ddda43c82fcaca8af7"
-  integrity sha512-TBLAarl2yJroaACyFzpzCJJ1981HZu/AMY5i2SpxXo0cThqQpnjqgOQOQw61un1Qo2o7bC3cEGlY3xwkOMm0Pw==
+axios-simple-wrapper@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/axios-simple-wrapper/-/axios-simple-wrapper-1.0.5.tgz#f48ed3a5900025a9f1ebeaeb1738aeb7c48e0eae"
+  integrity sha512-+pbieCXy26oTcWnIpftCJ0wYxhTAhieaB3rCrt3T57wmnDQ5pu4Nw5qjr4hc00AXufIwc2l4hlEbcMYLdWzzvw==
 
 axios@*:
   version "0.27.2"

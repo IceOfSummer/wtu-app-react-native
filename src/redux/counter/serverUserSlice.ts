@@ -105,6 +105,10 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
     markLoginInvalid(state) {
       state.authenticated = false
       state.userInfo = undefined
+      state.token = undefined
+    },
+    modifyRequestToken(state, { payload }) {
+      state.token = payload
     },
   },
   extraReducers: {
@@ -135,6 +139,7 @@ export const {
   saveUserToCache,
   markLoginInvalid,
   updateServerUserInfo,
+  modifyRequestToken,
 } = serverUserSlice.actions
 
 export default serverUserSlice.reducer

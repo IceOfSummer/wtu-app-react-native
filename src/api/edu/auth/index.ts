@@ -1,8 +1,8 @@
 import betterAjax, { noRepeatAjax } from 'axios-simple-wrapper'
 import { getInputValue } from '../../../utils/htmlUtils'
-import { GET_FULL_RESPONSE, IGNORE_LOGIN_EXPIRE } from '../../index'
 import { AxiosResponse } from 'axios'
 import { isAuthPage } from '../../../utils/AuthUtils'
+import { GET_FULL_RESPONSE, IGNORE_LOGIN_EXPIRE } from '../../request'
 
 const AUTH_URL = `https://auth.wtu.edu.cn/authserver/login?service=http%3A%2F%2Fjwglxt.wtu.edu.cn%2Fsso%2Fjziotlogin#${IGNORE_LOGIN_EXPIRE}`
 export const initLogin = () =>
@@ -80,9 +80,9 @@ export const login = (
  */
 export const testLogin = () =>
   new Promise<LoginStatus>((resolve, reject) => {
-    betterAjax<AxiosResponse, true>({
+    betterAjax<AxiosResponse>({
       url: `${AUTH_URL}#${GET_FULL_RESPONSE + IGNORE_LOGIN_EXPIRE}`,
-      rejectPolicy: 'NO_POLICY',
+      rejectPolicy: 'noPolicy',
     })
       .then(resp => {
         if (isAuthPage(resp.request.responseURL)) {

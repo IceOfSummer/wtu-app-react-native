@@ -1,23 +1,31 @@
-import {
-  Ajax,
-  AjaxResponseTypes,
-} from 'axios-simple-wrapper/lib/common/betterAjax'
+import { AjaxResponseTypes } from 'axios-simple-wrapper/lib/common/betterAjax'
 import { ResponseTemplate } from './server/types'
-import { cancelOldAjax, noRepeatAjax, normalAjax } from 'axios-simple-wrapper'
+import wrapperStatic, {
+  cancelOldAjax,
+  noRepeatAjax,
+} from 'axios-simple-wrapper'
 import { AxiosResponse, AxiosError } from 'axios'
 import { isAuthPage } from '../utils/AuthUtils'
 import Toast from 'react-native-toast-message'
 import { SCHOOL_AUTH, SERVER_AUTH_PAGE } from '../router'
 import { store } from '../redux/store'
 import { markLoginExpired } from '../redux/actions/user'
-import { markLoginInvalid } from '../redux/counter/serverUserSlice'
+import {
+  markLoginInvalid,
+  modifyRequestToken,
+} from '../redux/counter/serverUserSlice'
 import { navigationPush } from '../tabs'
 import Environment from '../utils/Environment'
 import { getLogger } from '../utils/LoggerUtils'
+import { ReducerTypes } from '../redux/counter'
+import { RejectPolicy } from 'axios-simple-wrapper/lib/interceptor/debounce'
 
 const logger = getLogger('/api/request')
 
 const serverResponseInterceptor = (resp: AxiosResponse): any => {
+  if (resp.headers.Token) {
+    store.dispatch(modifyRequestToken(resp.headers.Token))
+  }
   if (resp.data.code === undefined) {
     throw new Error(resp.data)
   }
@@ -30,7 +38,6 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
 
 const serverRequestErrorInterceptor = (error: AxiosError): Error => {
   const data = error.response?.data as any
-  logger.error(error)
   if (data && data.message) {
     if (data.code === 1) {
       // 标记登录失效
@@ -44,16 +51,29 @@ const serverRequestErrorInterceptor = (error: AxiosError): Error => {
   }
 }
 
-function createServerAjax(ajax: Ajax) {
+function createServerAjax(rejectPolicy: RejectPolicy) {
   return <T>(
     url: string,
     data?: Record<string, any>,
     method?: 'GET' | 'POST'
   ): AjaxResponseTypes<ResponseTemplate<T>, true> =>
     new Promise((resolve, reject) => {
+      const state = store.getState() as ReducerTypes
       const fullUrl = Environment.serverBaseUrl + url
       logger.info(`${method ?? 'GET'}: ${fullUrl};`)
-      ajax<AxiosResponse<ResponseTemplate<T>>, true>(fullUrl, data, method)
+      wrapperStatic({
+        url: fullUrl,
+        method,
+        param: data,
+        rejectPolicy,
+        axiosConfig: {
+          headers: state.serverUser.token
+            ? {
+                Authorization: state.serverUser.token,
+              }
+            : undefined,
+        },
+      })
         .then(resp => resolve(serverResponseInterceptor(resp)))
         .catch(e => reject(serverRequestErrorInterceptor(e)))
     })
@@ -62,14 +82,11 @@ function createServerAjax(ajax: Ajax) {
 /**
  * 发送给跳蚤市场服务器的ajax
  */
-export const serverNoRepeatAjax = createServerAjax(noRepeatAjax)
-
+export const serverNoRepeatAjax = createServerAjax('rejectIfExist')
 /**
  * 发送给跳蚤市场服务器的ajax
  */
-export const serverCancelOldAjax = createServerAjax(cancelOldAjax)
-
-export const serverNormalAjax = createServerAjax(normalAjax)
+export const serverCancelOldAjax = createServerAjax('cancelOldTask')
 
 // 当登录过期后, 不显示Toast
 export const IGNORE_LOGIN_EXPIRE = 'ignoreLoginExpire;'

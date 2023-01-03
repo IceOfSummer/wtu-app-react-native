@@ -4,7 +4,7 @@ import { getUserInfo } from '../../api/edu/applications'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../redux/reducers'
 import { UserInfo } from '../../redux/reducers/user'
-import { markLoginExpired, saveUserInfo } from '../../redux/actions/user'
+import { saveUserInfo } from '../../redux/actions/user'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import styles from './styles'
 import CenterTextCard from '../../component/Cards/CenterTextCard'
@@ -14,6 +14,8 @@ import Loading from '../../component/Loading'
 import NativeDialog from '../../native/modules/NativeDialog'
 import { logout } from '../../api/server/auth'
 import Toast from 'react-native-root-toast'
+import { store } from '../../redux/store'
+import { markLoginExpired } from '../../redux/counter/wtuUserSlice'
 
 interface PersonalInfoProps {}
 
@@ -45,7 +47,7 @@ const PersonalInfo: React.FC<
   /**
    * 登出
    */
-  const logOutEduAccount = (): void => {
+  const logOut = (): void => {
     NativeDialog.showDialog({
       title: '注销登录',
       message: '确定要注销登录吗?',
@@ -54,7 +56,7 @@ const PersonalInfo: React.FC<
         Loading.showLoading()
         logout()
           .then(() => {
-            props.logOut()
+            store.dispatch(markLoginExpired())
             Toast.show('登出成功')
             props.navigation.goBack()
           })
@@ -92,7 +94,7 @@ const PersonalInfo: React.FC<
           title="注销登录"
           hideBorder
           type="error"
-          onTap={logOutEduAccount}
+          onTap={logOut}
         />
       </View>
     </View>
@@ -106,7 +108,6 @@ interface StoreProps {
 
 interface StoreActions {
   saveUserInfo: (...args: Parameters<typeof saveUserInfo>) => void
-  logOut: (...args: Parameters<typeof markLoginExpired>) => void
 }
 
 export default connect<
@@ -121,6 +122,5 @@ export default connect<
   }),
   {
     saveUserInfo,
-    logOut: markLoginExpired,
   }
 )(PersonalInfo)

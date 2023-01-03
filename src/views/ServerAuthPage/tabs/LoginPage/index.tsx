@@ -10,7 +10,10 @@ import { NavigationType, REGISTER_PAGE } from '../../index'
 import useFormManager from '../../../../hook/useFormManager'
 import { login } from '../../../../api/server/auth'
 import { useDispatch, useStore } from 'react-redux'
-import { markLogin } from '../../../../redux/counter/serverUserSlice'
+import {
+  markLogin,
+  modifyRequestToken,
+} from '../../../../redux/counter/serverUserSlice'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import Loading from '../../../../component/Loading'
@@ -75,6 +78,7 @@ const LoginPage: React.FC = () => {
           currentUserInfo: userInfo,
         })
         dispatch(markLogin(userInfo))
+        dispatch(modifyRequestToken(data.token))
         Toast.show({
           text1: '登录成功',
           text2: '感谢您使用本APP',

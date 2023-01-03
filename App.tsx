@@ -9,6 +9,7 @@ import Loading from './src/component/Loading'
 import { StatusBar, View } from 'react-native'
 import UpdateChecker from './src/utils/UpdateChecker'
 import { getLogger } from './src/utils/LoggerUtils'
+import ReLoginWrapper from './src/component/Container/ReLoginWrapper'
 
 const logger = getLogger('App')
 
@@ -26,8 +27,10 @@ const App = () => {
             backgroundColor="transparent"
             barStyle="dark-content"
           />
-          <Router />
           <Loading />
+          <ReLoginWrapper>
+            <Router />
+          </ReLoginWrapper>
         </View>
       </PersistGate>
     </Provider>
