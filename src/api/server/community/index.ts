@@ -103,3 +103,6 @@ export type CommunityTipQueryType = {
  */
 export const queryMessageTip = () =>
   serverNoRepeatAjax<CommunityTipQueryType[]>('/community/tip')
+
+export const deletePost = (postId: number) =>
+  serverNoRepeatAjax(`/community/article/${postId}/delete`, undefined, 'POST')

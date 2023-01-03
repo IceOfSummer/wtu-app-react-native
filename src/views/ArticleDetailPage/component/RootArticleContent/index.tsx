@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Comment } from '../../route/RootArticle'
 import { StyleSheet, Text, View, ViewStyle } from 'react-native'
-
-import RowAvatar from '../../../../tabs/MessageScreen/components/RowAvatar'
 import JudgeComponent from '../JudgeComponent'
 import RichTextPresentView from '../../../../component/Container/RichTextPresentView'
+import CommentHeader from '../CommentHeader'
+import { MsgInfoContext } from '../../index'
 
 interface RootArticleContentProps {
   item: Comment
@@ -13,11 +13,15 @@ interface RootArticleContentProps {
 
 const RootArticleContent: React.FC<RootArticleContentProps> = props => {
   const { item } = props
+  const context = useContext(MsgInfoContext)
 
   return (
     <View style={[styles.topContainer, props.style]}>
       <Text style={styles.titleText}>{item.title}</Text>
-      <RowAvatar {...item} />
+      <CommentHeader
+        item={item}
+        onPress={() => context.openMessageMenu(item, true)}
+      />
       <RichTextPresentView content={item.content} />
       <JudgeComponent item={item} />
     </View>

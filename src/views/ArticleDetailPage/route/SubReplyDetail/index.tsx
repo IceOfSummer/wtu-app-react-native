@@ -6,11 +6,6 @@ import {
 import { View } from 'react-native'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { MsgInfoContext } from '../../index'
-import ReplyDrawer from '../../component/ReplyDrawer'
-import { useSelector } from 'react-redux'
-import { ReducerTypes } from '../../../../redux/counter'
-import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
-import { Comment } from '../RootArticle'
 import LottieLoadingHeader from '../../../../component/LoadingScrollView/LottieLoadingHeader'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import Toast from 'react-native-root-toast'
@@ -31,22 +26,21 @@ const SIZE = 5
  * @constructor
  */
 const SubReplyDetail: React.FC<SubReplyDetailProps> = props => {
-  const { uidMapToNickname, msgIdMapToUser } = useContext(MsgInfoContext)
   const item = props.article
-  const scroll = useRef<SpringScrollView>(null)
-  const [comments, setComments] = useState<Comment[]>([])
+
+  const context = useContext(MsgInfoContext)
+
+  const { subComments, setSubComments } = context
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(item.replyCount === 0)
   const page = useRef(1)
-  const replyDrawer = useRef<ReplyDrawer>(null)
-  const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
-    state => state.serverUser.userInfo
-  )
+
+  const scroll = useRef<SpringScrollView>(null)
 
   function saveState(message: CommunityMessageQueryType[]) {
     message.forEach(value => {
-      uidMapToNickname.set(value.author, value.nickname)
-      msgIdMapToUser.set(value.id, {
+      context.uidMapToNickname.set(value.author, value.nickname)
+      context.msgIdMapToUser.set(value.id, {
         uid: value.author,
         nickname: value.nickname,
       })
@@ -71,20 +65,22 @@ const SubReplyDetail: React.FC<SubReplyDetailProps> = props => {
     if (reply.length < SIZE) {
       setEmpty(true)
     }
-    setComments(comments.concat(reply))
+    setSubComments(subComments.concat(reply))
     saveState(reply)
     page.current++
   }
 
   useEffect(() => {
-    uidMapToNickname.set(item.author, item.nickname)
-    msgIdMapToUser.set(item.id, { uid: item.author, nickname: item.nickname })
+    context.uidMapToNickname.set(item.author, item.nickname)
+    context.msgIdMapToUser.set(item.id, {
+      uid: item.author,
+      nickname: item.nickname,
+    })
     loadComment().then()
+    return () => {
+      context.setSubComments([])
+    }
   }, [])
-
-  const onReplySend = (article: CommunityMessageQueryType) => {
-    setComments([article, ...comments])
-  }
 
   return (
     <View style={{ height: '100%' }}>
@@ -93,36 +89,19 @@ const SubReplyDetail: React.FC<SubReplyDetailProps> = props => {
         allLoaded={empty}
         loadingFooter={LottieLoadingHeader}>
         <CommentItem
+          onRequireOpenMenu={() => context.openMessageMenu(item, true)}
           item={item}
-          onPress={() =>
-            replyDrawer.current?.openReplyDrawer({
-              message: item.title,
-              pid: item.id,
-              replyTo: item.id,
-              replyToUserId: item.author,
-            })
-          }
+          pid={item.id}
+          isSubPage
         />
         <CommentContainer
-          comments={comments}
+          comments={subComments}
           rootItem={item}
           loading={loading}
+          isSubPage
           empty={empty}
-          onCommentPress={comment =>
-            replyDrawer.current?.openReplyDrawer({
-              message: comment.content,
-              pid: item.id,
-              replyTo: comment.id,
-              replyToUserId: comment.author,
-            })
-          }
         />
       </SpringScrollView>
-      <ReplyDrawer
-        ref={replyDrawer}
-        onReplySend={onReplySend}
-        userInfo={userInfo}
-      />
     </View>
   )
 }

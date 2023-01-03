@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native'
-import RowAvatar from '../../../../tabs/MessageScreen/components/RowAvatar'
 import JudgeComponent from '../JudgeComponent'
 import {
   ArticleDetailRouteType,
@@ -13,15 +12,18 @@ import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/src/types'
 import { Comment } from '../../route/RootArticle'
 import Toast from 'react-native-root-toast'
+import CommentHeader from '../CommentHeader'
 
 interface CommentItemProps {
   item: Comment
-  onPress?: () => void
+  pid: number
   style?: ViewStyle
+  onRequireOpenMenu?: (comment: Comment) => void
+  isSubPage?: boolean
 }
 
 const CommentItem: React.FC<CommentItemProps> = props => {
-  const { uidMapToNickname, msgIdMapToUser } = useContext(MsgInfoContext)
+  const context = useContext(MsgInfoContext)
   const { item } = props
   const subReply: CommunityMessageQueryType[] = item.replyPreview ?? []
   const nav = useNavigation<NavigationProp<ArticleDetailRouteType>>()
@@ -34,8 +36,8 @@ const CommentItem: React.FC<CommentItemProps> = props => {
 
   let contentPrefix: string | undefined
   if (item.replyTo !== item.pid) {
-    const user = msgIdMapToUser.get(replyTo)
-    contentPrefix = user ? user.nickname : uidMapToNickname.get(replyTo)
+    const user = context.msgIdMapToUser.get(replyTo)
+    contentPrefix = user ? user.nickname : context.uidMapToNickname.get(replyTo)
   }
 
   const copyContentToClipboard = () => {
@@ -43,13 +45,33 @@ const CommentItem: React.FC<CommentItemProps> = props => {
     Toast.show(`已复制${item.nickname}的评论`)
   }
 
+  const openReplyDrawer = () => {
+    if (props.isSubPage) {
+      context.openReplyDrawer({
+        message: item.content,
+        pid: props.pid,
+        replyTo: item.id,
+        replyToUserId: item.author,
+        isSubReplyPage: true,
+      })
+    } else {
+      context.openReplyDrawer({
+        message: item.content,
+        pid: item.id,
+        replyTo: item.id,
+        replyToUserId: item.author,
+        isSubReplyPage: false,
+      })
+    }
+  }
+
   return (
     <Pressable
       onLongPress={copyContentToClipboard}
       style={[styles.topContainer, props.style]}
-      onPress={props.onPress}>
+      onPress={openReplyDrawer}>
       {item.title ? <Text style={styles.titleText}>{item.title}</Text> : null}
-      <RowAvatar {...item} />
+      <CommentHeader item={item} onPress={props.onRequireOpenMenu} />
       <View style={styles.contentContainer}>
         <Text>
           {contentPrefix ? (
@@ -108,6 +130,7 @@ const SubReply: React.FC<SubReplyProps> = props => {
     </View>
   )
 }
+
 const styles = StyleSheet.create({
   topContainer: {
     backgroundColor: global.colors.boxBackgroundColor,

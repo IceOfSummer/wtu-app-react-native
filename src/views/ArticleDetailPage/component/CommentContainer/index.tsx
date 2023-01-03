@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { CommunityMessageQueryType } from '../../../../api/server/community'
 import { StyleSheet, Text, View } from 'react-native'
 import CommentItem from '../CommentItem'
+import { MsgInfoContext } from '../../index'
 
 export type Comment = CommunityMessageQueryType & {
   replyPreview?: CommunityMessageQueryType[]
@@ -13,9 +14,11 @@ interface CommentContainerProps {
   empty?: boolean
   onCommentPress?: (comment: Comment) => void
   loading?: boolean
+  isSubPage?: boolean
 }
 
 const CommentContainer: React.FC<CommentContainerProps> = props => {
+  const context = useContext(MsgInfoContext)
   return (
     <View style={styles.commentsContainer}>
       <Text style={styles.commentTitle}>评论 {props.rootItem.replyCount}</Text>
@@ -24,10 +27,12 @@ const CommentContainer: React.FC<CommentContainerProps> = props => {
       ) : null}
       {props.comments.map(value => (
         <CommentItem
+          onRequireOpenMenu={() => context.openMessageMenu(value, false)}
           style={styles.comment}
           item={value}
           key={value.id}
-          onPress={() => props.onCommentPress?.(value)}
+          pid={props.rootItem.id}
+          isSubPage={props.isSubPage}
         />
       ))}
       {props.empty ? (

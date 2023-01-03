@@ -11,11 +11,11 @@ import { getLogger } from '../../../../utils/LoggerUtils'
 import Loading from '../../../../component/Loading'
 import Toast from 'react-native-root-toast'
 import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
+import { ArticleDetailContext } from '../../index'
 
 const logger = getLogger('/views/ArticleDetailPage/component/ReplyDrawer')
 
 interface ReplyDrawerProps {
-  onReplySend?: (article: CommunityMessageQueryType) => void
   placeholder?: string
   userInfo?: ServerUserInfo
 }
@@ -25,11 +25,13 @@ interface ReplyDrawerState {
   replyText: string
 }
 
-type OpenDrawerParam = {
+export type OpenDrawerParam = {
   pid: number
   replyTo: number
   message: string
   replyToUserId: number
+  // 是否为二级评论详细页面
+  isSubReplyPage: boolean
 }
 export default class ReplyDrawer extends React.Component<
   ReplyDrawerProps,
@@ -38,7 +40,13 @@ export default class ReplyDrawer extends React.Component<
   drawer = React.createRef<Drawer>()
 
   state: ReplyDrawerState = {
-    reply: { pid: 0, message: '', replyTo: 0, replyToUserId: 0 },
+    reply: {
+      pid: 0,
+      message: '',
+      replyTo: 0,
+      replyToUserId: 0,
+      isSubReplyPage: false,
+    },
     replyText: '',
   }
 
@@ -63,7 +71,7 @@ export default class ReplyDrawer extends React.Component<
       content: this.state.replyText,
     }
     const uid = this.props.userInfo?.uid
-    logger.info('start submitting message...')
+    logger.info('sending reply...')
     logger.debug(param)
     Loading.showLoading()
     const contentPreview =
@@ -76,11 +84,13 @@ export default class ReplyDrawer extends React.Component<
     )
       .then(r => {
         const userInfo = this.props.userInfo
+        logger.info('send reply success')
         if (!userInfo) {
           logger.warn('userinfo is null!')
           return
         }
-        this.props.onReplySend?.({
+        Toast.show('评论成功!')
+        this.updateComment({
           author: userInfo.uid,
           content: param.content,
           createTime: Date.now(),
@@ -94,7 +104,6 @@ export default class ReplyDrawer extends React.Component<
           title: '',
           contentPreview,
         })
-        Toast.show('评论成功!')
       })
       .catch(e => {
         logger.error('submit message failed: ' + e.message)
@@ -107,10 +116,32 @@ export default class ReplyDrawer extends React.Component<
       })
   }
 
+  private updateComment(message: CommunityMessageQueryType) {
+    logger.info('updating comment...')
+    const context = this.context as ArticleDetailContext
+    const parent = context.comments.find(value => value.id === message.pid)
+    if (parent) {
+      if (parent.replyPreview) {
+        parent.replyPreview.push(message)
+      } else {
+        parent.replyPreview = [message]
+      }
+    }
+    if (this.state.reply.isSubReplyPage) {
+      context.setSubComments([message, ...context.subComments])
+    } else if (!parent) {
+      // 在主文章页面，直接评论根消息
+      context.setComments([message, ...context.comments])
+    } else {
+      // 强制刷新
+      context.setComments([...context.comments])
+    }
+  }
+
   textInput = React.createRef<TextInput>()
 
-  constructor(props: ReplyDrawerProps) {
-    super(props)
+  constructor(props: ReplyDrawerProps, context: ArticleDetailContext) {
+    super(props, context)
     this.onChangeText = this.onChangeText.bind(this)
     this.submitReply = this.submitReply.bind(this)
   }

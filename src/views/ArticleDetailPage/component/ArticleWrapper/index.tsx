@@ -6,10 +6,11 @@ import {
   queryArticleById,
 } from '../../../../api/server/community'
 import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingView'
-
+import { Text } from 'react-native'
 interface ArticleWrapperProps {
   content: React.FC<{ article: CommunityMessageQueryType }>
 }
+
 const ArticleWrapper: React.FC<ArticleWrapperProps> = props => {
   const { params } = useRoute<UseRouteGeneric<'ArticleDetailPage'>>()
   const [data, setData] = useState<CommunityMessageQueryType | null>(null)
@@ -28,7 +29,11 @@ const ArticleWrapper: React.FC<ArticleWrapperProps> = props => {
       loadData={loadPost}
       setData={setData}
       style={{ flex: 1 }}>
-      <Component article={data!} />
+      {data ? (
+        <Component article={data} />
+      ) : (
+        <Text style={global.styles.errorTipText}>消息不存在</Text>
+      )}
     </EnhancedLoadingView>
   )
 }

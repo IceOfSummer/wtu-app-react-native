@@ -337,7 +337,10 @@ const Router: React.FC = () => {
           name={ARTICLE_DETAIL_PAGE}
           component={ArticleDetailPage}
           options={{
-            ...headerCommonOptionsWithTitle('帖子详细'),
+            ...headerCommonOptionsWithTitle(
+              '帖子详细',
+              global.colors.boxBackgroundColor
+            ),
             animation: 'slide_from_right',
           }}
         />
