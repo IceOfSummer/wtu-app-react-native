@@ -7,9 +7,9 @@ import {
   SceneRendererProps,
 } from 'react-native-tab-view/lib/typescript/types'
 import SubjectList from './SubjectList'
-import PrimaryButton from '../../../component/Button/PrimaryButton'
 import useGlobalState from '../useGlobalState'
 import { SubjectSelectItem } from '../../../api/edu/subjectSelect'
+import ColorfulButton from '../../../component/Button/ColorfulButton'
 /**
  * 用于懒加载
  */
@@ -19,8 +19,12 @@ const LazyLoadView: React.FC = props => {
     return <React.Fragment>{props.children}</React.Fragment>
   }
   return (
-    <View>
-      <PrimaryButton title="初始化课程" onPress={() => setReady(true)} />
+    <View style={{ paddingHorizontal: 50, marginTop: 20 }}>
+      <ColorfulButton
+        color={global.colors.primaryColor}
+        title="初始化课程"
+        onPress={() => setReady(true)}
+      />
     </View>
   )
 }

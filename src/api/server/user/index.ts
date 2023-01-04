@@ -31,7 +31,6 @@ export const getMultiUserInfo = async (ids: number[]) => {
     param += value + ','
   })
   param = param.replace(/,$/, '')
-  console.log(param)
   return serverNoRepeatAjax<Array<UserInfoQueryType>>(
     '/user/info/multi_query',
     { i: param }

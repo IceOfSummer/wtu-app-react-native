@@ -3,6 +3,10 @@ import { BaseButtonProps } from '../BaseButton'
 import Button from 'react-native-button'
 import { Text, View } from 'react-native'
 
+/**
+ * @deprecated 有很蛋疼的Size bug
+ * @see ColorfulButton
+ */
 const PrimaryButton: React.FC<BaseButtonProps> = props => {
   console.log('btn')
   return (

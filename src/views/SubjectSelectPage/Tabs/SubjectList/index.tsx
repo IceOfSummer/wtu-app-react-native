@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { connect } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/reducers'
-import PrimaryButton from '../../../../component/Button/PrimaryButton'
-import BounceScrollView from '../../../../native/component/BounceScrollView'
 import {
   BaseQueryParam,
   ClassMark,
@@ -21,6 +19,8 @@ import AutoCollapsible from '../../../../component/AutoCollapsible'
 import Loading from '../../../../component/Loading'
 import Button from 'react-native-button'
 import useGlobalState from '../../useGlobalState'
+import ColorfulButton from '../../../../component/Button/ColorfulButton'
+import { SpringScrollView } from 'react-native-spring-scrollview'
 
 interface ClassListProps {
   classMark: ClassMark
@@ -32,7 +32,6 @@ const SubjectList: React.FC<ClassListProps & StoreState> = props => {
   const [isInitFail, setInitFail] = useState(false)
   const globalState = useGlobalState()
   const baseQueryParam = globalState.getBaseQueryParam()
-
   /**
    * 设置初始化成功
    */
@@ -149,7 +148,7 @@ const SubjectList: React.FC<ClassListProps & StoreState> = props => {
   } else {
     return (
       <View>
-        <BounceScrollView enablePureScrollMode>
+        <SpringScrollView>
           <View style={{ paddingBottom: 150 }}>
             {subjectList.map((value, index) => (
               <SubjectCollapsible
@@ -161,12 +160,15 @@ const SubjectList: React.FC<ClassListProps & StoreState> = props => {
                 queryParam={globalState.getSubjectQueryParam(props.storageKey)}
               />
             ))}
-            <PrimaryButton
-              title={subjectList.length === 0 ? '加载可选课程' : '加载更多'}
-              onPress={loadSubjects}
-            />
+            <View style={{ paddingHorizontal: 50, marginTop: 20 }}>
+              <ColorfulButton
+                color={global.colors.primaryColor}
+                title={subjectList.length === 0 ? '加载可选课程' : '加载更多'}
+                onPress={loadSubjects}
+              />
+            </View>
           </View>
-        </BounceScrollView>
+        </SpringScrollView>
       </View>
     )
   }

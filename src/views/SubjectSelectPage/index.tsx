@@ -150,8 +150,9 @@ const PageContainer: React.FC = () => {
       <NavigationHeader
         title="选课工具"
         navigation={nav}
-        headerRight={() => <SubjectSelectHeaderRight />}
-      />
+        backgroundColor={global.colors.boxBackgroundColor}>
+        <SubjectSelectHeaderRight />
+      </NavigationHeader>
       <Content />
       <Drawer ref={fullScreenDialog}>
         <SubjectSelectTip />

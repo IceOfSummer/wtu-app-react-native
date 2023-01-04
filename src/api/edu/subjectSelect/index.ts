@@ -59,7 +59,6 @@ export const getBaseQueryParam = (username: string) =>
           if (availableItem != null) {
             availableItem.forEach(val => {
               const m = val.match(/[0-9|A-Z]{2,}/g)
-              console.log(m)
               const nameArr = val.match(/[\u4e00-\u9fa5]+/)
               let title = '获取课程名称失败'
               if (nameArr) {
@@ -95,7 +94,6 @@ export const getBaseQueryParam = (username: string) =>
             availableSelect: items,
           })
         } catch (ignore) {
-          console.log(ignore)
           reject('加载失败, 请稍后再试')
         }
       })
