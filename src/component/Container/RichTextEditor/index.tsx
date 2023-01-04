@@ -49,6 +49,13 @@ export default class RichTextEditor extends React.Component<
 
   imagePick = React.createRef<ImagePickMenu>()
 
+  /**
+   * 图片本地url -> 远程url
+   *
+   * 避免相同重复上传
+   */
+  imageCache = new Map<string, string>()
+
   onMessage(message: WebViewMessageEvent) {
     let msg: WebViewMessage<any>
     logger.debug('receive webview message: ' + message.nativeEvent.data)
@@ -91,7 +98,13 @@ export default class RichTextEditor extends React.Component<
     if (!img) {
       return
     }
+    const remoteUrl = this.imageCache.get(img.path)
     logger.info('uploading image...')
+    if (remoteUrl) {
+      logger.info('image has already uploaded!')
+      this.insertImage(remoteUrl)
+      return
+    }
     Loading.showLoading('上传图片中')
     if (!this.imageUploadSignCache) {
       logger.info('requesting upload sign')
@@ -113,6 +126,8 @@ export default class RichTextEditor extends React.Component<
         img.contentType
       )
       this.insertImage(this.imageUploadSignCache.path)
+      // save to cache
+      this.imageCache.set(img.path, this.imageUploadSignCache.path)
       this.imageUploadSignCache = undefined
     } catch (e: any) {
       logger.error('image upload failed: ' + e.message)
