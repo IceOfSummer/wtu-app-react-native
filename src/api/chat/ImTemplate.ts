@@ -4,13 +4,14 @@ import { getLogger } from '../../utils/LoggerUtils'
 import LinkedOneWayQueue, {
   OneWayQueue,
 } from '../../utils/Queue/LinkedOneWayQueue'
-import CookieManager from '@react-native-cookies/cookies'
 import AuthRequestMessage from './message/request/AuthRequestMessage'
 import ByteBuffer from 'bytebuffer'
 import pubsub from 'pubsub-js'
 import { buildMessage, parseMessage } from './message/Protocol'
 import SocketSessionManager from './SocketSessionManager'
 import ServerResponseMessage from './message/response/ServerResponseMessage'
+import { store } from '../../redux/store'
+import { ReducerTypes } from '../../redux/counter'
 
 const logger = getLogger('/api/chat/ImTemplate')
 
@@ -192,15 +193,14 @@ export default class ImTemplate {
         reject(new Error('正在连接服务器中'))
         return
       }
-      const cookies = await CookieManager.get(global.constant.serverBaseUrl)
-      const session = cookies[global.constant.sessionCookieName] as any
-      if (!session) {
+      const state = store.getState() as ReducerTypes
+      const token = state.serverUser.token
+      if (!token) {
         reject(new Error('请先登录'))
         return
       }
-      const sessionValue = session.value as string
       try {
-        await this.sendMessage0(new AuthRequestMessage(sessionValue), conn)
+        await this.sendMessage0(new AuthRequestMessage(token), conn)
         logger.info('聊天服务器登录成功')
         this._isAuthenticated = true
         this.onReady?.()
