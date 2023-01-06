@@ -1,28 +1,33 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { OrderDetail } from '../../../../api/server/order'
+import { OrderPreview } from '../../../../api/server/order'
 import { LoadingScrollView } from '../../../../component/LoadingScrollView'
 import { Text, View } from 'react-native'
 import OrderItem from '../OrderItem'
 import CancelOrderDrawer from '../CancelOrderDrawer'
-import OrderDetailDrawer from '../OrderDetailDrawer'
 import usePage from '../../../../hook/usePage'
 import Drawer from '../../../../component/Drawer'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import { ResponseTemplate } from '../../../../api/server/types'
 
+export interface OrderControlComponentProps {
+  order: OrderPreview
+  setOrder: (order: OrderPreview) => void
+}
+
 interface PageAdapterProps {
   loadData: (
     page: number,
     size: number
-  ) => Promise<ResponseTemplate<OrderDetail[]>>
+  ) => Promise<ResponseTemplate<OrderPreview[]>>
+  control?: React.ComponentType<OrderControlComponentProps>
 }
 
 const PageAdapter: React.FC<PageAdapterProps> = props => {
-  const page = usePage<OrderDetail>(props.loadData, 6)
+  const page = usePage<OrderPreview>(props.loadData, 6)
   const loading = useRef<LoadingScrollView>(null)
   const cancelDrawer = useRef<Drawer>(null)
   const previewDrawer = useRef<Drawer>(null)
-  const [selectedOrder, setSelectedOrder] = useState<OrderDetail | undefined>()
+  const [selectedOrder, setSelectedOrder] = useState<OrderPreview | undefined>()
 
   const loadData = () => {
     page
@@ -35,17 +40,12 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
       })
   }
 
-  const onCancel = (order: OrderDetail) => {
-    setSelectedOrder(order)
-    cancelDrawer.current?.showDrawer()
-  }
-
-  const checkOrder = (order: OrderDetail) => {
+  const checkOrder = (order: OrderPreview) => {
     setSelectedOrder(order)
     previewDrawer.current?.showDrawer()
   }
 
-  const onOrderRemove = (order: OrderDetail) => {
+  const onOrderRemove = (order: OrderPreview) => {
     const data = page.data
     page.setData(data.filter(value => value.orderId !== order.orderId))
   }
@@ -64,8 +64,8 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
         {page.data.map(value => (
           <OrderItem
             order={value}
-            onCancel={onCancel}
             onPress={() => checkOrder(value)}
+            control={props.control}
             key={value.orderId}
           />
         ))}
@@ -79,11 +79,6 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
         order={selectedOrder}
         drawerRef={cancelDrawer}
         onOrderCancel={onOrderRemove}
-      />
-      <OrderDetailDrawer
-        order={selectedOrder}
-        drawerRef={previewDrawer}
-        onRequireRemove={onOrderRemove}
       />
     </View>
   )

@@ -1,21 +1,30 @@
 import { serverNoRepeatAjax } from '../../request'
 import { appendCdnPrefix } from '../../../utils/CdnUtil'
 
-export type OrderDetail = {
+export type OrderPreview = {
+  tradeUid: number
+  tradeName: string
   orderId: number
-  commodityId: number
-  createTime: number
-  remark: string
+  /**
+   * 商品名称
+   */
   name: string
-  price: number
+  /**
+   * 交易地点
+   */
   tradeLocation: string
-  status: OrderStatus
-  type: OrderType
-  count: number
+  createTime: number
   previewImage: string
-  ownerId: number
+  type: OrderType
+  price: number
+  count: number
+  status: OrderStatus
 }
 
+/**
+ * @deprecated
+ */
+export type OrderDetail = OrderPreview
 export enum OrderStatus {
   TRADING,
   DONE,
@@ -79,16 +88,8 @@ export const getAllOrder = (page: number, size: number = 6) =>
 /**
  * 标记交易成功
  */
-export const markTradeDone = (
-  orderId: number,
-  sellerId: number,
-  remark?: string
-) =>
-  serverNoRepeatAjax(
-    `/order/${orderId}/done`,
-    { s: sellerId, r: remark },
-    'POST'
-  )
+export const markTradeDone = (orderId: number, remark?: string) =>
+  serverNoRepeatAjax(`/order/${orderId}/done`, { r: remark }, 'POST')
 
 /**
  * 取消订单

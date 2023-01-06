@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { cancelTrade, OrderDetail } from '../../../../api/server/order'
+import { markTradeDone, OrderPreview } from '../../../../api/server/order'
 import Drawer from '../../../../component/Drawer'
 import { StyleSheet, Text, View } from 'react-native'
 import SimpleInput from '../../../../component/Input/SimpleInput'
 import Loading from '../../../../component/Loading'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 
-interface CancelOrderDrawerProps {
-  order?: OrderDetail
+interface ConfirmOrderDrawerProps {
+  order: OrderPreview
+  onOrderConfirm: () => void
   drawerRef: React.RefObject<Drawer>
-  onOrderCancel: () => void
 }
 
-const CancelOrderDrawer: React.FC<CancelOrderDrawerProps> = props => {
+const ConfirmOrderDrawer: React.FC<ConfirmOrderDrawerProps> = props => {
   const [remark, setRemark] = useState('')
   const remarkInputRef = useRef<SimpleInput>(null)
 
@@ -26,14 +26,15 @@ const CancelOrderDrawer: React.FC<CancelOrderDrawerProps> = props => {
       return
     }
     Loading.showLoading('处理中...')
-    cancelTrade(order.orderId, remark)
+    console.log(order)
+    markTradeDone(order.orderId, remark)
       .then(() => {
         props.drawerRef.current?.closeDrawer()
-        showSingleBtnTip('订单取消成功!', '订单已取消')
-        props.onOrderCancel()
+        props.onOrderConfirm()
+        showSingleBtnTip('确认收货成功!', '订单已确认收货')
       })
       .catch(e => {
-        remarkInputRef.current?.showErrorText('取消失败: ' + e.message)
+        remarkInputRef.current?.showErrorText('确认失败: ' + e.message)
       })
       .finally(() => {
         Loading.hideLoading()
@@ -43,7 +44,7 @@ const CancelOrderDrawer: React.FC<CancelOrderDrawerProps> = props => {
   return (
     <Drawer ref={props.drawerRef} style={styles.drawer}>
       <View style={styles.headerContainer}>
-        <Text style={styles.titleText}>取消订单</Text>
+        <Text style={styles.titleText}>确认收货</Text>
         <Text style={styles.submitText} onPress={onSubmit}>
           提交
         </Text>
@@ -53,7 +54,7 @@ const CancelOrderDrawer: React.FC<CancelOrderDrawerProps> = props => {
           ref={remarkInputRef}
           onChangeText={setRemark}
           textInputProps={{
-            placeholder: '取消原因(可选)',
+            placeholder: '备注(可选)',
             multiline: true,
             numberOfLines: 4,
             textAlignVertical: 'top',
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   titleText: {
-    color: global.colors.error_color,
+    color: global.colors.primaryColor,
     fontSize: global.styles.$font_size_base,
     fontWeight: 'bold',
   },
@@ -83,5 +84,4 @@ const styles = StyleSheet.create({
     fontSize: global.styles.$font_size_base,
   },
 })
-
-export default CancelOrderDrawer
+export default ConfirmOrderDrawer

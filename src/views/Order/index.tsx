@@ -18,22 +18,34 @@ const Order: React.FC = () => {
       <Stack.Screen
         name={PENDING_RECEIVE_PAGE}
         component={PendingReceivePage}
-        options={headerCommonOptionsWithTitle('待收货')}
+        options={headerCommonOptionsWithTitle(
+          '待收货',
+          global.colors.boxBackgroundColor
+        )}
       />
       <Stack.Screen
         name={PENDING_DELIVERY_PAGE}
         component={PendingDeliveryPage}
-        options={headerCommonOptionsWithTitle('待发货')}
+        options={headerCommonOptionsWithTitle(
+          '待发货',
+          global.colors.boxBackgroundColor
+        )}
       />
       <Stack.Screen
         name={ORDER_PREVIEW_PAGE}
         component={OrderPreviewPage}
-        options={headerCommonOptionsWithTitle('我的订单')}
+        options={headerCommonOptionsWithTitle(
+          '我的订单',
+          global.colors.boxBackgroundColor
+        )}
       />
       <Stack.Screen
         name={SELLING_ITEM_PAGE}
         component={SellingItemPage}
-        options={headerCommonOptionsWithTitle('我的商品')}
+        options={headerCommonOptionsWithTitle(
+          '我的商品',
+          global.colors.boxBackgroundColor
+        )}
       />
     </Stack.Navigator>
   )

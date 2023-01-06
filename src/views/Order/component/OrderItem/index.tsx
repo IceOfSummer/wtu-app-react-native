@@ -1,30 +1,29 @@
-import React from 'react'
-import {
-  OrderDetail,
-  OrderStatus,
-  OrderType,
-} from '../../../../api/server/order'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import React, { useState } from 'react'
+import { OrderPreview, OrderStatus } from '../../../../api/server/order'
+import { StyleSheet, Text, View } from 'react-native'
 import BetterImage from '../../../../component/Container/BetterImage'
-import KVTextContainer from '../../../../component/Container/KVTextContainer'
 import { formatTimestamp } from '../../../../utils/DateUtils'
 import { RouterTypes, USER_INFO_PAGE } from '../../../../router'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/src/types'
 import BaseContainer from '../../../../component/Container/BaseContainer'
+import Icons from '../../../../component/Icons'
+import { OrderControlComponentProps } from '../PageAdapter'
 
 interface OrderItemProps {
-  order: OrderDetail
-  onCancel?: (order: OrderDetail) => void
+  order: OrderPreview
   onPress?: () => void
+  control?: React.ComponentType<OrderControlComponentProps>
 }
 
 /**
  * 用于待收货和待发货
  */
 const OrderItem: React.FC<OrderItemProps> = props => {
-  const { order } = props
+  const [order, setOrder] = useState(props.order)
   const nav = useNavigation<NavigationProp<RouterTypes>>()
+
+  const ControlComponent = props.control ?? EmptyControl
 
   let statusText = ''
   let statusTextColor: string
@@ -43,75 +42,63 @@ const OrderItem: React.FC<OrderItemProps> = props => {
       break
   }
 
-  const seeSeller = () => {
-    nav.navigate(USER_INFO_PAGE, {
-      id: order.ownerId,
-    })
-  }
-
-  const cancelOrder = () => {
-    props.onCancel?.(props.order)
+  const toUserInfo = () => {
+    nav.navigate(USER_INFO_PAGE, { id: props.order.tradeUid })
   }
 
   return (
     <BaseContainer style={styles.container} onPress={props.onPress}>
-      <View style={styles.image}>
-        <BetterImage uri={order.previewImage} />
+      <View style={styles.header}>
+        <Text style={styles.headerText} onPress={toUserInfo}>
+          <Icons iconText="&#xe767;" />与{props.order.tradeName}的交易
+          <Icons iconText="&#xe61c;" />
+        </Text>
+        <Text style={{ color: statusTextColor }}>{statusText}</Text>
       </View>
-      <View style={{ flex: 1, paddingHorizontal: 10 }}>
-        <View style={styles.rightTextContainer}>
-          <View>
-            <Text style={global.styles.blobText}>{order.name}</Text>
-            <KVTextContainer
-              icon="&#xe662;"
-              name="锁定时间"
-              style={styles.text}
-              value={formatTimestamp(order.createTime)}
-            />
-            <KVTextContainer
-              icon="&#xe786;"
-              name="交易地点"
-              style={styles.text}
-              value={order.tradeLocation}
-            />
-            <KVTextContainer
-              icon="&#xe6e1;"
-              name="交易状态"
-              valueColor={statusTextColor}
-              style={styles.text}
-              value={statusText}
-            />
-          </View>
+      <View style={global.styles.flexRow}>
+        <View style={styles.image}>
+          <BetterImage uri={order.previewImage} />
         </View>
-        <View style={[styles.text, styles.buttonLinkContainer]}>
-          <Pressable onPress={seeSeller}>
-            <Text style={styles.sellerInfoText}>卖家信息</Text>
-          </Pressable>
-          {order.status === OrderStatus.TRADING ? (
-            <Pressable>
-              <Text style={styles.cancelText} onPress={cancelOrder}>
-                {order.type === OrderType.BUY ? '不想要了' : '不想卖了'}
-              </Text>
-            </Pressable>
-          ) : null}
-          <Text
-            style={[
-              global.styles.errorTipText,
-              { marginLeft: global.styles.$spacing_row_base },
-            ]}>
-            {order.price * order.count}￥({order.price}￥ × {order.count}件)
-          </Text>
+        <View style={{ flex: 1, paddingHorizontal: 10 }}>
+          <View style={styles.rightTextContainer}>
+            <Text style={styles.itemNameText} numberOfLines={2}>
+              {order.name}
+            </Text>
+          </View>
+          <View style={[styles.text, styles.buttonLinkContainer]}>
+            <Text style={styles.timeText}>
+              {formatTimestamp(props.order.createTime)}
+            </Text>
+            <Text
+              style={[
+                global.styles.errorTipText,
+                { marginLeft: global.styles.$spacing_row_base },
+              ]}>
+              {order.price * order.count}￥({order.price}￥ × {order.count}件)
+            </Text>
+          </View>
+          <ControlComponent order={order} setOrder={setOrder} />
         </View>
       </View>
     </BaseContainer>
   )
 }
 
+const EmptyControl = () => null
+
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 8,
+  },
+  headerText: {
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_base,
+    fontWeight: 'bold',
+  },
   container: {
     marginVertical: 4,
-    alignItems: 'center',
-    flexDirection: 'row',
     paddingHorizontal: 15,
   },
   image: {
@@ -145,6 +132,14 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 12,
     textDecorationLine: 'underline',
+  },
+  itemNameText: {
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_base,
+    textAlignVertical: 'center',
+  },
+  timeText: {
+    fontSize: global.styles.$font_size_sm,
   },
 })
 export default OrderItem
