@@ -3,7 +3,6 @@ import { Image, Linking, StyleSheet, Text, View } from 'react-native'
 import { getVersion } from 'react-native-device-info'
 import CardContainer from '../../../../component/Cards/CardContainer'
 import NavigationCard from '../../../../component/Cards/NavigationCard'
-import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
 import SimpleCard from '../../../../component/Cards/SimpleCard'
 import UpdateChecker from '../../../../utils/UpdateChecker'
 import { LOGS_PAGE } from '../../index'
@@ -22,11 +21,7 @@ const About: React.FC = () => {
   }, [])
 
   const checkUpdate = () => {
-    UpdateChecker.checkUpdate(version).then(r => {
-      if (!r) {
-        quickShowErrorTip('检查更新', '您已经是最新版本了')
-      }
-    })
+    UpdateChecker.checkUpdate(true)
   }
 
   const openUrl = (url: string) => {

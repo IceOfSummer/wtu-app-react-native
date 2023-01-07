@@ -4,6 +4,7 @@ import NativeDialog from '../../native/modules/NativeDialog'
 import { Linking } from 'react-native'
 import Environment from '../Environment'
 import UpdateState = CodePush.UpdateState
+import Toast from 'react-native-root-toast'
 
 const logger = getLogger('/utils/UpdateChecker')
 export default class UpdateChecker {
@@ -19,56 +20,48 @@ export default class UpdateChecker {
     })
   }
 
-  public static checkUpdate(currentVersion?: string) {
+  /**
+   * 检查更新
+   * @param notice 有热更新时是否提醒
+   */
+  public static checkUpdate(notice?: boolean) {
     if (__DEV__) {
-      return Promise.resolve(false)
+      return
     }
-    if (
-      UpdateChecker._newVersion &&
-      UpdateChecker._newVersion === currentVersion
-    ) {
-      return Promise.resolve(true)
-    }
-    return new Promise<boolean>(resolve => {
-      logger.info('checking update...')
-      let flag = true
-      CodePush.checkForUpdate(undefined, async r => {
-        logger.info('new version found: ' + r.appVersion)
-        this._newVersion = r.appVersion
-        await UpdateChecker.downLoadNewVersion(r.appVersion, r.description)
-        if (flag) {
-          resolve(true)
-          flag = false
+    logger.info('checking update...')
+    CodePush.checkForUpdate(undefined, async r => {
+      logger.info('new version found: ' + r.appVersion)
+      await UpdateChecker.downLoadNewVersion(r.appVersion, r.description)
+    })
+      .then(update => {
+        if (update) {
+          if (notice) {
+            Toast.show('有新的热更新版本了，正在下载!')
+          }
+          logger.info('hot update available: ' + update.label)
+          update
+            .download()
+            .then(resource => {
+              resource
+                .install(CodePush.InstallMode.ON_NEXT_RESTART)
+                .then(() => {
+                  Toast.show('热更新安装完毕，下次重启后生效')
+                  CodePush.notifyAppReady().then()
+                })
+            })
+            .catch(e => {
+              logger.error('download hot update failed: ' + e.message)
+            })
+        } else {
+          if (notice) {
+            Toast.show('已经是最新版本了!')
+          }
+          logger.info('no hot update available!')
         }
       })
-        .then(update => {
-          if (update) {
-            logger.info('hot update available: ' + update.label)
-            update
-              .download()
-              .then(resource => {
-                resource
-                  .install(CodePush.InstallMode.ON_NEXT_RESTART)
-                  .then(() => {
-                    CodePush.notifyAppReady().then()
-                  })
-              })
-              .catch(e => {
-                logger.error('download hot update failed: ' + e.message)
-              })
-          } else {
-            logger.info('no hot update available!')
-          }
-        })
-        .catch(e => {
-          logger.error('checkForUpdate fail: ' + e.message)
-        })
-        .finally(() => {
-          if (flag) {
-            resolve(false)
-          }
-        })
-    })
+      .catch(e => {
+        logger.error('checkForUpdate fail: ' + e.message)
+      })
   }
 
   private static async downLoadNewVersion(version: string, message: string) {
