@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
-import { OrderPreview, OrderStatus } from '../../../../api/server/order'
+import {
+  OrderPreview,
+  OrderStatus,
+  OrderType,
+} from '../../../../api/server/order'
 import { StyleSheet, Text, View } from 'react-native'
 import BetterImage from '../../../../component/Container/BetterImage'
 import { formatTimestamp } from '../../../../utils/DateUtils'
@@ -9,6 +13,7 @@ import { NavigationProp } from '@react-navigation/core/src/types'
 import BaseContainer from '../../../../component/Container/BaseContainer'
 import Icons from '../../../../component/Icons'
 import { OrderControlComponentProps } from '../PageAdapter'
+import { ORDER_DETAIL_PAGE, OrderRouteParam } from '../../index'
 
 interface OrderItemProps {
   order: OrderPreview
@@ -21,7 +26,7 @@ interface OrderItemProps {
  */
 const OrderItem: React.FC<OrderItemProps> = props => {
   const [order, setOrder] = useState(props.order)
-  const nav = useNavigation<NavigationProp<RouterTypes>>()
+  const nav = useNavigation<NavigationProp<RouterTypes & OrderRouteParam>>()
 
   const ControlComponent = props.control ?? EmptyControl
 
@@ -46,8 +51,12 @@ const OrderItem: React.FC<OrderItemProps> = props => {
     nav.navigate(USER_INFO_PAGE, { id: props.order.tradeUid })
   }
 
+  const toDetail = () => {
+    nav.navigate(ORDER_DETAIL_PAGE, { oid: props.order.orderId })
+  }
+
   return (
-    <BaseContainer style={styles.container} onPress={props.onPress}>
+    <BaseContainer style={styles.container} onPress={toDetail}>
       <View style={styles.header}>
         <Text style={styles.headerText} onPress={toUserInfo}>
           <Icons iconText="&#xe767;" />与{props.order.tradeName}的交易
@@ -74,7 +83,8 @@ const OrderItem: React.FC<OrderItemProps> = props => {
                 global.styles.errorTipText,
                 { marginLeft: global.styles.$spacing_row_base },
               ]}>
-              {order.price * order.count}￥({order.price}￥ × {order.count}件)
+              {order.price * order.count}￥({order.price}￥ × {order.count}件)(
+              {props.order.type === OrderType.BUY ? '买' : '卖'})
             </Text>
           </View>
           <ControlComponent order={order} setOrder={setOrder} />

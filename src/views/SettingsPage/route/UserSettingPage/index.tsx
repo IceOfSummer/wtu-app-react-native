@@ -7,8 +7,6 @@ import CenterTextCard from '../../../../component/Cards/CenterTextCard'
 import { markLoginInvalid } from '../../../../redux/counter/serverUserSlice'
 import NativeDialog from '../../../../native/modules/NativeDialog'
 import { useNavigation } from '@react-navigation/native'
-import CookieManager from '@react-native-cookies/cookies'
-import Environment from '../../../../utils/Environment'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import KVTextCard from '../../../../component/Cards/KVTextCard'
 import EmailUpdateDrawer from './EmailUpdateDrawer'
@@ -59,12 +57,6 @@ const UserSettingPage: React.FC = () => {
       title: '注销登录',
       message: '确定注销吗?',
       onConfirm() {
-        CookieManager.clearByName(
-          Environment.serverBaseUrl,
-          'JSESSIONID'
-        ).catch(e => {
-          logger.error('clear server cookie failed: ' + e.message)
-        })
         store.dispatch(markLoginInvalid())
         nav.goBack()
       },

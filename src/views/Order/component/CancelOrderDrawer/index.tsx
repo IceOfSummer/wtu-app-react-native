@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { cancelTrade, OrderDetail } from '../../../../api/server/order'
+import { cancelTrade, OrderPreview } from '../../../../api/server/order'
 import Drawer from '../../../../component/Drawer'
 import { StyleSheet, Text, View } from 'react-native'
 import SimpleInput from '../../../../component/Input/SimpleInput'
@@ -7,7 +7,7 @@ import Loading from '../../../../component/Loading'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 
 interface CancelOrderDrawerProps {
-  order?: OrderDetail
+  order?: OrderPreview
   drawerRef: React.RefObject<Drawer>
   onOrderCancel: () => void
 }

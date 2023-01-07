@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { OrderPreview } from '../../../../api/server/order'
 import { LoadingScrollView } from '../../../../component/LoadingScrollView'
 import { Text, View } from 'react-native'
 import OrderItem from '../OrderItem'
-import CancelOrderDrawer from '../CancelOrderDrawer'
 import usePage from '../../../../hook/usePage'
-import Drawer from '../../../../component/Drawer'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import { ResponseTemplate } from '../../../../api/server/types'
 
@@ -25,10 +23,6 @@ interface PageAdapterProps {
 const PageAdapter: React.FC<PageAdapterProps> = props => {
   const page = usePage<OrderPreview>(props.loadData, 6)
   const loading = useRef<LoadingScrollView>(null)
-  const cancelDrawer = useRef<Drawer>(null)
-  const previewDrawer = useRef<Drawer>(null)
-  const [selectedOrder, setSelectedOrder] = useState<OrderPreview | undefined>()
-
   const loadData = () => {
     page
       .loadMore()
@@ -38,16 +32,6 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
       .finally(() => {
         loading.current?.endLoading()
       })
-  }
-
-  const checkOrder = (order: OrderPreview) => {
-    setSelectedOrder(order)
-    previewDrawer.current?.showDrawer()
-  }
-
-  const onOrderRemove = (order: OrderPreview) => {
-    const data = page.data
-    page.setData(data.filter(value => value.orderId !== order.orderId))
   }
 
   useEffect(() => {
@@ -64,7 +48,6 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
         {page.data.map(value => (
           <OrderItem
             order={value}
-            onPress={() => checkOrder(value)}
             control={props.control}
             key={value.orderId}
           />
@@ -75,11 +58,6 @@ const PageAdapter: React.FC<PageAdapterProps> = props => {
           </Text>
         ) : null}
       </LoadingScrollView>
-      <CancelOrderDrawer
-        order={selectedOrder}
-        drawerRef={cancelDrawer}
-        onOrderCancel={onOrderRemove}
-      />
     </View>
   )
 }

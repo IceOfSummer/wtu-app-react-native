@@ -1,12 +1,12 @@
 import React from 'react'
-import { OrderDetail, OrderStatus } from '../../../api/server/order'
+import { OrderPreview, OrderStatus } from '../../../api/server/order'
 import { StyleSheet, Text, View } from 'react-native'
 import KVTextContainer from '../../../component/Container/KVTextContainer'
 import { formatTimestamp } from '../../../utils/DateUtils'
 import BetterImage from '../../../component/Container/BetterImage'
 
 interface SimpleOrderPreviewProps {
-  order: OrderDetail
+  order: OrderPreview
 }
 
 /**
@@ -47,10 +47,6 @@ const SimpleOrderPreview: React.FC<SimpleOrderPreviewProps> = props => {
             value={formatTimestamp(order.createTime)}
           />
           <KVTextContainer name="交易结果" value={statusText} />
-          <KVTextContainer
-            name="用户备注"
-            value={order.remark ? order.remark : '无'}
-          />
         </View>
       </View>
     </View>

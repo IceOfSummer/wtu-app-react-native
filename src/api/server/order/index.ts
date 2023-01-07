@@ -9,10 +9,6 @@ export type OrderPreview = {
    * 商品名称
    */
   name: string
-  /**
-   * 交易地点
-   */
-  tradeLocation: string
   createTime: number
   previewImage: string
   type: OrderType
@@ -21,10 +17,21 @@ export type OrderPreview = {
   status: OrderStatus
 }
 
-/**
- * @deprecated
- */
-export type OrderDetail = OrderPreview
+export type OrderDetail = {
+  commodityId: number
+  commodityName: string
+  count: number
+  price: number
+  tradeLocation: string
+  status: OrderStatus
+  type: OrderType
+  remark: string
+  tradeUid: number
+  tradeName: string
+  createTime: number
+  finishedTime: number
+  finishedRemark: string
+}
 export enum OrderStatus {
   TRADING,
   DONE,
@@ -40,7 +47,7 @@ export enum OrderType {
  * 查询用户出售记录
  */
 export const getSoldOrderSimply = (userId: number, page = 0) =>
-  serverNoRepeatAjax<OrderDetail[]>('/order/sold', {
+  serverNoRepeatAjax<OrderPreview[]>('/order/sold', {
     i: userId,
     p: page,
     s: 5,
@@ -52,7 +59,7 @@ export const getSoldOrderSimply = (userId: number, page = 0) =>
   })
 
 export const getPendingReceiveOrder = (page: number = 0, size: number = 20) =>
-  serverNoRepeatAjax<OrderDetail[]>('/order/pending/receive', {
+  serverNoRepeatAjax<OrderPreview[]>('/order/pending/receive', {
     p: page,
     s: size,
   }).then(result => {
@@ -64,7 +71,7 @@ export const getPendingReceiveOrder = (page: number = 0, size: number = 20) =>
   })
 
 export const getPendingDeliveryOrder = (page: number = 0, size: number = 20) =>
-  serverNoRepeatAjax<OrderDetail[]>('/order/pending/delivery', {
+  serverNoRepeatAjax<OrderPreview[]>('/order/pending/delivery', {
     p: page,
     s: size,
   }).then(result => {
@@ -76,7 +83,7 @@ export const getPendingDeliveryOrder = (page: number = 0, size: number = 20) =>
   })
 
 export const getAllOrder = (page: number, size: number = 6) =>
-  serverNoRepeatAjax<OrderDetail[]>('/order/all', { p: page, s: size }).then(
+  serverNoRepeatAjax<OrderPreview[]>('/order/all', { p: page, s: size }).then(
     result => {
       result.data.forEach(value => {
         value.previewImage = appendCdnPrefix(value.previewImage)
@@ -96,3 +103,9 @@ export const markTradeDone = (orderId: number, remark?: string) =>
  */
 export const cancelTrade = (orderId: number, remark?: string) =>
   serverNoRepeatAjax(`/order/${orderId}/cancel`, { r: remark }, 'POST')
+
+/**
+ * 查询订单详细信息
+ */
+export const queryOrderDetail = (orderId: number) =>
+  serverNoRepeatAjax<OrderDetail>(`/order/${orderId}/detail`)

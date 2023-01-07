@@ -19,12 +19,16 @@ import Drawer from '../../../../component/Drawer'
 import { Commodity, CommodityStatus } from '../../../../api/server/types'
 import useForceUpdate from '../../../../hook/useForceUpdate'
 import Loading from '../../../../component/Loading'
-import CommodityDetailDrawer from '../../component/CommodityDetailDrawer'
+import Icons from '../../../../component/Icons'
+import ControlButton from '../../component/ControlButton'
+import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
+import { useNavigation } from '@react-navigation/native'
+import { COMMODITY_PAGE, UseNavigationGeneric } from '../../../../router'
 
 const SellingItemPage: React.FC = () => {
   const page = usePage<ProcessedCommodity>(getUploadedCommodity, 5, true)
   const modifyDrawer = useRef<Drawer>(null)
-  const detailDrawer = useRef<Drawer>(null)
+  const nav = useNavigation<UseNavigationGeneric>()
   const [currentCommodity, setCurrentCommodity] = useState<
     ProcessedCommodity | undefined
   >()
@@ -52,8 +56,7 @@ const SellingItemPage: React.FC = () => {
   }
 
   const showDetail = (commodity: ProcessedCommodity) => {
-    setCurrentCommodity(commodity)
-    detailDrawer.current?.showDrawer()
+    nav.navigate(COMMODITY_PAGE, { id: commodity.commodityId })
   }
 
   return (
@@ -75,10 +78,9 @@ const SellingItemPage: React.FC = () => {
         drawerRef={modifyDrawer}
         onUpdate={onUpdate}
       />
-      <CommodityDetailDrawer
-        drawerRef={detailDrawer}
-        commodity={currentCommodity}
-      />
+      <ConditionHideContainer hide={!page.empty}>
+        <Text style={global.styles.infoTipText}>到底了~</Text>
+      </ConditionHideContainer>
     </LoadingScrollView>
   )
 }
@@ -117,51 +119,58 @@ const CommodityItem: React.FC<CommodityItemProps> = props => {
   }
   return (
     <BaseContainer style={styles.container} onPress={props.onPress}>
-      <View style={styles.image}>
-        <BetterImage uri={commodity.previewImage} />
-      </View>
-      <View style={styles.rightContainer}>
-        <Text style={global.styles.blobText}>{commodity.name}</Text>
-        <View style={styles.detailContainer}>
-          <View>
-            <KVTextContainer
-              icon="&#xe786;"
-              name="交易地点"
-              value={commodity.tradeLocation}
-            />
-            <KVTextContainer
-              icon="&#xe63d;"
-              name="剩余数量"
-              value={commodity.count}
-            />
-            <KVTextContainer
-              icon="&#xe67b;"
-              name="当前状态"
-              value={
-                commodity.status === CommodityStatus.STATUS_ACTIVE
-                  ? '可用'
-                  : '已经下架'
-              }
-              valueColor={
-                commodity.status === CommodityStatus.STATUS_ACTIVE
-                  ? undefined
-                  : global.colors.error_color
-              }
-            />
-          </View>
-          <View style={styles.rightContent}>
-            <Text style={global.styles.errorTipText}>{commodity.price}￥</Text>
-            <View style={styles.buttonContainer}>
-              <Text
-                style={styles.linkText}
-                onPress={() => props.onModify(props.commodity)}>
-                修改信息
+      <Text style={styles.title}>
+        <Icons iconText="&#xe767;" />
+        {commodity.name}
+      </Text>
+      <View style={global.styles.flexRow}>
+        <View style={styles.image}>
+          <BetterImage uri={commodity.previewImage} />
+        </View>
+        <View style={styles.rightContainer}>
+          <View style={styles.detailContainer}>
+            <View>
+              <KVTextContainer
+                icon="&#xe786;"
+                name="交易地点"
+                value={commodity.tradeLocation}
+              />
+              <KVTextContainer
+                icon="&#xe63d;"
+                name="剩余数量"
+                value={commodity.count}
+              />
+              <KVTextContainer
+                icon="&#xe67b;"
+                name="当前状态"
+                value={
+                  commodity.status === CommodityStatus.STATUS_ACTIVE
+                    ? '可用'
+                    : '已经下架'
+                }
+                valueColor={
+                  commodity.status === CommodityStatus.STATUS_ACTIVE
+                    ? undefined
+                    : global.colors.error_color
+                }
+              />
+            </View>
+            <View style={styles.rightContent}>
+              <Text style={global.styles.errorTipText}>
+                {commodity.price}￥
               </Text>
-              <Text
-                onPress={closeCommodity}
-                style={[styles.linkText, { color: global.colors.error_color }]}>
-                下架商品
-              </Text>
+              <View style={styles.buttonContainer}>
+                <ControlButton
+                  color={global.colors.primaryColor}
+                  title="修改信息"
+                  onPress={() => props.onModify(props.commodity)}
+                />
+                <ControlButton
+                  title="下架商品"
+                  color={global.colors.error_color}
+                  onPress={closeCommodity}
+                />
+              </View>
             </View>
           </View>
         </View>
@@ -171,10 +180,13 @@ const CommodityItem: React.FC<CommodityItemProps> = props => {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_base,
+    fontWeight: 'bold',
+    marginBottom: 6,
+  },
   container: {
-    marginVertical: 4,
-    alignItems: 'center',
-    flexDirection: 'row',
     paddingHorizontal: 15,
   },
   image: {

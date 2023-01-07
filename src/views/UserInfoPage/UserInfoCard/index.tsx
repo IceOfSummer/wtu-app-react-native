@@ -3,7 +3,7 @@ import { UserInfoQueryType } from '../../../api/server/user'
 import { StyleSheet, Text, View } from 'react-native'
 import BaseContainer from '../../../component/Container/BaseContainer'
 import EnhancedLoadingView from '../../../component/Loading/EnhancedLoadingView'
-import { getSoldOrderSimply, OrderDetail } from '../../../api/server/order'
+import { getSoldOrderSimply, OrderPreview } from '../../../api/server/order'
 import SimpleOrderPreview from '../component/SimpleOrderPreview'
 import UserSimpleInfo from '../component/UserSimpleInfo'
 import { useStore } from 'react-redux'
@@ -19,7 +19,7 @@ interface UserInfoCardProps {
 
 const UserInfoCard: React.FC<UserInfoCardProps> = props => {
   const { userInfo } = props
-  const [orders, setOrders] = useState<OrderDetail[]>([])
+  const [orders, setOrders] = useState<OrderPreview[]>([])
   const loadUserSoldOrder = () => getSoldOrderSimply(props.userInfo.userId)
   const nav = useNavigation<UseNavigationGeneric>()
   const selfUid =
