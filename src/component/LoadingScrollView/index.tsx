@@ -2,12 +2,14 @@ import React from 'react'
 import {
   RefreshHeaderPropType,
   RefreshHeaderStateType,
+  ScrollEvent,
   SpringScrollView,
 } from 'react-native-spring-scrollview'
-import LottieLoadingHeader from './LottieLoadingHeader'
 import RetryView from '../EnhancedScrollView/RetryView'
 import { View } from 'react-native'
 import InitSkeleton from './InitSkeleton'
+import ConditionHideContainer from '../Container/ConditionHideContainer'
+import LottieView from 'lottie-react-native'
 
 interface LoadingScrollViewProps {
   /**
@@ -25,7 +27,9 @@ interface LoadingScrollViewProps {
   >
 }
 
-interface LoadingScrollViewState {}
+interface LoadingScrollViewState {
+  loading: boolean
+}
 
 /**
  * 用于加载的容器，会自动显示加载骨架以及失败重试等操作。
@@ -36,16 +40,32 @@ export class LoadingScrollView extends React.Component<
   LoadingScrollViewProps,
   LoadingScrollViewState
 > {
-  state: LoadingScrollViewState = {}
+  state: LoadingScrollViewState = {
+    loading: false,
+  }
 
   scroll = React.createRef<SpringScrollView>()
 
   public endLoading() {
-    this.scroll.current?.endLoading(true)
+    this.setState({ loading: false })
   }
 
   public endRefresh() {
     this.scroll.current?.endRefresh()
+  }
+
+  onScroll = (evt: ScrollEvent) => {
+    if (this.state.loading || this.props.empty) {
+      return
+    }
+    const scroll = this.scroll.current!
+    const toBottomDis =
+      scroll._contentHeight - evt.nativeEvent.contentOffset.y - scroll._height
+    if (toBottomDis < 50) {
+      // refresh
+      this.setState({ loading: true })
+      this.props.onRequireLoad()
+    }
   }
 
   retry() {
@@ -60,12 +80,11 @@ export class LoadingScrollView extends React.Component<
   render() {
     return (
       <SpringScrollView
+        onScroll={this.onScroll}
         onRefresh={this.props.onRefresh}
         ref={this.scroll}
         refreshHeader={this.props.refreshHeader}
-        allLoaded={this.props.empty}
-        loadingFooter={LottieLoadingHeader}
-        onLoading={this.props.onRequireLoad}>
+        allLoaded={this.props.empty}>
         {this.props.children}
         {this.props.dataLength === 0 && this.props.loading ? (
           <Skeleton />
@@ -74,6 +93,15 @@ export class LoadingScrollView extends React.Component<
           onRetry={this.retry}
           show={!this.props.loading && this.props.error}
         />
+        <ConditionHideContainer
+          hide={!this.state.loading}
+          style={{ width: '100%', height: 60 }}>
+          <LottieView
+            source={require('../../assets/lottie/loading.json')}
+            loop
+            autoPlay
+          />
+        </ConditionHideContainer>
       </SpringScrollView>
     )
   }

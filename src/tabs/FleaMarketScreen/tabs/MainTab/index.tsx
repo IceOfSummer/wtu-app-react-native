@@ -23,6 +23,7 @@ import FleaMarketRefreshHeader from '../../components/FleaMarketRefreshHeader'
 
 const logger = getLogger('/tabs/FleaMarketScreen/tabs/MainTab')
 
+const SIZE = 8
 /**
  * 跳蚤市场
  */
@@ -59,13 +60,12 @@ const MainTab: React.FC = () => {
   const loadMore = (refresh?: boolean) => {
     logger.info('loading suggest...')
     setLoading(true)
-    getSuggestCommodity(maxId.current)
+    getSuggestCommodity(SIZE, maxId.current)
       .then(r => {
         setLoadError(false)
-        if (r.data.length === 0) {
+        if (r.data.length < SIZE) {
           setEmpty(true)
-          logger.info('no more data available!')
-          return
+          logger.info('no more data available! set status to empty')
         }
         const lastId = r.data[r.data.length - 1].commodityId
         logger.debug(r.data)
@@ -90,6 +90,8 @@ const MainTab: React.FC = () => {
         setLoading(false)
         if (refresh) {
           scroll.current?.endRefresh()
+        } else {
+          scroll.current?.endLoading()
         }
       })
   }

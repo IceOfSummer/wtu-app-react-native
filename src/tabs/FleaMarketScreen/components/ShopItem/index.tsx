@@ -39,8 +39,10 @@ const ShopItem: React.FC<ShowItemProps> = props => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    borderRadius: 4,
+    borderRadius: 8,
     marginVertical: 5,
+    paddingBottom: 6,
+    overflow: 'hidden',
   },
   image: {
     width: '100%',
@@ -49,6 +51,8 @@ const styles = StyleSheet.create({
   },
   nameText: {
     color: global.styles.$text_color,
+    fontWeight: 'bold',
+    marginVertical: 4,
   },
   priceText: {
     color: 'red',

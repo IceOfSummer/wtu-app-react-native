@@ -123,12 +123,13 @@ export const takeDownCommodity = (commodityId: number) =>
 /**
  * 该返回值某些属性可能为空
  */
-export const getSuggestCommodity = (maxId?: number) =>
-  serverNoRepeatAjax<Commodity[]>('/commodity/suggest', { m: maxId }).then(
-    r => {
-      return {
-        ...r,
-        data: castArray(r.data),
-      }
+export const getSuggestCommodity = (size: number = 8, maxId?: number) =>
+  serverNoRepeatAjax<Commodity[]>('/commodity/suggest', {
+    m: maxId,
+    s: size,
+  }).then(r => {
+    return {
+      ...r,
+      data: castArray(r.data),
     }
-  )
+  })
