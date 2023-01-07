@@ -133,9 +133,7 @@ const styles = StyleSheet.create({
     marginVertical: 3,
   },
   buttonLinkContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   cancelText: {
     marginLeft: 15,
