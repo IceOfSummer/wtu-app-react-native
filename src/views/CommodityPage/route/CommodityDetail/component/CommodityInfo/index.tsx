@@ -45,18 +45,14 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   const getStatusText = (): string => {
     if (commodity.status === 0) {
       return '可用'
-    } else if (commodity.status === 1) {
-      return '交易中'
     } else {
-      return '交易已完成'
+      return '已下架'
     }
   }
 
   const getStatusColor = (): string => {
     if (commodity.status === 0) {
       return global.styles.$primary_color
-    } else if (commodity.status === 1) {
-      return 'gold'
     } else {
       return 'red'
     }

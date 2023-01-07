@@ -11,6 +11,7 @@ import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import { Commodity } from '../../../../api/server/types'
 import Loading from '../../../../component/Loading'
 import { getLogger } from '../../../../utils/LoggerUtils'
+import Toast from 'react-native-root-toast'
 
 const logger = getLogger('/views/Order/component/ModifyCommodityDrawer')
 
@@ -44,6 +45,9 @@ const Content: React.FC<
   const [tradeLocation, setTradeLocation] = useState(props.tradeLocation)
   const [price, setPrice] = useState(props.price.toString())
   const [description, setDescription] = useState(props.description)
+  const [count, setCount] = useState(props.count.toString())
+
+  const countRef = useRef<SimpleInput>(null)
   const commodityNameRef = useRef<SimpleInput>(null)
   const tradeLocationRef = useRef<SimpleInput>(null)
   const priceRef = useRef<SimpleInput>(null)
@@ -68,6 +72,11 @@ const Content: React.FC<
       name: '描述',
       ref: descriptionRef,
       maxLength: 255,
+    },
+    {
+      name: '数量',
+      ref: countRef,
+      check: checkNumber({ noDecimal: true, min: 1 }),
     },
   ])
   const onSubmit = () => {
@@ -97,6 +106,11 @@ const Content: React.FC<
       updateCount++
       requestParam.description = description
     }
+    const cou = Number.parseInt(count, 10)
+    if (cou !== props.count) {
+      updateCount++
+      requestParam.count = cou
+    }
     logger.warn('no update available')
     if (updateCount === 0) {
       showSingleBtnTip('更新失败', '请至少修改一项')
@@ -106,7 +120,7 @@ const Content: React.FC<
     logger.info('sending request...')
     updateCommodity(props.commodityId, requestParam)
       .then(() => {
-        showSingleBtnTip('更新成功', '')
+        Toast.show('更新成功')
         logger.info('update success, param: ')
         logger.info(requestParam)
         // 传id, 好用来更新
@@ -159,6 +173,18 @@ const Content: React.FC<
             }}
             rowTipText="元"
             onChangeText={setPrice}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text>数量: </Text>
+          <SimpleInput
+            ref={countRef}
+            textInputProps={{
+              value: count,
+              keyboardType: 'numeric',
+            }}
+            rowTipText="个"
+            onChangeText={setCount}
           />
         </View>
         <View style={styles.inputContainer}>

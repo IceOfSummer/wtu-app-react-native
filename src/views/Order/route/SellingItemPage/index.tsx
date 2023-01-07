@@ -159,7 +159,11 @@ const CommodityItem: React.FC<CommodityItemProps> = props => {
               <Text style={global.styles.errorTipText}>
                 {commodity.price}￥
               </Text>
-              <View style={styles.buttonContainer}>
+              <ConditionHideContainer
+                style={styles.buttonContainer}
+                hide={
+                  props.commodity.status === CommodityStatus.STATUS_INACTIVE
+                }>
                 <ControlButton
                   color={global.colors.primaryColor}
                   title="修改信息"
@@ -170,7 +174,7 @@ const CommodityItem: React.FC<CommodityItemProps> = props => {
                   color={global.colors.error_color}
                   onPress={closeCommodity}
                 />
-              </View>
+              </ConditionHideContainer>
             </View>
           </View>
         </View>

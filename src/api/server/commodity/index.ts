@@ -104,7 +104,7 @@ export const getUploadedCommodity = (page: number = 0, size = 5) =>
 /**
  * 更新货物。
  * <p>
- * 仅可更新{@link Commodity#name}, {@link Commodity#price},
+ * 仅可更新{@link Commodity#name}, {@link Commodity#price}, {@link Commodity#count}
  * {@link Commodity#tradeLocation}, {@link Commodity#description}。
  * 更新其他字段可能会导致Bad Request
  */
