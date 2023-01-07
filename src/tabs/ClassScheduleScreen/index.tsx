@@ -9,6 +9,10 @@ import { SCHOOL_AUTH } from '../../router'
 import { getLessons } from '../../api/edu/classes'
 import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
 import NativeDialog from '../../native/modules/NativeDialog'
+import Toast from 'react-native-root-toast'
+import { getLogger } from '../../utils/LoggerUtils'
+
+const logger = getLogger('/tabs/ClassScheduleScreen')
 
 interface ClassScheduleProps {}
 
@@ -20,7 +24,7 @@ const ClassSchedule: React.FC<
   /**
    * 自动加载数据, 返回true表示加载成功, false表示失败
    */
-  async function loadData(): Promise<boolean> {
+  async function loadData() {
     return new Promise(resolve => {
       if (!props.isLoginValid || !props.username) {
         showNavigationToast({
@@ -28,12 +32,13 @@ const ClassSchedule: React.FC<
           text1: '请先登录',
           routerName: SCHOOL_AUTH,
         })
-        resolve(false)
         return
       }
       // load
+      logger.info('loading class table')
       getLessons(props.username, props.year, props.term)
         .then(resp => {
+          logger.info('load class table success')
           props.saveLessonsInfo(resp)
           resolve(true)
           if (resp.length === 0) {
@@ -45,22 +50,18 @@ const ClassSchedule: React.FC<
             return
           }
         })
-        .catch(() => resolve(false))
+        .catch(e => {
+          logger.error('load class table failed: ' + e.message)
+          Toast.show('加载课表失败: ' + e.message)
+        })
     })
   }
 
   const onPullDownRefresh = () => {
     setRefreshing(true)
-    loadData()
-      .then(result => {
-        console.log(result)
-      })
-      .catch(e => {
-        console.log(e)
-      })
-      .finally(() => {
-        setRefreshing(false)
-      })
+    loadData().finally(() => {
+      setRefreshing(false)
+    })
   }
   return (
     <View style={{ flex: 1 }}>

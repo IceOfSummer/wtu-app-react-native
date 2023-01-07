@@ -26,7 +26,7 @@ export const getCurDay = () => {
 export const getCurTerm = (): Term => {
   // 1为一月
   const month = new Date().getMonth() + 1
-  if (month >= 3 && month <= 8) {
+  if (month >= 1 && month <= 8) {
     // 下学期
     return 12
   } else {
