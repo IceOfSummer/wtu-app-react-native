@@ -8,10 +8,10 @@ import Toast from 'react-native-root-toast'
 
 const logger = getLogger('/utils/UpdateChecker')
 export default class UpdateChecker {
-  private static _newVersion: string | undefined
+  private static _newBinaryVersion: string | undefined
 
-  static get newVersion(): string | undefined {
-    return this._newVersion
+  static get newBinaryVersion(): string | undefined {
+    return this._newBinaryVersion
   }
 
   public static getVersionLabel(): Promise<string | undefined> {
@@ -31,6 +31,7 @@ export default class UpdateChecker {
     logger.info('checking update...')
     CodePush.checkForUpdate(undefined, async r => {
       logger.info('new version found: ' + r.appVersion)
+      UpdateChecker._newBinaryVersion = r.appVersion
       await UpdateChecker.downLoadNewVersion(r.appVersion, r.description)
     })
       .then(update => {
@@ -64,7 +65,7 @@ export default class UpdateChecker {
       })
   }
 
-  private static async downLoadNewVersion(version: string, message: string) {
+  public static async downLoadNewVersion(version: string, message: string) {
     NativeDialog.showDialog({
       title: '有新版本了!',
       message,

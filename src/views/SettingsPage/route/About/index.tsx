@@ -21,7 +21,17 @@ const About: React.FC = () => {
   }, [])
 
   const checkUpdate = () => {
-    UpdateChecker.checkUpdate(true)
+    if (UpdateChecker.newBinaryVersion) {
+      // fallback
+      UpdateChecker.downLoadNewVersion(
+        UpdateChecker.newBinaryVersion,
+        '新版本更新'
+      ).catch(e => {
+        Toast.show('下载新版本失败: ' + e.message)
+      })
+    } else {
+      UpdateChecker.checkUpdate(true)
+    }
   }
 
   const openUrl = (url: string) => {
@@ -64,9 +74,9 @@ const About: React.FC = () => {
           hideBorder
           onTap={checkUpdate}
           rightContent={
-            UpdateChecker.newVersion === version
+            UpdateChecker.newBinaryVersion === version
               ? '已经是最新版本了'
-              : UpdateChecker.newVersion
+              : UpdateChecker.newBinaryVersion
           }
         />
       </CardContainer>
