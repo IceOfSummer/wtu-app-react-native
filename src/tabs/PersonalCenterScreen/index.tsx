@@ -24,7 +24,7 @@ import WtuLoginValidCard from './component/WtuLoginValidCard'
 import WtuLoginInvalidCard from './component/WtuLoginInvalidCard'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { useNavigation } from '@react-navigation/native'
-import Avatar, { getAvatarUrl } from '../../component/Container/Avatar'
+import Avatar from '../../component/Container/Avatar'
 import { ServerUserInfo } from '../../redux/types/serverUserTypes'
 import { USER_SETTINGS_PAGE } from '../../views/SettingsPage'
 
@@ -78,10 +78,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
         />
         <View style={styles.headerContainer}>
           <View style={global.styles.flexRow}>
-            <Avatar
-              size={60}
-              uri={userInfo ? getAvatarUrl(userInfo.uid) : undefined}
-            />
+            <Avatar size={60} uid={userInfo?.uid} />
             <View style={styles.userInfoContainer}>
               <View style={global.styles.flexRow}>
                 <Text style={styles.nicknameText} onPress={toAuthPage}>
@@ -95,7 +92,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
                   />
                 ) : null}
               </View>
-              <Text>{userInfo ? userInfo.uid : ''}</Text>
+              <Text>{userInfo ? `uid:${userInfo.uid}` : ''}</Text>
             </View>
           </View>
           <Pressable onPress={() => props.navigation.navigate(SETTINGS_PAGE)}>

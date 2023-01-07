@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ShopItem from '../../components/ShopItem'
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native'
-import NativeDialog, {
-  showSingleBtnTip,
-} from '../../../../native/modules/NativeDialog'
+import NativeDialog from '../../../../native/modules/NativeDialog'
 import { LoadingScrollView } from '../../../../component/LoadingScrollView'
 import {
   getSuggestCommodity,
@@ -20,6 +18,8 @@ import {
 } from '../../../../router'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/src/types'
+import Toast from 'react-native-root-toast'
+import FleaMarketRefreshHeader from '../../components/FleaMarketRefreshHeader'
 
 const logger = getLogger('/tabs/FleaMarketScreen/tabs/MainTab')
 
@@ -54,8 +54,9 @@ const MainTab: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(false)
   const [loadError, setLoadError] = useState(false)
+  const scroll = useRef<LoadingScrollView>(null)
   const maxId = useRef<number | undefined>(undefined)
-  const loadMore = () => {
+  const loadMore = (refresh?: boolean) => {
     logger.info('loading suggest...')
     setLoading(true)
     getSuggestCommodity(maxId.current)
@@ -73,26 +74,43 @@ const MainTab: React.FC = () => {
           setEmpty(true)
         }
         maxId.current = lastId - 1
-        setCommodityItems(commodityItems.concat(r.data))
+        if (refresh) {
+          Toast.show('刷新成功!')
+          setCommodityItems(r.data)
+        } else {
+          setCommodityItems(commodityItems.concat(r.data))
+        }
       })
       .catch(e => {
-        showSingleBtnTip('加载失败', e.message)
+        Toast.show('加载失败: ' + e.message)
         logger.error('load failed: ' + e.message)
         setLoadError(true)
       })
       .finally(() => {
         setLoading(false)
+        if (refresh) {
+          scroll.current?.endRefresh()
+        }
       })
   }
+
+  const onRefresh = () => {
+    maxId.current = undefined
+    loadMore(true)
+  }
+
   useEffect(() => {
     loadMore()
   }, [])
 
   return (
     <LoadingScrollView
+      refreshHeader={FleaMarketRefreshHeader}
+      ref={scroll}
       dataLength={commodityItems.length}
       loading={loading}
       onRequireLoad={loadMore}
+      onRefresh={onRefresh}
       empty={empty}
       error={loadError}>
       <CenterBanner onGoButtonPress={goSubmitItem} />
