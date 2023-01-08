@@ -21,6 +21,7 @@ import { CommodityPageRouteTypes, FORM_DRAWER_PAGE } from '../../../../index'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../../../redux/counter'
 import Toast from 'react-native-root-toast'
+import RichTextPresentView from '../../../../../../component/Container/RichTextPresentView'
 
 interface CommodityInfoProps {
   commodity: ProcessedCommodity
@@ -139,9 +140,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
           <View>
             <Text style={styles.titleText}>商品详细</Text>
           </View>
-          <View style={styles.commodityInfoContainer}>
-            <Text>{commodity.description}</Text>
-          </View>
+          <RichTextPresentView content={commodity.description} />
         </View>
         <View style={{ padding: 50 }} />
       </SpringScrollView>

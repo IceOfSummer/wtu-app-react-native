@@ -28,7 +28,10 @@ export const GoodsSubmitPage: React.FC = () => {
         name={SUBMIT_PAGE}
         component={SubmitPage}
         initialParams={{ uid: route.params.uid }}
-        options={headerCommonOptionsWithTitle('提交商品')}
+        options={headerCommonOptionsWithTitle(
+          '提交商品',
+          global.colors.boxBackgroundColor
+        )}
       />
       <Stack.Screen
         name={SUCCESS_PAGE}

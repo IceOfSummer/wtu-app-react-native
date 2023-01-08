@@ -68,8 +68,19 @@
   toolbar.addHandler('image', () => {
     postMessage({type: 'image'})
   })
+  let previousHeight = 0
+  quill.on('text-change', () => {
+    if (previousHeight === document.body.clientHeight) {
+      return
+    }
+    previousHeight = document.body.clientHeight
+    postMessage({type: 'height', data: document.body.clientHeight})
+  })
 
-
+  window.addEventListener('load', () => {
+    previousHeight = document.body.clientHeight
+    postMessage({type: 'height', data: document.body.clientHeight})
+  })
 </script>
 </body>
 </html>

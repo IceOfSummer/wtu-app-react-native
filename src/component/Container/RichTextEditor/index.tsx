@@ -1,6 +1,6 @@
 import React from 'react'
 import WebView from 'react-native-webview'
-import { Dimensions, Image, StyleSheet, View } from 'react-native'
+import { Image, PixelRatio, View } from 'react-native'
 import {
   WebViewErrorEvent,
   WebViewMessageEvent,
@@ -22,17 +22,26 @@ const logger = getLogger('/component/Container/RichTextEditor')
 
 interface RichTextEditorProps {
   type?: 'all_functions' | 'image_only'
+  onHeightChange?: (height: number) => void
 }
 
 interface RichTextEditorState {
   html: string
+  height: number
 }
 interface WebViewMessageType {
   image: void
   content: EditorData
+  height: number
 }
 export type EditorData = {
+  /**
+   * 纯文本
+   */
   text: string
+  /**
+   * 包含html的内容
+   */
   content: string
 }
 
@@ -70,6 +79,11 @@ export default class RichTextEditor extends React.Component<
     } else if (msg.type === 'content') {
       const contentMessage = msg as WebViewMessage<'content'>
       this.contentResolveCallback?.(contentMessage.data)
+    } else if (msg.type === 'height') {
+      const contentMessage = msg as WebViewMessage<'height'>
+      this.setState({
+        height: PixelRatio.roundToNearestPixel(contentMessage.data),
+      })
     } else {
       logger.warn('unknown message type, data: ' + message.nativeEvent.data)
     }
@@ -148,6 +162,7 @@ export default class RichTextEditor extends React.Component<
     super(props)
     this.state = {
       html: '',
+      height: 0,
     }
     this.onMessage = this.onMessage.bind(this)
     this.onImagePick = this.onImagePick.bind(this)
@@ -168,10 +183,10 @@ export default class RichTextEditor extends React.Component<
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ width: '100%', height: this.state.height }}>
         <WebView
           ref={this.webView}
-          containerStyle={styles.webView}
+          containerStyle={{ height: this.state.height, width: '100%' }}
           source={
             __DEV__
               ? { html: this.state.html }
@@ -188,9 +203,3 @@ export default class RichTextEditor extends React.Component<
     )
   }
 }
-
-const styles = StyleSheet.create({
-  webView: {
-    height: Dimensions.get('window').height / 1.5,
-  },
-})
