@@ -5,7 +5,7 @@ import { OrderRouteParam } from '../../index'
 import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingView'
 import {
   OrderDetail,
-  OrderStatus,
+  orderStatusToString,
   OrderType,
   queryOrderDetail,
 } from '../../../../api/server/order'
@@ -41,22 +41,7 @@ const Detail: React.FC<DetailProps> = props => {
   const { order } = props
   const typeWord = OrderType.BUY ? '买' : '卖'
   const nav = useNavigation<UseNavigationGeneric>()
-  let statusText = ''
-  let statusTextColor: string
-  switch (order.status) {
-    case OrderStatus.TRADING:
-      statusTextColor = global.colors.primaryColor
-      statusText = '交易中'
-      break
-    case OrderStatus.FAIL:
-      statusTextColor = global.colors.error_color
-      statusText = '交易失败'
-      break
-    case OrderStatus.DONE:
-      statusTextColor = global.colors.success_color
-      statusText = '交易完成'
-      break
-  }
+  const statusString = orderStatusToString(order.status)
 
   const toUserInfo = () => {
     nav.navigate(USER_INFO_PAGE, { id: order.tradeUid })
@@ -70,7 +55,7 @@ const Detail: React.FC<DetailProps> = props => {
     <ScrollView style={styles.container}>
       <View style={global.styles.flexRowJustBetween}>
         <KVText keyText="订单号" valueText={props.orderId} />
-        <Text style={{ color: statusTextColor }}>{statusText}</Text>
+        <Text style={{ color: statusString.color }}>{statusString.name}</Text>
       </View>
       <KVText keyText="商品号" valueText={order.commodityId} />
       <KVText
@@ -96,16 +81,24 @@ const Detail: React.FC<DetailProps> = props => {
         <Text style={styles.keyText}>交易时备注：</Text>
         <Text style={{ marginVertical: 5 }}>{order.remark || '无'}</Text>
       </View>
+      <View style={styles.splitLine} />
       <ConditionHideContainer hide={!order.finishedTime}>
-        <View style={styles.splitLine} />
         <KVText
           keyText="完成时间"
           valueText={formatTimestamp(order.finishedTime)}
         />
+      </ConditionHideContainer>
+      <ConditionHideContainer hide={!order.buyerRemark}>
         <View>
-          <Text style={styles.keyText}>完成备注：</Text>
+          <Text style={styles.keyText}>买家备注：</Text>
+          <Text style={{ marginVertical: 5 }}>{order.buyerRemark || '无'}</Text>
+        </View>
+      </ConditionHideContainer>
+      <ConditionHideContainer hide={!order.sellerRemark}>
+        <View>
+          <Text style={styles.keyText}>卖家备注：</Text>
           <Text style={{ marginVertical: 5 }}>
-            {order.finishedRemark || '无'}
+            {order.sellerRemark || '无'}
           </Text>
         </View>
       </ConditionHideContainer>

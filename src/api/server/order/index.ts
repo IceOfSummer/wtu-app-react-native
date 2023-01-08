@@ -30,14 +30,73 @@ export type OrderDetail = {
   tradeName: string
   createTime: number
   finishedTime: number
-  finishedRemark: string
+  buyerRemark: string
+  sellerRemark: string
 }
 export enum OrderStatus {
-  TRADING,
-  DONE,
-  FAIL,
+  TRADING = 0,
+  BUYER_CONFIRMED = 1,
+  SELLER_CONFIRMED = 2,
+  BUYER_CANCELED = 3,
+  SELLER_CANCELED = 4,
+  DONE = 100,
+  CANCELED_BY_SELLER = 101,
+  CANCELED_BY_BUYER = 102,
+}
+type StatusString = {
+  name: string
+  color: string
 }
 
+export const orderStatusToString = (orderStatus: OrderStatus): StatusString => {
+  switch (orderStatus) {
+    case OrderStatus.TRADING:
+      return {
+        name: '交易中',
+        color: global.colors.success_color,
+      }
+    case OrderStatus.BUYER_CONFIRMED:
+      return {
+        name: '等待卖家确认',
+        color: global.colors.success_color,
+      }
+    case OrderStatus.SELLER_CONFIRMED:
+      return {
+        name: '等待买家确认',
+        color: global.colors.success_color,
+      }
+    case OrderStatus.BUYER_CANCELED:
+      return {
+        name: '买家申请取消订单',
+        color: global.colors.warning_color,
+      }
+    case OrderStatus.SELLER_CANCELED:
+      return {
+        name: '卖家申请取消订单',
+        color: global.colors.warning_color,
+      }
+    case OrderStatus.DONE:
+      return {
+        name: '已完成',
+        color: global.colors.primaryColor,
+      }
+    case OrderStatus.CANCELED_BY_BUYER:
+      return {
+        name: '买家取消订单',
+        color: global.colors.error_color,
+      }
+    case OrderStatus.CANCELED_BY_SELLER:
+      return {
+        name: '卖家取消订单',
+        color: global.colors.error_color,
+      }
+    default:
+      return {
+        name: '',
+        color: '',
+      }
+  }
+}
 export enum OrderType {
   BUY,
   SELL,
@@ -95,14 +154,32 @@ export const getAllOrder = (page: number, size: number = 6) =>
 /**
  * 标记交易成功
  */
-export const markTradeDone = (orderId: number, remark?: string) =>
-  serverNoRepeatAjax(`/order/${orderId}/done`, { r: remark }, 'POST')
+export const markTradeDone = (
+  orderId: number,
+  previousStatus: number,
+  isSeller?: boolean,
+  remark?: string
+) =>
+  serverNoRepeatAjax(
+    `/order/${orderId}/done`,
+    { r: remark, s: isSeller ? '1' : '0', ps: previousStatus },
+    'POST'
+  )
 
 /**
  * 取消订单
  */
-export const cancelTrade = (orderId: number, remark?: string) =>
-  serverNoRepeatAjax(`/order/${orderId}/cancel`, { r: remark }, 'POST')
+export const cancelTrade = (
+  orderId: number,
+  previousStatus: number,
+  isSeller?: boolean,
+  remark?: string
+) =>
+  serverNoRepeatAjax(
+    `/order/${orderId}/cancel`,
+    { r: remark, s: isSeller ? '1' : '0', ps: previousStatus },
+    'POST'
+  )
 
 /**
  * 查询订单详细信息

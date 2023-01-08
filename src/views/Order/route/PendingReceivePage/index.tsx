@@ -12,6 +12,7 @@ import Drawer from '../../../../component/Drawer'
 import CancelOrderDrawer from '../../component/CancelOrderDrawer'
 import ConfirmOrderDrawer from '../../component/ConfirmOrderDrawer'
 import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
+import Toast from 'react-native-root-toast'
 
 /**
  * 待收货界面
@@ -35,21 +36,20 @@ const PendingReceiveControl: React.FC<PendingReceiveControl> = props => {
     cancelOrderDrawerRef.current?.showDrawer()
   }
   const confirmOrder = () => {
+    if (
+      props.order.status === OrderStatus.BUYER_CANCELED ||
+      props.order.status === OrderStatus.SELLER_CANCELED
+    ) {
+      Toast.show('已经被取消的订单无法再确认')
+      return
+    }
     confirmOrderDrawerRef.current?.showDrawer()
   }
 
-  const onOrderCancel = () => {
+  const onOrderModify = (nextStatus: OrderStatus) => {
     props.setOrder({
       ...props.order,
-      status: OrderStatus.FAIL,
-    })
-    setHideControl(true)
-  }
-
-  const onOrderConfirm = () => {
-    props.setOrder({
-      ...props.order,
-      status: OrderStatus.DONE,
+      status: nextStatus,
     })
     setHideControl(true)
   }
@@ -69,12 +69,14 @@ const PendingReceiveControl: React.FC<PendingReceiveControl> = props => {
         />
       </ConditionHideContainer>
       <CancelOrderDrawer
+        title="取消订单(不可撤销)"
         order={props.order}
         drawerRef={cancelOrderDrawerRef}
-        onOrderCancel={onOrderCancel}
+        onOrderCancel={onOrderModify}
       />
       <ConfirmOrderDrawer
-        onOrderConfirm={onOrderConfirm}
+        title="确认收货"
+        onOrderConfirm={onOrderModify}
         order={props.order}
         drawerRef={confirmOrderDrawerRef}
       />

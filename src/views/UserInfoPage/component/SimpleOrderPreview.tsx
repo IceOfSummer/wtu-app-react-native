@@ -1,5 +1,5 @@
 import React from 'react'
-import { OrderPreview, OrderStatus } from '../../../api/server/order'
+import { OrderPreview, orderStatusToString } from '../../../api/server/order'
 import { StyleSheet, Text, View } from 'react-native'
 import KVTextContainer from '../../../component/Container/KVTextContainer'
 import { formatTimestamp } from '../../../utils/DateUtils'
@@ -14,18 +14,7 @@ interface SimpleOrderPreviewProps {
  */
 const SimpleOrderPreview: React.FC<SimpleOrderPreviewProps> = props => {
   const { order } = props
-  let statusText = ''
-  switch (order.status) {
-    case OrderStatus.DONE:
-      statusText = '成功'
-      break
-    case OrderStatus.FAIL:
-      statusText = '失败'
-      break
-    case OrderStatus.TRADING:
-      statusText = '正在交易中'
-      break
-  }
+  const statusString = orderStatusToString(order.status)
   return (
     <View style={styles.container}>
       <View style={styles.image}>
@@ -46,7 +35,11 @@ const SimpleOrderPreview: React.FC<SimpleOrderPreviewProps> = props => {
             name="开始时间"
             value={formatTimestamp(order.createTime)}
           />
-          <KVTextContainer name="交易结果" value={statusText} />
+          <KVTextContainer
+            name="交易结果"
+            value={statusString.name}
+            valueColor={statusString.color}
+          />
         </View>
       </View>
     </View>

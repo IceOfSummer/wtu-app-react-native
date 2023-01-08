@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   OrderPreview,
-  OrderStatus,
+  orderStatusToString,
   OrderType,
 } from '../../../../api/server/order'
 import { StyleSheet, Text, View } from 'react-native'
@@ -30,22 +30,7 @@ const OrderItem: React.FC<OrderItemProps> = props => {
 
   const ControlComponent = props.control ?? EmptyControl
 
-  let statusText = ''
-  let statusTextColor: string
-  switch (order.status) {
-    case OrderStatus.TRADING:
-      statusTextColor = global.colors.primaryColor
-      statusText = '交易中'
-      break
-    case OrderStatus.FAIL:
-      statusTextColor = global.colors.error_color
-      statusText = '交易失败'
-      break
-    case OrderStatus.DONE:
-      statusTextColor = global.colors.success_color
-      statusText = '交易完成'
-      break
-  }
+  const statusString = orderStatusToString(order.status)
 
   const toUserInfo = () => {
     nav.navigate(USER_INFO_PAGE, { id: props.order.tradeUid })
@@ -62,7 +47,7 @@ const OrderItem: React.FC<OrderItemProps> = props => {
           <Icons iconText="&#xe767;" />与{props.order.tradeName}的交易
           <Icons iconText="&#xe61c;" />
         </Text>
-        <Text style={{ color: statusTextColor }}>{statusText}</Text>
+        <Text style={{ color: statusString.color }}>{statusString.name}</Text>
       </View>
       <View style={global.styles.flexRow}>
         <View style={styles.image}>
