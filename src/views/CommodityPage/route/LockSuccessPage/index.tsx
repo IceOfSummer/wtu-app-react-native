@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import SuccessContainer from '../../../../component/Container/SuccessContainer'
 import { Text, View } from 'react-native'
 import {
@@ -15,11 +15,15 @@ import {
   RouterTypes,
 } from '../../../../router'
 import { NavigationProp } from '@react-navigation/core/src/types'
+import { modifyKVData } from '../../../../redux/counter/temporaryDataSlice'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../../redux/counter'
 
 const LockSuccessPage: React.FC = () => {
   const route =
     useRoute<RouteProp<CommodityPageRouteTypes, typeof LOCK_SUCCESS_PAGE>>()
   const nav = useNavigation<NavigationProp<RouterTypes>>()
+  const store = useStore<ReducerTypes>()
   const backToHome = () => {
     nav.dispatch(StackActions.replace(HOME_TABS, { screen: FLEA_MARKET_TABS }))
   }
@@ -27,6 +31,18 @@ const LockSuccessPage: React.FC = () => {
   const talkToSeller = () => {
     nav.dispatch(StackActions.replace(CHAT_PAGE, { screen: FLEA_MARKET_TABS }))
   }
+
+  useEffect(() => {
+    const stat = store.getState().temporary.tradeStat
+    store.dispatch(
+      modifyKVData({
+        tradeStat: {
+          receiveCount: stat.receiveCount + 1,
+          deliveryCount: stat.deliveryCount,
+        },
+      })
+    )
+  }, [])
 
   return (
     <SuccessContainer>

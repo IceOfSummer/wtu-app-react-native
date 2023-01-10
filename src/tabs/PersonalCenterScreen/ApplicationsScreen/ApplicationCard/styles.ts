@@ -21,6 +21,7 @@ export default StyleSheet.create({
   appOuter: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    marginVertical: 8,
   },
   cardHeader: {
     borderBottomWidth: StyleSheet.hairlineWidth,

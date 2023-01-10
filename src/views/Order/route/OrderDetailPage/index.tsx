@@ -81,8 +81,8 @@ const Detail: React.FC<DetailProps> = props => {
         <Text style={styles.keyText}>交易时备注：</Text>
         <Text style={{ marginVertical: 5 }}>{order.remark || '无'}</Text>
       </View>
-      <View style={styles.splitLine} />
       <ConditionHideContainer hide={!order.finishedTime}>
+        <View style={styles.splitLine} />
         <KVText
           keyText="完成时间"
           valueText={formatTimestamp(order.finishedTime)}

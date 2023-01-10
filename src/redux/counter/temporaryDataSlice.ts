@@ -17,6 +17,10 @@ const initialState: TemporaryDataState = {
   globalStates: {},
   messageTips: [],
   messageTipCount: 0,
+  tradeStat: {
+    receiveCount: 0,
+    deliveryCount: 0,
+  },
 }
 
 async function adjustUnreadMessage() {

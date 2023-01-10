@@ -1,5 +1,6 @@
 import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
 import { MessageTipTable } from '../../sqlite/message_tip'
+import { TradeStat } from '../../api/server/stat'
 
 export interface TemporaryDataState {
   /**
@@ -22,6 +23,10 @@ export interface TemporaryDataState {
    * 当前用户的消息提醒数量
    */
   messageTipCount: number
+  /**
+   * 交易统计
+   */
+  tradeStat: TradeStat
 }
 
 export type GlobalStateAvailableTypes =

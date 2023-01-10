@@ -10,6 +10,9 @@ import SimpleInput from '../../../../component/Input/SimpleInput'
 import Loading from '../../../../component/Loading'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import { getLogger } from '../../../../utils/LoggerUtils'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../../redux/counter'
+import { modifyKVData } from '../../../../redux/counter/temporaryDataSlice'
 
 const logger = getLogger('/views/Order/component/ConfirmOrderDrawer')
 
@@ -42,6 +45,7 @@ interface ConfirmOrderDrawerProps {
 const ConfirmOrderDrawer: React.FC<ConfirmOrderDrawerProps> = props => {
   const [remark, setRemark] = useState('')
   const remarkInputRef = useRef<SimpleInput>(null)
+  const store = useStore<ReducerTypes>()
 
   useEffect(() => {
     setRemark('')
@@ -53,8 +57,8 @@ const ConfirmOrderDrawer: React.FC<ConfirmOrderDrawerProps> = props => {
       return
     }
     logger.info('confirming order...')
-    const status = getNextStatus(order.status, props.isSeller)
-    if (!status) {
+    const nextStatus = getNextStatus(order.status, props.isSeller)
+    if (!nextStatus) {
       props.drawerRef.current?.showToast('发生了预期之外的错误！')
       return
     }
@@ -62,7 +66,27 @@ const ConfirmOrderDrawer: React.FC<ConfirmOrderDrawerProps> = props => {
     markTradeDone(order.orderId, order.status, props.isSeller, remark)
       .then(() => {
         props.drawerRef.current?.closeDrawer()
-        props.onOrderConfirm(status)
+        props.onOrderConfirm(nextStatus)
+        const stat = store.getState().temporary.tradeStat
+        if (nextStatus >= 100) {
+          let state
+          if (props.isSeller) {
+            state = {
+              receiveCount: stat.receiveCount,
+              deliveryCount: stat.deliveryCount - 1,
+            }
+          } else {
+            state = {
+              receiveCount: stat.receiveCount - 1,
+              deliveryCount: stat.deliveryCount,
+            }
+          }
+          store.dispatch(
+            modifyKVData({
+              tradeStat: state,
+            })
+          )
+        }
         showSingleBtnTip('确认收货成功!', '订单已确认收货')
         logger.info('confirm order success')
       })

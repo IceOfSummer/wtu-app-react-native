@@ -316,7 +316,7 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={COMMODITY_PAGE}
           component={commodityPage}
-          options={{ headerShown: false, header: () => null }}
+          options={{ headerShown: false, animation: 'slide_from_right' }}
         />
         <Stack.Screen
           name={SETTINGS_PAGE}

@@ -7,6 +7,8 @@ import { deepCopyObject, innerCombineObject } from '../../utils/ObjectUtils'
 const initTemporaryDataState: TemporaryDataState = {
   isCheckLoginDone: false,
   globalStates: {},
+  messageTips: [],
+  messageTipCount: 0,
 }
 
 /**

@@ -10,6 +10,9 @@ import SimpleInput from '../../../../component/Input/SimpleInput'
 import Loading from '../../../../component/Loading'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import { getLogger } from '../../../../utils/LoggerUtils'
+import { modifyKVData } from '../../../../redux/counter/temporaryDataSlice'
+import { useStore } from 'react-redux'
+import { ReducerTypes } from '../../../../redux/counter'
 
 const logger = getLogger('/views/Order/component/CancelOrderDrawer')
 
@@ -47,6 +50,7 @@ interface CancelOrderDrawerProps {
 const CancelOrderDrawer: React.FC<CancelOrderDrawerProps> = props => {
   const [remark, setRemark] = useState('')
   const remarkInputRef = useRef<SimpleInput>(null)
+  const store = useStore<ReducerTypes>()
 
   useEffect(() => {
     setRemark('')
@@ -68,6 +72,26 @@ const CancelOrderDrawer: React.FC<CancelOrderDrawerProps> = props => {
       .then(() => {
         logger.info('cancel order success')
         props.drawerRef.current?.closeDrawer()
+        const stat = store.getState().temporary.tradeStat
+        if (nextStatus >= 100) {
+          let state
+          if (props.isSeller) {
+            state = {
+              receiveCount: stat.receiveCount,
+              deliveryCount: stat.deliveryCount - 1,
+            }
+          } else {
+            state = {
+              receiveCount: stat.receiveCount - 1,
+              deliveryCount: stat.deliveryCount,
+            }
+          }
+          store.dispatch(
+            modifyKVData({
+              tradeStat: state,
+            })
+          )
+        }
         showSingleBtnTip('订单取消成功!', '订单已取消')
         props.onOrderCancel(nextStatus)
       })
