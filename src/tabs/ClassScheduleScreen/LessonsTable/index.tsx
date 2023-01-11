@@ -10,7 +10,6 @@ import {
 } from 'react-native'
 import styles, { HEADER_HEIGHT, PER_CLASS_HEIGHT } from './styles'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../../redux/reducers'
 import { ClassInfo } from '../../../redux/types/lessonsTableTypes'
 import { Link, useNavigation } from '@react-navigation/native'
 import { LESSONS_DETAIL, RouterTypes, SCHOOL_AUTH } from '../../../router'
@@ -18,6 +17,7 @@ import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import TappableView from '../../../component/TappableView'
 import { useClassScheduleTheme } from '../Theme'
 import { getSubjectStatus, SubjectStatus } from '../../../utils/LessonsUtils'
+import { ReducerTypes } from '../../../redux/counter'
 
 interface LessonsTableProps {}
 

@@ -1,12 +1,12 @@
 import React from 'react'
 import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
 import { Text, View } from 'react-native'
 import styles from './styles'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { LESSONS_DETAIL, RouterTypes } from '../../router'
 import LessonCard from './LessonCard'
+import { ReducerTypes } from '../../redux/counter'
 
 interface LessonsDetailProps {}
 

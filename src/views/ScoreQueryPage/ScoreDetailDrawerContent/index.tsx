@@ -6,9 +6,9 @@ import {
 } from '../../../api/edu/applications'
 import { StyleSheet, Text, View } from 'react-native'
 import { useStore } from 'react-redux'
-import { ReducerTypes } from '../../../redux/reducers'
 import NativeDialog from '../../../native/modules/NativeDialog'
 import { SpringScrollView } from 'react-native-spring-scrollview'
+import { ReducerTypes } from '../../../redux/counter'
 
 interface ScoreDetailDrawerContentProps {
   subject?: SubjectScore

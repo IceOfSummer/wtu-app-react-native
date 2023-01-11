@@ -9,7 +9,6 @@ import { isAuthPage } from '../utils/AuthUtils'
 import Toast from 'react-native-toast-message'
 import { SCHOOL_AUTH, SERVER_AUTH_PAGE } from '../router'
 import { store } from '../redux/store'
-import { markLoginExpired } from '../redux/actions/user'
 import {
   markLoginInvalid,
   modifyRequestToken,
@@ -19,6 +18,7 @@ import Environment from '../utils/Environment'
 import { getLogger } from '../utils/LoggerUtils'
 import { ReducerTypes } from '../redux/counter'
 import { RejectPolicy } from 'axios-simple-wrapper/lib/interceptor/debounce'
+import { markLoginExpired } from '../redux/counter/wtuUserSlice'
 
 const logger = getLogger('/api/request')
 

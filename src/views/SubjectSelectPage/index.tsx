@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native'
 import { connect, useStore } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
 import Tabs from './Tabs'
 import SubjectSelectTip from './SubjectSelectTip'
 import { BaseQueryParam, getBaseQueryParam } from '../../api/edu/subjectSelect'
@@ -19,6 +18,7 @@ import NavigationHeader from '../../component/Container/NavigationHeader'
 import { useNavigation } from '@react-navigation/native'
 import Drawer from '../../component/Drawer'
 import SubjectSelectHeaderRight from './SubjectSelectHeaderRight'
+import { ReducerTypes } from '../../redux/counter'
 
 export const BROAD_OPEN_DIALOG_TIP = 'openDialogTip'
 

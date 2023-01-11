@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../../../redux/reducers'
 import {
   BaseQueryParam,
   ClassMark,
@@ -21,6 +20,7 @@ import Button from 'react-native-button'
 import useGlobalState from '../../useGlobalState'
 import ColorfulButton from '../../../../component/Button/ColorfulButton'
 import { SpringScrollView } from 'react-native-spring-scrollview'
+import { ReducerTypes } from '../../../../redux/counter'
 
 interface ClassListProps {
   classMark: ClassMark

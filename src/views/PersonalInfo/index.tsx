@@ -2,9 +2,6 @@ import React, { useEffect } from 'react'
 import { Text, View } from 'react-native'
 import { getUserInfo } from '../../api/edu/applications'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
-import { UserInfo } from '../../redux/reducers/user'
-import { saveUserInfo } from '../../redux/actions/user'
 import SimpleCard from '../../component/Cards/SimpleCard'
 import styles from './styles'
 import CenterTextCard from '../../component/Cards/CenterTextCard'
@@ -15,7 +12,12 @@ import NativeDialog from '../../native/modules/NativeDialog'
 import { logout } from '../../api/server/auth'
 import Toast from 'react-native-root-toast'
 import { store } from '../../redux/store'
-import { markLoginExpired } from '../../redux/counter/wtuUserSlice'
+import {
+  markLoginExpired,
+  saveUserInfo,
+} from '../../redux/counter/wtuUserSlice'
+import { UserInfo } from '../../redux/types/wtuUserTypes'
+import { ReducerTypes } from '../../redux/counter'
 
 interface PersonalInfoProps {}
 

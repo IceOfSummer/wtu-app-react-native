@@ -1,6 +1,6 @@
-import { UserInfo } from '../../../redux/reducers/user'
 import { Term } from '../../../redux/types/lessonsTableTypes'
 import { wtuNoRepeatAjax } from '../../request'
+import { UserInfo } from '../../../redux/types/wtuUserTypes'
 /**
  * 获取用户信息
  */

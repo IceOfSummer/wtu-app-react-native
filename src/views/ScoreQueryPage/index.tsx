@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
 import { Term } from '../../redux/types/lessonsTableTypes'
 import { getCurTerm } from '../../utils/DateUtils'
 import { queryStudentScore, SubjectScore } from '../../api/edu/applications'
@@ -13,6 +12,7 @@ import Icons from '../../component/Icons'
 import Drawer from '../../component/Drawer'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import Picker from '../../component/Drawer/Picker'
+import { ReducerTypes } from '../../redux/counter'
 
 const curYear = new Date().getFullYear()
 const TERM_STR = [

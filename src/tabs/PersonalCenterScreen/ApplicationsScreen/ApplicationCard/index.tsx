@@ -5,9 +5,9 @@ import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import styles from './styles'
 import { useStore } from 'react-redux'
-import { ReducerTypes } from '../../../../redux/reducers'
 import NativeDialog from '../../../../native/modules/NativeDialog'
 import BaseContainer from '../../../../component/Container/BaseContainer'
+import { ReducerTypes } from '../../../../redux/counter'
 
 interface ApplicationCardProps {
   title: string

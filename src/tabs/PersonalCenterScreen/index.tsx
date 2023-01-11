@@ -7,7 +7,6 @@ import {
   View,
 } from 'react-native'
 import { connect, useSelector } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
 import Icons from '../../component/Icons'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import {
@@ -27,6 +26,7 @@ import { useNavigation } from '@react-navigation/native'
 import Avatar from '../../component/Container/Avatar'
 import { ServerUserInfo } from '../../redux/types/serverUserTypes'
 import { USER_SETTINGS_PAGE } from '../../views/SettingsPage'
+import { ReducerTypes } from '../../redux/counter'
 
 interface StoreProps {
   authenticated: boolean

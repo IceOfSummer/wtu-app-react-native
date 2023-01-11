@@ -4,11 +4,9 @@ import {
   LessonsTableStates,
   UpdateCurWeekAsyncAction,
 } from '../types/lessonsTableTypes'
-import { getCurTerm, getStanderDay } from '../../utils/DateUtils'
-import { getCurYear } from '../reducers/lessonsTable'
+import { getCurTerm, getCurYear, getStanderDay } from '../../utils/DateUtils'
 import { getCurWeekFromServer } from '../../api/edu/classes'
 import { LessonsTableActionConstant } from '../constant'
-import { modifyOptions as modifyLessonsTableOptions } from '../actions/lessonsTable'
 
 const initialState: LessonsTableStates = {
   lessons: [],
@@ -26,7 +24,7 @@ export const updateCurWeek: UpdateCurWeekAsyncAction = createAsyncThunk(
     getCurWeekFromServer(year, term)
       .then(resp =>
         dispatch(
-          modifyLessonsTableOptions({
+          modifyOptions({
             week: resp,
           })
         )

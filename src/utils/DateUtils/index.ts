@@ -35,6 +35,19 @@ export const getCurTerm = (): Term => {
   }
 }
 
+/**
+ * 获取学年
+ */
+export function getCurYear(): number {
+  const term = getCurTerm()
+  const year = new Date().getFullYear()
+  if (term === 12) {
+    return year - 1
+  } else {
+    return year
+  }
+}
+
 export const append0Prefix = (hour: number) => {
   return hour < 10 ? '0' + hour : hour
 }

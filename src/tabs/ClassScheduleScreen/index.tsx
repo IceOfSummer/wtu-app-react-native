@@ -3,14 +3,14 @@ import { RefreshControl, ScrollView, View } from 'react-native'
 import LessonsTable from './LessonsTable'
 import { ClassInfo } from '../../redux/types/lessonsTableTypes'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../redux/reducers'
 import { showNavigationToast } from '../../component/DiyToast/NavToast'
 import { SCHOOL_AUTH } from '../../router'
 import { getLessons } from '../../api/edu/classes'
-import { saveLessonsInfo } from '../../redux/actions/lessonsTable'
 import NativeDialog from '../../native/modules/NativeDialog'
 import Toast from 'react-native-root-toast'
 import { getLogger } from '../../utils/LoggerUtils'
+import { saveLessonsInfo } from '../../redux/counter/lessonsTableSlice'
+import { ReducerTypes } from '../../redux/counter'
 
 const logger = getLogger('/tabs/ClassScheduleScreen')
 

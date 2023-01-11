@@ -1,8 +1,8 @@
 import { ColorValue } from 'react-native'
 import { useStore } from 'react-redux'
-import { ReducerTypes } from '../../../redux/reducers'
 import { modifyCommonOptions } from '../../../redux/counter/commonOptionsSlice'
 import defaultTheme from './defaultTheme'
+import { ReducerTypes } from '../../../redux/counter'
 
 export interface ClassScheduleTheme {
   themeId: string

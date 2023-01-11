@@ -4,7 +4,7 @@ import {
 } from '../../../api/edu/subjectSelect'
 import { useStore } from 'react-redux'
 import { saveGlobalState } from '../../../redux/counter/temporaryDataSlice'
-import { ReducerTypes } from '../../../redux/reducers'
+import { ReducerTypes } from '../../../redux/counter'
 
 const S_S_GLOBAL_PREFIX = 'subjectSelect'
 const S_S_K_BASE_QUERY = 'baseQueryParam'

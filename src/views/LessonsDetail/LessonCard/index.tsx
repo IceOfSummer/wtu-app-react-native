@@ -2,8 +2,8 @@ import React from 'react'
 import { ClassInfo } from '../../../redux/types/lessonsTableTypes'
 import { ColorValue, Text, View } from 'react-native'
 import { connect } from 'react-redux'
-import { ReducerTypes } from '../../../redux/reducers'
 import styles from './styles'
+import { ReducerTypes } from '../../../redux/counter'
 
 interface LessonCardProps {
   lessons: ClassInfo

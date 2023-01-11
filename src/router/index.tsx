@@ -14,12 +14,8 @@ import DiyToast from '../component/DiyToast/NavToast'
 import LessonsDetail from '../views/LessonsDetail'
 import EmptyPage from '../views/EmptyPage'
 import SettingsPage from '../views/SettingsPage'
-import { updateCurWeek } from '../redux/actions/lessonsTable'
 import Webpage from '../views/Webpage'
 import ScoreQueryPage from '../views/ScoreQueryPage'
-import { checkLogin } from '../redux/actions/user'
-import { markCheckLoginDone } from '../redux/actions/temporaryData'
-import { ReducerTypes } from '../redux/reducers'
 import SubjectSelectPage from '../views/SubjectSelectPage'
 import { useDispatch, useSelector, useStore } from 'react-redux'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
@@ -43,6 +39,10 @@ import ArticleDetailPage from '../views/ArticleDetailPage'
 import { CommunityMessageQueryType } from '../api/server/community'
 import NavigationHeader from '../component/Container/NavigationHeader'
 import MessageTipCheckPage from '../views/MessageTipCheckPage'
+import { updateCurWeek } from '../redux/counter/lessonsTableSlice'
+import { markCheckLoginDone } from '../redux/counter/temporaryDataSlice'
+import { ReducerTypes } from '../redux/counter'
+import { checkLogin } from '../redux/counter/wtuUserSlice'
 
 const Stack = createNativeStackNavigator()
 
@@ -213,10 +213,10 @@ const Router: React.FC = () => {
           // 更新当前周
           const state = store.getState()
           dispatch(
-            updateCurWeek(
-              state.lessonsTable.options.year,
-              state.lessonsTable.options.term
-            )
+            updateCurWeek({
+              year: state.lessonsTable.options.year,
+              term: state.lessonsTable.options.term,
+            })
           )
         }
         store.dispatch(markCheckLoginDone())
