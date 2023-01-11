@@ -14,10 +14,10 @@ const KVTextCard: React.FC<KVTextCardProps> = props => {
     <Cards {...props}>
       <View style={styles.container}>
         <Text style={styles.title}>{props.title}</Text>
-        <View style={global.styles.flexRow}>
+        <View style={styles.textContainer}>
           <Text style={styles.value}>{props.value}</Text>
-          {props.showArrow ? <Icons iconText="&#xe61c;" size={20} /> : null}
         </View>
+        {props.showArrow ? <Icons iconText="&#xe61c;" size={20} /> : null}
       </View>
     </Cards>
   )
@@ -28,13 +28,20 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     color: global.colors.textColor,
     fontSize: global.styles.$font_size_base,
+    marginRight: 4,
   },
   value: {
     fontSize: global.styles.$font_size_base,
+  },
+  textContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
   },
 })
 

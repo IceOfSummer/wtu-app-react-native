@@ -6,7 +6,6 @@ import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
 import { StyleSheet, Text, View } from 'react-native'
 import Avatar from '../../../../component/Container/Avatar'
 import Icons from '../../../../component/Icons'
-import { formatTimestamp } from '../../../../utils/DateUtils'
 
 interface CommentHeaderProps {
   item: Comment
@@ -21,10 +20,8 @@ const CommentHeader: React.FC<CommentHeaderProps> = props => {
   const showMoreBtn = userInfo && userInfo.uid === item.author
   return (
     <View style={styles.avatarContainer}>
-      <View style={global.styles.flexRow}>
-        <Avatar uid={item.author} />
-        <Text style={styles.nickName}>{item.nickname}</Text>
-      </View>
+      <Avatar uid={item.author} />
+      <Text style={styles.nickName}>{item.nickname}</Text>
       <View style={styles.avatarRightContainer}>
         {showMoreBtn ? (
           <Icons
@@ -33,7 +30,6 @@ const CommentHeader: React.FC<CommentHeaderProps> = props => {
             onPress={() => props.onPress?.(props.item)}
           />
         ) : null}
-        <Text>{formatTimestamp(item.createTime)}</Text>
       </View>
     </View>
   )
@@ -41,17 +37,23 @@ const CommentHeader: React.FC<CommentHeaderProps> = props => {
 
 const styles = StyleSheet.create({
   avatarRightContainer: {
+    position: 'absolute',
+    right: 0,
     alignItems: 'flex-end',
+    top: -20,
   },
   nickName: {
-    fontSize: 15,
+    fontSize: global.styles.$font_size_base,
     color: global.colors.textColor,
     marginLeft: 5,
+    flex: 1,
   },
   avatarContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+  },
+  timeText: {
+    fontSize: global.styles.$font_size_sm,
   },
 })
 

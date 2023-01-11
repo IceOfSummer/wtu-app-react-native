@@ -5,6 +5,7 @@ import JudgeComponent from '../JudgeComponent'
 import RichTextPresentView from '../../../../component/Container/RichTextPresentView'
 import CommentHeader from '../CommentHeader'
 import { MsgInfoContext } from '../../index'
+import { formatTimestamp } from '../../../../utils/DateUtils'
 
 interface RootArticleContentProps {
   item: Comment
@@ -23,7 +24,10 @@ const RootArticleContent: React.FC<RootArticleContentProps> = props => {
         onPress={() => context.openMessageMenu(item, true)}
       />
       <RichTextPresentView content={item.content} />
-      <JudgeComponent item={item} />
+      <View style={styles.bottomContainer}>
+        <Text>{formatTimestamp(item.createTime)}</Text>
+        <JudgeComponent item={item} />
+      </View>
     </View>
   )
 }
@@ -41,6 +45,11 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     marginVertical: 15,
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 })
 

@@ -31,6 +31,7 @@ enum OP {
 }
 const PROPERTY_MAP: Array<keyof UserUpdate> = ['nickname']
 const NAME_MAP: Array<string> = ['昵称']
+const MAX_SIZE_MAP: Array<number> = [20]
 
 const UserSettingPage: React.FC = () => {
   const store = useStore<ReducerTypes>()
@@ -45,7 +46,7 @@ const UserSettingPage: React.FC = () => {
 
   const openUpdateDrawer = (op: OP) => {
     setCurrentOp(op)
-    commonUpdateDrawer.current?.showDrawer()
+    commonUpdateDrawer.current?.showDrawer(MAX_SIZE_MAP[op])
   }
 
   const openEmailUpdateDrawer = () => {

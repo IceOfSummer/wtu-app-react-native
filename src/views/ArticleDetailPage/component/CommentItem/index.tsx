@@ -13,6 +13,7 @@ import { NavigationProp } from '@react-navigation/core/src/types'
 import { Comment } from '../../route/RootArticle'
 import Toast from 'react-native-root-toast'
 import CommentHeader from '../CommentHeader'
+import { formatTimestamp } from '../../../../utils/DateUtils'
 
 interface CommentItemProps {
   item: Comment
@@ -82,7 +83,10 @@ const CommentItem: React.FC<CommentItemProps> = props => {
           <Text style={styles.content}>{item.content}</Text>
         </Text>
       </View>
-      <JudgeComponent item={item} />
+      <View style={styles.bottomContainer}>
+        <Text>{formatTimestamp(item.createTime)}</Text>
+        <JudgeComponent item={item} />
+      </View>
       {subReply.length === 0 ? null : (
         <View style={styles.replyContainer}>
           <Pressable onPress={toSubReplyDetail}>
@@ -157,6 +161,11 @@ const styles = StyleSheet.create({
   },
   name: {
     color: global.colors.primaryColor,
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 })
 

@@ -77,13 +77,11 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
           style={styles.imageBackground}
         />
         <View style={styles.headerContainer}>
-          <View style={global.styles.flexRow}>
+          <View style={[global.styles.flexRow, { flex: 1 }]}>
             <Avatar size={60} uid={userInfo?.uid} />
             <View style={styles.userInfoContainer}>
-              <View style={global.styles.flexRow}>
-                <Text style={styles.nicknameText} onPress={toAuthPage}>
-                  {userNickname}
-                </Text>
+              <Text style={styles.nicknameText} onPress={toAuthPage}>
+                {userNickname}
                 {auth ? (
                   <Icons
                     iconText="&#xe610;"
@@ -91,7 +89,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
                     onPress={toUserSettingPage}
                   />
                 ) : null}
-              </View>
+              </Text>
               <Text>{userInfo ? `uid:${userInfo.uid}` : ''}</Text>
             </View>
           </View>
@@ -161,10 +159,11 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     marginLeft: 6,
+    flex: 1,
   },
   nicknameText: {
     color: global.colors.textColor,
-    fontSize: global.styles.$font_size_lg,
+    fontSize: global.styles.$font_size_base,
   },
 })
 
