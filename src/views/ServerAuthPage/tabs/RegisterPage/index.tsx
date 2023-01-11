@@ -25,6 +25,15 @@ import { wtuEncrypt } from '../../../../utils/aesUtils'
 const logger = getLogger('/views/ServerAuthPage/tabs/RegisterPage')
 const MIN_LENGTH = 8
 const MAX_LENGTH = 25
+const CHECK_REGX = /^[A-Za-z0-9]+$/
+function isInvalidUsername(username: string): boolean {
+  const match = username.match(CHECK_REGX)
+  if (!match || match.length === 0) {
+    return true
+  }
+  return match[0].length !== username.length
+}
+
 const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState<string>('')
   const [username, setUsername] = useState<string>('')
@@ -43,6 +52,10 @@ const RegisterPage: React.FC = () => {
   const wtuCaptchaRef = useRef<SimpleInput>(null)
   const registerParam = useRef<WtuAuthInitParam | undefined>()
   const tryReg = () => {
+    if (isInvalidUsername(username)) {
+      usernameInput.current?.setErrorText('用户名只能由数字或者英文字母组成')
+      return
+    }
     const unMsg = checkLength({
       value: username,
       name: '用户名',
@@ -170,21 +183,27 @@ const RegisterPage: React.FC = () => {
         </View>
         <View style={styles.blockOuter}>
           <AniInput
+            errorColor="orange"
             placeholder="用户名"
+            inputStyle={{ color: '#fff' }}
             onTextInput={setUsername}
             ref={usernameInput}
             value={username}
           />
           <AniInput
             placeholder="密码"
+            errorColor="orange"
             password
+            inputStyle={{ color: '#fff' }}
             onTextInput={setPassword}
             ref={passwordInput}
             value={password}
           />
           <AniInput
             placeholder="确认密码"
+            errorColor="orange"
             password
+            inputStyle={{ color: '#fff' }}
             onTextInput={setPasswordConfirm}
             ref={passwordConfirmInput}
             value={passwordConfirm}

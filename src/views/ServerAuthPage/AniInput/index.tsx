@@ -13,6 +13,7 @@ interface AniInputProps {
   onTextInput?: (text: string) => void
   value: string
   inputStyle?: TextStyle
+  errorColor?: string
 }
 interface AniInputRefProps {
   onRef?: ForwardedRef<any>
@@ -106,7 +107,7 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
         <Animated.Text
           style={{
             transform: [{ translateY: moveText }],
-            color: isError ? global.colors.error_color : '#fff',
+            color: isError ? props.errorColor : '#fff',
             marginLeft: 2,
             paddingBottom: 2,
             fontSize: scaleFont,
@@ -124,6 +125,10 @@ const AniInput: React.FC<AniInputProps & AniInputRefProps> = props => {
       />
     </View>
   )
+}
+
+AniInput.defaultProps = {
+  errorColor: global.colors.error_color,
 }
 
 export default React.forwardRef<AniInputRefAttribute, AniInputProps>(

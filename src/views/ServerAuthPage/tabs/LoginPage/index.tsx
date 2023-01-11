@@ -116,6 +116,7 @@ const LoginPage: React.FC = () => {
       </View>
       <View style={styles.blockOuter}>
         <AniInput
+          errorColor="orange"
           placeholder="用户名"
           inputStyle={{ color: '#fff' }}
           onTextInput={setUsername}
@@ -123,6 +124,7 @@ const LoginPage: React.FC = () => {
           value={username}
         />
         <AniInput
+          errorColor="orange"
           placeholder="密码"
           password
           inputStyle={{ color: '#fff' }}
