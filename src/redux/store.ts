@@ -1,16 +1,32 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { persistReducer, persistStore } from 'redux-persist'
-import { configureStore } from '@reduxjs/toolkit'
+import { AnyAction, configureStore, PayloadAction } from '@reduxjs/toolkit'
 import reducer from './counter'
-import { PersistConfig } from 'redux-persist/es/types'
 import PubSub from 'pubsub-js'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { PersistConfig } from 'redux-persist/es/types'
+import { persistReducer, persistStore } from 'redux-persist'
+
+const RESET_REDUX_ACTION = 'ResetRedux'
+
+export const resetReduxAction = (): PayloadAction => {
+  return {
+    type: RESET_REDUX_ACTION,
+    payload: undefined,
+  }
+}
 
 const persistConfig: PersistConfig<any> = {
   key: 'root',
   storage: AsyncStorage,
+  whitelist: [''],
 }
 
-const persistedReducer = persistReducer(persistConfig, reducer)
+const rootReducer = (state: any, action: AnyAction) => {
+  if (action.type === RESET_REDUX_ACTION) {
+    state = undefined
+  }
+  return reducer(state, action)
+}
+const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 export const store = configureStore({
   reducer: persistedReducer,

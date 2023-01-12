@@ -16,7 +16,6 @@ import {
 import { navigationPush } from '../tabs'
 import Environment from '../utils/Environment'
 import { getLogger } from '../utils/LoggerUtils'
-import { ReducerTypes } from '../redux/counter'
 import { RejectPolicy } from 'axios-simple-wrapper/lib/interceptor/debounce'
 import { markLoginExpired } from '../redux/counter/wtuUserSlice'
 
@@ -58,7 +57,6 @@ function createServerAjax(rejectPolicy: RejectPolicy) {
     method?: 'GET' | 'POST'
   ): AjaxResponseTypes<ResponseTemplate<T>, true> =>
     new Promise((resolve, reject) => {
-      const state = store.getState() as ReducerTypes
       const fullUrl = Environment.serverBaseUrl + url
       logger.info(`${method ?? 'GET'}: ${fullUrl};`)
       wrapperStatic({
@@ -67,9 +65,9 @@ function createServerAjax(rejectPolicy: RejectPolicy) {
         param: data,
         rejectPolicy,
         axiosConfig: {
-          headers: state.serverUser.token
+          headers: global.token
             ? {
-                Authorization: state.serverUser.token,
+                Authorization: global.token,
               }
             : undefined,
         },

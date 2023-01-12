@@ -1,10 +1,7 @@
-import SQLite, {
-  ResultSet,
-  SQLiteDatabase,
-  Transaction,
-} from 'react-native-sqlite-storage'
+import SQLite, { ResultSet, SQLiteDatabase } from 'react-native-sqlite-storage'
 import { getLogger } from '../utils/LoggerUtils'
 import AppEvents from '../AppEvents'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const logger = getLogger('/src/sqlite')
 
@@ -45,7 +42,7 @@ CREATE TABLE IF NOT EXISTS last_message(
 
 CREATE TABLE IF NOT EXISTS app_metadata (
     name CHAR(10) PRIMARY KEY,
-    value CHAR(50) NOT NULL 
+    value CHAR(3000) NOT NULL 
 );
 INSERT INTO app_metadata VALUES ('version', '${version}');
 
@@ -80,7 +77,7 @@ CREATE TABLE IF NOT EXISTS unread_message_tip(
 );
 `
 /**
- * 从v1升级到v2的sql
+ * 升级的sql
  */
 const update_v2_sql = `
 CREATE TABLE IF NOT EXISTS message_tip(
@@ -107,38 +104,87 @@ CREATE TABLE IF NOT EXISTS unread_message_tip(
 
 UPDATE app_metadata SET value = '${version}' WHERE name = 'version'
 `
-
+const LAST_OPEN_UID = 'LastOpenUid'
 class DatabaseManager {
-  private static _database: SQLiteDatabase
+  private _database: SQLiteDatabase | undefined
 
-  private static _name: string
+  private readonly _namespace: string
 
-  static get namespace(): string {
-    return this._name
+  private static INSTANCE: DatabaseManager | undefined
+
+  private constructor(uid: number) {
+    this._namespace = 'u' + uid
+    logger.info('loading database: ' + this._namespace)
+    DatabaseManager.openDatabase(this._namespace)
+      .then(r => {
+        logger.info('starting init database')
+        DatabaseManager.initDatabase(r)
+          .then(() => {
+            this._database = r
+            AppEvents.trigger('beforeDatabaseInitDone')
+            AppEvents.trigger('appDatabaseCheckDone')
+            AppEvents.trigger('onDatabaseInitDone')
+          })
+          .catch(e => {
+            logger.error('init database failed: ' + e.message)
+          })
+      })
+      .catch(e => {
+        logger.error('open database failed: ' + e.message)
+      })
+  }
+
+  public static isReady(): boolean {
+    return this.INSTANCE?._database !== undefined
+  }
+
+  static get namespace(): string | undefined {
+    return this.INSTANCE?._namespace
   }
 
   /**
    * 加载一个数据库
    * @param uid 用户id
    */
-  public static async loadDatabase(uid: number) {
-    DatabaseManager._name = 'u' + uid
-    logger.info('loading database: ' + DatabaseManager._name)
-    if (DatabaseManager._database) {
-      DatabaseManager._database.close().catch(e => {
-        logger.error(
-          `while trying to close database "${DatabaseManager._name}" fail`
-        )
-        logger.error(e)
+  public static async loadDatabase(uid?: number) {
+    if (!uid) {
+      uid = await this.getLastOpenUid()
+    }
+    if (!uid) {
+      AppEvents.trigger('appDatabaseCheckDone')
+      return
+    }
+    this.setLastOpenUid(uid)
+    DatabaseManager.INSTANCE = new DatabaseManager(uid)
+  }
+
+  public static setLastOpenUid(uid?: number) {
+    if (uid) {
+      AsyncStorage.setItem(LAST_OPEN_UID, uid.toString()).catch(e => {
+        logger.error('setLastOpenUid failed: ' + e.message)
+      })
+    } else {
+      AsyncStorage.removeItem(LAST_OPEN_UID).catch(e => {
+        logger.error('setLastOpenUid failed: ' + e.message)
       })
     }
-    DatabaseManager._database = await DatabaseManager.openDatabase(
-      DatabaseManager._name
-    )
-    logger.info('starting init database')
-    await DatabaseManager.initDatabase()
-    AppEvents.trigger('onDatabaseInitDone')
-    logger.info('init database done')
+  }
+
+  private static async getLastOpenUid(): Promise<number | undefined> {
+    const uid = await AsyncStorage.getItem(LAST_OPEN_UID)
+    return uid ? Number.parseInt(uid, 10) : undefined
+  }
+
+  public static async closeConnection(): Promise<void> {
+    logger.info('closing connection...')
+    if (DatabaseManager.INSTANCE) {
+      await DatabaseManager.INSTANCE._database?.close()
+      DatabaseManager.INSTANCE = undefined
+      await DatabaseManager.setLastOpenUid(undefined)
+      logger.info('close database success')
+    } else {
+      logger.warn('no instance found')
+    }
   }
 
   /**
@@ -157,19 +203,16 @@ class DatabaseManager {
    * 初始化数据库，用来创建表
    * @private
    */
-  private static async initDatabase() {
+  private static async initDatabase(connection: SQLiteDatabase) {
     return new Promise<void>(async (resolve, reject) => {
-      const check = await DatabaseManager.executeSql(
+      const check = await connection.executeSql(
         'SELECT * FROM sqlite_master WHERE tbl_name = ?',
-        'app_metadata'
+        ['app_metadata']
       )
       if (check[0].rows.length === 0) {
         logger.info('no local database exist, creating new tables')
         // 创建表
-        await DatabaseManager.parseAndRunMultiSql(
-          DatabaseManager._database,
-          sql
-        )
+        await DatabaseManager.parseAndRunMultiSql(connection, sql)
         resolve()
         return
       }
@@ -184,7 +227,7 @@ class DatabaseManager {
         // 版本号差1才进行更新, 跨度太大不更新
         logger.info('database need update')
         logger.info('updating database to ' + version)
-        await DatabaseManager.updateDatabase()
+        await DatabaseManager.updateDatabase(connection)
         resolve()
         return
       } else if (gap > 1) {
@@ -215,32 +258,28 @@ class DatabaseManager {
   }
 
   /**
-   * 执行<b>事务</b>SQL
-   */
-  public static transaction(cb: (tx: Transaction) => void) {
-    logger.debug('opened a transaction sql')
-    if (DatabaseManager._database) {
-      DatabaseManager._database.transaction(cb)
-      return
-    }
-    DatabaseManager.openDatabase(DatabaseManager._name).then(db => {
-      DatabaseManager._database = db
-      db.transaction(cb)
-    })
-  }
-
-  /**
    * 执行普通sql
    */
   public static executeSql(statement: string, ...args: any[]) {
     logger.info(
       'SQL RUNNING\nSQL: ' + statement + '\nARGS: ' + args.toString?.()
     )
-    if (DatabaseManager._database) {
-      return DatabaseManager._database.executeSql(statement, args)
+    return DatabaseManager.executeSqlWithoutLog(statement, args)
+  }
+
+  public static executeSqlWithoutLog(statement: string, args: any[]) {
+    const instance = DatabaseManager.INSTANCE
+    if (!instance) {
+      logger.error('no instance exist, can not run sql: ' + statement)
+      throw new Error('数据库加载失败')
     }
-    return DatabaseManager.openDatabase(DatabaseManager._name).then(db => {
-      DatabaseManager._database = db
+    if (instance._database) {
+      return instance._database.executeSql(statement, args)
+    }
+    return DatabaseManager.openDatabase(instance._namespace).then(db => {
+      if (DatabaseManager.INSTANCE) {
+        DatabaseManager.INSTANCE._database = db
+      }
       return Promise.resolve(db.executeSql(statement, args))
     })
   }
@@ -249,8 +288,8 @@ class DatabaseManager {
    * 从上一个版本的数据库升级到新版本
    * @private
    */
-  private static async updateDatabase() {
-    await this.parseAndRunMultiSql(DatabaseManager._database, update_v2_sql)
+  private static async updateDatabase(db: SQLiteDatabase) {
+    await this.parseAndRunMultiSql(db, update_v2_sql)
   }
 }
 

@@ -21,6 +21,18 @@ interface Events {
    * 数据库初始化完毕事件
    */
   onDatabaseInitDone: () => void
+  /**
+   * 当注销登录时(无论是主动还是被动)
+   */
+  onLogout: () => void
+  /**
+   * 在数据库马上就要执行完前(此时数据库可用，该事件只是提供了一个更高的优先级)
+   */
+  beforeDatabaseInitDone: () => void
+  /**
+   * app数据库检查完毕(此时数据库可能不可用)
+   */
+  appDatabaseCheckDone: () => void
 }
 
 export default class AppEvents {

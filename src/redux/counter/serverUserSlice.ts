@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import {
   CachedUser,
+  ServerUserInfo,
   ServerUserReducers,
   ServerUserState,
 } from '../types/serverUserTypes'
@@ -11,6 +12,9 @@ import {
 } from '../../sqlite/user'
 import { getLogger } from '../../utils/LoggerUtils'
 import { getMultiUserInfo } from '../../api/server/user'
+import DatabaseManager from '../../sqlite'
+import AppEvents from '../../AppEvents'
+import { persistor, resetReduxAction, store } from '../store'
 
 const logger = getLogger('redux/counter/serverUserSlice')
 
@@ -18,6 +22,17 @@ const initialState: ServerUserState = {
   authenticated: false,
   cachedUser: {},
 }
+
+export const markLogin = createAsyncThunk<void, ServerUserInfo>(
+  '/serverUserSlice/markLogin',
+  async (arg, { dispatch }) => {
+    // 加载用户数据库
+    await DatabaseManager.loadDatabase(arg.uid)
+    AppEvents.subscribeOnce('beforeDatabaseInitDone', () => {
+      dispatch(serverUserSlice.actions.markLogin(arg))
+    })
+  }
+)
 
 /**
  * 加载多个用户的信息缓存
@@ -106,9 +121,11 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
       state.authenticated = false
       state.userInfo = undefined
       state.token = undefined
+      AppEvents.trigger('onLogout')
     },
     modifyRequestToken(state, { payload }) {
       state.token = payload
+      global.token = payload
     },
   },
   extraReducers: {
@@ -134,8 +151,22 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
   },
 })
 
+AppEvents.subscribe('onLogout', () => {
+  setTimeout(() => {
+    DatabaseManager.closeConnection()
+      .then(() => {
+        persistor.pause()
+        store.dispatch(resetReduxAction())
+        DatabaseManager.setLastOpenUid(undefined)
+        persistor.persist()
+      })
+      .catch(e => {
+        logger.error('close database connection failed: ' + e.message)
+      })
+  }, 200)
+})
+
 export const {
-  markLogin,
   saveUserToCache,
   markLoginInvalid,
   updateServerUserInfo,

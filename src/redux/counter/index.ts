@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux'
 import userReducer from './wtuUserSlice'
 import { PersistConfig } from 'redux-persist/es/types'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { UserState } from '../types/wtuUserTypes'
 import { persistReducer } from 'redux-persist'
 import { LessonsTableStates } from '../types/lessonsTableTypes'
@@ -18,39 +17,41 @@ import messageSlice from './messageSlice'
 import { MessageState } from '../types/messageTypes'
 import { ServerUserState } from '../types/serverUserTypes'
 import serverUserSlice from './serverUserSlice'
+import SqliteStorage from '../persist'
 
 const userPersistConfig: PersistConfig<UserState> = {
   key: 'user',
-  storage: AsyncStorage,
+  storage: SqliteStorage,
   timeout: 3000,
 }
 
 const lessonsTablePersistConfig: PersistConfig<LessonsTableStates> = {
   key: 'lessons',
-  storage: AsyncStorage,
+  storage: SqliteStorage,
   timeout: 3000,
 }
 
 const commonOptionsPersistConfig: PersistConfig<CommonOptionsStates> = {
   key: 'commonOptions',
-  storage: AsyncStorage,
+  storage: SqliteStorage,
   timeout: 3000,
 }
+
 const commonPersistPConfig: PersistConfig<CommonPersistenceState> = {
   key: 'commonPersist',
-  storage: AsyncStorage,
+  storage: SqliteStorage,
   timeout: 3000,
 }
 
 const themePersistConfig: PersistConfig<ThemeState> = {
   key: 'theme',
-  storage: AsyncStorage,
+  storage: SqliteStorage,
   timeout: 3000,
 }
 
 const serverUserPersistConfig: PersistConfig<ServerUserState> = {
   key: 'serverUser',
-  storage: AsyncStorage,
+  storage: SqliteStorage,
   blacklist: ['cachedUser'],
   timeout: 3000,
 }

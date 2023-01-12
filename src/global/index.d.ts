@@ -148,3 +148,4 @@ declare var colors: ThemeColors
 declare var styles: GlobalStyleValues & GlobalStyleSheet
 declare var constant: AppConstant
 declare var util: UtilFunction
+declare var token: string | undefined

@@ -31,10 +31,16 @@ import { MultiChatResponseMessage } from '../../api/chat/message/response/MultiC
 import ImTemplate from '../../api/chat/ImTemplate'
 import { ImService } from '../../api/chat/ImService'
 import { markMessageRead as markSqliteMessageRead } from '../../sqlite/last_message'
+import AppEvents from '../../AppEvents'
+import storeDispatch from '../storeDispatch'
 
 const logger = getLogger('/redux/counter/messageSlice')
 
 const REPLACE_TYPE_MARKER = /§\d*§/g
+
+AppEvents.subscribe('onDatabaseInitDone', () => {
+  storeDispatch(initMessage())
+})
 
 /**
  * 初始化消息
