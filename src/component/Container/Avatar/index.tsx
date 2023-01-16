@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Pressable } from 'react-native'
+import { Pressable, ViewStyle } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import { useNavigation } from '@react-navigation/native'
 import { UseNavigationGeneric, USER_INFO_PAGE } from '../../../router'
@@ -14,6 +14,7 @@ interface AvatarProps {
   size?: number
   onPress?: () => void
   uid?: number
+  styles?: ViewStyle
 }
 
 const LENGTH = 48
@@ -33,12 +34,15 @@ const Avatar: React.FC<AvatarProps> = props => {
   return (
     <Pressable
       onPress={props.onPress ?? toUserInfo}
-      style={{
-        width: global.util.assert(props.size, LENGTH),
-        height: global.util.assert(props.size, LENGTH),
-        overflow: 'hidden',
-        borderRadius: 50,
-      }}>
+      style={[
+        {
+          width: global.util.assert(props.size, LENGTH),
+          height: global.util.assert(props.size, LENGTH),
+          overflow: 'hidden',
+          borderRadius: 50,
+        },
+        props.styles,
+      ]}>
       {fail ? (
         <FastImage
           source={require('../../../assets/img/avatar.png')}

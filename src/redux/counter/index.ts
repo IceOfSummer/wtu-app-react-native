@@ -18,6 +18,8 @@ import { MessageState } from '../types/messageTypes'
 import { ServerUserState } from '../types/serverUserTypes'
 import serverUserSlice from './serverUserSlice'
 import SqliteStorage from '../persist'
+import { EventRemindState } from '../types/eventRemindTypes'
+import eventRemindSlice from './eventRemindSlice'
 
 const userPersistConfig: PersistConfig<UserState> = {
   key: 'user',
@@ -49,10 +51,18 @@ const themePersistConfig: PersistConfig<ThemeState> = {
   timeout: 3000,
 }
 
+export const SERVER_USER_PERSIST_KEY = 'persist:serverUser'
+
 const serverUserPersistConfig: PersistConfig<ServerUserState> = {
   key: 'serverUser',
   storage: SqliteStorage,
   blacklist: ['cachedUser'],
+  timeout: 3000,
+}
+
+const eventRemindPersistConfig: PersistConfig<EventRemindState> = {
+  key: 'eventRemind',
+  storage: SqliteStorage,
   timeout: 3000,
 }
 
@@ -68,6 +78,7 @@ const reducer = combineReducers({
   theme: persistReducer(themePersistConfig, themeReducer),
   message: messageSlice,
   serverUser: persistReducer(serverUserPersistConfig, serverUserSlice),
+  eventRemind: persistReducer(eventRemindPersistConfig, eventRemindSlice),
 })
 
 export type ReducerTypes = {
@@ -79,5 +90,6 @@ export type ReducerTypes = {
   theme: ThemeState
   message: MessageState
   serverUser: ServerUserState
+  eventRemind: EventRemindState
 }
 export default reducer

@@ -38,11 +38,11 @@ import PostArticlePage from '../views/PostArticlePage'
 import ArticleDetailPage from '../views/ArticleDetailPage'
 import { CommunityMessageQueryType } from '../api/server/community'
 import NavigationHeader from '../component/Container/NavigationHeader'
-import MessageTipCheckPage from '../views/MessageTipCheckPage'
 import { updateCurWeek } from '../redux/counter/lessonsTableSlice'
 import { markCheckLoginDone } from '../redux/counter/temporaryDataSlice'
 import { ReducerTypes } from '../redux/counter'
 import { checkLogin } from '../redux/counter/wtuUserSlice'
+import MessageTipPage from '../views/MessageTipPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -76,7 +76,7 @@ export const COMMODITY_PAGE = 'CommodityPage'
 export const ORDER_PAGE = 'OrderPage'
 export const POST_ARTICLE_PAGE = 'PostArticlePage'
 export const ARTICLE_DETAIL_PAGE = 'ArticleDetailPage'
-export const MESSAGE_TIP_CHECK_PAGE = 'MessageTipCheckPage'
+export const MESSAGE_TIP_PAGE = 'MessageTipCheckPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -145,7 +145,7 @@ export interface RouterTypes extends ParamListBase {
     isSubReply: boolean
     screen?: string
   }
-  [MESSAGE_TIP_CHECK_PAGE]: undefined
+  [MESSAGE_TIP_PAGE]: undefined
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -345,12 +345,9 @@ const Router: React.FC = () => {
           }}
         />
         <Stack.Screen
-          name={MESSAGE_TIP_CHECK_PAGE}
-          component={MessageTipCheckPage}
-          options={headerCommonOptionsWithTitle(
-            '消息提醒',
-            global.colors.boxBackgroundColor
-          )}
+          name={MESSAGE_TIP_PAGE}
+          component={MessageTipPage}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
       <DiyToast />

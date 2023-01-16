@@ -15,6 +15,8 @@ import { getMultiUserInfo } from '../../api/server/user'
 import DatabaseManager from '../../sqlite'
 import AppEvents from '../../AppEvents'
 import { persistor, resetReduxAction, store } from '../store'
+import SqliteStorage from '../persist'
+import { SERVER_USER_PERSIST_KEY } from './index'
 
 const logger = getLogger('redux/counter/serverUserSlice')
 
@@ -23,16 +25,22 @@ const initialState: ServerUserState = {
   cachedUser: {},
 }
 
-export const markLogin = createAsyncThunk<void, ServerUserInfo>(
-  '/serverUserSlice/markLogin',
-  async (arg, { dispatch }) => {
-    // 加载用户数据库
-    await DatabaseManager.loadDatabase(arg.uid)
-    AppEvents.subscribeOnce('beforeDatabaseInitDone', () => {
+export const markLogin = createAsyncThunk<
+  void,
+  ServerUserInfo & { token: string }
+>('/serverUserSlice/markLogin', async (arg, { dispatch }) => {
+  // 加载用户数据库
+  await DatabaseManager.loadDatabase(arg.uid)
+  AppEvents.subscribeOnce('beforeDatabaseInitDone', () => {
+    persistor.pause()
+    store.dispatch(resetReduxAction())
+    persistor.persist()
+    SqliteStorage.subscribe(SERVER_USER_PERSIST_KEY, () => {
       dispatch(serverUserSlice.actions.markLogin(arg))
+      dispatch(serverUserSlice.actions.modifyRequestToken(arg.token))
     })
-  }
-)
+  })
+})
 
 /**
  * 加载多个用户的信息缓存

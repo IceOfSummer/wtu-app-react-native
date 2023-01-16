@@ -28,4 +28,15 @@ export default class MetaDataMapper {
       [key]
     )
   }
+
+  /**
+   * 获取数据库版本
+   */
+  public static async getDBVersion(): Promise<number> {
+    const [result] = await DatabaseManager.executeSql(
+      'SELECT value FROM app_metadata WHERE name = ?',
+      'version'
+    )
+    return result.rows.item(0).value
+  }
 }

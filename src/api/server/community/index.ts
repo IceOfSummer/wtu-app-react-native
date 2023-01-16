@@ -98,11 +98,5 @@ export type CommunityTipQueryType = {
   type: number
 }
 
-/**
- * 查询消息提醒(比如谁评论了自己)
- */
-export const queryMessageTip = () =>
-  serverNoRepeatAjax<CommunityTipQueryType[]>('/community/tip')
-
 export const deletePost = (postId: number) =>
   serverNoRepeatAjax(`/community/article/${postId}/delete`, undefined, 'POST')

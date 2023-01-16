@@ -8,7 +8,7 @@ const logger = getLogger('/src/sqlite')
 /**
  * 数据库版本号，相关信息保存在metadata表中，若版本号不一致，则会调用{@link DatabaseManager.updateDatabase}
  */
-const version = 2
+const version = 3
 
 export const EMPTY_RESULT_SET: ResultSet = {
   rowsAffected: 0,
@@ -54,55 +54,38 @@ CREATE TABLE IF NOT EXISTS user (
     credit INT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS message_tip(
-    message_id PRIMARY KEY NOT NULL ,
-    last_reply_uid INT NOT NULL,
-    count INT NOT NULL DEFAULT 1,
-    last_reply_time INT NOT NULL,
-    last_reply_nickname CHAR(30) NOT NULL,
-    title CHAR(30) ,
-    content CHAR(40) NOT NULL,
-    type INT DEFAULT 0
+CREATE TABLE event_remind(
+    id INT PRIMARY KEY NOT NULL,
+    count INT,
+    remindTitle CHAR(30) NOT NULL,
+    sourceId INT NOT NULL,
+    sourceType INT NOT NULL,
+    sourceContent CHAR(30),
+    senderIds CHAR(30) NOT NULL ,
+    createTime INT NOT NULL,
+    targetContent CHAR(30) NOT NULL
 );
-
-CREATE TABLE IF NOT EXISTS unread_message_tip(
-     message_id PRIMARY KEY NOT NULL ,
-     last_reply_uid INT NOT NULL,
-     count INT NOT NULL DEFAULT 1,
-     last_reply_time INT NOT NULL,
-     last_reply_nickname CHAR(30) NOT NULL,
-     title CHAR(30) ,
-     content CHAR(40) NOT NULL,
-     type INT DEFAULT 0
-);
+CREATE INDEX event_remind_type_index ON event_remind(sourceType);
 `
 /**
- * 升级的sql
+ * 升级时使用的sql
  */
-const update_v2_sql = `
-CREATE TABLE IF NOT EXISTS message_tip(
-    message_id PRIMARY KEY NOT NULL ,
-    last_reply_uid INT NOT NULL,
-    count INT NOT NULL DEFAULT 1,
-    last_reply_time INT NOT NULL,
-    last_reply_nickname CHAR(30) NOT NULL,
-    title CHAR(30) ,
-    content CHAR(40) NOT NULL,
-    type INT
+const update_sql = `
+DROP TABLE IF EXISTS message_tip;
+DROP TABLE IF EXISTS unread_message_tip;
+CREATE TABLE event_remind(
+    id INT PRIMARY KEY NOT NULL,
+    count INT,
+    remindTitle CHAR(30) NOT NULL,
+    sourceId INT NOT NULL,
+    sourceType INT NOT NULL,
+    sourceContent CHAR(30),
+    senderIds CHAR(30) NOT NULL ,
+    createTime INT NOT NULL,
+    targetContent CHAR(30) NOT NULL
 );
-
-CREATE TABLE IF NOT EXISTS unread_message_tip(
-     message_id PRIMARY KEY NOT NULL ,
-     last_reply_uid INT NOT NULL,
-     count INT NOT NULL DEFAULT 1,
-     last_reply_time INT NOT NULL,
-     last_reply_nickname CHAR(30) NOT NULL,
-     title CHAR(30) ,
-     content CHAR(40) NOT NULL,
-     type INT
-);
-
-UPDATE app_metadata SET value = '${version}' WHERE name = 'version'
+CREATE INDEX event_remind_type_index ON event_remind(sourceType);
+UPDATE app_metadata SET value = '${version}' WHERE name = 'version';
 `
 const LAST_OPEN_UID = 'LastOpenUid'
 class DatabaseManager {
@@ -228,6 +211,7 @@ class DatabaseManager {
         logger.info('database need update')
         logger.info('updating database to ' + version)
         await DatabaseManager.updateDatabase(connection)
+        logger.info('successfully update to ' + version)
         resolve()
         return
       } else if (gap > 1) {
@@ -260,7 +244,10 @@ class DatabaseManager {
   /**
    * 执行普通sql
    */
-  public static executeSql(statement: string, ...args: any[]) {
+  public static executeSql(
+    statement: string,
+    ...args: (string | number | null | undefined)[]
+  ) {
     logger.info(
       'SQL RUNNING\nSQL: ' + statement + '\nARGS: ' + args.toString?.()
     )
@@ -289,7 +276,7 @@ class DatabaseManager {
    * @private
    */
   private static async updateDatabase(db: SQLiteDatabase) {
-    await this.parseAndRunMultiSql(db, update_v2_sql)
+    await this.parseAndRunMultiSql(db, update_sql)
   }
 }
 

@@ -61,6 +61,8 @@ const SubReplyDetail: React.FC<SubReplyDetailProps> = props => {
       logger.error('load sub comment failed: ' + e.message)
       Toast.show('加载评论失败: ' + e.message)
       return
+    } finally {
+      setLoading(false)
     }
     if (reply.length < SIZE) {
       setEmpty(true)

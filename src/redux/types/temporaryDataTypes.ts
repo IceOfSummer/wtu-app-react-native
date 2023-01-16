@@ -1,5 +1,4 @@
 import { CaseReducer, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit'
-import { MessageTipTable } from '../../sqlite/message_tip'
 import { TradeStat } from '../../api/server/stat'
 
 export interface TemporaryDataState {
@@ -15,14 +14,6 @@ export interface TemporaryDataState {
    * 聊天服务器是否连接失败
    */
   isChatServerConnectFailed?: boolean
-  /**
-   * 当前用户的消息提醒
-   */
-  messageTips: Array<MessageTipTable>
-  /**
-   * 当前用户的消息提醒数量
-   */
-  messageTipCount: number
   /**
    * 交易统计
    */
