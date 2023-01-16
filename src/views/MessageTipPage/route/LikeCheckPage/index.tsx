@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
   },
   titleContainer: {
     flex: 5,
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
   },
   time: {
     color: global.colors.infoTextColor,
+    fontSize: global.styles.$font_size_sm,
   },
   outerContainer: {
     flex: 1,

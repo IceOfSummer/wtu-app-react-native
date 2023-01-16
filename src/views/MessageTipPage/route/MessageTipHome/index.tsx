@@ -77,7 +77,7 @@ const NavigationCard: React.FC<NavigationCardProps> = props => {
   )
 }
 
-const LENGTH = 70
+const LENGTH = 60
 const TIP_LENGTH = 18
 const styles = StyleSheet.create({
   container: {

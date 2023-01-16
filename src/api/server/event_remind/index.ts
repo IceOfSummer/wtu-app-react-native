@@ -25,4 +25,5 @@ export const queryEventRemind = () =>
 export const queryUnreadTipCount = () =>
   serverNoRepeatAjax<number>('/remind/count')
 
-export const markAllRead = () => serverNoRepeatAjax('/remind/read')
+export const markAllRead = () =>
+  serverNoRepeatAjax('/remind/read', undefined, 'POST')

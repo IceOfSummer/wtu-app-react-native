@@ -331,7 +331,10 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={POST_ARTICLE_PAGE}
           component={PostArticlePage}
-          options={headerCommonOptionsWithTitle('发布帖子')}
+          options={{
+            ...headerCommonOptionsWithTitle('发布帖子'),
+            animation: 'slide_from_right',
+          }}
         />
         <Stack.Screen
           name={ARTICLE_DETAIL_PAGE}

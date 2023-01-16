@@ -85,13 +85,11 @@ const RowItem: React.FC<RowItemProps> = props => {
         <AvatarContainer uids={remind.senderIds} />
         <View style={styles.rightContainer}>
           <View>
-            <Text style={styles.title}>
-              {remind.remindTitle}
-              <Text style={styles.time}>
-                ({formatTimestamp(remind.createTime)})
-              </Text>
-            </Text>
+            <Text style={styles.title}>{remind.remindTitle}</Text>
             <Text>{remind.sourceContent}</Text>
+            <Text style={styles.time}>
+              ({formatTimestamp(remind.createTime)})
+            </Text>
           </View>
           <Text style={styles.content}>{remind.targetContent}</Text>
         </View>
@@ -110,7 +108,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
   },
   titleContainer: {
     flex: 5,
@@ -132,6 +130,7 @@ const styles = StyleSheet.create({
   },
   time: {
     color: global.colors.infoTextColor,
+    fontSize: global.styles.$font_size_sm,
   },
   outerContainer: {
     flex: 1,
