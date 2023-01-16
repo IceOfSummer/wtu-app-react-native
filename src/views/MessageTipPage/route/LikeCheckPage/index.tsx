@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
@@ -13,30 +13,58 @@ import { useNavigation } from '@react-navigation/native'
 import { ARTICLE_DETAIL_PAGE, UseNavigationGeneric } from '../../../../router'
 import { COMMENT_DETAIL_PAGE } from '../../../ArticleDetailPage'
 import Empty from '../../../../component/Container/Empty'
-import { SpringScrollView } from 'react-native-spring-scrollview'
+import { LoadingScrollView } from '../../../../component/LoadingScrollView'
+import useHistoryRemind from '../../hook/useHistoryRemind'
+import { AbstractType } from '../../../../sqlite/event_remind'
+import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
 import { clearLikeRemind } from '../../../../redux/counter/eventRemindSlice'
 
 const LikeCheckPage: React.FC = () => {
   const like = useSelector<ReducerTypes, CombinedEventRemind[]>(
     state => state.eventRemind.likeReminds
   )
+  const scroll = useRef<LoadingScrollView>(null)
+  const { loadData, data, empty } = useHistoryRemind(AbstractType.LIKE, like)
+
+  const loadMore = () => {
+    loadData()
+    scroll.current?.endLoading()
+  }
+
   const dispatch = useDispatch()
   useEffect(() => {
+    loadMore()
     return () => {
       dispatch(clearLikeRemind())
     }
   }, [])
   return (
-    <SpringScrollView>
-      {like.map(value => (
-        <RowItem remind={value} key={value.id} />
-      ))}
-      {like.length > 0 ? (
+    <LoadingScrollView
+      ref={scroll}
+      empty={empty}
+      onRequireLoad={loadMore}
+      dataLength={data.length}
+      error={false}>
+      <ConditionHideContainer hide={like.length === 0}>
+        <View>
+          <Text style={styles.headerText}>最新消息</Text>
+          {like.map(value => (
+            <RowItem remind={value} key={value.id} />
+          ))}
+        </View>
+      </ConditionHideContainer>
+      <ConditionHideContainer hide={data.length === 0}>
+        <Text style={styles.headerText}>历史消息</Text>
+        {data.map(value => (
+          <RowItem remind={value} key={value.id} />
+        ))}
+      </ConditionHideContainer>
+      {data.length + like.length > 0 ? (
         <Text style={global.styles.infoTipText}>没有更多数据了...</Text>
       ) : (
         <Empty />
       )}
-    </SpringScrollView>
+    </LoadingScrollView>
   )
 }
 interface RowItem {
@@ -81,10 +109,11 @@ const RowItem: React.FC<RowItem> = props => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: global.colors.boxBackgroundColor,
-    borderTopColor: global.colors.borderColor,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
   },
   innerContainer: {
+    borderBottomColor: global.colors.backgroundColor,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 10,
@@ -109,6 +138,15 @@ const styles = StyleSheet.create({
   },
   time: {
     color: global.colors.infoTextColor,
+  },
+  outerContainer: {
+    flex: 1,
+    backgroundColor: global.colors.boxBackgroundColor,
+  },
+  headerText: {
+    padding: 4,
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_sm,
   },
 })
 

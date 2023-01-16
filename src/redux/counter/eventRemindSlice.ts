@@ -5,6 +5,7 @@ import {
 } from '../types/eventRemindTypes'
 import {
   EventRemindType,
+  markAllRead,
   queryEventRemind,
 } from '../../api/server/event_remind'
 import EventRemindMapper from '../../sqlite/event_remind'
@@ -32,6 +33,10 @@ export const loadUnreadEventReminds = createAsyncThunk<void>(
   '/eventRemind/loadUnreadEventReminds',
   async (arg, { dispatch }) => {
     const response = await queryEventRemind()
+    if (response.data.length === 0) {
+      return
+    }
+    await markAllRead()
     await EventRemindMapper.insertEventReminds(response.data)
     dispatch(eventRemindSlice.actions.saveUnreadReminds(response.data))
   }
@@ -101,14 +106,17 @@ const eventRemindSlice = createSlice<EventRemindState, EventRemindReducers>({
       state.systemMessageCount = 0
     },
     clearReplyRemind: state => {
+      state.sumUnreadCount -= state.replyMessageCount
       state.replyReminds = []
       state.replyMessageCount = 0
     },
     clearLikeRemind: state => {
+      state.sumUnreadCount -= state.likeMessageCount
       state.likeReminds = []
       state.likeMessageCount = 0
     },
     clearSysMsgRemind: state => {
+      state.sumUnreadCount -= state.systemMessageCount
       state.sysReminds = []
       state.systemMessageCount = 0
     },

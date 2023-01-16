@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { SpringScrollView } from 'react-native-spring-scrollview'
+import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import { CombinedEventRemind } from '../../../../api/server/event_remind'
@@ -12,28 +11,57 @@ import Button from 'react-native-button'
 import AvatarContainer from '../../component/AvatarContainer'
 import { formatTimestamp } from '../../../../utils/DateUtils'
 import { clearReplyRemind } from '../../../../redux/counter/eventRemindSlice'
+import { LoadingScrollView } from '../../../../component/LoadingScrollView'
+import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
+import useHistoryRemind from '../../hook/useHistoryRemind'
+import { AbstractType } from '../../../../sqlite/event_remind'
 
 const ReplyPage: React.FC = () => {
   const reply = useSelector<ReducerTypes, CombinedEventRemind[]>(
     state => state.eventRemind.replyReminds
   )
+  const scroll = useRef<LoadingScrollView>(null)
+  const { loadData, data, empty } = useHistoryRemind(AbstractType.REPLY, reply)
+
+  const loadMore = () => {
+    loadData()
+    scroll.current?.endLoading()
+  }
+
   const dispatch = useDispatch()
   useEffect(() => {
+    loadMore()
     return () => {
       dispatch(clearReplyRemind())
     }
   }, [])
   return (
-    <SpringScrollView>
-      {reply.map(value => (
-        <RowItem remind={value} key={value.id} />
-      ))}
-      {reply.length > 0 ? (
+    <LoadingScrollView
+      ref={scroll}
+      empty={empty}
+      onRequireLoad={loadMore}
+      dataLength={data.length}
+      error={false}>
+      <ConditionHideContainer hide={reply.length === 0}>
+        <View>
+          <Text style={styles.headerText}>最新消息</Text>
+          {reply.map(value => (
+            <RowItem remind={value} key={value.id} />
+          ))}
+        </View>
+      </ConditionHideContainer>
+      <ConditionHideContainer hide={data.length === 0}>
+        <Text style={styles.headerText}>历史消息</Text>
+        {data.map(value => (
+          <RowItem remind={value} key={value.id} />
+        ))}
+      </ConditionHideContainer>
+      {data.length + reply.length > 0 ? (
         <Text style={global.styles.infoTipText}>没有更多数据了...</Text>
       ) : (
         <Empty />
       )}
-    </SpringScrollView>
+    </LoadingScrollView>
   )
 }
 
@@ -75,10 +103,11 @@ const RowItem: React.FC<RowItemProps> = props => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: global.colors.boxBackgroundColor,
-    borderTopColor: global.colors.borderColor,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
   },
   innerContainer: {
+    borderBottomColor: global.colors.backgroundColor,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: 10,
@@ -103,6 +132,15 @@ const styles = StyleSheet.create({
   },
   time: {
     color: global.colors.infoTextColor,
+  },
+  outerContainer: {
+    flex: 1,
+    backgroundColor: global.colors.boxBackgroundColor,
+  },
+  headerText: {
+    padding: 4,
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_sm,
   },
 })
 

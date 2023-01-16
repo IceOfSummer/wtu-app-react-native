@@ -294,7 +294,7 @@ dependencies {
     implementation  'io.github.scwang90:refresh-header-classics:2.0.5'   //经典刷新头
     implementation  'io.github.scwang90:refresh-footer-classics:2.0.5'    //经典加载
     implementation 'com.github.kongzue.DialogXSample:CustomWheelPicker:0.0.3' //自定义联动选择对话框
-    implementation project(':appwidget')
+    releaseImplementation project(':appwidget')
     def dialogx_version = "0.0.43"
     implementation "com.github.kongzue.DialogX:DialogX:${dialogx_version}"
     implementation "com.github.kongzue.DialogX:DialogXMIUIStyle:${dialogx_version}"

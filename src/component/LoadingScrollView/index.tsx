@@ -17,7 +17,10 @@ interface LoadingScrollViewProps {
    */
   onRequireLoad: () => void
   empty: boolean
-  loading: boolean
+  /**
+   * @deprecated
+   */
+  loading?: boolean
   error: boolean
   dataLength: number
   onRefresh?: () => void

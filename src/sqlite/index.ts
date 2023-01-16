@@ -63,9 +63,10 @@ CREATE TABLE event_remind(
     sourceContent CHAR(30),
     senderIds CHAR(30) NOT NULL ,
     createTime INT NOT NULL,
-    targetContent CHAR(30) NOT NULL
+    targetContent CHAR(30) NOT NULL,
+    abstractType INT NOT NULL
 );
-CREATE INDEX event_remind_type_index ON event_remind(sourceType);
+CREATE INDEX event_remind_type_index ON event_remind(abstractType);
 `
 /**
  * 升级时使用的sql
@@ -82,9 +83,10 @@ CREATE TABLE event_remind(
     sourceContent CHAR(30),
     senderIds CHAR(30) NOT NULL ,
     createTime INT NOT NULL,
-    targetContent CHAR(30) NOT NULL
+    targetContent CHAR(30) NOT NULL,
+    abstractType INT NOT NULL
 );
-CREATE INDEX event_remind_type_index ON event_remind(sourceType);
+CREATE INDEX event_remind_type_index ON event_remind(abstractType);
 UPDATE app_metadata SET value = '${version}' WHERE name = 'version';
 `
 const LAST_OPEN_UID = 'LastOpenUid'
