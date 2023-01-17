@@ -23,6 +23,10 @@ const logger = getLogger('/component/Container/RichTextEditor')
 interface RichTextEditorProps {
   type?: 'all_functions' | 'image_only'
   onHeightChange?: (height: number) => void
+  /**
+   * 最大高度。若不提供则会无效扩容
+   */
+  maxHeight?: number
 }
 
 interface RichTextEditorState {
@@ -81,8 +85,17 @@ export default class RichTextEditor extends React.Component<
       this.contentResolveCallback?.(contentMessage.data)
     } else if (msg.type === 'height') {
       const contentMessage = msg as WebViewMessage<'height'>
+      let height
+      if (this.props.maxHeight) {
+        height = Math.min(
+          this.props.maxHeight,
+          PixelRatio.roundToNearestPixel(contentMessage.data)
+        )
+      } else {
+        height = contentMessage.data
+      }
       this.setState({
-        height: PixelRatio.roundToNearestPixel(contentMessage.data),
+        height,
       })
     } else {
       logger.warn('unknown message type, data: ' + message.nativeEvent.data)
@@ -194,9 +207,9 @@ export default class RichTextEditor extends React.Component<
           }
           originWhitelist={['*']}
           onMessage={this.onMessage}
+          showsVerticalScrollIndicator={false}
           scrollEnabled={false}
           onError={this.onWebViewError}
-          showsVerticalScrollIndicator={false}
         />
         <ImagePickMenu onSelect={this.onImagePick} ref={this.imagePick} />
       </View>

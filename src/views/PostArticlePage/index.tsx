@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import SimpleInput from '../../component/Input/SimpleInput'
-import ColorfulButton from '../../component/Button/ColorfulButton'
 import { useFormChecker } from '../../component/Input'
 import { postArticle } from '../../api/server/community'
 import Loading from '../../component/Loading'
@@ -15,6 +14,7 @@ import RichTextEditor, {
 } from '../../component/Container/RichTextEditor'
 import { getLogger } from '../../utils/LoggerUtils'
 import { processHtml } from '../../utils/XssUtil'
+import NavigationHeader from '../../component/Container/NavigationHeader'
 
 const logger = getLogger('/views/PostArticlePage')
 
@@ -89,32 +89,44 @@ const PostArticlePage: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <SimpleInput
-        ref={titleInputRef}
-        textInputProps={{ placeholder: '标题' }}
-        onChangeText={setTitle}
-        style={{ marginBottom: 8 }}
-      />
-      <RichTextEditor ref={richTextEditor} />
-      <ColorfulButton
-        onPress={submit}
-        color={global.colors.primaryColor}
-        title="发布"
-        style={styles.submitButton}
-      />
+    <View style={styles.outerContainer}>
+      <NavigationHeader
+        showSplitLine
+        title="发布帖子"
+        navigation={nav}
+        backgroundColor={global.colors.boxBackgroundColor}>
+        <Text style={styles.submitText} onPress={submit}>
+          提交
+        </Text>
+      </NavigationHeader>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 20 }}>
+        <SimpleInput
+          ref={titleInputRef}
+          textInputProps={{ placeholder: '标题' }}
+          onChangeText={setTitle}
+          style={{ marginBottom: 8 }}
+        />
+        <RichTextEditor ref={richTextEditor} />
+      </ScrollView>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+  },
   container: {
     backgroundColor: '#fff',
     paddingHorizontal: 15,
     flex: 1,
   },
-  submitButton: {
-    marginVertical: 20,
+  submitText: {
+    color: global.colors.primaryColor,
+    fontSize: global.styles.$font_size_base,
+    marginRight: 8,
   },
 })
 

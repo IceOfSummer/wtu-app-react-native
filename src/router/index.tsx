@@ -311,7 +311,7 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={GOODS_SUBMIT_PAGE}
           component={GoodsSubmitPage}
-          options={{ header: () => null }}
+          options={{ header: () => null, animation: 'slide_from_right' }}
         />
         <Stack.Screen
           name={COMMODITY_PAGE}
@@ -332,7 +332,7 @@ const Router: React.FC = () => {
           name={POST_ARTICLE_PAGE}
           component={PostArticlePage}
           options={{
-            ...headerCommonOptionsWithTitle('发布帖子'),
+            headerShown: false,
             animation: 'slide_from_right',
           }}
         />
