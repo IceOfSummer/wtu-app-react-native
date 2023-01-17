@@ -4,16 +4,18 @@ import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { useNavigation } from '@react-navigation/native'
-import { NavigationProp } from '@react-navigation/core/src/types'
 import {
   LIKE_CHECK_PAGE,
   MessageTipPageRouteParam,
   REPLY_PAGE,
   SYSTEM_MESSAGE_PAGE,
-} from '../../index'
-import Empty from '../../../../component/Container/Empty'
+} from '../../../../views/MessageTipPage'
+import { MESSAGE_TIP_PAGE, UseNavigationGeneric } from '../../../../router'
+import NavigationHeader from '../../../../component/Container/NavigationHeader'
+import Chat from '../Chat'
 
 const MessageTipHome: React.FC = () => {
+  const nav = useNavigation()
   const likeCount = useSelector<ReducerTypes, number>(
     state => state.eventRemind.likeMessageCount
   )
@@ -25,29 +27,37 @@ const MessageTipHome: React.FC = () => {
   )
 
   return (
-    <SpringScrollView>
-      <View style={styles.headerContainer}>
-        <NavigationCard
-          to={LIKE_CHECK_PAGE}
-          tipCount={likeCount}
-          text="收到的赞"
-          image={require('../../../../assets/img/like_blue.png')}
-        />
-        <NavigationCard
-          to={REPLY_PAGE}
-          tipCount={replyCount}
-          text="回复我的"
-          image={require('../../../../assets/img/message_blue.png')}
-        />
-        <NavigationCard
-          to={SYSTEM_MESSAGE_PAGE}
-          tipCount={sysMsgCount}
-          text="系统消息"
-          image={require('../../../../assets/img/planet_blue.png')}
-        />
-      </View>
-      <Empty name="没有新消息" />
-    </SpringScrollView>
+    <View style={styles.outerContainer}>
+      <NavigationHeader
+        title="消息"
+        navigation={nav}
+        hideBackButton
+        showSplitLine
+      />
+      <SpringScrollView>
+        <View style={styles.headerContainer}>
+          <NavigationCard
+            to={LIKE_CHECK_PAGE}
+            tipCount={likeCount}
+            text="收到的赞"
+            image={require('../../../../assets/img/like_blue.png')}
+          />
+          <NavigationCard
+            to={REPLY_PAGE}
+            tipCount={replyCount}
+            text="回复我的"
+            image={require('../../../../assets/img/message_blue.png')}
+          />
+          <NavigationCard
+            to={SYSTEM_MESSAGE_PAGE}
+            tipCount={sysMsgCount}
+            text="系统消息"
+            image={require('../../../../assets/img/planet_blue.png')}
+          />
+        </View>
+        <Chat />
+      </SpringScrollView>
+    </View>
   )
 }
 
@@ -59,9 +69,9 @@ interface NavigationCardProps {
 }
 
 const NavigationCard: React.FC<NavigationCardProps> = props => {
-  const nav = useNavigation<NavigationProp<MessageTipPageRouteParam>>()
+  const nav = useNavigation<UseNavigationGeneric>()
   const jump = () => {
-    nav.navigate(props.to)
+    nav.navigate(MESSAGE_TIP_PAGE, { screen: props.to })
   }
 
   return (
@@ -80,6 +90,10 @@ const NavigationCard: React.FC<NavigationCardProps> = props => {
 const LENGTH = 60
 const TIP_LENGTH = 18
 const styles = StyleSheet.create({
+  outerContainer: {
+    flex: 1,
+    backgroundColor: global.colors.boxBackgroundColor,
+  },
   container: {
     flex: 1,
   },

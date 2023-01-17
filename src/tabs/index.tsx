@@ -98,8 +98,8 @@ const TabBar = () => {
 }
 
 const messageOptions: BottomTabNavigationOptions = {
-  tabBarLabel: '聊天',
-  title: '聊天',
+  tabBarLabel: '消息',
+  title: '消息',
   headerShown: false,
 }
 

@@ -145,7 +145,9 @@ export interface RouterTypes extends ParamListBase {
     isSubReply: boolean
     screen?: string
   }
-  [MESSAGE_TIP_PAGE]: undefined
+  [MESSAGE_TIP_PAGE]: {
+    screen: string
+  }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -159,6 +161,7 @@ const headerCommonOptions: NativeStackNavigationOptions = {
     fontSize: global.styles.$font_size_lg,
   },
   headerShadowVisible: false,
+  animation: 'slide_from_right',
 }
 const hideHeaderOptions: NativeStackNavigationOptions = {
   header: () => null,
@@ -226,7 +229,9 @@ const Router: React.FC = () => {
   return (
     <NavigationContainer theme={navTheme}>
       <Stack.Navigator
-        defaultScreenOptions={{ header: () => null }}
+        defaultScreenOptions={{
+          header: () => null,
+        }}
         screenOptions={{
           headerTitleStyle: {
             fontSize: global.styles.$font_size_lg,

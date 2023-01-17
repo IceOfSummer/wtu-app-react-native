@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import Square from './route/Square'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import Avatar from '../../component/Container/Avatar'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
@@ -8,13 +8,11 @@ import { ServerUserInfo } from '../../redux/types/serverUserTypes'
 import RoundSearchBar from '../../component/SearchBar/RoundSearchBar'
 import { useNavigation } from '@react-navigation/native'
 import {
-  MESSAGE_TIP_PAGE,
   PERSONAL_CENTER_TABS,
   SEARCH_PAGE,
   UseNavigationGeneric,
 } from '../../router'
 import CustomStatusBar from '../../component/Container/CustomStatusBar'
-import Icons from '../../component/Icons'
 import AppEvents from '../../AppEvents'
 
 // 原本打算做个侧拉Drawer的，结果好像有点难实现? 主要是不好把下面的Tabs顶走
@@ -22,12 +20,6 @@ const HomeScreen: React.FC = () => {
   const nav = useNavigation<UseNavigationGeneric>()
   const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
     state => state.serverUser.userInfo
-  )
-  const authenticated = useSelector<ReducerTypes, boolean>(
-    state => state.serverUser.authenticated
-  )
-  const unreadRemindCount = useSelector<ReducerTypes, number>(
-    state => state.eventRemind.sumUnreadCount
   )
 
   const goSearch = () => {
@@ -37,10 +29,6 @@ const HomeScreen: React.FC = () => {
 
   const toPersonalCenter = () => {
     nav.navigate(PERSONAL_CENTER_TABS)
-  }
-
-  const onMessageBoxPress = () => {
-    nav.navigate(MESSAGE_TIP_PAGE)
   }
 
   useEffect(() => {
@@ -61,36 +49,11 @@ const HomeScreen: React.FC = () => {
           disable
           outerStyle={{ flex: 1 }}
         />
-        {authenticated ? (
-          <MessageBoxIcon
-            newTipCount={unreadRemindCount}
-            onPress={onMessageBoxPress}
-          />
-        ) : null}
       </View>
       <View style={{ zIndex: 1, flex: 1 }}>
         <Square />
       </View>
     </View>
-  )
-}
-
-interface MessageBoxIconProps {
-  newTipCount: number
-  onPress?: () => void
-}
-
-/**
- * 右上角的消息图标
- */
-const MessageBoxIcon: React.FC<MessageBoxIconProps> = props => {
-  return (
-    <Pressable onPress={props.onPress}>
-      <Icons iconText="&#xe8bd;" size={34} />
-      {props.newTipCount === 0 ? null : (
-        <Text style={styles.redPoint}>{props.newTipCount}</Text>
-      )}
-    </Pressable>
   )
 }
 
@@ -107,23 +70,6 @@ const styles = StyleSheet.create({
   searchBar: {
     backgroundColor: global.colors.shallowBoxBackgroundColor,
     width: '100%',
-  },
-  redPoint: {
-    width: 20,
-    height: 20,
-    borderRadius: 20,
-    backgroundColor: 'red',
-    position: 'absolute',
-    right: -8,
-    top: -4,
-    justifyContent: 'center',
-    textAlign: 'center',
-    color: '#fff',
-  },
-  tipCountText: {
-    fontSize: 12,
-    color: '#fff',
-    textAlign: 'center',
   },
 })
 
