@@ -13,6 +13,7 @@ import {
 import { MESSAGE_TIP_PAGE, UseNavigationGeneric } from '../../../../router'
 import NavigationHeader from '../../../../component/Container/NavigationHeader'
 import Chat from '../Chat'
+import ConnectFailView from '../ConnectFailView'
 
 const MessageTipHome: React.FC = () => {
   const nav = useNavigation()
@@ -34,6 +35,7 @@ const MessageTipHome: React.FC = () => {
         hideBackButton
         showSplitLine
       />
+      <ConnectFailView />
       <SpringScrollView>
         <View style={styles.headerContainer}>
           <NavigationCard

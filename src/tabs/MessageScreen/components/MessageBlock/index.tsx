@@ -53,8 +53,8 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
   }
 
   const onDeletePress = () => {
+    setToolBoxVisible(false)
     dispatch(removeMessagePanel(props.uid))
-    delayCloseModal()
   }
 
   const onPinPress = () => {

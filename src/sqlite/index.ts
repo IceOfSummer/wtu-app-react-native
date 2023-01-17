@@ -46,14 +46,6 @@ CREATE TABLE IF NOT EXISTS app_metadata (
 );
 INSERT INTO app_metadata VALUES ('version', '${version}');
 
-CREATE TABLE IF NOT EXISTS user (
-    uid INTEGER PRIMARY KEY NOT NULL ,
-    nickname CHAR(20),
-    name CHAR(10),
-    bedroom CHAR(10),
-    credit INT NOT NULL
-);
-
 CREATE TABLE event_remind(
     id INT PRIMARY KEY NOT NULL,
     count INT,
@@ -90,6 +82,7 @@ CREATE INDEX event_remind_type_index ON event_remind(abstractType);
 UPDATE app_metadata SET value = '${version}' WHERE name = 'version';
 `
 const LAST_OPEN_UID = 'LastOpenUid'
+
 class DatabaseManager {
   private _database: SQLiteDatabase | undefined
 
@@ -97,8 +90,8 @@ class DatabaseManager {
 
   private static INSTANCE: DatabaseManager | undefined
 
-  private constructor(uid: number) {
-    this._namespace = 'u' + uid
+  public constructor(namespace: string) {
+    this._namespace = namespace
     logger.info('loading database: ' + this._namespace)
     DatabaseManager.openDatabase(this._namespace)
       .then(r => {
@@ -140,7 +133,7 @@ class DatabaseManager {
       return
     }
     this.setLastOpenUid(uid)
-    DatabaseManager.INSTANCE = new DatabaseManager(uid)
+    DatabaseManager.INSTANCE = new DatabaseManager('u' + uid)
   }
 
   public static setLastOpenUid(uid?: number) {

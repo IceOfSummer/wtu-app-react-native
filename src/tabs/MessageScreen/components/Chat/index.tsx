@@ -2,10 +2,10 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import MessageBlock from '../../components/MessageBlock'
-import { SpringScrollView } from 'react-native-spring-scrollview'
 import { MessageLabel } from '../../../../redux/types/messageTypes'
-import ConnectFailView from '../../components/ConnectFailView'
-import { View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
+import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
+import Empty from '../../../../component/Container/Empty'
 
 const Chat: React.FC = () => {
   const lastMsg = useSelector<ReducerTypes, MessageLabel>(
@@ -15,14 +15,32 @@ const Chat: React.FC = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ConnectFailView />
-      <SpringScrollView showsVerticalScrollIndicator>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>聊天消息</Text>
+      </View>
+      <View>
         {ent.map(([key, value]) =>
           value ? <MessageBlock {...value} key={key} /> : null
         )}
-      </SpringScrollView>
+      </View>
+      <ConditionHideContainer hide={ent.length > 0}>
+        <Empty name="暂时没有新消息" />
+      </ConditionHideContainer>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  header: {
+    paddingHorizontal: 10,
+    marginTop: 15,
+  },
+  headerText: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: global.colors.borderColor,
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_base,
+  },
+})
 
 export default Chat

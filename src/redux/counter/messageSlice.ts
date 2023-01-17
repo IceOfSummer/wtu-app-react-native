@@ -38,7 +38,7 @@ const logger = getLogger('/redux/counter/messageSlice')
 
 const REPLACE_TYPE_MARKER = /§\d*§/g
 
-AppEvents.subscribe('onDatabaseInitDone', () => {
+AppEvents.subscribe('onUserChange', () => {
   storeDispatch(initMessage())
 })
 

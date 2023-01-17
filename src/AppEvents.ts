@@ -33,6 +33,10 @@ interface Events {
    * app数据库检查完毕(此时数据库可能不可用)
    */
   appDatabaseCheckDone: () => void
+  /**
+   * 当APP启动时
+   */
+  onAppLaunch: () => void
 }
 
 export default class AppEvents {

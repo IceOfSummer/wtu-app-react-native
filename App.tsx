@@ -26,6 +26,7 @@ const App = () => {
       logger.error('load database failed: ' + e.message)
       showSingleBtnTip('加载本地数据库失败', e.message)
     })
+    AppEvents.trigger('onAppLaunch')
     AppEvents.subscribeOnce('appDatabaseCheckDone', () => {
       setReady(true)
     })

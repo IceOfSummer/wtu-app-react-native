@@ -297,7 +297,10 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={USER_INFO_PAGE}
           component={UserInfoPage}
-          options={{ headerShown: false }}
+          options={{
+            headerShown: false,
+            animation: __DEV__ ? 'slide_from_right' : undefined,
+          }}
         />
         <Stack.Screen
           name={SERVER_AUTH_PAGE}

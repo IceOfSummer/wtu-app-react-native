@@ -18,7 +18,19 @@ export const generateInsertArgument = <T>(
   entities: T[],
   processor: (entity: T) => Arg[]
 ): InsertArgument => {
-  let sql = `INSERT INTO ${tableName}${template} VALUES`
+  let sql = `INSERT INTO ${tableName}${template} `
+  const values = generateInsertValues(entities, processor)
+  return {
+    statement: sql + values.sql,
+    args: values.args,
+  }
+}
+
+export const generateInsertValues = <T>(
+  entities: T[],
+  processor: (entity: T) => Arg[]
+) => {
+  let sql = 'VALUES'
   const args: Arg[] = []
   for (let i = 0, len = entities.length; i < len; i++) {
     const arg = processor(entities[i])
@@ -36,7 +48,7 @@ export const generateInsertArgument = <T>(
     args.push(...arg)
   }
   return {
-    statement: sql,
+    sql,
     args,
   }
 }
