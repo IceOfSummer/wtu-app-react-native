@@ -83,7 +83,6 @@ export class LoadingScrollView extends React.Component<
   render() {
     return (
       <SpringScrollView
-        style={{ overflow: 'hidden', zIndex: 1 }}
         onScroll={this.onScroll}
         onRefresh={this.props.onRefresh}
         ref={this.scroll}
