@@ -312,7 +312,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       Object.keys(state.messageLabels).forEach(key => {
         const l = state.messageLabels[Number.parseInt(key, 10)]
         if (l) {
-          l.confirmed = 0
+          l.confirmed = 1
         }
       })
     },

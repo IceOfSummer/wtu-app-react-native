@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ComponentType } from 'react'
 import { ColorValue, StyleSheet, Text, View } from 'react-native'
 import CustomStatusBar from '../CustomStatusBar'
 import Icons from '../../Icons'
@@ -18,14 +18,15 @@ interface NavigationHeaderProps {
   headerRight?: (props: NavigationHeaderProps) => Element
   navigation: NavigationLike
   showSplitLine?: boolean
+  headerLeft?: ComponentType
 }
 
 /**
  * 自定义导航头
  */
 const NavigationHeader: React.FC<NavigationHeaderProps> = props => {
-  const canBack = !props.hideBackButton && props.navigation.canGoBack()
   const children = props.children ?? props.headerRight?.(props)
+  const LeftComponent = props.headerLeft
   return (
     <View
       style={[
@@ -38,20 +39,28 @@ const NavigationHeader: React.FC<NavigationHeaderProps> = props => {
       <CustomStatusBar />
       <View style={styles.headerContainer}>
         <View style={styles.leftContainer}>
-          {canBack ? (
-            <Icons
-              iconText="&#xe61d;"
-              color={global.colors.textColor}
-              size={34}
-              onPress={props.navigation.goBack}
-            />
-          ) : null}
+          {LeftComponent ? <LeftComponent /> : <BackButton {...props} />}
         </View>
         <Text style={styles.title}>{props.title}</Text>
         <View style={styles.rightContainer}>{children}</View>
       </View>
     </View>
   )
+}
+
+const BackButton: React.FC<NavigationHeaderProps> = props => {
+  const canBack = !props.hideBackButton && props.navigation.canGoBack()
+  if (canBack) {
+    return (
+      <Icons
+        iconText="&#xe61d;"
+        color={global.colors.textColor}
+        size={34}
+        onPress={props.navigation.goBack}
+      />
+    )
+  }
+  return null
 }
 
 const styles = StyleSheet.create({

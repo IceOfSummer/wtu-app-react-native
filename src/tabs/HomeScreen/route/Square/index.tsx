@@ -80,7 +80,7 @@ const Square: React.FC = () => {
     loadMore()
   }, [])
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, overflow: 'hidden' }}>
       <LoadingScrollView
         ref={scroll}
         onRefresh={refresh}

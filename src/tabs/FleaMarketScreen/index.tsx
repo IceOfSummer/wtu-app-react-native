@@ -22,17 +22,14 @@ const FleaMarketScreen: React.FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <CustomStatusBar />
-      <View>
-        <View
-          style={[global.styles.flexRowJustBetween, styles.headerContainer]}>
-          <RoundSearchBar
-            outerStyle={{ flex: 1 }}
-            containerStyle={styles.searchBarStyle}
-            placeHolder={searchBarPlaceholder}
-            onContainerPress={onSearchBarPress}
-            disable
-          />
-        </View>
+      <View style={[global.styles.flexRowJustBetween, styles.headerContainer]}>
+        <RoundSearchBar
+          outerStyle={{ flex: 1 }}
+          containerStyle={styles.searchBarStyle}
+          placeHolder={searchBarPlaceholder}
+          onContainerPress={onSearchBarPress}
+          disable
+        />
       </View>
       <MainTab />
     </View>
@@ -43,6 +40,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingHorizontal: 8,
     marginVertical: 5,
+    zIndex: 2,
   },
   searchBarStyle: {
     opacity: 0.9,

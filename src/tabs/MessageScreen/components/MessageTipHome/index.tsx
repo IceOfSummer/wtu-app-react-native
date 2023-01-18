@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
@@ -10,7 +10,11 @@ import {
   REPLY_PAGE,
   SYSTEM_MESSAGE_PAGE,
 } from '../../../../views/MessageTipPage'
-import { MESSAGE_TIP_PAGE, UseNavigationGeneric } from '../../../../router'
+import {
+  MESSAGE_TIP_PAGE,
+  UseNavigationGeneric,
+  USER_INFO_PAGE,
+} from '../../../../router'
 import NavigationHeader from '../../../../component/Container/NavigationHeader'
 import Chat from '../Chat'
 import ConnectFailView from '../ConnectFailView'
@@ -19,6 +23,7 @@ import BottomMenu, { MenuItem } from '../../../../component/Drawer/BottomMenu'
 import Drawer from '../../../../component/Drawer'
 import { clearAllRemind } from '../../../../redux/counter/eventRemindSlice'
 import { markMessageAllRead } from '../../../../redux/counter/messageSlice'
+import SimpleInput from '../../../../component/Input/SimpleInput'
 
 const ITEMS: MenuItem[] = [{ name: '全部已读', icon: '&#xe731;' }]
 
@@ -54,8 +59,14 @@ const MessageTipHome: React.FC = () => {
         title="消息"
         navigation={nav}
         hideBackButton
+        headerLeft={HeaderLeft}
         showSplitLine>
-        <Icons iconText="&#xe8af;" size={30} onPress={moreBtnPress} />
+        <Icons
+          iconText="&#xe8af;"
+          size={30}
+          onPress={moreBtnPress}
+          color={global.colors.textColor}
+        />
       </NavigationHeader>
       <ConnectFailView />
       <SpringScrollView>
@@ -83,6 +94,52 @@ const MessageTipHome: React.FC = () => {
       </SpringScrollView>
       <Drawer ref={menuDrawer}>
         <BottomMenu onSelect={onMenuSelect} items={ITEMS} title="快捷选项" />
+      </Drawer>
+    </View>
+  )
+}
+
+const HeaderLeft: React.FC = () => {
+  const searchDrawer = useRef<Drawer>(null)
+  const input = useRef<SimpleInput>(null)
+  const [text, setText] = useState('')
+  const nav = useNavigation<UseNavigationGeneric>()
+  const showDrawer = () => {
+    searchDrawer.current?.showDrawer()
+  }
+
+  const search = () => {
+    const uid = Number.parseInt(text, 10)
+    if (isNaN(uid)) {
+      input.current?.showErrorText('请输入有效的数字')
+      return
+    }
+    searchDrawer.current?.closeDrawer()
+    nav.navigate(USER_INFO_PAGE, { id: uid })
+  }
+  return (
+    <View style={styles.headerLeft}>
+      <Icons
+        iconText="&#xe632;"
+        size={23}
+        color={global.colors.textColor}
+        onPress={showDrawer}
+      />
+      <Drawer ref={searchDrawer} style={styles.searchDrawerContainer}>
+        <View style={styles.searchDrawerHeader}>
+          <Text style={styles.searchDrawerLeftText}>搜索用户</Text>
+          <Text style={styles.searchDrawerRightText} onPress={search}>
+            搜索
+          </Text>
+        </View>
+        <SimpleInput
+          ref={input}
+          onChangeText={setText}
+          textInputProps={{
+            placeholder: '输入用户uid',
+            keyboardType: 'numeric',
+          }}
+        />
       </Drawer>
     </View>
   )
@@ -149,6 +206,25 @@ const styles = StyleSheet.create({
     height: TIP_LENGTH,
     textAlign: 'center',
     textAlignVertical: 'center',
+  },
+  headerLeft: {
+    marginLeft: 6,
+  },
+  searchDrawerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  searchDrawerLeftText: {
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_base,
+  },
+  searchDrawerRightText: {
+    color: global.colors.primaryColor,
+    fontSize: global.styles.$font_size_base,
+  },
+  searchDrawerContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 15,
   },
 })
 
