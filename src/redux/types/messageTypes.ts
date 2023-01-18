@@ -27,6 +27,10 @@ export interface MessageState {
    *
    */
   onlineMessages: Array<SqliteMessage>
+  /**
+   * 未读消息总数
+   */
+  unreadCount: number
 }
 
 /**
@@ -65,10 +69,6 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
    * 清空当前正在聊天的消息
    */
   resetCurrentTalkMessage: CaseReducer<MessageState, PayloadAction<void>>
-  /**
-   * 将消息标记为未读
-   */
-  setUnread: CaseReducer<MessageState, PayloadAction<SqliteMessage[]>>
   /**
    * 修改消息读取确认状态
    */

@@ -45,7 +45,7 @@ AppEvents.subscribe('onUserChange', () => {
 /**
  * 初始化消息
  */
-export const initMessage = createAsyncThunk<MessageState, undefined>(
+export const initMessage = createAsyncThunk<MessageLabel, undefined>(
   'message/loadMessage',
   async (arg, { dispatch }) => {
     // 加载一下类
@@ -54,6 +54,7 @@ export const initMessage = createAsyncThunk<MessageState, undefined>(
     // 加载聊天面板上的最后聊天记录
     logger.info('querying last message')
     const lastMsg = await queryLastMessage()
+    console.log(lastMsg)
     let messageLabels: MessageLabel = {}
     lastMsg.forEach(value => {
       value.content = value.content.replace(REPLACE_TYPE_MARKER, '')
@@ -61,10 +62,7 @@ export const initMessage = createAsyncThunk<MessageState, undefined>(
     })
     // 加载相关用户
     dispatch(loadMultiUserCache(lastMsg.map(value => value.uid)))
-    return {
-      messageLabels,
-      onlineMessages: [],
-    }
+    return messageLabels
   }
 )
 
@@ -167,17 +165,35 @@ export const markMessageRead = createAsyncThunk<void, number>(
   }
 )
 
+function getReadCountUpdateValue(current: number, prev?: number): number {
+  if (prev === undefined) {
+    prev = 0
+  }
+  if (current === prev) {
+    return 0
+  } else if (current === 1) {
+    return -1
+  } else {
+    return 1
+  }
+}
+
 const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
     messageLabels: [],
     onlineMessages: [],
+    unreadCount: 0,
   },
   reducers: {
     /**
      * do not export it, it needs extra operation, see {@link insertSingleMessage}
      */
     insertSingleMessage: (state, { payload }) => {
+      state.unreadCount += getReadCountUpdateValue(
+        payload.confirmed,
+        state.messageLabels[payload.uid]?.confirmed
+      )
       // payload 不能直接修改
       state.messageLabels[payload.uid] = {
         ...payload,
@@ -188,12 +204,20 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      * do not export it, it needs extra operation, see {@link removeMessagePanel}
      */
     removeMessagePanel: (state, { payload }) => {
+      state.unreadCount += getReadCountUpdateValue(
+        1,
+        state.messageLabels[payload]?.confirmed
+      )
       state.messageLabels[payload] = undefined
     },
     insertOnlineMessage: (state, { payload }) => {
       if (Array.isArray(payload)) {
         state.onlineMessages = state.onlineMessages.concat(payload)
         payload.forEach(value => {
+          state.unreadCount += getReadCountUpdateValue(
+            1,
+            state.messageLabels[value.uid]?.confirmed
+          )
           state.messageLabels[value.uid] = {
             ...value,
             confirmed: 1,
@@ -202,6 +226,10 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         logger.debug('updating onlineMessages: ')
         logger.debug(state.onlineMessages)
       } else {
+        state.unreadCount += getReadCountUpdateValue(
+          1,
+          state.messageLabels[payload.uid]?.confirmed
+        )
         state.messageLabels[payload.uid] = {
           ...payload,
           confirmed: 1,
@@ -212,21 +240,12 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     resetCurrentTalkMessage: state => {
       state.onlineMessages = []
     },
-    setUnread: (state, { payload }) => {
-      payload.forEach(value => {
-        const target = state.messageLabels[value.messageId]
-        if (target) {
-          target.confirmed = 0
-        } else {
-          state.messageLabels[value.messageId] = {
-            ...value,
-            confirmed: 0,
-          }
-        }
-      })
-    },
     insertOfflineMessage: (state, { payload }) => {
       payload.forEach(value => {
+        state.unreadCount += getReadCountUpdateValue(
+          1,
+          state.messageLabels[value.uid]?.confirmed
+        )
         state.messageLabels[value.uid] = {
           ...value,
           confirmed: 0,
@@ -236,6 +255,10 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     modifyReadStatus: (state, { payload }) => {
       const target = state.messageLabels[payload.uid]
       if (target) {
+        state.unreadCount += getReadCountUpdateValue(
+          payload.confirmed,
+          target.confirmed
+        )
         target.confirmed = payload.confirmed
       }
     },
@@ -243,14 +266,15 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
   extraReducers: {
     [initMessage.fulfilled.type](
       state,
-      { payload }: { payload: MessageState }
+      { payload }: { payload: MessageLabel }
     ) {
       logger.debug(
         `init message success, messageLabels count: ${
-          Object.keys(payload.messageLabels).length
+          Object.keys(payload).length
         }`
       )
-      state.messageLabels = payload.messageLabels
+      console.log(payload)
+      state.messageLabels = payload
     },
     [initMessage.rejected.type](state, { error }) {
       logger.error('while run "loadMessage" error, ' + error.message)

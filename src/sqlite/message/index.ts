@@ -17,27 +17,24 @@ export enum MessageType {
 }
 
 /**
- * 消息查询分页大小
- */
-const PAGE_SIZE = 10
-
-/**
  * 获取用户的消息
  * @param uid 和谁聊天
  * @param maxId 所查询消息的最大id(不包括)
  * @param page 第几页
+ * @param size 每页大小
  */
 export const queryMessage = (
   uid: number,
   maxId: number,
-  page = 0
+  page = 0,
+  size: number = 10
 ): Promise<SqliteMessage[]> =>
   DatabaseManager.executeSql(
     'SELECT uid, content, createTime, type FROM message WHERE uid = ? AND messageId < ? ORDER BY createTime DESC LIMIT ?, ?',
     uid,
     maxId,
-    page * 10,
-    PAGE_SIZE
+    page * size,
+    size
   ).then(result => {
     return Promise.resolve(result[0].rows.raw())
   })

@@ -54,7 +54,6 @@ export const loadMultiUserCache = createAsyncThunk<CachedUser, number[]>(
     // 先从本地数拿
     const info = await loadMultiUserInfo(arg)
     logger.debug('local user length: ' + info.length)
-    console.log(info)
     const cachedUser: CachedUser = {}
     // 检查哪些数据本地没有, **此处arg和info#uid都是递增的，且arg的长度大于等于info**
     let infoPointer = 0

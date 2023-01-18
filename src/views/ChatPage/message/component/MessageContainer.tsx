@@ -30,7 +30,6 @@ const MessageContainer: React.FC<MessageContainerProps> = props => {
         onLayout={props.onLayout}
         style={{
           marginVertical: global.styles.$spacing_col_sm,
-          transform: [{ rotateX: '180deg' }],
         }}>
         {props.children}
       </View>
@@ -93,7 +92,6 @@ const Container: React.FC<SqliteMessage> = props => {
 const styles = StyleSheet.create({
   container: {
     marginVertical: global.styles.$spacing_col_base,
-    transform: [{ rotateX: '180deg' }],
     marginHorizontal: global.styles.$spacing_row_base,
   },
   nameText: {

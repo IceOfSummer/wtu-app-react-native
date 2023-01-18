@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { queryMessage, SqliteMessage } from '../../../../sqlite/message'
-import { quickShowErrorTip } from '../../../../native/modules/NativeDialog'
+import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import AbstractMessage from '../../message/AbstractMessage'
 import decodeMessage from '../../message/MessageManager'
@@ -19,13 +19,13 @@ const useMessageManager = (chatWith: number) => {
   const curPage = useRef(0)
   const [messages, setMessages] = useState<Array<AbstractMessage>>([])
   useEffect(() => {
-    loadNextPage()
+    loadNextPage(4).catch()
   }, [])
 
   /**
    * 加载消息并自动将计数器加一
    */
-  function loadNextPage() {
+  function loadNextPage(size: number = 10) {
     logger.info(
       `loading message with uid ${chatWith}, current page: ${curPage.current}`
     )
@@ -37,23 +37,23 @@ const useMessageManager = (chatWith: number) => {
       }
     }
     let minId = sqliteMsg ? sqliteMsg.messageId : 2e9
-    return queryMessage(chatWith, minId, curPage.current)
+    return queryMessage(chatWith, minId, curPage.current, size)
       .then(msg => {
         logger.info(`successfully loaded ${msg.length} messages`)
         if (msg.length === 0) {
           return
         }
         const ms = msg.map(decodeMessage)
+        ms.sort((a, b) => a.createTime - b.createTime)
         // 添加一条时间消息
-        ms.push(new TimeMessage(msg[0].createTime))
-        setMessages(messages.concat(ms))
+        setMessages([new TimeMessage(msg[0].createTime), ...ms, ...messages])
         curPage.current++
       })
       .catch(e => {
         logger.error(
           `loading message with uid ${chatWith} failed! ${e.message}`
         )
-        quickShowErrorTip('加载消息失败', e.message)
+        showSingleBtnTip('加载消息失败', e.message)
       })
   }
 
