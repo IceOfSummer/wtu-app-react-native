@@ -18,6 +18,11 @@ export const markMessageRead = (uid: number) =>
     ).then(resolve)
   })
 
+export const markMessageUnread = (uid: number) =>
+  DatabaseManager.executeSql(
+    'UPDATE last_message SET confirmed = 0 WHERE uid = ?',
+    uid
+  )
 /**
  * 插入last_message
  * @param confirm 是否为未读消息
@@ -98,3 +103,9 @@ export const deleteLastMessage = (uid: number) =>
       uid
     ).then(resolve)
   })
+
+export const markAllMessageRead = () => {
+  return DatabaseManager.executeSql(
+    'UPDATE last_message SET confirmed = 1 WHERE confirmed = 0'
+  )
+}

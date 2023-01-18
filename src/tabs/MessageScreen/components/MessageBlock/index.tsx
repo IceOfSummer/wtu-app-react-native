@@ -14,6 +14,7 @@ import Avatar from '../../../../component/Container/Avatar'
 import Button from 'react-native-button'
 import {
   markMessageRead,
+  markMessageUnread,
   removeMessagePanel,
 } from '../../../../redux/counter/messageSlice'
 import useNav from '../../../../hook/useNav'
@@ -73,8 +74,12 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
   /**
    * 标记消息已读
    */
-  const setRead = () => {
-    dispatch(markMessageRead(props.uid))
+  const setReadStatus = () => {
+    if (props.confirmed) {
+      dispatch(markMessageUnread(props.uid))
+    } else {
+      dispatch(markMessageRead(props.uid))
+    }
     delayCloseModal()
   }
 
@@ -113,11 +118,11 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
               { left: startX.current, top: startY.current },
             ]}>
             <View style={styles.toolBoxContainer}>
-              {props.confirmed ? null : (
-                <Button onPress={setRead}>
-                  <Text style={styles.toolBoxButtonText}>已读</Text>
-                </Button>
-              )}
+              <Button onPress={setReadStatus}>
+                <Text style={styles.toolBoxButtonText}>
+                  {props.confirmed ? '标记未读' : '标记已读'}
+                </Text>
+              </Button>
               <Button onPress={onPinPress}>
                 <Text style={styles.toolBoxButtonText}>置顶</Text>
               </Button>

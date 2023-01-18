@@ -76,4 +76,8 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
     MessageState,
     PayloadAction<{ uid: number; confirmed: 1 | 0 }>
   >
+  /**
+   * 标记所有消息为已读
+   */
+  markAllRead: CaseReducer<MessageState, PayloadAction>
 }

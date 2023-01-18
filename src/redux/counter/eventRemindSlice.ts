@@ -128,6 +128,7 @@ const eventRemindSlice = createSlice<EventRemindState, EventRemindReducers>({
   },
 })
 
-export const { clearLikeRemind, clearReplyRemind } = eventRemindSlice.actions
+export const { clearLikeRemind, clearReplyRemind, clearAllRemind } =
+  eventRemindSlice.actions
 
 export default eventRemindSlice.reducer

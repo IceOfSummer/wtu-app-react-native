@@ -23,6 +23,8 @@ import { useNavigation } from '@react-navigation/native'
 import { FunctionArgType } from '../hook/useNav'
 import { LESSONS_TABLE_SETTINGS_PAGE } from '../views/SettingsPage'
 import NavigationHeader from '../component/Container/NavigationHeader'
+import { useSelector } from 'react-redux'
+import { ReducerTypes } from '../redux/counter'
 
 const Tab = createBottomTabNavigator()
 
@@ -45,6 +47,14 @@ export const navigationPush = <RouteName extends keyof RouterTypes>(
 
 const TabBar = () => {
   const nav = useNavigation<any>()
+  const remindCount = useSelector<ReducerTypes, number>(
+    state => state.eventRemind.sumUnreadCount
+  )
+  const messageCount = useSelector<ReducerTypes, number>(
+    state => state.message.unreadCount
+  )
+
+  const sumTipCount = remindCount + messageCount
   useEffect(() => {
     pubsub.subscribe(NAVIGATION_EVENT_KEY, (message, data: Nav) => {
       // 在非组件内进行路由操作
@@ -86,7 +96,10 @@ const TabBar = () => {
       <Tab.Screen
         name={MESSAGE_TABS}
         component={MessageScreen}
-        options={messageOptions}
+        options={{
+          ...messageOptions,
+          tabBarBadge: sumTipCount || undefined,
+        }}
       />
       <Tab.Screen
         name={PERSONAL_CENTER_TABS}
@@ -101,6 +114,7 @@ const messageOptions: BottomTabNavigationOptions = {
   tabBarLabel: '消息',
   title: '消息',
   headerShown: false,
+  tabBarBadgeStyle: { backgroundColor: 'red' },
 }
 
 const fleaMarketOptions: BottomTabNavigationOptions = {

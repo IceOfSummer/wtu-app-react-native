@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import { SpringScrollView } from 'react-native-spring-scrollview'
 import { useNavigation } from '@react-navigation/native'
@@ -14,9 +14,18 @@ import { MESSAGE_TIP_PAGE, UseNavigationGeneric } from '../../../../router'
 import NavigationHeader from '../../../../component/Container/NavigationHeader'
 import Chat from '../Chat'
 import ConnectFailView from '../ConnectFailView'
+import Icons from '../../../../component/Icons'
+import BottomMenu, { MenuItem } from '../../../../component/Drawer/BottomMenu'
+import Drawer from '../../../../component/Drawer'
+import { clearAllRemind } from '../../../../redux/counter/eventRemindSlice'
+import { markMessageAllRead } from '../../../../redux/counter/messageSlice'
+
+const ITEMS: MenuItem[] = [{ name: '全部已读', icon: '&#xe731;' }]
 
 const MessageTipHome: React.FC = () => {
   const nav = useNavigation()
+  const menuDrawer = useRef<Drawer>(null)
+  const dispatch = useDispatch()
   const likeCount = useSelector<ReducerTypes, number>(
     state => state.eventRemind.likeMessageCount
   )
@@ -27,14 +36,27 @@ const MessageTipHome: React.FC = () => {
     state => state.eventRemind.systemMessageCount
   )
 
+  const onMenuSelect = (index: number) => {
+    if (index === 0) {
+      dispatch(clearAllRemind())
+      dispatch(markMessageAllRead())
+    }
+    menuDrawer.current?.closeDrawer()
+  }
+
+  const moreBtnPress = () => {
+    menuDrawer.current?.showDrawer()
+  }
+
   return (
     <View style={styles.outerContainer}>
       <NavigationHeader
         title="消息"
         navigation={nav}
         hideBackButton
-        showSplitLine
-      />
+        showSplitLine>
+        <Icons iconText="&#xe8af;" size={30} onPress={moreBtnPress} />
+      </NavigationHeader>
       <ConnectFailView />
       <SpringScrollView>
         <View style={styles.headerContainer}>
@@ -59,6 +81,9 @@ const MessageTipHome: React.FC = () => {
         </View>
         <Chat />
       </SpringScrollView>
+      <Drawer ref={menuDrawer}>
+        <BottomMenu onSelect={onMenuSelect} items={ITEMS} title="快捷选项" />
+      </Drawer>
     </View>
   )
 }

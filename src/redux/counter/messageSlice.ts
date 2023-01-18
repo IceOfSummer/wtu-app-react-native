@@ -18,6 +18,7 @@ import {
   deleteLastMessage,
   insertLastMessage,
   insertMultiLastMessage,
+  markAllMessageRead,
   queryLastMessage,
 } from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
@@ -30,7 +31,10 @@ import { ReducerTypes } from './index'
 import { MultiChatResponseMessage } from '../../api/chat/message/response/MultiChatResponseMessage'
 import ImTemplate from '../../api/chat/ImTemplate'
 import { ImService } from '../../api/chat/ImService'
-import { markMessageRead as markSqliteMessageRead } from '../../sqlite/last_message'
+import {
+  markMessageRead as markSqliteMessageRead,
+  markMessageUnread as markSqliteMessageUnread,
+} from '../../sqlite/last_message'
 import AppEvents from '../../AppEvents'
 import storeDispatch from '../storeDispatch'
 
@@ -42,10 +46,15 @@ AppEvents.subscribe('onUserChange', () => {
   storeDispatch(initMessage())
 })
 
+type InitMessageResult = {
+  label: MessageLabel
+  count: number
+}
+
 /**
  * 初始化消息
  */
-export const initMessage = createAsyncThunk<MessageLabel, undefined>(
+export const initMessage = createAsyncThunk<InitMessageResult, undefined>(
   'message/loadMessage',
   async (arg, { dispatch }) => {
     // 加载一下类
@@ -54,15 +63,21 @@ export const initMessage = createAsyncThunk<MessageLabel, undefined>(
     // 加载聊天面板上的最后聊天记录
     logger.info('querying last message')
     const lastMsg = await queryLastMessage()
-    console.log(lastMsg)
+    let count = 0
     let messageLabels: MessageLabel = {}
     lastMsg.forEach(value => {
       value.content = value.content.replace(REPLACE_TYPE_MARKER, '')
       messageLabels[value.uid] = value
+      if (!value.confirmed) {
+        count++
+      }
     })
     // 加载相关用户
     dispatch(loadMultiUserCache(lastMsg.map(value => value.uid)))
-    return messageLabels
+    return {
+      label: messageLabels,
+      count,
+    }
   }
 )
 
@@ -152,6 +167,9 @@ export const removeMessagePanel = createAsyncThunk<void, number>(
   }
 )
 
+/**
+ * 标记某条消息为已读状态
+ */
 export const markMessageRead = createAsyncThunk<void, number>(
   'message/markMessageRead',
   async (uid, { dispatch }) => {
@@ -162,6 +180,33 @@ export const markMessageRead = createAsyncThunk<void, number>(
         confirmed: 1,
       })
     )
+  }
+)
+
+/**
+ * 标记某条消息为未读状态
+ */
+export const markMessageUnread = createAsyncThunk<void, number>(
+  'message/markMessageUnread',
+  async (uid, { dispatch }) => {
+    await markSqliteMessageUnread(uid)
+    dispatch(
+      messageSlice.actions.modifyReadStatus({
+        uid,
+        confirmed: 0,
+      })
+    )
+  }
+)
+
+/**
+ * 标记消息列表上所有消息均已读
+ */
+export const markMessageAllRead = createAsyncThunk<void>(
+  'message/markMessageAllRead',
+  async (arg, { dispatch }) => {
+    await markAllMessageRead()
+    dispatch(messageSlice.actions.markAllRead())
   }
 )
 
@@ -262,11 +307,20 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         target.confirmed = payload.confirmed
       }
     },
+    markAllRead: state => {
+      state.unreadCount = 0
+      Object.keys(state.messageLabels).forEach(key => {
+        const l = state.messageLabels[Number.parseInt(key, 10)]
+        if (l) {
+          l.confirmed = 0
+        }
+      })
+    },
   },
   extraReducers: {
     [initMessage.fulfilled.type](
       state,
-      { payload }: { payload: MessageLabel }
+      { payload }: { payload: InitMessageResult }
     ) {
       logger.debug(
         `init message success, messageLabels count: ${
@@ -274,7 +328,8 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         }`
       )
       console.log(payload)
-      state.messageLabels = payload
+      state.messageLabels = payload.label
+      state.unreadCount = payload.count
     },
     [initMessage.rejected.type](state, { error }) {
       logger.error('while run "loadMessage" error, ' + error.message)
@@ -298,6 +353,12 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     },
     [markMessageRead.rejected.type](state, { error }) {
       logger.error('mark message read failed: ' + error.message)
+    },
+    [markMessageUnread.rejected.type](state, { error }) {
+      logger.error('mark message unread failed: ' + error.message)
+    },
+    [markMessageAllRead.rejected.type](state, { error }) {
+      logger.error('mark message all read failed: ' + error.message)
     },
   },
 })
