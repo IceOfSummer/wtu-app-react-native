@@ -12,6 +12,7 @@ import SocketSessionManager from './SocketSessionManager'
 import ServerResponseMessage from './message/response/ServerResponseMessage'
 import { store } from '../../redux/store'
 import { ReducerTypes } from '../../redux/counter'
+import IdleRequestMessage from './message/request/IdleRequestMessage'
 
 const logger = getLogger('/api/chat/ImTemplate')
 
@@ -56,6 +57,8 @@ export default class ImTemplate {
 
   private requestManager: MessageRequestIdManager
 
+  private idleInterval: NodeJS.Timer | undefined
+
   /**
    * 通过pubsub监听该Key值来获取最新消息
    */
@@ -81,12 +84,33 @@ export default class ImTemplate {
     this.messageQueue = new LinkedOneWayQueue()
     this.frameDecoder = new FrameDecoder(6)
     this.requestManager = new MessageRequestIdManager()
-    this.socketSessionManager.onConnectionReset = () => {
-      this._isAuthenticated = false
-    }
-    this.socketSessionManager.onConnected = socket => {
-      this.bindEvent(socket)
-      this.tryAuth().catch(() => {})
+    this.socketSessionManager.onConnectionReset = this.onConnectionReset
+    this.socketSessionManager.onConnected = this.onConnected
+  }
+
+  private onConnected = (socket: TLSSocket) => {
+    this.bindEvent(socket)
+    this.tryAuth().catch(() => {})
+    this.idleInterval = setInterval(() => {
+      logger.info('sending idle request...')
+      this.sendMessage(new IdleRequestMessage())
+        .then(() => {
+          logger.info('send idle request success!')
+        })
+        .catch(e => {
+          logger.error('send idle request failed: ' + e.message)
+        })
+    }, 1000 * 90)
+  }
+
+  /**
+   * 当连接重置时
+   * @private
+   */
+  private onConnectionReset = () => {
+    this._isAuthenticated = false
+    if (this.idleInterval) {
+      clearInterval(this.idleInterval)
     }
   }
 
