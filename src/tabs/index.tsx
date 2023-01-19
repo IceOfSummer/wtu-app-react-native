@@ -25,6 +25,7 @@ import { LESSONS_TABLE_SETTINGS_PAGE } from '../views/SettingsPage'
 import NavigationHeader from '../component/Container/NavigationHeader'
 import { useSelector } from 'react-redux'
 import { ReducerTypes } from '../redux/counter'
+import { TradeStat } from '../api/server/stat'
 
 const Tab = createBottomTabNavigator()
 
@@ -53,8 +54,14 @@ const TabBar = () => {
   const messageCount = useSelector<ReducerTypes, number>(
     state => state.message.unreadCount
   )
+  const tradeStat = useSelector<ReducerTypes, TradeStat | undefined>(
+    state => state.temporary.tradeStat
+  )
 
   const sumTipCount = remindCount + messageCount
+  const personalCenterTip = tradeStat
+    ? tradeStat.receiveCount + tradeStat.deliveryCount
+    : undefined
   useEffect(() => {
     pubsub.subscribe(NAVIGATION_EVENT_KEY, (message, data: Nav) => {
       // 在非组件内进行路由操作
@@ -104,7 +111,10 @@ const TabBar = () => {
       <Tab.Screen
         name={PERSONAL_CENTER_TABS}
         component={PersonalCenterScreen}
-        options={PERSONAL_CENTER_SCREEN_OPTIONS}
+        options={{
+          ...PERSONAL_CENTER_SCREEN_OPTIONS,
+          tabBarBadge: personalCenterTip || undefined,
+        }}
       />
     </Tab.Navigator>
   )
@@ -153,6 +163,7 @@ const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
 const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
   headerShown: false,
   tabBarLabel: '个人中心',
+  tabBarBadgeStyle: { backgroundColor: 'red' },
 }
 
 export default TabBar
