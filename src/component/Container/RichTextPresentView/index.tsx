@@ -8,6 +8,7 @@ import {
 import Environment from '../../../utils/Environment'
 import { getLogger } from '../../../utils/LoggerUtils'
 import { processHtml } from '../../../utils/XssUtil'
+import Toast from 'react-native-root-toast'
 
 const logger = getLogger('/component/Container/RichTextPresentView')
 
@@ -18,7 +19,7 @@ interface RichTextPresentViewProps {
 }
 
 type WebViewMessage = {
-  type: 'height'
+  type: 'height' | 'error'
   data: any
 }
 async function getSource(): Promise<WebViewSource> {
@@ -61,6 +62,14 @@ export default class RichTextPresentView extends React.Component<
       const hei = PixelRatio.roundToNearestPixel(message.data)
       this.setState({ height: hei })
       logger.info('webView height: ' + hei)
+    } else if (message.type === 'error') {
+      logger.error(
+        'show rich text failed: ' +
+          message.data +
+          '; rich text content: ' +
+          this.props.content
+      )
+      Toast.show('富文本展示出错: ' + message.data)
     }
   }
 

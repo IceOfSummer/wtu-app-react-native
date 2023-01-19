@@ -7,6 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
   <link href="https://xds.asia/static/quill/quill.snow.css" rel="stylesheet">
   <script src="https://xds.asia/static/quill/quill.min.js"></script>
+  <style>
+    .ql-editor {
+      padding: 12px 0 !important;
+    }
+  </style>
 </head>
 <body style="margin: 0;">
 <div id="editor" style="border: none"></div>
@@ -28,7 +33,9 @@
    * @param message {{type: string, data?: string | number}}
    */
   function postMessage(message) {
-    window.ReactNativeWebView.postMessage(JSON.stringify(message))
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify(message))
+    }
   }
 
   function setContents(content) {
@@ -60,6 +67,10 @@
       }
     }, 200)
   }
+
+  window.addEventListener('error', (evt) => {
+    postMessage({type: 'error', data: `${evt.type}: ${evt.message}`})
+  })
 
 </script>
 </body>
