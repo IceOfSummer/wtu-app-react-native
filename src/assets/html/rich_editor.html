@@ -11,6 +11,9 @@
 <body style="margin: 0">
 <div id="editor" style="z-index: 1"></div>
 <script>
+  Quill.prototype.setHtml = function(content) {
+    this.container.querySelector('.ql-editor').innerHTML = content
+  }
   Quill.prototype.getHtml = function() {
     return this.container.querySelector('.ql-editor').innerHTML;
   }
@@ -53,6 +56,11 @@
    */
   function insertImage(url) {
     quill.insertEmbed(quill.getSelection().index, 'image', url)
+  }
+
+  function setContents(content) {
+    quill.setHtml(content)
+    postMessage({type: 'height', data: editor.clientHeight})
   }
 
   /**

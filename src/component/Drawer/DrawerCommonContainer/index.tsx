@@ -13,7 +13,7 @@ interface DrawerCommonContainerProps {
 const DrawerCommonContainer: React.FC<DrawerCommonContainerProps> = props => {
   return (
     <View style={styles.container}>
-      <View style={global.styles.flexRowJustBetween}>
+      <View style={styles.header}>
         <Text style={styles.title}>{props.title}</Text>
         <Text onPress={props.onSubmit} style={styles.button}>
           {props.buttonText ?? '提交'}
@@ -35,6 +35,11 @@ const styles = StyleSheet.create({
   button: {
     color: global.colors.primaryColor,
     fontSize: global.styles.$font_size_base,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
   },
 })
 
