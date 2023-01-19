@@ -46,8 +46,10 @@ const OrderItem: React.FC<OrderItemProps> = props => {
         <Text style={styles.headerText} onPress={toUserInfo}>
           <Icons iconText="&#xe767;" />与{props.order.tradeName}的交易
           <Icons iconText="&#xe61c;" />
+          <Text style={{ color: statusString.color }}>
+            ({statusString.name})
+          </Text>
         </Text>
-        <Text style={{ color: statusString.color }}>{statusString.name}</Text>
       </View>
       <View style={global.styles.flexRow}>
         <View style={styles.image}>

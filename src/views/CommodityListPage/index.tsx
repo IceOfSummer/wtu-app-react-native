@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import RoundSearchBar from '../../component/SearchBar/RoundSearchBar'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { StackActions, useNavigation, useRoute } from '@react-navigation/native'
 import {
   COMMODITY_DETAIL_PAGE,
   COMMODITY_LIST_PAGE,
@@ -39,7 +39,6 @@ const CommodityListPage: React.FC = () => {
           setEmpty(true)
           return
         }
-        console.log(resp)
         setCommodities(commodities.concat(resp.data))
         currentPage.current++
         setLoadFail(false)
@@ -76,7 +75,7 @@ const CommodityListPage: React.FC = () => {
           disable
           outerStyle={{ flex: 1 }}
           onContainerPress={() =>
-            nav.navigate(SEARCH_PAGE, { placeholder: '' })
+            nav.dispatch(StackActions.replace(SEARCH_PAGE, { placeholder: '' }))
           }
           placeHolder={search}
         />

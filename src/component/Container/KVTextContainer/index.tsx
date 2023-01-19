@@ -1,5 +1,5 @@
 import React from 'react'
-import { ColorValue, Text, View, ViewStyle } from 'react-native'
+import { ColorValue, Text, TextStyle, View, ViewStyle } from 'react-native'
 import Icons from '../../Icons'
 
 interface KVTextContainerProps {
@@ -8,6 +8,8 @@ interface KVTextContainerProps {
   keyColor?: ColorValue
   icon?: string
   style?: ViewStyle
+  valueStyles?: TextStyle
+  onPress?: () => void
 }
 
 const defaultProps = {
@@ -33,7 +35,11 @@ const KVTextContainer: React.FC<
         {props.delimiter}
       </Text>
       <Text
-        style={{ color: props.valueColor, fontSize: props.fontSize }}
+        onPress={props.onPress}
+        style={[
+          { color: props.valueColor, fontSize: props.fontSize },
+          props.valueStyles,
+        ]}
         numberOfLines={1}
         ellipsizeMode="tail">
         {props.value}

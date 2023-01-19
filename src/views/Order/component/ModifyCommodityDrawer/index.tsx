@@ -44,7 +44,6 @@ const Content: React.FC<
   const [commodityName, setCommodityName] = useState(props.name)
   const [tradeLocation, setTradeLocation] = useState(props.tradeLocation)
   const [price, setPrice] = useState(props.price.toString())
-  const [description, setDescription] = useState(props.description)
   const [count, setCount] = useState(props.count.toString())
 
   const countRef = useRef<SimpleInput>(null)
@@ -101,10 +100,6 @@ const Content: React.FC<
     if (tradeLocation !== props.tradeLocation) {
       updateCount++
       requestParam.tradeLocation = tradeLocation
-    }
-    if (description !== props.description) {
-      updateCount++
-      requestParam.description = description
     }
     const cou = Number.parseInt(count, 10)
     if (cou !== props.count) {
@@ -187,22 +182,8 @@ const Content: React.FC<
             onChangeText={setCount}
           />
         </View>
-        <View style={styles.inputContainer}>
-          <Text>描述: </Text>
-          <SimpleInput
-            ref={descriptionRef}
-            textInputProps={{
-              value: description,
-              keyboardType: 'numeric',
-              multiline: true,
-              textAlignVertical: 'top',
-              numberOfLines: 5,
-            }}
-            onChangeText={setDescription}
-          />
-        </View>
         <View>
-          <Text style={global.styles.infoTipText}>预览图等无法修改</Text>
+          <Text style={global.styles.infoTipText}>预览图和描述等无法修改</Text>
         </View>
       </View>
     </View>

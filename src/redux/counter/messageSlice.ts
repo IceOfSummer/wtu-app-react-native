@@ -327,7 +327,6 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
           Object.keys(payload).length
         }`
       )
-      console.log(payload)
       state.messageLabels = payload.label
       state.unreadCount = payload.count
     },

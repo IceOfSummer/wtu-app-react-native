@@ -10,6 +10,9 @@ import { formatTimestamp } from '../../../../utils/DateUtils'
 import Icons from '../../../../component/Icons'
 import { EsCommodity } from '../../../../api/server/types'
 import BetterImage from '../../../../component/Container/BetterImage'
+import KVTextContainer from '../../../../component/Container/KVTextContainer'
+import { useNavigation } from '@react-navigation/native'
+import { UseNavigationGeneric, USER_INFO_PAGE } from '../../../../router'
 
 interface HorShopItemProps {
   onClick?: () => void
@@ -22,9 +25,14 @@ interface HorShopItemProps {
  */
 const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
   const date = new Date(props.createTime)
+  const nav = useNavigation<UseNavigationGeneric>()
   const standerPrice = props.price.toFixed(2)
   const dimensions = useWindowDimensions()
   const len = dimensions.height / 6
+  const toSeller = () => {
+    nav.navigate(USER_INFO_PAGE, { id: props.sellerId })
+  }
+
   return (
     <View style={styles.outer}>
       <Pressable
@@ -42,26 +50,29 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
           />
         </View>
         <View style={styles.descriptionContainer}>
-          <Text style={global.styles.blobText} ellipsizeMode="tail">
+          <Text style={styles.commodityTitle} numberOfLines={2}>
             {props.name}
           </Text>
-          <View style={global.styles.flexRow}>
-            <Icons iconText="&#xe786;" color="#000" size={13} />
-            <Text style={styles.normalText}>{props.tradeLocation}</Text>
-          </View>
+          <KVTextContainer
+            name="交易地点"
+            value={props.tradeLocation}
+            icon="&#xe786;"
+          />
+          <KVTextContainer
+            name="发布时间"
+            value={formatTimestamp(date.getTime())}
+            icon="&#xe662;"
+          />
+          <KVTextContainer
+            icon="&#xe79b;"
+            name="卖家"
+            onPress={toSeller}
+            valueStyles={{ textDecorationLine: 'underline', flex: 1 }}
+            value={props.sellerNickname + '>'}
+          />
           <View style={styles.bottomContainer}>
             <View>
-              <Text style={global.styles.errorTipText}>{standerPrice}￥</Text>
-            </View>
-            <View style={global.styles.flexRowCenter}>
-              <Icons
-                iconText="&#xe662;"
-                color={global.styles.$primary_color}
-                size={12}
-              />
-              <Text style={global.styles.primaryTipText}>
-                {formatTimestamp(date.getTime())}
-              </Text>
+              <Text style={styles.priceText}>￥{standerPrice}</Text>
             </View>
             <View>
               <Icons iconText="&#xe636;" />
@@ -107,6 +118,15 @@ const styles = StyleSheet.create({
   normalText: {
     color: '#000',
     fontSize: 12,
+  },
+  commodityTitle: {
+    color: global.colors.textColor,
+    fontSize: global.styles.$font_size_base,
+    fontWeight: 'bold',
+  },
+  priceText: {
+    color: 'red',
+    fontSize: global.styles.$font_size_base,
   },
 })
 export default HorShopItem

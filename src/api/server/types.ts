@@ -11,6 +11,8 @@ export type EsCommodity = {
   price: number
   image: string
   tradeLocation: string
+  sellerId: number
+  sellerNickname: string
 }
 
 export enum CommodityStatus {

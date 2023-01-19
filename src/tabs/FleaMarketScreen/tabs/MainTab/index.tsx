@@ -67,6 +67,9 @@ const MainTab: React.FC = () => {
           setEmpty(true)
           logger.info('no more data available! set status to empty')
         }
+        if (r.data.length === 0) {
+          return
+        }
         const lastId = r.data[r.data.length - 1].commodityId
         logger.debug(r.data)
         logger.info('load success, lastId: ' + lastId)
@@ -130,6 +133,9 @@ const MainTab: React.FC = () => {
           ))}
         </View>
       </View>
+      {empty ? (
+        <Text style={global.styles.infoTipText}>我也是有底线的</Text>
+      ) : null}
     </LoadingScrollView>
   )
 }

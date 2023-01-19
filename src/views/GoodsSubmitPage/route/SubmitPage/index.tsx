@@ -86,7 +86,7 @@ const SubmitPage: React.FC = () => {
       Toast.show('描述不可为空！')
       return
     }
-    const html = decoration.text
+    const html = decoration.content
     if (html.length === 0) {
       Toast.show('描述不可为空！')
       return

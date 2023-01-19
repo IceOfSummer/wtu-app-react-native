@@ -1,11 +1,13 @@
 import React from 'react'
 import ContentLoader, { Rect } from 'react-content-loader/native'
+import { useWindowDimensions } from 'react-native'
 
 const CommoditySkeleton: React.FC = () => {
+  const width = useWindowDimensions().width
   return (
     <ContentLoader
       speed={2}
-      width={400}
+      width={width}
       height={120}
       style={{ marginVertical: 5 }}
       viewBox="0 0 400 120"
