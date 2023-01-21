@@ -1,5 +1,12 @@
 import React from 'react'
-import { Image, PixelRatio, ViewStyle } from 'react-native'
+import {
+  Image,
+  PixelRatio,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native'
 import WebView from 'react-native-webview'
 import {
   WebViewMessageEvent,
@@ -9,6 +16,7 @@ import Environment from '../../../utils/Environment'
 import { getLogger } from '../../../utils/LoggerUtils'
 import { processHtml } from '../../../utils/XssUtil'
 import Toast from 'react-native-root-toast'
+import ConditionHideContainer from '../ConditionHideContainer'
 
 const logger = getLogger('/component/Container/RichTextPresentView')
 
@@ -91,15 +99,31 @@ export default class RichTextPresentView extends React.Component<
 
   render() {
     return (
-      <WebView
-        onLoad={this.onLoad}
-        ref={this.webView}
-        onMessage={this.onMessage}
-        style={[{ height: this.state.height, width: '100%' }, this.props.style]}
-        containerStyle={this.props.containerStyle}
-        source={this.state.source}
-        showsVerticalScrollIndicator={false}
-      />
+      <React.Fragment>
+        <WebView
+          onLoad={this.onLoad}
+          ref={this.webView}
+          onMessage={this.onMessage}
+          style={[
+            { height: this.state.height, width: '100%' },
+            this.props.style,
+          ]}
+          containerStyle={this.props.containerStyle}
+          source={this.state.source}
+          showsVerticalScrollIndicator={false}
+        />
+        <ConditionHideContainer hide={this.state.height > 0}>
+          <View style={styles.loadingContainer}>
+            <Text style={global.styles.infoTipText}>加载内容中...</Text>
+          </View>
+        </ConditionHideContainer>
+      </React.Fragment>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    padding: 15,
+  },
+})
