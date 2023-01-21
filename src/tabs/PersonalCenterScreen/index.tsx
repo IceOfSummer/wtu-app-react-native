@@ -21,7 +21,6 @@ import TradeLabel from './component/TradeLabel'
 import LinearGradient from 'react-native-linear-gradient'
 import WtuLoginValidCard from './component/WtuLoginValidCard'
 import WtuLoginInvalidCard from './component/WtuLoginInvalidCard'
-import { SpringScrollView } from 'react-native-spring-scrollview'
 import { useNavigation } from '@react-navigation/native'
 import Avatar from '../../component/Container/Avatar'
 import { ServerUserInfo } from '../../redux/types/serverUserTypes'
@@ -67,7 +66,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
   }
   return (
     <View style={{ flexDirection: 'column', flex: 1 }}>
-      <SpringScrollView contentStyle={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <ImageBackground
           source={require('../../assets/img/user_banner.jpg')}
           style={styles.imageBackground}
@@ -85,7 +84,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
                 {auth ? (
                   <Icons
                     iconText="&#xe610;"
-                    size={20}
+                    size={16}
                     onPress={toUserSettingPage}
                   />
                 ) : null}
@@ -120,7 +119,7 @@ const PersonalCenter: React.FC<PersonalCenterProps> = props => {
         <View style={{ zIndex: 1 }}>
           <Applications />
         </View>
-      </SpringScrollView>
+      </View>
     </View>
   )
 }
