@@ -1,8 +1,7 @@
 import { Comment } from '../../route/RootArticle'
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
-import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
 import { StyleSheet, Text, View } from 'react-native'
 import Avatar from '../../../../component/Container/Avatar'
 import Icons from '../../../../component/Icons'
@@ -14,10 +13,11 @@ interface CommentHeaderProps {
 
 const CommentHeader: React.FC<CommentHeaderProps> = props => {
   const { item } = props
-  const userInfo = useSelector<ReducerTypes, ServerUserInfo | undefined>(
-    state => state.serverUser.userInfo
-  )
-  const showMoreBtn = userInfo && userInfo.uid === item.author
+  const store = useStore<ReducerTypes>()
+  const state = store.getState()
+  const userInfo = state.serverUser.userInfo
+  const isAdmin = state.serverUser.isAdmin
+  const showMoreBtn = isAdmin || (userInfo && userInfo.uid === item.author)
   return (
     <View style={styles.avatarContainer}>
       <Avatar uid={item.author} />

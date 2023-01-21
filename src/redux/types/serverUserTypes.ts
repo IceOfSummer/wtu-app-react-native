@@ -21,6 +21,10 @@ export type ServerUserState = {
    * 请求时需要携带的token
    */
   token?: string
+  /**
+   * 是否为管理员
+   */
+  isAdmin?: boolean
 }
 
 export type CachedUser = Record<number, ServerUser>
@@ -55,6 +59,10 @@ export type ServerUserInfo = {
    * 教务系统学号
    */
   wtuId: string
+  /**
+   * 当前权限
+   */
+  roles: number
 }
 
 type Reducer<T> = CaseReducer<ServerUserState, PayloadAction<T>>

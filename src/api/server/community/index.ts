@@ -100,3 +100,12 @@ export type CommunityTipQueryType = {
 
 export const deletePost = (postId: number) =>
   serverNoRepeatAjax(`/community/article/${postId}/delete`, undefined, 'POST')
+
+export const pinMessage = (messageId: number) =>
+  serverNoRepeatAjax(`/community/article/${messageId}/pin`, undefined, 'POST')
+
+export const unpinMessage = (messageId: number) =>
+  serverNoRepeatAjax(`/community/article/${messageId}/unpin`, undefined, 'POST')
+
+export const queryTopMessage = () =>
+  serverNoRepeatAjax<CommunityMessageQueryType[]>('/community/top')

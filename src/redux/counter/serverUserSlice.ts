@@ -110,6 +110,8 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
     markLogin(state, { payload }) {
       state.authenticated = true
       state.userInfo = payload
+      // eslint-disable-next-line no-bitwise
+      state.isAdmin = ((payload.roles >> 1) & 1) === 1
     },
     saveUserToCache(state, { payload }) {
       logger.info('saving user: ')

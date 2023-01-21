@@ -70,6 +70,7 @@ const LoginPage: React.FC = () => {
           email: data.email,
           wtuId: data.wtuId,
           token: data.token,
+          roles: data.roles,
         }
         AppEvents.trigger('onLoginDone', {
           previousUserInfo: store.getState().serverUser.userInfo,

@@ -6,9 +6,11 @@ import Icons from '../../../../component/Icons'
 import { useNavigation } from '@react-navigation/native'
 import { ARTICLE_DETAIL_PAGE, UseNavigationGeneric } from '../../../../router'
 import { formatTimestamp } from '../../../../utils/DateUtils'
+import Tag, { TagProps } from '../../../../component/Container/Tag'
 
 interface ArticleItemProps {
   item: CommunityMessageQueryType
+  tags?: TagProps[]
 }
 
 const ArticleItem: React.FC<ArticleItemProps> = props => {
@@ -24,8 +26,15 @@ const ArticleItem: React.FC<ArticleItemProps> = props => {
   return (
     <Pressable style={styles.container} onPress={toDetail}>
       <View style={styles.messageHeader}>
-        <Avatar uid={item.author} />
-        <Text style={styles.nickname}>{item.nickname}</Text>
+        <View style={global.styles.flexRow}>
+          <Avatar uid={item.author} size={40} />
+          <Text style={styles.nickname}>{item.nickname}</Text>
+        </View>
+        <View>
+          {props.tags?.map((value, index) => (
+            <Tag {...value} key={index} />
+          ))}
+        </View>
       </View>
       <View style={styles.articleContainer}>
         <Text style={styles.titleText}>{item.title}</Text>
@@ -65,6 +74,7 @@ const styles = StyleSheet.create({
   messageHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   nickname: {
     fontSize: 14,

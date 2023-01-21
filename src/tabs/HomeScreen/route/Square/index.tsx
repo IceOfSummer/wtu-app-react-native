@@ -7,15 +7,21 @@ import { LoadingScrollView } from '../../../../component/LoadingScrollView'
 import {
   CommunityMessageQueryType,
   queryNewlyCommunityMessage,
+  queryTopMessage,
 } from '../../../../api/server/community'
 import ArticleItem from '../../component/ArticleItem'
 import Toast from 'react-native-root-toast'
 import MessageRefreshHeader from '../../component/MessageRefreshHeader'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
+import { TagProps } from '../../../../component/Container/Tag'
+
+const TOP_TAG: TagProps[] = [{ name: '置顶', color: 'red' }]
 
 const Square: React.FC = () => {
   const [messages, setMessages] = useState<CommunityMessageQueryType[]>([])
+  // 被置顶的消息
+  const [topMessage, setTopMessage] = useState<CommunityMessageQueryType[]>([])
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(false)
   const [error, setError] = useState(false)
@@ -64,7 +70,7 @@ const Square: React.FC = () => {
           setEmpty(true)
         }
         maxId.current = lastId - 1
-        setMessages(messages.concat(r.data))
+        setMessages(messages.concat(distinct(r.data)))
       })
       .catch(e => {
         Toast.show('加载失败: ' + e.message)
@@ -76,8 +82,37 @@ const Square: React.FC = () => {
       })
   }
 
+  /**
+   * 去重，不显示被置顶的消息
+   */
+  function distinct(arr: CommunityMessageQueryType[]) {
+    const result: CommunityMessageQueryType[] = []
+    arr.forEach(value => {
+      if (topMessage.findIndex(v => v.id === value.id) === -1) {
+        result.push(value)
+      }
+    })
+    return result
+  }
+
+  /**
+   * 加载置顶消息, 在置顶消息加载完后再加载其它消息
+   */
+  const loadTopMessage = () => {
+    queryTopMessage()
+      .then(r => {
+        setTopMessage(r.data)
+      })
+      .catch(e => {
+        Toast.show('加载置顶消息失败: ' + e.message)
+      })
+      .finally(() => {
+        loadMore()
+      })
+  }
+
   useEffect(() => {
-    loadMore()
+    loadTopMessage()
   }, [])
   return (
     <View style={{ flex: 1, overflow: 'hidden' }}>
@@ -90,6 +125,9 @@ const Square: React.FC = () => {
         empty={empty}
         dataLength={messages.length}
         error={error}>
+        {topMessage.map(value => (
+          <ArticleItem item={value} key={value.id} tags={TOP_TAG} />
+        ))}
         {messages.map(value => (
           <ArticleItem item={value} key={value.id} />
         ))}

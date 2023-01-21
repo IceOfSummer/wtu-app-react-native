@@ -2,11 +2,17 @@ import React from 'react'
 import BottomMenu, { MenuItem } from '../../../../component/Drawer/BottomMenu'
 import Drawer from '../../../../component/Drawer'
 import { Comment } from '../CommentContainer'
-import { deletePost } from '../../../../api/server/community'
+import {
+  deletePost,
+  pinMessage,
+  unpinMessage,
+} from '../../../../api/server/community'
 import Toast from 'react-native-root-toast'
 import { ArticleDetailContext } from '../../index'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import Loading from '../../../../component/Loading'
+import { store } from '../../../../redux/store'
+import { ReducerTypes } from '../../../../redux/counter'
 
 const items: MenuItem[] = [{ name: '删除', icon: '&#xe645;' }]
 
@@ -31,8 +37,8 @@ export default class MessageMenu extends React.Component<
     const comment = this.comment!
     if (index === 0) {
       // delete
-      logger.info('deleting comment id' + comment.id)
       Loading.showLoading()
+      logger.info('deleting comment id' + comment.id)
       deletePost(comment.id)
         .then(() => {
           logger.info('delete success')
@@ -42,6 +48,38 @@ export default class MessageMenu extends React.Component<
         .catch(e => {
           logger.error('delete failed: ' + e.message)
           Toast.show('删除失败: ' + e.message)
+        })
+        .finally(() => {
+          Loading.hideLoading()
+        })
+    } else if (index === 1) {
+      // pin
+      logger.info('pin message, id: ' + comment.id)
+      Loading.showLoading()
+      pinMessage(comment.id)
+        .then(() => {
+          logger.info('pin message success')
+          Toast.show('置顶成功!')
+        })
+        .catch(e => {
+          logger.error('pin failed: ' + e.message)
+          Toast.show('置顶失败: ' + e.message)
+        })
+        .finally(() => {
+          Loading.hideLoading()
+        })
+    } else if (index === 2) {
+      // unpin
+      logger.info('unpin message, id: ' + comment.id)
+      Loading.showLoading()
+      unpinMessage(comment.id)
+        .then(() => {
+          logger.info('unpin message success!')
+          Toast.show('取消置顶成功!')
+        })
+        .catch(e => {
+          logger.error('unpin failed: ' + e.message)
+          Toast.show('取消置顶失败: ' + e.message)
         })
         .finally(() => {
           Loading.hideLoading()
@@ -101,14 +139,28 @@ export default class MessageMenu extends React.Component<
     this.drawer.current?.showDrawer()
   }
 
+  private isAdmin?: boolean
+
   constructor(props: MessageMenuProps, context: any) {
     super(props, context)
+    const state = store.getState() as ReducerTypes
+    this.isAdmin = state.serverUser.isAdmin
   }
 
   render() {
+    let it: MenuItem[]
+    if (this.isAdmin) {
+      it = [
+        ...items,
+        { icon: '&#xe6ca;', name: '置顶' },
+        { icon: '&#xe681;', name: '取消置顶' },
+      ]
+    } else {
+      it = items
+    }
     return (
       <Drawer ref={this.drawer}>
-        <BottomMenu onSelect={this.onSelect} items={items} title="消息选项" />
+        <BottomMenu onSelect={this.onSelect} items={it} title="消息选项" />
       </Drawer>
     )
   }
