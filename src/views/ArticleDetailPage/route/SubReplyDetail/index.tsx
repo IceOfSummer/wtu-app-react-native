@@ -85,7 +85,11 @@ const SubReplyDetail: React.FC<SubReplyDetailProps> = props => {
   }, [])
 
   return (
-    <View style={{ height: '100%' }}>
+    <View
+      style={{
+        height: '100%',
+        backgroundColor: global.colors.boxBackgroundColor,
+      }}>
       <SpringScrollView
         ref={scroll}
         allLoaded={empty}

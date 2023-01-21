@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: global.colors.textColor,
-    fontSize: global.styles.$font_size_lg,
+    fontSize: global.styles.$font_size_base,
   },
 })
 export default ArticleDetailPage

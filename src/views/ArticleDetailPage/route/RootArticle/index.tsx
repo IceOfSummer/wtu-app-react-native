@@ -1,18 +1,17 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
-import { SpringScrollView } from 'react-native-spring-scrollview'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import {
   CommunityMessageQueryType,
   queryReply,
 } from '../../../../api/server/community'
 import Toast from 'react-native-root-toast'
-import LottieLoadingHeader from '../../../../component/LoadingScrollView/LottieLoadingHeader'
 import { MsgInfoContext } from '../../index'
 import RootArticleContent from '../../component/RootArticleContent'
 import ArticleWrapper from '../../component/ArticleWrapper'
 import CommentContainer from '../../component/CommentContainer'
 import BottomReplyToolbar from '../../component/BottomReplyToolbar'
+import { LoadingScrollView } from '../../../../component/LoadingScrollView'
 
 const logger = getLogger('/views/ArticleDetailPage')
 
@@ -38,8 +37,9 @@ const RootArticle: React.FC<RootArticleProps> = props => {
   const { comments, setComments } = context
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(item.replyCount === 0)
+  const [commentLoadError, setCommentLoadError] = useState(false)
 
-  const scroll = useRef<SpringScrollView>(null)
+  const scroll = useRef<LoadingScrollView>(null)
   const page = useRef(1)
 
   function saveState(message: CommunityMessageQueryType[]) {
@@ -91,12 +91,14 @@ const RootArticle: React.FC<RootArticleProps> = props => {
         })
       })
       setComments(comments.concat(result))
+      setCommentLoadError(false)
       page.current++
     } catch (e: any) {
       logger.error('load comment failed: ' + e.message)
       Toast.show('评论加载失败: ' + e.message)
+      setCommentLoadError(true)
     } finally {
-      scroll.current?.endLoading(true)
+      scroll.current?.endLoading()
       setLoading(false)
     }
   }
@@ -112,11 +114,12 @@ const RootArticle: React.FC<RootArticleProps> = props => {
 
   return (
     <View style={{ height: '100%' }}>
-      <SpringScrollView
+      <LoadingScrollView
         ref={scroll}
-        allLoaded={empty}
-        loadingFooter={LottieLoadingHeader}
-        onLoading={loadComment}>
+        error={commentLoadError}
+        empty={empty}
+        onRequireLoad={loadComment}
+        dataLength={comments.length}>
         <RootArticleContent item={item} />
         <CommentContainer
           comments={comments}
@@ -124,7 +127,7 @@ const RootArticle: React.FC<RootArticleProps> = props => {
           empty={empty}
           rootItem={item}
         />
-      </SpringScrollView>
+      </LoadingScrollView>
       <BottomReplyToolbar
         item={item}
         onPress={() =>

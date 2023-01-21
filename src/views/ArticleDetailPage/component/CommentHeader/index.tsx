@@ -20,7 +20,7 @@ const CommentHeader: React.FC<CommentHeaderProps> = props => {
   const showMoreBtn = isAdmin || (userInfo && userInfo.uid === item.author)
   return (
     <View style={styles.avatarContainer}>
-      <Avatar uid={item.author} />
+      <Avatar uid={item.author} size={40} />
       <Text style={styles.nickName}>{item.nickname}</Text>
       <View style={styles.avatarRightContainer}>
         {showMoreBtn ? (
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     alignItems: 'flex-end',
-    top: -20,
+    top: -10,
   },
   nickName: {
     fontSize: global.styles.$font_size_base,
