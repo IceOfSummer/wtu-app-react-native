@@ -9,7 +9,6 @@ import {
   ParamListBase,
   RouteProp,
 } from '@react-navigation/native'
-import PersonalInfo from '../views/PersonalInfo'
 import DiyToast from '../component/DiyToast/NavToast'
 import LessonsDetail from '../views/LessonsDetail'
 import EmptyPage from '../views/EmptyPage'
@@ -52,7 +51,6 @@ export const CLASS_SCHEDULE_TABS = 'ClassSchedule'
 export const MESSAGE_TABS = 'MessageScreen'
 export const FLEA_MARKET_TABS = 'FleaMarket'
 export const SCHOOL_AUTH = 'SchoolAuth'
-export const PERSONAL_INFO = 'PersonalInfo'
 export const LESSONS_DETAIL = 'LessonsDetail'
 export const EMPTY_PAGE = 'EmptyPage'
 export const SETTINGS_PAGE = 'SettingsPage'
@@ -83,7 +81,6 @@ export interface RouterTypes extends ParamListBase {
   [PERSONAL_CENTER_TABS]: undefined
   [CLASS_SCHEDULE_TABS]: undefined
   [SCHOOL_AUTH]: undefined
-  [PERSONAL_INFO]: undefined
   [LESSONS_DETAIL]: {
     /**
      * 第几周的课
@@ -246,11 +243,6 @@ const Router: React.FC = () => {
           name={SCHOOL_AUTH}
           component={WebSchoolAuth}
           options={hideHeaderOptions}
-        />
-        <Stack.Screen
-          name={PERSONAL_INFO}
-          component={PersonalInfo}
-          options={headerCommonOptionsWithTitle('个人资料')}
         />
         <Stack.Screen
           name={LESSONS_DETAIL}
