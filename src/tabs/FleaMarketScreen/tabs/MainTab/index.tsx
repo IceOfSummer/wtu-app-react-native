@@ -101,6 +101,7 @@ const MainTab: React.FC = () => {
 
   const onRefresh = () => {
     maxId.current = undefined
+    setEmpty(false)
     loadMore(true)
   }
 
