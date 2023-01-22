@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import { showNavigationToast } from '../../component/DiyToast/NavToast'
 import { SCHOOL_AUTH } from '../../router'
 import { getLessons } from '../../api/edu/classes'
-import NativeDialog from '../../native/modules/NativeDialog'
 import Toast from 'react-native-root-toast'
 import { getLogger } from '../../utils/LoggerUtils'
 import { saveLessonsInfo } from '../../redux/counter/lessonsTableSlice'
@@ -25,43 +24,36 @@ const ClassSchedule: React.FC<
    * 自动加载数据, 返回true表示加载成功, false表示失败
    */
   async function loadData() {
-    return new Promise(resolve => {
-      if (!props.isLoginValid || !props.username) {
-        showNavigationToast({
-          type: 'error',
-          text1: '请先登录',
-          routerName: SCHOOL_AUTH,
-        })
-        return
-      }
-      // load
-      logger.info('loading class table')
-      getLessons(props.username, props.year, props.term)
-        .then(resp => {
-          logger.info('load class table success')
-          props.saveLessonsInfo(resp)
-          resolve(true)
-          if (resp.length === 0) {
-            NativeDialog.showDialog({
-              title: '当前设置下没有课哦',
-              message: '点击右上角设置可以具体配置相关设置',
-              hideCancelBtn: true,
-            })
-            return
-          }
-        })
-        .catch(e => {
-          logger.error('load class table failed: ' + e.message)
-          Toast.show('加载课表失败: ' + e.message)
-        })
-    })
+    if (!props.isLoginValid || !props.username) {
+      showNavigationToast({
+        type: 'error',
+        text1: '请先登录教务系统',
+        text2: '点我登录教务系统',
+        routerName: SCHOOL_AUTH,
+      })
+      return
+    }
+    // load
+    logger.info('loading class table')
+    const resp = await getLessons(props.username, props.year, props.term)
+    logger.info('load class table success')
+    props.saveLessonsInfo(resp)
+    if (resp.length === 0) {
+      Toast.show('当前学期设置下没有课哦!')
+      return
+    }
   }
 
   const onPullDownRefresh = () => {
     setRefreshing(true)
-    loadData().finally(() => {
-      setRefreshing(false)
-    })
+    loadData()
+      .catch(e => {
+        logger.error('load class failed:' + e.message)
+        Toast.show('加载课表失败: ' + e.message)
+      })
+      .finally(() => {
+        setRefreshing(false)
+      })
   }
   return (
     <View style={{ flex: 1 }}>
