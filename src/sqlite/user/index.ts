@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS user (
 `
 AppEvents.subscribeOnce('onAppLaunch', async () => {
   try {
-    console.log('loading')
     instance = await SQLite.openDatabase({
       name: DB_NAME,
       location: 'Shared',

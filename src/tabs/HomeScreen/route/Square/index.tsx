@@ -52,7 +52,12 @@ const Square: React.FC = () => {
       })
   }
 
-  const loadMore = () => {
+  /**
+   * @param distinctArray 用于对消息去重。主动提供该参数以防不能拿到最新的state
+   */
+  const loadMore = (
+    distinctArray: CommunityMessageQueryType[] = topMessage
+  ) => {
     if (loading) {
       scroll.current?.endLoading()
       return
@@ -70,7 +75,7 @@ const Square: React.FC = () => {
           setEmpty(true)
         }
         maxId.current = lastId - 1
-        setMessages(messages.concat(distinct(r.data)))
+        setMessages(messages.concat(distinct(r.data, distinctArray)))
       })
       .catch(e => {
         Toast.show('加载失败: ' + e.message)
@@ -85,10 +90,13 @@ const Square: React.FC = () => {
   /**
    * 去重，不显示被置顶的消息
    */
-  function distinct(arr: CommunityMessageQueryType[]) {
+  function distinct(
+    arr: CommunityMessageQueryType[],
+    compareArr: CommunityMessageQueryType[]
+  ) {
     const result: CommunityMessageQueryType[] = []
     arr.forEach(value => {
-      if (topMessage.findIndex(v => v.id === value.id) === -1) {
+      if (compareArr.findIndex(v => v.id === value.id) === -1) {
         result.push(value)
       }
     })
@@ -102,12 +110,11 @@ const Square: React.FC = () => {
     queryTopMessage()
       .then(r => {
         setTopMessage(r.data)
+        loadMore(r.data)
       })
       .catch(e => {
-        Toast.show('加载置顶消息失败: ' + e.message)
-      })
-      .finally(() => {
         loadMore()
+        Toast.show('加载置顶消息失败: ' + e.message)
       })
   }
 
