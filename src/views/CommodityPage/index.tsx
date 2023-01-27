@@ -1,14 +1,18 @@
 import React from 'react'
 import { ParamListBase, useRoute } from '@react-navigation/native'
 import CommodityDetail from './route/CommodityDetail'
-import { COMMODITY_PAGE, headerWithTitle, UseRouteGeneric } from '../../router'
+import {
+  COMMODITY_PAGE,
+  headerCommonOptionsWithTitle,
+  UseRouteGeneric,
+} from '../../router'
 import { ProcessedCommodity } from '../../api/server/commodity'
 import ConfirmPage from './route/ConfirmPage'
-import { createStackNavigator } from '@react-navigation/stack'
 import DrawerPage from './route/FormDrawerPage'
 import LockSuccessPage from './route/LockSuccessPage'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-const Stack = createStackNavigator()
+const Stack = createNativeStackNavigator()
 const INITIAL_ROUTE_NAME = ''
 export const DETAIL_PAGE = '/Commodity/detail'
 export const CONFIRM_PAGE = '/Commodity/confirm'
@@ -44,12 +48,24 @@ const CommodityPage: React.FC = () => {
         <Stack.Screen
           name={CONFIRM_PAGE}
           component={ConfirmPage}
-          options={headerWithTitle('确认订单')}
+          options={{
+            ...headerCommonOptionsWithTitle(
+              '确认订单',
+              global.colors.boxBackgroundColor
+            ),
+            animation: 'slide_from_right',
+          }}
         />
         <Stack.Screen
           name={LOCK_SUCCESS_PAGE}
           component={LockSuccessPage}
-          options={headerWithTitle('锁定成功')}
+          options={{
+            ...headerCommonOptionsWithTitle(
+              '锁定成功',
+              global.colors.boxBackgroundColor
+            ),
+            animation: 'slide_from_bottom',
+          }}
         />
       </Stack.Group>
       <Stack.Group

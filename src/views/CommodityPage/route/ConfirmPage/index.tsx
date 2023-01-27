@@ -11,6 +11,7 @@ import { SpringScrollView } from 'react-native-spring-scrollview'
 import {
   CommodityPageRouteTypes,
   CONFIRM_PAGE,
+  DETAIL_PAGE,
   LOCK_SUCCESS_PAGE,
 } from '../../index'
 import { getUserInfo, UserInfoQueryType } from '../../../../api/server/user'
@@ -24,7 +25,6 @@ import EnhancedLoadingView from '../../../../component/Loading/EnhancedLoadingVi
 import UserSimpleInfo from '../../../UserInfoPage/component/UserSimpleInfo'
 import ColorfulButton from '../../../../component/Button/ColorfulButton'
 import { NavigationProp } from '@react-navigation/core/src/types'
-import CustomStatusBar from '../../../../component/Container/CustomStatusBar'
 
 const ConfirmPage: React.FC = () => {
   const route =
@@ -34,6 +34,10 @@ const ConfirmPage: React.FC = () => {
   const nav = useNavigation<NavigationProp<CommodityPageRouteTypes>>()
 
   const loadUserInfo = () => getUserInfo(commodity.ownerId)
+
+  const toCommodityDetail = () => {
+    nav.navigate(DETAIL_PAGE, { id: commodity.commodityId })
+  }
 
   const lock = () => {
     Loading.showLoading()
@@ -59,17 +63,17 @@ const ConfirmPage: React.FC = () => {
   }
   return (
     <View style={{ flex: 1 }}>
-      <CustomStatusBar backgroundColor={global.colors.boxBackgroundColor} />
-
       <SpringScrollView>
-        <BaseContainer title="商品信息">
+        <BaseContainer title="商品信息" padding={0}>
           <HorShopItem
+            sellerId={commodity.ownerId}
             id={commodity.commodityId}
             name={commodity.name}
             createTime={Number.parseInt(commodity.createTime, 10)}
             price={commodity.price}
             image={commodity.previewImage}
             tradeLocation={commodity.tradeLocation}
+            onClick={toCommodityDetail}
           />
         </BaseContainer>
         <BaseContainer2 title="备注信息">
@@ -93,7 +97,6 @@ const ConfirmPage: React.FC = () => {
           onPress={lock}
           color={global.styles.$primary_color}
           title="锁定并通知卖家"
-          style={{ marginHorizontal: 6 }}
           containerStyle={styles.button}
         />
       </View>
@@ -110,14 +113,14 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   priceText: {
     color: 'red',
     fontSize: 20,
   },
   button: {
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
   },
 })
 export default ConfirmPage

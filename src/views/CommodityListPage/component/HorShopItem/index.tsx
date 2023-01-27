@@ -14,16 +14,17 @@ import KVTextContainer from '../../../../component/Container/KVTextContainer'
 import { useNavigation } from '@react-navigation/native'
 import { UseNavigationGeneric, USER_INFO_PAGE } from '../../../../router'
 
-interface HorShopItemProps {
+type HorShopItemProps = {
   onClick?: () => void
-}
+  sellerNickname?: Displayable
+} & Omit<EsCommodity, 'sellerNickname'>
 
 /**
  * 横着显示的商品
  * @param props
  * @constructor
  */
-const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
+const HorShopItem: React.FC<HorShopItemProps> = props => {
   const date = new Date(props.createTime)
   const nav = useNavigation<UseNavigationGeneric>()
   const standerPrice = props.price.toFixed(2)
@@ -63,13 +64,15 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
             value={formatTimestamp(date.getTime())}
             icon="&#xe662;"
           />
-          <KVTextContainer
-            icon="&#xe79b;"
-            name="卖家"
-            onPress={toSeller}
-            valueStyles={{ textDecorationLine: 'underline', flex: 1 }}
-            value={props.sellerNickname + '>'}
-          />
+          {props.sellerNickname ? (
+            <KVTextContainer
+              icon="&#xe79b;"
+              name="卖家"
+              onPress={toSeller}
+              valueStyles={{ textDecorationLine: 'underline', flex: 1 }}
+              value={props.sellerNickname + '>'}
+            />
+          ) : null}
           <View style={styles.bottomContainer}>
             <View>
               <Text style={styles.priceText}>￥{standerPrice}</Text>
@@ -85,7 +88,7 @@ const HorShopItem: React.FC<EsCommodity & HorShopItemProps> = props => {
 }
 const styles = StyleSheet.create({
   outer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
   },
   container: {
     overflow: 'hidden',
@@ -127,6 +130,11 @@ const styles = StyleSheet.create({
   priceText: {
     color: 'red',
     fontSize: global.styles.$font_size_base,
+  },
+  linkText: {
+    color: global.colors.primaryColor,
+    textDecorationLine: 'underline',
+    fontSize: global.styles.$font_size_sm,
   },
 })
 export default HorShopItem
