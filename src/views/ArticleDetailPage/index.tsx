@@ -136,7 +136,7 @@ const Header: React.FC<StackHeaderProps> = props => {
   return (
     <View style={styles.headerContainer}>
       <Text style={styles.title}>评论详细</Text>
-      <Icons iconText="&#xe612;" size={26} onPress={props.navigation.goBack} />
+      <Icons iconText="&#xe612;" size={22} onPress={props.navigation.goBack} />
     </View>
   )
 }

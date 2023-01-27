@@ -18,6 +18,7 @@ import Environment from '../utils/Environment'
 import { getLogger } from '../utils/LoggerUtils'
 import { RejectPolicy } from 'axios-simple-wrapper/lib/interceptor/debounce'
 import { markLoginExpired } from '../redux/counter/wtuUserSlice'
+import { toNativeErrorMessage } from './util'
 
 const logger = getLogger('/api/request')
 
@@ -26,7 +27,7 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
     store.dispatch(modifyRequestToken(resp.headers.Token))
   }
   if (resp.data.code === undefined) {
-    throw new Error(resp.data)
+    throw new Error(toNativeErrorMessage(resp.data))
   }
   if (resp.data.code !== 0) {
     logger.error(`request failed: ${resp.request._url}: ${resp.data.message}`)
@@ -44,8 +45,9 @@ const serverRequestErrorInterceptor = (error: AxiosError): Error => {
       // 跳转登录页面
       navigationPush(SERVER_AUTH_PAGE)
     }
-    return new Error(data.message)
+    return new Error(toNativeErrorMessage(data.message))
   } else {
+    error.message = toNativeErrorMessage(error.message)
     return error
   }
 }

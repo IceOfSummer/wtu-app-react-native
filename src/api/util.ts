@@ -1,47 +1,20 @@
-import { ResponseTemplate } from './server/types'
+import { getLogger } from '../utils/LoggerUtils'
 
-/**
- * 将响应根据指定的格式转换
- *
- * 不支持属性嵌套！
- * @param mapping 键值映射
- * @param response 响应内容
- */
-export const responseParser = <R>(
-  mapping: Record<string, string>,
-  response: ResponseTemplate<any>
-): ResponseTemplate<R> => {
-  if (!response.data) {
-    return response
-  }
-  response.data = parse(mapping, response.data)
-  return response
+const messageMapping: Record<string, string> = {
+  'Network Error': '连接服务器失败, 请检查您的网络',
 }
 
-/**
- * 解析数组，原理类似responseParser
- * @param mapping 键值映射
- * @param response 响应内容
- */
-export const responseArrayParser = <R>(
-  mapping: Record<string, string>,
-  response: ResponseTemplate<Array<any>>
-): ResponseTemplate<Array<R>> => {
-  for (let i = 0, len = response.data.length; i < len; ++i) {
-    response.data[i] = parse(mapping, response.data[i])
-  }
-  return response
-}
+const logger = getLogger('/api/util')
 
 /**
- * 按照mapping解析target
- * @param mapping 映射
- * @param target 要解析的对象
+ * 将错误信息转换为汉语
+ * @param message 错误信息
  */
-function parse(mapping: Record<string, string>, target: any) {
-  const cast: Record<string, any> = {}
-  Object.keys(mapping).forEach(key => {
-    cast[mapping[key]] = target[key]
-  })
-  return cast
+export function toNativeErrorMessage(message: string): string {
+  const msg = messageMapping[message]
+  if (msg) {
+    return msg
+  }
+  logger.warn(`the message '${message}' has no mapping to use`)
+  return message
 }
