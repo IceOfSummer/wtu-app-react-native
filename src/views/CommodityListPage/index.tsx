@@ -11,12 +11,16 @@ import {
 } from '../../router'
 import Icons from '../../component/Icons'
 import { EsCommodity } from '../../api/server/types'
-import EnhancedScrollView from '../../component/EnhancedScrollView'
 import { searchCommodity } from '../../api/server/commodity'
 import HorShopItem from './component/HorShopItem'
-import NativeDialog from '../../native/modules/NativeDialog'
-import CommoditySkeleton from './component/CommoditySkeleton'
 import CustomStatusBar from '../../component/Container/CustomStatusBar'
+import { LoadingScrollView } from '../../component/LoadingScrollView'
+import Toast from 'react-native-root-toast'
+import { getLogger } from '../../utils/LoggerUtils'
+
+const logger = getLogger('/views/CommodityListPage')
+
+const SIZE = 6
 
 /**
  * 商品搜索结果展示页面
@@ -28,16 +32,14 @@ const CommodityListPage: React.FC = () => {
   const currentPage = useRef(0)
   const [commodities, setCommodities] = useState<EsCommodity[]>([])
   const [loadFail, setLoadFail] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(false)
+  const scroll = useRef<LoadingScrollView>(null)
 
   const loadMore = () => {
-    setLoading(true)
-    searchCommodity(route.params.search, currentPage.current)
+    searchCommodity(route.params.search, currentPage.current, SIZE)
       .then(resp => {
-        if (resp.data.length === 0) {
+        if (resp.data.length < SIZE) {
           setEmpty(true)
-          return
         }
         setCommodities(commodities.concat(resp.data))
         currentPage.current++
@@ -45,14 +47,11 @@ const CommodityListPage: React.FC = () => {
       })
       .catch(e => {
         setLoadFail(true)
-        NativeDialog.showDialog({
-          title: '请求失败',
-          message: e.message,
-          hideCancelBtn: true,
-        })
+        logger.error('search commodity failed: ' + e.message)
+        Toast.show('加载失败: ' + e.message)
       })
       .finally(() => {
-        setLoading(false)
+        scroll.current?.endLoading()
       })
   }
 
@@ -65,7 +64,7 @@ const CommodityListPage: React.FC = () => {
   }, [])
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <CustomStatusBar />
       <View style={styles.headerContainer}>
         <Pressable onPress={nav.goBack}>
@@ -80,39 +79,25 @@ const CommodityListPage: React.FC = () => {
           placeHolder={search}
         />
       </View>
-      <View style={{ zIndex: 1, overflow: 'hidden' }}>
-        <EnhancedScrollView
-          onRequireLoad={loadMore}
-          fail={loadFail}
-          loading={loading}
-          empty={empty}
-          dataLength={commodities.length}
-          loadingSkeleton={<LoadingSkeleton />}
-          onScrollToBottom={loadMore}
-          scrollViewProps={{ scrollEnabled: commodities.length > 0 }}>
-          {commodities.map(value => (
-            <HorShopItem
-              onClick={() => navToCommodity(value.id)}
-              {...value}
-              key={value.id}
-            />
-          ))}
-        </EnhancedScrollView>
-      </View>
+      <LoadingScrollView
+        ref={scroll}
+        showEmptyTip
+        onRequireLoad={loadMore}
+        error={loadFail}
+        empty={empty}
+        dataLength={commodities.length}>
+        {commodities.map(value => (
+          <HorShopItem
+            onClick={() => navToCommodity(value.id)}
+            {...value}
+            key={value.id}
+          />
+        ))}
+      </LoadingScrollView>
     </View>
   )
 }
-const LoadingSkeleton: React.FC = () => {
-  return (
-    <View>
-      <CommoditySkeleton />
-      <CommoditySkeleton />
-      <CommoditySkeleton />
-      <CommoditySkeleton />
-      <CommoditySkeleton />
-    </View>
-  )
-}
+
 const styles = StyleSheet.create({
   headerContainer: {
     zIndex: 2,

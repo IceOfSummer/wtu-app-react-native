@@ -42,10 +42,15 @@ function castArray(commodity: Commodity[]): ProcessedCommodity[] {
 export const createCommodity = (commodity: PostCommodityType) =>
   serverNoRepeatAjax<number>('/commodity/create', commodity, 'POST')
 
-export const searchCommodity = (searchContent: string, page = 0) =>
+export const searchCommodity = (
+  searchContent: string,
+  page = 0,
+  size?: number
+) =>
   serverCancelOldAjax<EsCommodity[]>('/commodity/search', {
     s: searchContent,
     p: page,
+    z: size,
   }).then(result => {
     result.data.forEach(value => {
       value.image = appendCdnPrefix('/' + value.image)

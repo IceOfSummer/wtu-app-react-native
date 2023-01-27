@@ -6,7 +6,7 @@ import {
   SpringScrollView,
 } from 'react-native-spring-scrollview'
 import RetryView from '../EnhancedScrollView/RetryView'
-import { View } from 'react-native'
+import { Text, View } from 'react-native'
 import InitSkeleton from './InitSkeleton'
 import ConditionHideContainer from '../Container/ConditionHideContainer'
 import LottieView from 'lottie-react-native'
@@ -31,6 +31,7 @@ interface LoadingScrollViewProps {
     RefreshHeaderPropType,
     RefreshHeaderStateType
   >
+  showEmptyTip?: boolean
 }
 
 interface LoadingScrollViewState {
@@ -113,6 +114,9 @@ export class LoadingScrollView extends React.Component<
             loop
             autoPlay
           />
+        </ConditionHideContainer>
+        <ConditionHideContainer hide={!this.props.showEmptyTip}>
+          <Text style={global.styles.infoTipText}>到底了哦!</Text>
         </ConditionHideContainer>
       </SpringScrollView>
     )
