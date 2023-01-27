@@ -52,7 +52,9 @@ if (Platform.OS === 'ios') {
           }
         })
         .catch(e => {
-          logger.error('query cache failed: ' + e.message)
+          if (!e.message.includes('code=404')) {
+            logger.error('query cache failed: ' + e.message)
+          }
           props.onLoadFail()
         })
     }, [])

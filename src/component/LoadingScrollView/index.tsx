@@ -13,9 +13,12 @@ import LottieView from 'lottie-react-native'
 
 interface LoadingScrollViewProps {
   /**
-   * 当需要加载数据时
+   * 当需要加载数据时(上滑时加载)，若返回值为void，需要手动调用{@link LoadingScrollView#endLoading}方法，否则刷新动画不会终止
+   * <p>
+   * 若返回promise，则会自动调用终止方法，但在发生错误时，该组件不会有额外的行为，
+   * 需要自己进行处理，比如设置{@link LoadingScrollViewProps#error}属性为`true`。
    */
-  onRequireLoad: () => void
+  onRequireLoad: () => void | Promise<unknown>
   empty: boolean
   /**
    * @deprecated
@@ -65,19 +68,25 @@ export class LoadingScrollView extends React.Component<
     const toBottomDis =
       scroll._contentHeight - evt.nativeEvent.contentOffset.y - scroll._height
     if (toBottomDis < 50) {
-      // refresh
+      // loading
       this.setState({ loading: true })
-      this.props.onRequireLoad()
+      this.loadMoreData()
     }
   }
 
-  retry() {
-    this.props.onRequireLoad()
+  private loadMoreData() {
+    const returnVal = this.props.onRequireLoad()
+    if (typeof returnVal === 'object') {
+      // promise
+      returnVal.finally(() => {
+        this.endLoading()
+      })
+    }
   }
 
   constructor(props: LoadingScrollViewProps) {
     super(props)
-    this.retry = this.retry.bind(this)
+    this.loadMoreData = this.loadMoreData.bind(this)
   }
 
   render() {
@@ -93,7 +102,7 @@ export class LoadingScrollView extends React.Component<
           <Skeleton />
         ) : null}
         <RetryView
-          onRetry={this.retry}
+          onRetry={this.loadMoreData}
           show={!this.props.loading && this.props.error}
         />
         <ConditionHideContainer

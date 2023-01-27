@@ -26,7 +26,7 @@ import { useNavigation } from '@react-navigation/native'
 import { COMMODITY_PAGE, UseNavigationGeneric } from '../../../../router'
 
 const SellingItemPage: React.FC = () => {
-  const page = usePage<ProcessedCommodity>(getUploadedCommodity, 5, true)
+  const page = usePage<ProcessedCommodity>(getUploadedCommodity, 5)
   const modifyDrawer = useRef<Drawer>(null)
   const nav = useNavigation<UseNavigationGeneric>()
   const [currentCommodity, setCurrentCommodity] = useState<
