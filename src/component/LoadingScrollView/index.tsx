@@ -68,7 +68,7 @@ export class LoadingScrollView extends React.Component<
     const scroll = this.scroll.current!
     const toBottomDis =
       scroll._contentHeight - evt.nativeEvent.contentOffset.y - scroll._height
-    if (toBottomDis < 50) {
+    if (toBottomDis < 50 && !this.props.error && !this.state.loading) {
       // loading
       this.setState({ loading: true })
       this.loadMoreData()
