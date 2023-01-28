@@ -120,9 +120,9 @@ const RegisterPage: React.FC = () => {
       cookies: param.cookies,
       lt: param.lt,
     })
-      .then(r => {
-        console.log(r)
+      .then(() => {
         Toast.show('注册成功')
+        nav.goBack()
       })
       .catch(e => {
         showSingleBtnTip('注册失败', e.message)
