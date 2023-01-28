@@ -207,8 +207,9 @@ export default class RichTextEditor extends React.Component<
    * 将剪切板内容导入的富文本编辑器中
    */
   inputHtml = () => {
+    // 用base64出现汉字会报错, 猜测这里的内存不能出现换行，否则内容设置不了
     this.webView.current?.injectJavaScript(
-      `setContents('${this.state.clipboardText}')`
+      `setContents("${encodeURI(this.state.clipboardText)}")`
     )
     this.htmlInputRef.current?.closeDrawer()
     Toast.show('导入成功!')

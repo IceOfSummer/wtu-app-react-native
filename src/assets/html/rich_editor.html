@@ -48,7 +48,11 @@
    * @param message {{type: string, data?: string}}
    */
   function postMessage(message) {
-    window.ReactNativeWebView.postMessage(JSON.stringify(message))
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify(message))
+    } else {
+      console.log(message)
+    }
   }
 
   /**
@@ -59,8 +63,12 @@
   }
 
   function setContents(content) {
-    quill.setHtml(content)
-    postMessage({type: 'height', data: editor.clientHeight})
+    postMessage({type: 'error', data: content})
+    try {
+      quill.setHtml(decodeURI(content))
+    } catch (e) {
+    }
+    postMessage({type: 'height', data: document.body.clientHeight})
   }
 
   /**
