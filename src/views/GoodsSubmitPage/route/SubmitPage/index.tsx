@@ -22,8 +22,11 @@ import { ReducerTypes } from '../../../../redux/counter'
 import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
 import RichTextEditor from '../../../../component/Container/RichTextEditor'
 import Toast from 'react-native-root-toast'
+import { getLogger } from '../../../../utils/LoggerUtils'
 
 const MAX_ACTIVE_COMMODITY = 10
+
+const logger = getLogger('/views/GoodsSubmitPage/route/SubmitPage')
 
 /**
  * 商品提交页面，需要提前保证用户已经登录
@@ -72,6 +75,7 @@ const SubmitPage: React.FC = () => {
   ])
 
   const submitCommodity = async () => {
+    logger.info('submit commodity...... checking param')
     const previewImageRef = previewImageInput.current
     const detailImageRef = detailImageInput.current
     if (
@@ -99,13 +103,9 @@ const SubmitPage: React.FC = () => {
       Toast.show('预览图不能为空')
       return
     }
-    const detail = detailImageRef.getNotUploadedImages()
-    if (detailImageRef.getUploadedImageCount() === 0 && detail.length === 0) {
-      Toast.show('请至少上传一张详细图')
-      return
-    }
-    let count = preview.length + detail.length
+    let count = preview.length + detailImageRef.getNotUploadedImages().length
     try {
+      logger.info('trying to upload images')
       Loading.showLoading('准备上传图片')
       const { data } = await requireUserSpaceUploadSecret(count, 'image/png')
       previewImageRef.bindUploadSign(data)
@@ -115,12 +115,14 @@ const SubmitPage: React.FC = () => {
       await detailImageRef.uploadImage((current, total) => {
         Loading.showLoading(`上传详细图中(${current}/${total})`)
       })
+      logger.info('upload images success!')
       Loading.showLoading('发布商品中')
       const { data: commodityId } = await uploadCommodity(html)
       // 跳转到成功页面
       nav.navigate(SUCCESS_PAGE, { commodityId })
     } catch (e: any) {
       showSingleBtnTip('上传失败', e.message)
+      logger.error('upload commodity failed: ' + e.message)
     } finally {
       Loading.hideLoading()
     }
@@ -132,23 +134,32 @@ const SubmitPage: React.FC = () => {
   function uploadCommodity(html: string) {
     // 太懒狗了，直接用断言了
     const previewImage = previewImageInput.current!.getSelectedImage()[0]
-    const images = JSON.stringify(
-      detailImageInput
-        .current!.getSelectedImage()
-        .map(value =>
-          getUserspaceImagePath(
-            uid,
-            getFilenameFromUrl(value.sign?.path) + '.webp'
-          )
+    const imagesArr = detailImageInput.current
+      ?.getSelectedImage()
+      .map(value =>
+        getUserspaceImagePath(
+          uid,
+          getFilenameFromUrl(value.sign?.path) + '.webp'
         )
-    )
+      )
+    let detailImage: string | undefined =
+      imagesArr && imagesArr.length > 0 ? JSON.stringify(imagesArr) : undefined
+    if (!detailImage) {
+      // 直接使用预览图当做详细图
+      detailImage = JSON.stringify([
+        getUserspaceImagePath(
+          uid,
+          getFilenameFromUrl(previewImage.sign?.path) + '.webp'
+        ),
+      ])
+    }
     return createCommodity({
       name: commodityName,
       previewImage: getUserspaceImagePath(
         uid,
         getFilenameFromUrl(previewImage.sign?.path) + '.webp'
       ),
-      images,
+      images: detailImage,
       price: Number.parseInt(commodityPrice, 10),
       description: html,
       tradeLocation: tradeLocation,
