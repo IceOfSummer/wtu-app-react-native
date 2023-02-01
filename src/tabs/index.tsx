@@ -57,8 +57,7 @@ const TabBar = () => {
   const tradeStat = useSelector<ReducerTypes, TradeStat | undefined>(
     state => state.temporary.tradeStat
   )
-
-  const sumTipCount = remindCount + messageCount
+  const sumTipCount = Math.min(remindCount + messageCount, 99)
   const personalCenterTip = tradeStat
     ? tradeStat.receiveCount + tradeStat.deliveryCount
     : undefined
