@@ -8,7 +8,7 @@ const logger = getLogger('/src/sqlite')
 /**
  * 数据库版本号，相关信息保存在metadata表中，若版本号不一致，则会调用{@link DatabaseManager.updateDatabase}
  */
-const version = 3
+const version = 4
 
 export const EMPTY_RESULT_SET: ResultSet = {
   rowsAffected: 0,
@@ -26,13 +26,13 @@ export const EMPTY_RESULT_SET: ResultSet = {
 
 const sql = `
 CREATE TABLE IF NOT EXISTS message(
-    messageId INTEGER PRIMARY KEY,
-    uid INT NOT NULL,
+    uid INTEGER NOT NULL,
+    messageId INTEGER,
     content CHAR(500) NOT NULL,
     createTime INT NOT NULL,
-    type INT NOT NULL
+    type INT NOT NULL,
+    PRIMARY KEY(uid, messageId)
 );
-CREATE INDEX IF NOT EXISTS message_username_index ON message(uid);
 
 CREATE TABLE IF NOT EXISTS last_message(
     uid INT PRIMARY KEY NOT NULL,
@@ -64,21 +64,15 @@ CREATE INDEX event_remind_type_index ON event_remind(abstractType);
  * 升级时使用的sql
  */
 const update_sql = `
-DROP TABLE IF EXISTS message_tip;
-DROP TABLE IF EXISTS unread_message_tip;
-CREATE TABLE event_remind(
-    id INT PRIMARY KEY NOT NULL,
-    count INT,
-    remindTitle CHAR(30) NOT NULL,
-    sourceId INT NOT NULL,
-    sourceType INT NOT NULL,
-    sourceContent CHAR(30),
-    senderIds CHAR(30) NOT NULL ,
+DROP TABLE IF EXISTS message;
+CREATE TABLE IF NOT EXISTS message(
+    uid INTEGER NOT NULL,
+    messageId INTEGER,
+    content CHAR(500) NOT NULL,
     createTime INT NOT NULL,
-    targetContent CHAR(30) NOT NULL,
-    abstractType INT NOT NULL
+    type INT NOT NULL,
+    PRIMARY KEY(uid, messageId)
 );
-CREATE INDEX event_remind_type_index ON event_remind(abstractType);
 UPDATE app_metadata SET value = '${version}' WHERE name = 'version';
 `
 const LAST_OPEN_UID = 'LastOpenUid'
