@@ -45,7 +45,7 @@ const serverRequestErrorInterceptor = (error: AxiosError): Error => {
       // 跳转登录页面
       navigationPush(SERVER_AUTH_PAGE)
     }
-    return new Error(toNativeErrorMessage(data.message))
+    return new Error(data.message)
   } else {
     error.message = toNativeErrorMessage(error.message)
     return error

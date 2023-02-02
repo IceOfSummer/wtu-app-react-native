@@ -64,7 +64,7 @@ export const insertMultiLastMessage = (messages: SqliteMessage[]) => {
 export const queryLastMessage = () =>
   new Promise<LastMessageQueryType[]>(resolve => {
     DatabaseManager.executeSql(
-      `SELECT lm.unreadCount as confirmed, m.* FROM last_message lm
+      `SELECT lm.unreadCount, m.* FROM last_message lm
                        JOIN message m USING(messageId)`
     ).then(result => {
       resolve(result[0].rows.raw())

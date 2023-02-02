@@ -22,10 +22,7 @@ import {
   queryLastMessage,
 } from '../../sqlite/last_message'
 import { getLogger } from '../../utils/LoggerUtils'
-import {
-  quickShowErrorTip,
-  showSingleBtnTip,
-} from '../../native/modules/NativeDialog'
+import { showSingleBtnTip } from '../../native/modules/NativeDialog'
 import { loadMultiUserCache, loadUserCacheFromServer } from './serverUserSlice'
 import { ReducerTypes } from './index'
 import { MultiChatResponseMessage } from '../../api/chat/message/response/MultiChatResponseMessage'
@@ -68,9 +65,7 @@ export const initMessage = createAsyncThunk<InitMessageResult, undefined>(
     lastMsg.forEach(value => {
       value.content = value.content.replace(REPLACE_TYPE_MARKER, '')
       messageLabels[value.uid] = value
-      if (!value.unreadCount) {
-        count++
-      }
+      count += value.unreadCount
     })
     // 加载相关用户
     dispatch(loadMultiUserCache(lastMsg.map(value => value.uid)))
@@ -146,6 +141,10 @@ export const syncMessage = createAsyncThunk<void, SyncMessageParam>(
     logger.info('insert multiply message success')
     await insertMultiLastMessage(msg)
     logger.info('insert last message success')
+    // 移除type marker
+    msg.forEach(value => {
+      value.content = value.content.replace(REPLACE_TYPE_MARKER, '')
+    })
     // 保存到新消息中
     if (confirmed) {
       dispatch(messageSlice.actions.insertOnlineMessage(msg))
@@ -210,19 +209,6 @@ export const markMessageAllRead = createAsyncThunk<void>(
   }
 )
 
-function getReadCountUpdateValue(current: number, prev?: number): number {
-  if (prev === undefined) {
-    prev = 0
-  }
-  if (current === prev) {
-    return 0
-  } else if (current === 1) {
-    return -1
-  } else {
-    return 1
-  }
-}
-
 const messageSlice = createSlice<MessageState, MessageReducers>({
   name: 'message',
   initialState: {
@@ -235,10 +221,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      * do not export it, it needs extra operation, see {@link insertSingleMessage}
      */
     insertSingleMessage: (state, { payload }) => {
-      state.unreadCount += getReadCountUpdateValue(
-        payload.unreadCount,
-        state.messageLabels[payload.uid]?.unreadCount
-      )
+      state.unreadCount++
       // payload 不能直接修改
       state.messageLabels[payload.uid] = {
         ...payload,
@@ -249,20 +232,14 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      * do not export it, it needs extra operation, see {@link removeMessagePanel}
      */
     removeMessagePanel: (state, { payload }) => {
-      state.unreadCount += getReadCountUpdateValue(
-        1,
-        state.messageLabels[payload]?.unreadCount
-      )
+      state.unreadCount -= state.messageLabels[payload]?.unreadCount ?? 0
       state.messageLabels[payload] = undefined
     },
     insertOnlineMessage: (state, { payload }) => {
       if (Array.isArray(payload)) {
         state.onlineMessages = state.onlineMessages.concat(payload)
         payload.forEach(value => {
-          state.unreadCount += getReadCountUpdateValue(
-            1,
-            state.messageLabels[value.uid]?.unreadCount
-          )
+          state.unreadCount++
           state.messageLabels[value.uid] = {
             ...value,
             unreadCount: 1,
@@ -271,10 +248,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         logger.debug('updating onlineMessages: ')
         logger.debug(state.onlineMessages)
       } else {
-        state.unreadCount += getReadCountUpdateValue(
-          1,
-          state.messageLabels[payload.uid]?.unreadCount
-        )
+        state.unreadCount++
         state.messageLabels[payload.uid] = {
           ...payload,
           unreadCount: 1,
@@ -297,11 +271,15 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     modifyReadStatus: (state, { payload }) => {
       const target = state.messageLabels[payload.uid]
       if (target) {
-        state.unreadCount += getReadCountUpdateValue(
-          payload.confirmed,
-          target.unreadCount
-        )
-        target.unreadCount = payload.confirmed
+        if (payload.confirmed) {
+          // 标记为已读
+          state.unreadCount -= target.unreadCount
+          target.unreadCount = 0
+        } else {
+          // 标记为未读
+          state.unreadCount++
+          target.unreadCount = 1
+        }
       }
     },
     markAllRead: state => {
@@ -329,7 +307,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     },
     [initMessage.rejected.type](state, { error }) {
       logger.error('while run "loadMessage" error, ' + error.message)
-      quickShowErrorTip(
+      showSingleBtnTip(
         '加载消息失败',
         '请寻求开发人员帮助或稍后再试:' + error.message
       )

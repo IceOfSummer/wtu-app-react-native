@@ -21,6 +21,7 @@ import useNav from '../../../../hook/useNav'
 import { CHAT_PAGE } from '../../../../router'
 import { ServerUser } from '../../../../sqlite/user'
 import { LastMessageQueryType } from '../../../../sqlite/last_message'
+import TipPoint from '../../../../component/Container/TipPoint'
 
 const MessageBlock: React.FC<LastMessageQueryType> = props => {
   const dispatch = useDispatch()
@@ -75,7 +76,7 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
    * 标记消息已读
    */
   const setReadStatus = () => {
-    if (props.unreadCount) {
+    if (props.unreadCount === 0) {
       dispatch(markMessageUnread(props.uid))
     } else {
       dispatch(markMessageRead(props.uid))
@@ -104,7 +105,7 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
           </View>
           <View style={styles.timeContainer}>
             <Text>{formatTimestampSimply(props.createTime)}</Text>
-            {props.unreadCount ? null : <View style={styles.redCircle} />}
+            <TipPoint count={props.unreadCount} />
           </View>
         </View>
       </Button>
@@ -120,7 +121,7 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
             <View style={styles.toolBoxContainer}>
               <Button onPress={setReadStatus}>
                 <Text style={styles.toolBoxButtonText}>
-                  {props.unreadCount ? '标记未读' : '标记已读'}
+                  {props.unreadCount === 0 ? '标记未读' : '标记已读'}
                 </Text>
               </Button>
               <Button onPress={onPinPress}>
@@ -187,13 +188,6 @@ const styles = StyleSheet.create({
   toolBoxButtonText: {
     color: global.colors.textColor,
     padding: 8,
-  },
-  redCircle: {
-    marginLeft: global.styles.$spacing_row_sm,
-    borderRadius: 50,
-    backgroundColor: 'red',
-    width: 12,
-    height: 12,
   },
 })
 
