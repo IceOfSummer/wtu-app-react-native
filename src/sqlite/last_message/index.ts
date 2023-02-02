@@ -1,10 +1,8 @@
 import { SqliteMessage } from '../message'
 import DatabaseManager, { EMPTY_RESULT_SET } from '../index'
-import { ServerUser } from '../user'
+import { generateInsertArgument } from '../../utils/SqlUtils'
 
-export type LastMessageExactly = LastMessageQueryType & ServerUser
-
-export type LastMessageQueryType = SqliteMessage & { confirmed: number }
+export type LastMessageQueryType = SqliteMessage & { unreadCount: number }
 
 /**
  * 标记消息已读
@@ -13,14 +11,14 @@ export type LastMessageQueryType = SqliteMessage & { confirmed: number }
 export const markMessageRead = (uid: number) =>
   new Promise(resolve => {
     DatabaseManager.executeSql(
-      'UPDATE last_message SET confirmed = 1 WHERE uid = ?',
+      'UPDATE last_message SET unreadCount = 0 WHERE uid = ?',
       uid
     ).then(resolve)
   })
 
 export const markMessageUnread = (uid: number) =>
   DatabaseManager.executeSql(
-    'UPDATE last_message SET confirmed = 0 WHERE uid = ?',
+    'UPDATE last_message SET unreadCount = 1 WHERE uid = ?',
     uid
   )
 /**
@@ -28,39 +26,36 @@ export const markMessageUnread = (uid: number) =>
  * @param confirm 是否为未读消息
  * @param message 消息
  */
-export const insertLastMessage = (message: SqliteMessage, confirm: 1 | 0) =>
+export const insertLastMessage = (
+  message: SqliteMessage,
+  confirm: boolean | (1 | 0)
+) =>
   new Promise(resolve => {
     DatabaseManager.executeSql(
-      'REPLACE INTO last_message(uid, messageId, confirmed) VALUES (?, ?, ?)',
+      'REPLACE INTO last_message(uid, messageId, unreadCount) VALUES (?, ?, ?) ON CONFLICT(uid) DO UPDATE SET messageId = excluded.messageId, unreadCount = unreadCount + excluded.unreadCount',
       message.uid,
       message.messageId,
-      confirm
+      confirm ? 0 : 1
     ).then(resolve)
   })
 
 /**
- * 插入多条last_message
+ * 插入多条last_message, 默认这些消息都是未读的.
  * @param messages 多条消息，请确保按照uid升序排序
- * @param confirm confirm
  */
-export const insertMultiLastMessage = (
-  messages: SqliteMessage[],
-  confirm: 1 | 0
-) => {
+export const insertMultiLastMessage = (messages: SqliteMessage[]) => {
   if (messages.length === 0) {
     return Promise.resolve([EMPTY_RESULT_SET])
   }
-  let sql = 'REPLACE INTO last_message VALUES'
-  const args: Array<string | number> = []
-  for (let i = 0, len = messages.length; i < len; ++i) {
-    const msg = messages[i]
-    sql += `(?,?,${confirm})`
-    if (i < len - 1) {
-      sql += ','
-    }
-    args.push(msg.uid, msg.messageId)
-  }
-  return DatabaseManager.executeSql(sql, ...args)
+  const argument = generateInsertArgument(
+    'last_message',
+    '(uid,messageId,unreadCount)',
+    messages,
+    entity => [entity.uid, entity.messageId, 1]
+  )
+  argument.statement +=
+    ' ON CONFLICT(uid) DO UPDATE SET messageId = excluded.messageId, unreadCount = unreadCount + excluded.unreadCount'
+  return DatabaseManager.executeSql(argument.statement, ...argument.args)
 }
 
 /**
@@ -69,24 +64,8 @@ export const insertMultiLastMessage = (
 export const queryLastMessage = () =>
   new Promise<LastMessageQueryType[]>(resolve => {
     DatabaseManager.executeSql(
-      `SELECT lm.confirmed as confirmed, m.* FROM last_message lm
+      `SELECT lm.unreadCount as confirmed, m.* FROM last_message lm
                        JOIN message m USING(messageId)`
-    ).then(result => {
-      resolve(result[0].rows.raw())
-    })
-  })
-
-/**
- * 查询用户聊天面板的详细信息
- */
-export const queryLastMessageExactly = () =>
-  new Promise<Array<LastMessageExactly>>(resolve => {
-    DatabaseManager.executeSql(
-      `
-                SELECT u.*, lm.confirmed as confirmed, m.* 
-                FROM last_message lm, user u LEFT JOIN message m 
-                ON m.messageId = lm.messageId
-            `
     ).then(result => {
       resolve(result[0].rows.raw())
     })
@@ -106,6 +85,6 @@ export const deleteLastMessage = (uid: number) =>
 
 export const markAllMessageRead = () => {
   return DatabaseManager.executeSql(
-    'UPDATE last_message SET confirmed = 1 WHERE confirmed = 0'
+    'UPDATE last_message SET unreadCount = 0 WHERE unreadCount > 0'
   )
 }

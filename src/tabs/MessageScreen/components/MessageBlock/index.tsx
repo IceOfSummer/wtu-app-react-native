@@ -75,7 +75,7 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
    * 标记消息已读
    */
   const setReadStatus = () => {
-    if (props.confirmed) {
+    if (props.unreadCount) {
       dispatch(markMessageUnread(props.uid))
     } else {
       dispatch(markMessageRead(props.uid))
@@ -104,7 +104,7 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
           </View>
           <View style={styles.timeContainer}>
             <Text>{formatTimestampSimply(props.createTime)}</Text>
-            {props.confirmed ? null : <View style={styles.redCircle} />}
+            {props.unreadCount ? null : <View style={styles.redCircle} />}
           </View>
         </View>
       </Button>
@@ -120,7 +120,7 @@ const MessageBlock: React.FC<LastMessageQueryType> = props => {
             <View style={styles.toolBoxContainer}>
               <Button onPress={setReadStatus}>
                 <Text style={styles.toolBoxButtonText}>
-                  {props.confirmed ? '标记未读' : '标记已读'}
+                  {props.unreadCount ? '标记未读' : '标记已读'}
                 </Text>
               </Button>
               <Button onPress={onPinPress}>

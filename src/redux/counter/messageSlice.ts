@@ -68,7 +68,7 @@ export const initMessage = createAsyncThunk<InitMessageResult, undefined>(
     lastMsg.forEach(value => {
       value.content = value.content.replace(REPLACE_TYPE_MARKER, '')
       messageLabels[value.uid] = value
-      if (!value.confirmed) {
+      if (!value.unreadCount) {
         count++
       }
     })
@@ -111,7 +111,7 @@ export const insertSingleMessage = createAsyncThunk<
     dispatch(
       messageSlice.actions.insertSingleMessage({
         ...msg,
-        confirmed: confirm,
+        unreadCount: confirm,
       })
     )
   }
@@ -144,7 +144,7 @@ export const syncMessage = createAsyncThunk<void, SyncMessageParam>(
     // 保存到数据库
     await insertMultiplyMessage(msg)
     logger.info('insert multiply message success')
-    await insertMultiLastMessage(msg, 0)
+    await insertMultiLastMessage(msg)
     logger.info('insert last message success')
     // 保存到新消息中
     if (confirmed) {
@@ -236,8 +236,8 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
      */
     insertSingleMessage: (state, { payload }) => {
       state.unreadCount += getReadCountUpdateValue(
-        payload.confirmed,
-        state.messageLabels[payload.uid]?.confirmed
+        payload.unreadCount,
+        state.messageLabels[payload.uid]?.unreadCount
       )
       // payload 不能直接修改
       state.messageLabels[payload.uid] = {
@@ -251,7 +251,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     removeMessagePanel: (state, { payload }) => {
       state.unreadCount += getReadCountUpdateValue(
         1,
-        state.messageLabels[payload]?.confirmed
+        state.messageLabels[payload]?.unreadCount
       )
       state.messageLabels[payload] = undefined
     },
@@ -261,11 +261,11 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
         payload.forEach(value => {
           state.unreadCount += getReadCountUpdateValue(
             1,
-            state.messageLabels[value.uid]?.confirmed
+            state.messageLabels[value.uid]?.unreadCount
           )
           state.messageLabels[value.uid] = {
             ...value,
-            confirmed: 1,
+            unreadCount: 1,
           }
         })
         logger.debug('updating onlineMessages: ')
@@ -273,11 +273,11 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       } else {
         state.unreadCount += getReadCountUpdateValue(
           1,
-          state.messageLabels[payload.uid]?.confirmed
+          state.messageLabels[payload.uid]?.unreadCount
         )
         state.messageLabels[payload.uid] = {
           ...payload,
-          confirmed: 1,
+          unreadCount: 1,
         }
         state.onlineMessages.push(payload)
       }
@@ -287,13 +287,10 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     },
     insertOfflineMessage: (state, { payload }) => {
       payload.forEach(value => {
-        state.unreadCount += getReadCountUpdateValue(
-          1,
-          state.messageLabels[value.uid]?.confirmed
-        )
+        state.unreadCount++
         state.messageLabels[value.uid] = {
           ...value,
-          confirmed: 0,
+          unreadCount: 0,
         }
       })
     },
@@ -302,9 +299,9 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       if (target) {
         state.unreadCount += getReadCountUpdateValue(
           payload.confirmed,
-          target.confirmed
+          target.unreadCount
         )
-        target.confirmed = payload.confirmed
+        target.unreadCount = payload.confirmed
       }
     },
     markAllRead: state => {
@@ -312,7 +309,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       Object.keys(state.messageLabels).forEach(key => {
         const l = state.messageLabels[Number.parseInt(key, 10)]
         if (l) {
-          l.confirmed = 1
+          l.unreadCount = 1
         }
       })
     },

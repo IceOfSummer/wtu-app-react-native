@@ -2,13 +2,9 @@ import SQLite, { ResultSet, SQLiteDatabase } from 'react-native-sqlite-storage'
 import { getLogger } from '../utils/LoggerUtils'
 import AppEvents from '../AppEvents'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { doUpdate } from './update'
 
 const logger = getLogger('/src/sqlite')
-
-/**
- * 数据库版本号，相关信息保存在metadata表中，若版本号不一致，则会调用{@link DatabaseManager.updateDatabase}
- */
-const version = 4
 
 export const EMPTY_RESULT_SET: ResultSet = {
   rowsAffected: 0,
@@ -24,57 +20,6 @@ export const EMPTY_RESULT_SET: ResultSet = {
   },
 }
 
-const sql = `
-CREATE TABLE IF NOT EXISTS message(
-    uid INTEGER NOT NULL,
-    messageId INTEGER,
-    content CHAR(500) NOT NULL,
-    createTime INT NOT NULL,
-    type INT NOT NULL,
-    PRIMARY KEY(uid, messageId)
-);
-
-CREATE TABLE IF NOT EXISTS last_message(
-    uid INT PRIMARY KEY NOT NULL,
-    messageId INT NOT NULL,
-    confirmed TINYINT DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS app_metadata (
-    name CHAR(10) PRIMARY KEY,
-    value CHAR(3000) NOT NULL 
-);
-INSERT INTO app_metadata VALUES ('version', '${version}');
-
-CREATE TABLE event_remind(
-    id INT PRIMARY KEY NOT NULL,
-    count INT,
-    remindTitle CHAR(30) NOT NULL,
-    sourceId INT NOT NULL,
-    sourceType INT NOT NULL,
-    sourceContent CHAR(30),
-    senderIds CHAR(30) NOT NULL ,
-    createTime INT NOT NULL,
-    targetContent CHAR(30) NOT NULL,
-    abstractType INT NOT NULL
-);
-CREATE INDEX event_remind_type_index ON event_remind(abstractType);
-`
-/**
- * 升级时使用的sql
- */
-const update_sql = `
-DROP TABLE IF EXISTS message;
-CREATE TABLE IF NOT EXISTS message(
-    uid INTEGER NOT NULL,
-    messageId INTEGER,
-    content CHAR(500) NOT NULL,
-    createTime INT NOT NULL,
-    type INT NOT NULL,
-    PRIMARY KEY(uid, messageId)
-);
-UPDATE app_metadata SET value = '${version}' WHERE name = 'version';
-`
 const LAST_OPEN_UID = 'LastOpenUid'
 
 class DatabaseManager {
@@ -176,58 +121,23 @@ class DatabaseManager {
    * @private
    */
   private static async initDatabase(connection: SQLiteDatabase) {
-    return new Promise<void>(async (resolve, reject) => {
-      const check = await connection.executeSql(
-        'SELECT * FROM sqlite_master WHERE tbl_name = ?',
-        ['app_metadata']
-      )
-      if (check[0].rows.length === 0) {
-        logger.info('no local database exist, creating new tables')
-        // 创建表
-        await DatabaseManager.parseAndRunMultiSql(connection, sql)
-        resolve()
-        return
-      }
-      logger.info('local database is found, checking version code')
-      const set = await DatabaseManager.executeSql(
-        'SELECT * FROM app_metadata WHERE name = ?',
-        'version'
-      )
-      const versionMeta = set[0].rows.item(0) as MetadataType
-      const gap = version - Number.parseInt(versionMeta.value, 10)
-      if (gap === 1) {
-        // 版本号差1才进行更新, 跨度太大不更新
-        logger.info('database need update')
-        logger.info('updating database to ' + version)
-        await DatabaseManager.updateDatabase(connection)
-        logger.info('successfully update to ' + version)
-        resolve()
-        return
-      } else if (gap > 1) {
-        logger.error('current app version is too low, please reinstall app! ')
-        reject(new Error('您当前APP版本过低，请重新下载最新版本'))
-        return
-      }
-      logger.info('current local database is the latest version!')
-      resolve()
-    })
-  }
-
-  /**
-   * 解析并运行多行sql
-   * @param db 数据库连接
-   * @param sqlStr sql字符串
-   * @private
-   */
-  private static async parseAndRunMultiSql(db: SQLiteDatabase, sqlStr: string) {
-    const sqlArr = sqlStr.split(';')
-    for (let i = 0, len = sqlArr.length; i < len; i++) {
-      const trimmedStr = sqlArr[i].trim()
-      if (trimmedStr) {
-        await db.executeSql(trimmedStr)
-        logger.debug(trimmedStr)
-      }
+    const check = await connection.executeSql(
+      'SELECT * FROM sqlite_master WHERE tbl_name = ?',
+      ['app_metadata']
+    )
+    if (check[0].rows.length === 0) {
+      logger.info('no local database exist, creating new tables')
+      // 创建表
+      await doUpdate(connection)
+      return
     }
+    logger.info('local database is found, checking version code')
+    const set = await DatabaseManager.executeSql(
+      'SELECT * FROM app_metadata WHERE name = ?',
+      'version'
+    )
+    const versionMeta = set[0].rows.item(0) as MetadataType
+    await doUpdate(connection, Number.parseInt(versionMeta.value, 10))
   }
 
   /**
@@ -258,14 +168,6 @@ class DatabaseManager {
       }
       return Promise.resolve(db.executeSql(statement, args))
     })
-  }
-
-  /**
-   * 从上一个版本的数据库升级到新版本
-   * @private
-   */
-  private static async updateDatabase(db: SQLiteDatabase) {
-    await this.parseAndRunMultiSql(db, update_sql)
   }
 }
 
