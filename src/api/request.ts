@@ -27,7 +27,8 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
     store.dispatch(modifyRequestToken(resp.headers.Token))
   }
   if (resp.data.code === undefined) {
-    throw new Error(toNativeErrorMessage(resp.data))
+    logger.warn('the response code is undefined! response: ' + resp)
+    throw new Error(resp.data)
   }
   if (resp.data.code !== 0) {
     logger.error(`request failed: ${resp.request._url}: ${resp.data.message}`)
@@ -47,7 +48,7 @@ const serverRequestErrorInterceptor = (error: AxiosError): Error => {
     }
     return new Error(data.message)
   } else {
-    error.message = toNativeErrorMessage(error.message)
+    error.message = toNativeErrorMessage(error)
     return error
   }
 }
