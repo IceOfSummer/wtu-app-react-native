@@ -3,7 +3,7 @@ import { View, ViewStyle } from 'react-native'
 
 interface ConditionHideContainer {
   hide?: boolean
-  style?: ViewStyle
+  style?: ViewStyle | ViewStyle[]
 }
 
 const ConditionHideContainer: React.FC<ConditionHideContainer> = props => {

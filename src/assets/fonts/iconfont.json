@@ -6,6 +6,111 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11975179",
+      "name": "删除线",
+      "font_class": "shanchuxian",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "4890372",
+      "name": "超链接",
+      "font_class": "chaolianjie",
+      "unicode": "e6e2",
+      "unicode_decimal": 59106
+    },
+    {
+      "icon_id": "4890373",
+      "name": "粗体",
+      "font_class": "cuti",
+      "unicode": "e6e4",
+      "unicode_decimal": 59108
+    },
+    {
+      "icon_id": "4890375",
+      "name": "大标题",
+      "font_class": "dabiaoti",
+      "unicode": "e6e5",
+      "unicode_decimal": 59109
+    },
+    {
+      "icon_id": "4890377",
+      "name": "分割线",
+      "font_class": "fengexian",
+      "unicode": "e6e6",
+      "unicode_decimal": 59110
+    },
+    {
+      "icon_id": "4890379",
+      "name": "居右对齐",
+      "font_class": "juyouduiqi",
+      "unicode": "e6e9",
+      "unicode_decimal": 59113
+    },
+    {
+      "icon_id": "4890380",
+      "name": "居左对齐",
+      "font_class": "juzuoduiqi",
+      "unicode": "e6ea",
+      "unicode_decimal": 59114
+    },
+    {
+      "icon_id": "4890383",
+      "name": "居中对齐",
+      "font_class": "juzhongduiqi",
+      "unicode": "e6eb",
+      "unicode_decimal": 59115
+    },
+    {
+      "icon_id": "4890385",
+      "name": "图片",
+      "font_class": "shangchuantupian",
+      "unicode": "e6ec",
+      "unicode_decimal": 59116
+    },
+    {
+      "icon_id": "4890392",
+      "name": "下划线",
+      "font_class": "xiahuaxian",
+      "unicode": "e6ed",
+      "unicode_decimal": 59117
+    },
+    {
+      "icon_id": "4890393",
+      "name": "文字",
+      "font_class": "wenzi",
+      "unicode": "e6ee",
+      "unicode_decimal": 59118
+    },
+    {
+      "icon_id": "4890394",
+      "name": "无序列表",
+      "font_class": "wuxuliebiao",
+      "unicode": "e6ef",
+      "unicode_decimal": 59119
+    },
+    {
+      "icon_id": "4890397",
+      "name": "小标题",
+      "font_class": "xiaobiaoti",
+      "unicode": "e6f0",
+      "unicode_decimal": 59120
+    },
+    {
+      "icon_id": "4890398",
+      "name": "斜体",
+      "font_class": "xieti",
+      "unicode": "e6f1",
+      "unicode_decimal": 59121
+    },
+    {
+      "icon_id": "4890402",
+      "name": "有序列表",
+      "font_class": "youxuliebiao",
+      "unicode": "e6f2",
+      "unicode_decimal": 59122
+    },
+    {
       "icon_id": "15644380",
       "name": "图钉",
       "font_class": "tuding",

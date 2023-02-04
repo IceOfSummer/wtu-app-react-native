@@ -1,6 +1,6 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3002046 */
-  src: url('iconfont.ttf?t=1674218235815') format('truetype');
+  src: url('iconfont.ttf?t=1675514212868') format('truetype');
 }
 
 .iconfont {
@@ -9,6 +9,66 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-shanchuxian:before {
+  content: "\e60e";
+}
+
+.icon-chaolianjie:before {
+  content: "\e6e2";
+}
+
+.icon-cuti:before {
+  content: "\e6e4";
+}
+
+.icon-dabiaoti:before {
+  content: "\e6e5";
+}
+
+.icon-fengexian:before {
+  content: "\e6e6";
+}
+
+.icon-juyouduiqi:before {
+  content: "\e6e9";
+}
+
+.icon-juzuoduiqi:before {
+  content: "\e6ea";
+}
+
+.icon-juzhongduiqi:before {
+  content: "\e6eb";
+}
+
+.icon-shangchuantupian:before {
+  content: "\e6ec";
+}
+
+.icon-xiahuaxian:before {
+  content: "\e6ed";
+}
+
+.icon-wenzi:before {
+  content: "\e6ee";
+}
+
+.icon-wuxuliebiao:before {
+  content: "\e6ef";
+}
+
+.icon-xiaobiaoti:before {
+  content: "\e6f0";
+}
+
+.icon-xieti:before {
+  content: "\e6f1";
+}
+
+.icon-youxuliebiao:before {
+  content: "\e6f2";
 }
 
 .icon-tuding:before {

@@ -44,7 +44,10 @@ export default class ImagePickMenu extends React.Component<
 
   pickerCallback(response: ImagePickerResponse) {
     if (!response.errorCode) {
-      const assets = response.assets!
+      const assets = response.assets
+      if (!assets) {
+        return
+      }
       const images: Array<ImageProperty> = []
       for (let i = 0; i < assets.length; i++) {
         const img = assets[i]

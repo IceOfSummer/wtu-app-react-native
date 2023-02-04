@@ -65,6 +65,10 @@ type WebViewMessage<T extends keyof WebViewMessageType> = {
   data: WebViewMessageType[T]
 }
 
+/**
+ * @deprecated
+ * @see CombinableRichEditor
+ */
 export default class RichTextEditor extends React.Component<
   RichTextEditorProps,
   RichTextEditorState

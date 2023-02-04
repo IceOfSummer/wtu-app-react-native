@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import SimpleInput from '../../component/Input/SimpleInput'
 import { useFormChecker } from '../../component/Input'
 import { postArticle } from '../../api/server/community'
@@ -9,12 +9,13 @@ import { StackActions, useNavigation } from '@react-navigation/native'
 import { ARTICLE_DETAIL_PAGE, UseNavigationGeneric } from '../../router'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../redux/counter'
-import RichTextEditor, {
-  EditorData,
-} from '../../component/Container/RichTextEditor'
 import { getLogger } from '../../utils/LoggerUtils'
 import { processHtml } from '../../utils/XssUtil'
 import NavigationHeader from '../../component/Container/NavigationHeader'
+import CombinableRichEditor, {
+  CombinableRichEditorToolBar,
+  EditorData,
+} from '../../component/Container/CombinableRichEditor'
 
 const logger = getLogger('/views/PostArticlePage')
 
@@ -23,7 +24,7 @@ const PostArticlePage: React.FC = () => {
   const titleInputRef = useRef<SimpleInput>(null)
   const nav = useNavigation<UseNavigationGeneric>()
   const store = useStore<ReducerTypes>()
-  const richTextEditor = useRef<RichTextEditor>(null)
+  const editorRef = useRef<CombinableRichEditor>(null)
   const checker = useFormChecker([
     {
       name: '标题',
@@ -34,7 +35,7 @@ const PostArticlePage: React.FC = () => {
 
   const submit = async () => {
     const errors = checker.checkForm()
-    const editor = richTextEditor.current!
+    const editor = editorRef.current!
     if (errors.length) {
       return
     }
@@ -90,26 +91,27 @@ const PostArticlePage: React.FC = () => {
 
   return (
     <View style={styles.outerContainer}>
-      <NavigationHeader
-        showSplitLine
-        title="发布帖子"
-        navigation={nav}
-        backgroundColor={global.colors.boxBackgroundColor}>
-        <Text style={styles.submitText} onPress={submit}>
-          提交
-        </Text>
-      </NavigationHeader>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ paddingBottom: 20 }}>
-        <SimpleInput
-          ref={titleInputRef}
-          textInputProps={{ placeholder: '标题' }}
-          onChangeText={setTitle}
-          style={{ marginBottom: 8 }}
-        />
-        <RichTextEditor ref={richTextEditor} />
-      </ScrollView>
+      <View style={{ flex: 1, borderWidth: 1 }}>
+        <NavigationHeader
+          showSplitLine
+          title="发布帖子"
+          navigation={nav}
+          backgroundColor={global.colors.boxBackgroundColor}>
+          <Text style={styles.submitText} onPress={submit}>
+            提交
+          </Text>
+        </NavigationHeader>
+        <View style={styles.container}>
+          <SimpleInput
+            ref={titleInputRef}
+            textInputProps={{ placeholder: '标题' }}
+            onChangeText={setTitle}
+            style={{ marginBottom: 8 }}
+          />
+          <CombinableRichEditor ref={editorRef} />
+        </View>
+        <CombinableRichEditorToolBar richEditorRef={editorRef} />
+      </View>
     </View>
   )
 }
