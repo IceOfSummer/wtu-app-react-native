@@ -17,6 +17,9 @@ import { getLogger } from '../../../utils/LoggerUtils'
 import { processHtml } from '../../../utils/XssUtil'
 import Toast from 'react-native-root-toast'
 import ConditionHideContainer from '../ConditionHideContainer'
+import NavigationContext from '@react-navigation/core/src/NavigationContext'
+import { NavigationProp } from '@react-navigation/core/src/types'
+import { FULL_SCREEN_IMAGE_PAGE, RouterTypes } from '../../../router'
 
 const logger = getLogger('/component/Container/RichTextPresentView')
 
@@ -27,14 +30,14 @@ interface RichTextPresentViewProps {
 }
 
 type WebViewMessage = {
-  type: 'height' | 'error'
+  type: 'height' | 'error' | 'imagePress'
   data: any
 }
 async function getSource(): Promise<WebViewSource> {
   if (__DEV__) {
     const source = await fetch(
       Image.resolveAssetSource(
-        require('../../../assets/html/rich_text_view.html')
+        require('../../../assets/html/rich_text_view_v2.html')
       ).uri
     )
     return {
@@ -42,7 +45,7 @@ async function getSource(): Promise<WebViewSource> {
     }
   } else {
     return {
-      uri: Environment.cdnUrl + '/static/html/rich_text_view.html',
+      uri: Environment.cdnUrl + '/static/html/rich_text_view_v2.html',
     }
   }
 }
@@ -56,6 +59,8 @@ export default class RichTextPresentView extends React.Component<
   RichTextPresentViewProps,
   RichTextPresentViewState
 > {
+  context: NavigationProp<RouterTypes>
+
   webView = React.createRef<WebView>()
 
   onLoad = () => {
@@ -78,13 +83,20 @@ export default class RichTextPresentView extends React.Component<
           this.props.content
       )
       Toast.show('富文本展示出错: ' + message.data)
+    } else if (message.type === 'imagePress') {
+      //
+      this.context.navigate(FULL_SCREEN_IMAGE_PAGE, {
+        images: [{ url: message.data }],
+      })
     }
   }
 
   constructor(
-    props: Readonly<RichTextPresentViewProps> | RichTextPresentViewProps
+    props: Readonly<RichTextPresentViewProps> | RichTextPresentViewProps,
+    context: NavigationProp<RouterTypes>
   ) {
-    super(props)
+    super(props, context)
+    this.context = context
     this.state = { height: 0 }
     getSource()
       .then(s => {
@@ -121,6 +133,8 @@ export default class RichTextPresentView extends React.Component<
     )
   }
 }
+
+RichTextPresentView.contextType = NavigationContext
 
 const styles = StyleSheet.create({
   loadingContainer: {

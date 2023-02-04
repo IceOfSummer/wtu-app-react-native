@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+  <link href="https://xds.asia/static/quill/quill.snow.css" rel="stylesheet">
+  <script src="https://xds.asia/static/quill/quill.min.js"></script>
+  <style>
+    .ql-editor {
+      padding: 12px 0 !important;
+    }
+  </style>
+</head>
+<body style="margin: 0;">
+<div id="editor" style="border: none"></div>
+</body>
+<script>
+  Quill.prototype.setHtml = function(content) {
+    const editor = this.container.querySelector('.ql-editor')
+    editor.innerHTML = content
+    // 绑定图片点击事件
+    editor.addEventListener('click', ({target}) => {
+      if (target.tagName === 'IMG' || target.tagName === 'img') {
+        if (target.src && target.src.length > 0) {
+          postMessage({type: 'imagePress', data: target.src})
+        }
+      }
+    })
+  }
+  const quill = new Quill('#editor', {
+    modules: {
+      toolbar: false
+    },
+    theme: 'snow',
+    readOnly: true
+  })
+  const editor = document.getElementById("editor")
+
+  /**
+   * 给RN发消息
+   * @param message {{type: string, data?: string | number}}
+   */
+  function postMessage(message) {
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify(message))
+    } else {
+      console.log('post message: ' + JSON.stringify(message))
+    }
+  }
+
+  function setContents(content) {
+    if (typeof content === 'string') {
+      quill.setHtml(content)
+    } else {
+      quill.setContents(content)
+    }
+    setTimeout(() => {
+      postMessage({type: 'height', data: editor.clientHeight})
+      intervalCheck()
+    }, 50)
+  }
+
+  /**
+   * 防止图片加载慢导致高度错误。由于目前没有找到有效在该场景下监控clientHeight变化的API，只能这样了。
+   */
+  function intervalCheck() {
+    let times = 0
+    let lastHeight = editor.clientHeight
+    const interval = setInterval(() => {
+      if (lastHeight !== editor.clientHeight) {
+        lastHeight = editor.clientHeight
+        postMessage({type: 'height', data: editor.clientHeight})
+      }
+      times++
+      if (times > 20) {
+        clearInterval(interval)
+      }
+    }, 200)
+  }
+
+  window.addEventListener('error', (evt) => {
+    postMessage({type: 'error', data: `${evt.type}: ${evt.message}`})
+  })
+</script>
+</html>
