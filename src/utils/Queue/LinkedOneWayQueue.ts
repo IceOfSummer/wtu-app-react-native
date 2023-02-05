@@ -22,7 +22,10 @@ class Node<T> {
 }
 
 /**
- * 使用链表构建的单向队列
+ * 使用链表构建的单向队列.
+ * <p>
+ * @deprecated <b>这个实现其实是一个栈，而非队列</b>
+ * @see SimpleQueue
  */
 export default class LinkedOneWayQueue<T> implements OneWayQueue<T> {
   private tail: Node<T> | undefined
