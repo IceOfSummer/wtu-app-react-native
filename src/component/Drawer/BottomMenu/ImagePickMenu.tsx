@@ -23,6 +23,7 @@ export type ImageProperty = {
    * 文件类型，如`image/png`
    */
   contentType: string
+  originFilepath?: string
 }
 
 interface ImagePickMenuProps {
@@ -56,6 +57,7 @@ export default class ImagePickMenu extends React.Component<
             path: img.uri,
             descriptor: img.type.substring(img.type.lastIndexOf('/') + 1),
             contentType: img.type,
+            originFilepath: img.originFilepath!,
           })
         }
       }

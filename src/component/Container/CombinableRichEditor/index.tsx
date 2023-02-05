@@ -23,11 +23,7 @@ import ImagePickMenu, {
   ImageProperty,
 } from '../../Drawer/BottomMenu/ImagePickMenu'
 import Loading from '../../Loading'
-import {
-  requirePublicSpaceUploadSecret,
-  SignInfo,
-  uploadFileToPublicSpace,
-} from '../../../api/server/cos'
+import ImageUploadUtils from '../../../utils/ImageUploadUtils'
 
 const logger = getLogger('/components/Container/CombinableRichEditor')
 
@@ -189,14 +185,13 @@ interface CombinableRichEditorToolBarProps {
    * - color
    */
   keyboardHeight?: number
+  visible?: boolean
 }
 
 enum ToolbarLabel {
   NONE,
   COLOR,
 }
-
-const imageCache = new Map<string, string>()
 
 /**
  * 富文本控制器
@@ -205,7 +200,6 @@ export const CombinableRichEditorToolBar: React.FC<
   CombinableRichEditorToolBarProps
 > = props => {
   const [colorLabelVisible, setColorLabelVisible] = useState(false)
-  const imageUploadSignCache = useRef<SignInfo | null>()
   // 当该标致为true时，在键盘收起时应该关闭label
   const closeLabelFlag = useRef<boolean>(true)
   const [labelVisible, setLabelVisible] = useState(false)
@@ -243,42 +237,17 @@ export const CombinableRichEditorToolBar: React.FC<
     if (!img) {
       return
     }
-    const remoteUrl = imageCache.get(img.path)
-    logger.info('uploading image...')
-    if (remoteUrl) {
-      logger.info('image has already uploaded!')
-      props.richEditorRef.current?.insertImage(remoteUrl)
-      return
-    }
-    Loading.showLoading('上传图片中')
-    if (!imageUploadSignCache.current) {
-      logger.info('requesting upload sign')
-      try {
-        imageUploadSignCache.current = (
-          await requirePublicSpaceUploadSecret(img.contentType)
-        ).data
-      } catch (e: any) {
-        logger.info('request upload sign failed: ' + e.message)
-        Toast.show('上传文件失败: ' + e.message)
-        Loading.hideLoading()
-        return
-      }
-    }
     try {
-      await uploadFileToPublicSpace(
-        imageUploadSignCache.current,
+      Loading.showLoading('上传图片中')
+      const url = await ImageUploadUtils.uploadImageToPublicSpace(
         img.path,
-        img.contentType
+        img.contentType,
+        img.originFilepath
       )
-      props.richEditorRef.current?.insertImage(
-        imageUploadSignCache.current.path
-      )
-      // save to cache
-      imageCache.set(img.path, imageUploadSignCache.current.path)
-      imageUploadSignCache.current = undefined
+      props.richEditorRef.current?.insertImage(url)
     } catch (e: any) {
-      logger.error('image upload failed: ' + e.message)
-      Toast.show('图片上传失败: ' + e.message)
+      logger.error('upload image failed: ' + e.message)
+      Toast.show('上传文件失败: ' + e.message)
     } finally {
       Loading.hideLoading()
     }
@@ -303,7 +272,8 @@ export const CombinableRichEditorToolBar: React.FC<
   }, [])
 
   return (
-    <View style={[styles.toolbar]}>
+    <View
+      style={[styles.toolbar, { display: props.visible ? 'flex' : 'none' }]}>
       <View style={styles.toolbarContainer}>
         <ToolBarItem
           icon="&#xe6e4;"

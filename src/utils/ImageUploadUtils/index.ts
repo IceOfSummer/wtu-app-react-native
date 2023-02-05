@@ -5,6 +5,9 @@ import {
 } from '../../api/server/cos'
 import PublicData from '../../sqlite/public_data'
 import LinkedStack from '../Collection/LinkedStack'
+import { getLogger } from '../LoggerUtils'
+
+const logger = getLogger('/utils/ImageUploadUtils')
 
 /**
  * 图片上传工具类。
@@ -24,28 +27,39 @@ export default class ImageUploadUtils {
    * 立刻上传图片到公共空间
    * @param filepath 图片路径
    * @param contentType 文件类型
+   * @param key 用于辨别文件的标识符
    */
   public static async uploadImageToPublicSpace(
     filepath: string,
-    contentType: string
+    contentType: string,
+    key: string = filepath
   ): Promise<string> {
     let path
+    logger.info('uploading image to public space')
     try {
-      path = await PublicData.get(filepath)
-    } catch (ignored) {}
+      path = await PublicData.get(key)
+    } catch (e: any) {
+      logger.error('get publicData failed: ' + e.message)
+    }
     if (path) {
+      logger.info('cache hit! return cached url.')
       return path
     }
     let sign = this.secretStack.peek()
     if (!sign) {
+      logger.info('requiring upload secret...')
       sign = (await requirePublicSpaceUploadSecret(contentType)).data
       this.secretStack.push(sign)
     }
+    logger.info('start upload')
     await uploadFileToPublicSpace(sign, filepath, contentType)
+    logger.info('upload success!')
     this.secretStack.pop()
     try {
-      await PublicData.set(filepath, sign.path)
-    } catch (ignored) {}
+      await PublicData.set(key, sign.path)
+    } catch (e: any) {
+      logger.error('set publicData failed: ' + e.message)
+    }
     return sign.path
   }
 }

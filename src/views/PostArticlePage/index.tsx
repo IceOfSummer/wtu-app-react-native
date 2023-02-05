@@ -21,6 +21,7 @@ const logger = getLogger('/views/PostArticlePage')
 
 const PostArticlePage: React.FC = () => {
   const [title, setTitle] = useState('')
+  const [toolbarVisible, setToolbarVisiable] = useState(false)
   const titleInputRef = useRef<SimpleInput>(null)
   const nav = useNavigation<UseNavigationGeneric>()
   const store = useStore<ReducerTypes>()
@@ -89,6 +90,14 @@ const PostArticlePage: React.FC = () => {
     }
   }
 
+  const onRichEditorFocus = () => {
+    setToolbarVisiable(true)
+  }
+
+  const onRichEditorBlur = () => {
+    setToolbarVisiable(false)
+  }
+
   return (
     <View style={styles.outerContainer}>
       <View style={{ flex: 1, borderWidth: 1 }}>
@@ -108,9 +117,16 @@ const PostArticlePage: React.FC = () => {
             onChangeText={setTitle}
             style={{ marginBottom: 8 }}
           />
-          <CombinableRichEditor ref={editorRef} />
+          <CombinableRichEditor
+            ref={editorRef}
+            onBlur={onRichEditorBlur}
+            onFocus={onRichEditorFocus}
+          />
         </View>
-        <CombinableRichEditorToolBar richEditorRef={editorRef} />
+        <CombinableRichEditorToolBar
+          visible={toolbarVisible}
+          richEditorRef={editorRef}
+        />
       </View>
     </View>
   )

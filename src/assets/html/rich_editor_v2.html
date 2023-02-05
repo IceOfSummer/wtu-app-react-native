@@ -68,6 +68,7 @@
    * 追加图片
    */
   function insertImage(url) {
+    quill.focus()
     quill.insertEmbed(quill.getSelection().index, 'image', url)
   }
 
@@ -92,7 +93,6 @@
     if (range) {
       if (range.length === 0) {
         postMessage({type: 'onFocus'})
-        postMessage(quill.lastSelection)
         if (quill.lastSelection) {
           quill.formatText(quill.lastSelection.index, quill.lastSelection.length, 'background', quill.lastSelection.background)
         }
