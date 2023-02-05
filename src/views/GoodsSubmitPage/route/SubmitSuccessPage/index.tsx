@@ -13,11 +13,16 @@ import {
   FLEA_MARKET_TABS,
   HOME_TABS,
 } from '../../../../router'
+import { useSelector } from 'react-redux'
+import { ReducerTypes } from '../../../../redux/counter'
 
 const SubmitSuccessPage: React.FC = () => {
   const route = useRoute<RouteProp<SubmitPageRouteTypes, typeof SUCCESS_PAGE>>()
   const lottie = useRef<LottieView>(null)
   const nav = useNavigation()
+  const email = useSelector<ReducerTypes, string | undefined>(
+    state => state.serverUser.userInfo?.email
+  )
 
   const toMainTab = () => {
     nav.dispatch(StackActions.replace(HOME_TABS, { screen: FLEA_MARKET_TABS }))
@@ -59,6 +64,11 @@ const SubmitSuccessPage: React.FC = () => {
         ]}>
         您的商品是APP上第{route.params.commodityId}件商品
       </Text>
+      {email ? null : (
+        <Text style={global.styles.errorTipText}>
+          检测到您还未绑定邮箱，在商品被购买时可能不会即使收到通知，请及时绑定邮箱！
+        </Text>
+      )}
       <View
         style={{
           flexDirection: 'row',

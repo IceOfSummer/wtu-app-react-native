@@ -123,11 +123,12 @@ const PostArticlePage: React.FC = () => {
             onFocus={onRichEditorFocus}
           />
         </View>
-        <CombinableRichEditorToolBar
-          visible={toolbarVisible}
-          richEditorRef={editorRef}
-        />
       </View>
+      <CombinableRichEditorToolBar
+        visible={toolbarVisible}
+        styles={{ position: 'absolute' }}
+        richEditorRef={editorRef}
+      />
     </View>
   )
 }

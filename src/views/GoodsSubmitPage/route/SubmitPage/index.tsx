@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import SimpleInput from '../../../../component/Input/SimpleInput'
 import ImageUploadContainer from '../../../../component/Input/ImageUploadContainer'
@@ -14,17 +14,13 @@ import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import { SUBMIT_PAGE, SubmitPageRouteTypes, SUCCESS_PAGE } from '../../index'
 import { getFilenameFromUrl } from '../../../../utils/PathUtils'
 import { createCommodity } from '../../../../api/server/commodity'
-import { SpringScrollView } from 'react-native-spring-scrollview'
 import Divider from '../../../../component/Container/Divider'
-import ColorfulButton from '../../../../component/Button/ColorfulButton'
-import { useSelector } from 'react-redux'
-import { ReducerTypes } from '../../../../redux/counter'
-import ConditionHideContainer from '../../../../component/Container/ConditionHideContainer'
-import RichTextEditor from '../../../../component/Container/RichTextEditor'
 import Toast from 'react-native-root-toast'
 import { getLogger } from '../../../../utils/LoggerUtils'
-
-const MAX_ACTIVE_COMMODITY = 10
+import CombinableRichEditor, {
+  CombinableRichEditorToolBar,
+} from '../../../../component/Container/CombinableRichEditor'
+import NavigationHeader from '../../../../component/Container/NavigationHeader'
 
 const logger = getLogger('/views/GoodsSubmitPage/route/SubmitPage')
 
@@ -39,17 +35,15 @@ const SubmitPage: React.FC = () => {
   const [commodityPrice, setCommodityPrice] = useState('')
   const [tradeLocation, setTradeLocation] = useState('')
   const [commodityCount, setCommodityCount] = useState('')
+  const [editorToolbarVisible, setEditorToolbarVisible] = useState(false)
   const goodsNameInput = useRef<SimpleInput>(null)
   const countInput = useRef<SimpleInput>(null)
   const priceInput = useRef<SimpleInput>(null)
   const tradeLocationInput = useRef<SimpleInput>(null)
   const previewImageInput = useRef<ImageUploadContainer>(null)
   const detailImageInput = useRef<ImageUploadContainer>(null)
-  const richTextInput = useRef<RichTextEditor>(null)
+  const inputRef = useRef<CombinableRichEditor>(null)
 
-  const email = useSelector<ReducerTypes, string | undefined>(
-    state => state.serverUser.userInfo?.email
-  )
   const formManager = useFormChecker<string>([
     {
       name: '商品名称',
@@ -85,7 +79,7 @@ const SubmitPage: React.FC = () => {
     ) {
       return
     }
-    const decoration = await richTextInput.current?.getContent()
+    const decoration = await inputRef.current?.getContent()
     if (!decoration) {
       Toast.show('描述不可为空！')
       return
@@ -167,83 +161,107 @@ const SubmitPage: React.FC = () => {
     })
   }
 
+  const onRichEditorFocus = () => {
+    setEditorToolbarVisible(true)
+  }
+
+  const onRichEditorBlur = () => {
+    setEditorToolbarVisible(false)
+  }
+
   return (
-    <SpringScrollView style={styles.container}>
-      <SimpleInput
-        textInputProps={{ placeholder: '商品名称', maxLength: 50 }}
-        ref={goodsNameInput}
-        onChangeText={setCommodityName}
-      />
-      <SimpleInput
-        onChangeText={setCommodityCount}
-        textInputProps={{ placeholder: '数量', keyboardType: 'numeric' }}
-        rowTipText="件"
-        rowTipTextStyle={styles.tipText}
-        ref={countInput}
-      />
-      <SimpleInput
-        onChangeText={setCommodityPrice}
-        textInputProps={{
-          placeholder: '价格',
-          keyboardType: 'numeric',
-          maxLength: 8,
-        }}
-        rowTipText="元"
-        rowTipTextStyle={styles.tipText}
-        ref={priceInput}
-      />
-      <SimpleInput
-        onChangeText={setTradeLocation}
-        textInputProps={{ placeholder: '交易地点(如送货上门)', maxLength: 20 }}
-        ref={tradeLocationInput}
-      />
-      <ImageUploadContainer
-        uid={uid}
-        title="预览图"
-        limit={1}
-        tipMessage="用户在搜索列表中最先看到的就是预览图了!图片会被压缩为正方形的图片，请提前确保尺寸"
-        imagePreviewResizeMode="stretch"
-        ref={previewImageInput}
-      />
-      <Divider />
-      <ImageUploadContainer
-        uid={uid}
-        title="详细图"
-        limit={6}
-        ref={detailImageInput}
-        tipMessage="用户在点进商品后会看到的详细展示图，若不上传，默认使用预览图"
-      />
-      <Divider />
-      <View style={styles.richTextContainer}>
-        <Text style={styles.titleText}>描述</Text>
-        <RichTextEditor ref={richTextInput} />
-      </View>
-      <View style={styles.submitButtonContainer}>
-        <Text style={global.styles.primaryTipText}>
-          每个人最多上架{MAX_ACTIVE_COMMODITY}件商品
+    <View style={{ flex: 1 }}>
+      <NavigationHeader
+        title="提交商品"
+        backgroundColor={global.colors.boxBackgroundColor}
+        navigation={nav}>
+        <Text style={styles.submitText} onPress={submitCommodity}>
+          提交
         </Text>
-        <ConditionHideContainer hide={!!email}>
-          <Text style={global.styles.errorTipText}>
-            检测到您还未绑定邮箱，建议尽快绑定邮箱，在商品有消息时将通过邮箱提醒你
-          </Text>
-        </ConditionHideContainer>
-        <ColorfulButton
-          color={global.colors.primaryColor}
-          title="提交"
-          onPress={submitCommodity}
+      </NavigationHeader>
+      <ScrollView style={styles.container}>
+        <SimpleInput
+          textInputProps={{ placeholder: '商品名称', maxLength: 50 }}
+          ref={goodsNameInput}
+          onChangeText={setCommodityName}
         />
-      </View>
-    </SpringScrollView>
+        <SimpleInput
+          onChangeText={setCommodityCount}
+          textInputProps={{ placeholder: '数量', keyboardType: 'numeric' }}
+          rowTipText="件"
+          rowTipTextStyle={styles.tipText}
+          ref={countInput}
+        />
+        <SimpleInput
+          onChangeText={setCommodityPrice}
+          textInputProps={{
+            placeholder: '价格',
+            keyboardType: 'numeric',
+            maxLength: 8,
+          }}
+          rowTipText="元"
+          rowTipTextStyle={styles.tipText}
+          ref={priceInput}
+        />
+        <SimpleInput
+          onChangeText={setTradeLocation}
+          textInputProps={{
+            placeholder: '交易地点(如送货上门)',
+            maxLength: 20,
+          }}
+          ref={tradeLocationInput}
+        />
+        <ImageUploadContainer
+          uid={uid}
+          title="预览图"
+          limit={1}
+          tipMessage="用户在搜索列表中最先看到的就是预览图了!图片会被压缩为正方形的图片，请提前确保尺寸"
+          imagePreviewResizeMode="stretch"
+          ref={previewImageInput}
+        />
+        <Divider />
+        <ImageUploadContainer
+          uid={uid}
+          title="详细图"
+          limit={6}
+          ref={detailImageInput}
+          tipMessage="用户在点进商品后会看到的详细展示图，若不上传，默认使用预览图"
+        />
+        <Divider />
+        <View style={styles.richTextContainer}>
+          <Text style={styles.titleText}>描述</Text>
+        </View>
+        <Divider />
+        <CombinableRichEditor
+          styles={styles.editor}
+          disableKeyboardAvoid
+          nestedScrollEnabled
+          ref={inputRef}
+          onFocus={onRichEditorFocus}
+          onBlur={onRichEditorBlur}
+        />
+        <View style={{ height: 40, width: '100%' }} />
+      </ScrollView>
+      <CombinableRichEditorToolBar
+        richEditorRef={inputRef}
+        visible={editorToolbarVisible}
+      />
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
+  editor: {
+    height: Dimensions.get('window').height / 2,
+    flex: undefined,
+  },
   container: {
     borderTopColor: global.colors.borderColor,
     borderTopWidth: StyleSheet.hairlineWidth,
     backgroundColor: global.colors.boxBackgroundColor,
     paddingHorizontal: global.styles.$spacing_row_base,
     overflow: 'hidden',
+    flex: 1,
   },
   tipText: {
     color: global.colors.textColor,
@@ -261,6 +279,11 @@ const styles = StyleSheet.create({
   },
   richTextContainer: {
     marginVertical: 8,
+  },
+  submitText: {
+    color: global.colors.primaryColor,
+    fontSize: global.styles.$font_size_base,
+    marginRight: 6,
   },
 })
 

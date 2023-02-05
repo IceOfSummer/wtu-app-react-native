@@ -14,14 +14,11 @@
     .ql-editor.ql-blank::before{
       left: 0;
     }
-    ::selection{
-      background-color: lightskyblue;
-    }
   </style>
 </head>
-<body style="margin: 0;overflow-x: hidden">
+<body style="margin: 0;overflow-x: hidden;">
 <div id="editor" style="z-index: 1;border: none;margin: 0"></div>
-<div style="height: 150px;width: 100%"></div>
+<div style="height: 100px;width: 100%"></div>
 <script>
   Quill.prototype.setHtml = function(content) {
     this.container.querySelector('.ql-editor').innerHTML = content
@@ -35,13 +32,6 @@
       value = false
     }
     this.format(formatName, value)
-  }
-  Quill.prototype.specialBlur = function () {
-    const {index, length} = this.getSelection()
-    const previousBackground = this.getFormat().background
-    quill.format('background', 'lightskyblue')
-    this.lastSelection = {index, length, background: previousBackground ?? false}
-    this.blur()
   }
 
   const quill = new Quill('#editor', {
@@ -93,16 +83,16 @@
     if (range) {
       if (range.length === 0) {
         postMessage({type: 'onFocus'})
-        if (quill.lastSelection) {
-          quill.formatText(quill.lastSelection.index, quill.lastSelection.length, 'background', quill.lastSelection.background)
-        }
         console.log('User cursor is on', range.index);
       }
     } else {
       console.log('Cursor not in the editor');
-      postMessage({type: 'onBlur'})
+      if (source !== 'api') {
+        postMessage({type: 'onBlur', data: source})
+      }
     }
   });
+
   let previousHeight = 0
   quill.on('text-change', function(delta, oldDelta, source) {
     if (source === 'user') {
@@ -111,7 +101,7 @@
       }
       previousHeight = document.body.clientHeight
     }
-  });
+  })
 
 </script>
 </body>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Pressable, StyleSheet } from 'react-native'
+import { StyleSheet, TouchableOpacity } from 'react-native'
 
 interface ColorItemProps {
   color: string
@@ -8,7 +8,8 @@ interface ColorItemProps {
 
 const ColorItem: React.FC<ColorItemProps> = props => {
   return (
-    <Pressable
+    <TouchableOpacity
+      activeOpacity={0.3}
       style={[styles.container, { backgroundColor: props.color }]}
       onPress={() => props.onPress?.(props.color)}
     />
