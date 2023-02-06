@@ -18,7 +18,7 @@
 </head>
 <body style="margin: 0;overflow-x: hidden;">
 <div id="editor" style="z-index: 1;border: none;margin: 0"></div>
-<div style="height: 100px;width: 100%"></div>
+<div style="height: 130px;width: 100%"></div>
 <script>
   Quill.prototype.setHtml = function(content) {
     this.container.querySelector('.ql-editor').innerHTML = content
@@ -59,7 +59,9 @@
    */
   function insertImage(url) {
     quill.focus()
-    quill.insertEmbed(quill.getSelection().index, 'image', url)
+    const index = quill.getSelection().index
+    quill.insertEmbed(index, 'image', url)
+    quill.insertText(index + 1, '\n')
   }
 
   function setContents(content) {
