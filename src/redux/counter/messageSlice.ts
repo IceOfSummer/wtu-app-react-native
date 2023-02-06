@@ -287,7 +287,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       Object.keys(state.messageLabels).forEach(key => {
         const l = state.messageLabels[Number.parseInt(key, 10)]
         if (l) {
-          l.unreadCount = 1
+          l.unreadCount = 0
         }
       })
     },
