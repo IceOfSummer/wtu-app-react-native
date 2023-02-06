@@ -16,4 +16,5 @@ export interface Stack<T> {
   push: (data: T) => void
   peek: () => T | undefined
   isEmpty: () => boolean
+  size: () => number
 }

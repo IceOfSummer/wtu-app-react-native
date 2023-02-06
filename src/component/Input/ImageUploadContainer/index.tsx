@@ -16,12 +16,14 @@ import {
 import BottomMenu from '../../Drawer/BottomMenu'
 import Drawer from '../../Drawer'
 import NativeDialog, {
-  quickShowErrorTip,
+  showSingleBtnTip,
 } from '../../../native/modules/NativeDialog'
 import { getLogger } from '../../../utils/LoggerUtils'
 import useNav from '../../../hook/useNav'
 import { FULL_SCREEN_IMAGE_PAGE } from '../../../router'
-import { SignInfo, uploadImageToUserspace } from '../../../api/server/cos'
+import ImageUploadUtils, {
+  ImageResource,
+} from '../../../utils/ImageUploadUtils'
 
 const logger = getLogger('/component/Container/ImageUploadContainer')
 
@@ -36,21 +38,9 @@ interface ImageUploadContainerProps {
   imagePreviewResizeMode?: ImageResizeMode
   uid: number
 }
-type ImageRes = ImageResource & {
-  // 是否已经上传
-  uploaded?: boolean
-  // 绑定的签名，用于上传
-  sign?: SignInfo
-}
 
 interface ImageUploadContainerState {
-  selectedImage: Array<ImageRes>
-}
-
-type ImageResource = {
-  fileName: string
-  uri: string
-  filetype: string
+  selectedImage: Array<ImageResource>
 }
 
 /**
@@ -78,65 +68,27 @@ export default class FGImageUploadContainer extends React.Component<
 
   /**
    * 获取还未上传的图片
+   * @deprecated
    */
-  public getNotUploadedImages(): Array<ImageRes> {
-    const arr: Array<ImageRes> = []
-    this.state.selectedImage.forEach(value => {
-      if (!value.uploaded) {
-        arr.push(value)
-      }
-    })
-    return arr
+  public getNotUploadedImages(): Array<ImageResource> {
+    return []
   }
 
-  public getUploadedImageCount(): number {
-    let count = 0
-    for (let i = 0, len = this.state.selectedImage.length; i < len; i++) {
-      if (this.state.selectedImage[i].uploaded) {
-        count++
-      }
-    }
-    return count
-  }
+  private uploadedCount = 0
 
   /**
    * 上传所选的图片
-   * @param progressCallback 进度条回调
    */
-  public async uploadImage(
-    progressCallback?: (current: number, total: number) => void
-  ) {
-    logger.info('started upload image')
-    const images = this.getNotUploadedImages()
-    for (let i = 0; i < images.length; i++) {
-      const value = images[i]
-      logger.info('uploading image ' + i)
-      if (value.sign) {
-        progressCallback?.(i, images.length)
-        await uploadImageToUserspace(
-          this.props.uid,
-          value.uri,
-          value.sign,
-          value.filetype
-        )
-        value.uploaded = true
-      } else {
-        logger.error('missing sign in image: ' + value + ', can not upload')
-      }
-    }
-  }
-
-  /**
-   * 绑定上传签名
-   * @param signInfos 上传签名，长度应和{@link ImageUploadContainer#getNotUploadedImages()}的返回值的长度相等
-   * @param start 从signInfos的哪个索引开始绑定
-   */
-  public bindUploadSign(signInfos: SignInfo[], start = 0) {
-    const images = this.getNotUploadedImages()
-    const infoLen = signInfos.length - start
-    let len = images.length < infoLen ? images.length : infoLen
-    for (let i = 0; i < len; i++) {
-      images[i].sign = signInfos[start++]
+  public async uploadImage() {
+    try {
+      const result = await ImageUploadUtils.uploadImagesToUserspace(
+        this.props.uid,
+        this.state.selectedImage
+      )
+      this.uploadedCount = this.state.selectedImage.length
+      return result
+    } catch (e: any) {
+      throw e
     }
   }
 
@@ -165,16 +117,16 @@ export default class FGImageUploadContainer extends React.Component<
           return
         }
         if (result.errorCode) {
-          quickShowErrorTip('获取图片失败', result.errorMessage ?? '未知原因')
+          showSingleBtnTip('获取图片失败', result.errorMessage ?? '未知原因')
           return
         }
         const uris: Array<ImageResource> = []
         result.assets?.forEach(value => {
           if (value.uri && value.fileName && value.type) {
             uris.push({
-              uri: value.uri,
-              fileName: value.fileName,
-              filetype: value.type,
+              filepath: value.uri,
+              contentType: value.type,
+              key: value.originFilepath,
             })
           }
         })
@@ -183,7 +135,7 @@ export default class FGImageUploadContainer extends React.Component<
         })
       })
       .catch(e => {
-        quickShowErrorTip('获取图片失败', e.message)
+        showSingleBtnTip('获取图片失败', e.message)
         logger.error('launch failed: ' + e.message)
       })
   }
@@ -239,7 +191,7 @@ export default class FGImageUploadContainer extends React.Component<
           {this.state.selectedImage.map((value, index) => (
             <ImagePreview
               {...value}
-              key={value.fileName}
+              key={value.key}
               index={index}
               onDelete={this.onImageDelete}
               resizeMode={this.props.imagePreviewResizeMode}
@@ -276,12 +228,15 @@ interface ImagePreviewProps extends ImageResource {
 const ImagePreview: React.FC<ImagePreviewProps> = props => {
   const nav = useNav()
   const preview = () => {
-    nav.push(FULL_SCREEN_IMAGE_PAGE, { index: 0, images: [{ url: props.uri }] })
+    nav.push(FULL_SCREEN_IMAGE_PAGE, {
+      index: 0,
+      images: [{ url: props.filepath }],
+    })
   }
   return (
     <Pressable onPress={preview}>
       <Image
-        source={{ uri: props.uri }}
+        source={{ uri: props.filepath }}
         width={100}
         height={100}
         resizeMode={props.resizeMode}

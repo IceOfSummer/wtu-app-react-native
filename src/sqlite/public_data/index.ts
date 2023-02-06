@@ -46,12 +46,16 @@ export default class PublicData {
   public static async get(key: string): Promise<string | undefined> {
     const connection = PublicData._INSTANCE._connection
     if (connection) {
-      return (
+      const item = (
         await connection.executeSql(
           'SELECT value FROM public_data WHERE name = ?',
           [key]
         )
-      )[0].rows.item(0).value
+      )[0].rows.item(0)
+      if (item && item.value.length > 0) {
+        return item.value
+      }
+      return undefined
     } else {
       logger.warn('the connection is undefined!')
     }
@@ -60,12 +64,10 @@ export default class PublicData {
   public static async set(key: string, value?: string) {
     const connection = PublicData._INSTANCE._connection
     if (connection) {
-      console.log('set')
       await connection.executeSql('REPLACE INTO public_data VALUES (?,?)', [
         key,
         value,
       ])
-      console.log('success')
     } else {
       logger.warn('the connection is undefined!')
     }

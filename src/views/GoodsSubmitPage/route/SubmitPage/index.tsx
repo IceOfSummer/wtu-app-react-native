@@ -6,13 +6,8 @@ import ImageUploadContainer from '../../../../component/Input/ImageUploadContain
 import { checkNumber, useFormChecker } from '../../../../component/Input'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import Loading from '../../../../component/Loading'
-import {
-  getUserspaceImagePath,
-  requireUserSpaceUploadSecret,
-} from '../../../../api/server/cos'
 import { NavigationProp } from '@react-navigation/core/lib/typescript/src/types'
 import { SUBMIT_PAGE, SubmitPageRouteTypes, SUCCESS_PAGE } from '../../index'
-import { getFilenameFromUrl } from '../../../../utils/PathUtils'
 import { createCommodity } from '../../../../api/server/commodity'
 import Divider from '../../../../component/Container/Divider'
 import Toast from 'react-native-root-toast'
@@ -92,26 +87,26 @@ const SubmitPage: React.FC = () => {
       Toast.show('描述不可以超过1万个字')
       return
     }
-    const preview = previewImageRef.getNotUploadedImages()
-    if (previewImageRef.getUploadedImageCount() === 0 && preview.length === 0) {
+    if (previewImageRef.getSelectedImage().length === 0) {
       Toast.show('预览图不能为空')
       return
     }
-    let count = preview.length + detailImageRef.getNotUploadedImages().length
     try {
       logger.info('trying to upload images')
-      Loading.showLoading('准备上传图片')
-      const { data } = await requireUserSpaceUploadSecret(count, 'image/png')
-      previewImageRef.bindUploadSign(data)
-      detailImageRef.bindUploadSign(data, 1)
       Loading.showLoading('上传预览图中')
-      await previewImageRef.uploadImage()
-      await detailImageRef.uploadImage((current, total) => {
-        Loading.showLoading(`上传详细图中(${current}/${total})`)
-      })
+      const previewImage = await previewImageRef.uploadImage()
+      if (!previewImage && !previewImage[0]) {
+        Toast.show('上传预览图失败, 请重试')
+        return
+      }
+      const detailImage = await detailImageRef.uploadImage()
       logger.info('upload images success!')
       Loading.showLoading('发布商品中')
-      const { data: commodityId } = await uploadCommodity(html)
+      const { data: commodityId } = await uploadCommodity(
+        html,
+        previewImage[0],
+        detailImage
+      )
       // 跳转到成功页面
       nav.navigate(SUCCESS_PAGE, { commodityId })
     } catch (e: any) {
@@ -125,35 +120,18 @@ const SubmitPage: React.FC = () => {
   /**
    * 发布商品。请确保所有图片都上传完毕后再调用该函数
    */
-  function uploadCommodity(html: string) {
-    // 太懒狗了，直接用断言了
-    const previewImage = previewImageInput.current!.getSelectedImage()[0]
-    const imagesArr = detailImageInput.current
-      ?.getSelectedImage()
-      .map(value =>
-        getUserspaceImagePath(
-          uid,
-          getFilenameFromUrl(value.sign?.path) + '.webp'
-        )
-      )
-    let detailImage: string | undefined =
-      imagesArr && imagesArr.length > 0 ? JSON.stringify(imagesArr) : undefined
-    if (!detailImage) {
-      // 直接使用预览图当做详细图
-      detailImage = JSON.stringify([
-        getUserspaceImagePath(
-          uid,
-          getFilenameFromUrl(previewImage.sign?.path) + '.webp'
-        ),
-      ])
+  function uploadCommodity(
+    html: string,
+    previewImage: string,
+    detailImage: string[]
+  ) {
+    if (detailImage.length === 0) {
+      detailImage = [previewImage]
     }
     return createCommodity({
       name: commodityName,
-      previewImage: getUserspaceImagePath(
-        uid,
-        getFilenameFromUrl(previewImage.sign?.path) + '.webp'
-      ),
-      images: detailImage,
+      previewImage,
+      images: JSON.stringify(detailImage),
       price: Number.parseInt(commodityPrice, 10),
       description: html,
       tradeLocation: tradeLocation,

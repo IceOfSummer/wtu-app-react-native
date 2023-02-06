@@ -40,7 +40,7 @@ const SubmitSuccessPage: React.FC = () => {
     lottie.current?.play()
   }, [])
   return (
-    <View style={{ flex: 1, alignItems: 'center' }}>
+    <View style={{ flex: 1, alignItems: 'center', paddingHorizontal: 20 }}>
       <LottieView
         style={{ height: 300 }}
         loop={false}

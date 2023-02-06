@@ -19,6 +19,8 @@ class Node<T> {
 export default class LinkedStack<T> implements Stack<T> {
   private top: Node<T> | undefined
 
+  private currentSize = 0
+
   isEmpty(): boolean {
     return this.top === undefined
   }
@@ -30,6 +32,7 @@ export default class LinkedStack<T> implements Stack<T> {
   pop(): T | undefined {
     const prevTail = this.top
     if (prevTail) {
+      this.currentSize--
       this.top = prevTail.bottom
       return prevTail.value
     }
@@ -37,6 +40,18 @@ export default class LinkedStack<T> implements Stack<T> {
   }
 
   push(data: T): void {
+    this.currentSize++
     this.top = new Node(this.top, data)
+  }
+
+  pushAll(data: T[]): void {
+    this.currentSize += data.length
+    data.forEach(value => {
+      this.push(value)
+    })
+  }
+
+  size(): number {
+    return this.currentSize
   }
 }

@@ -3,6 +3,7 @@ import config from '../../../../config.json'
 import fs from 'react-native-fs'
 import ByteBuffer from 'bytebuffer'
 import { getLogger } from '../../../utils/LoggerUtils'
+import { getFileExtension } from '../../../utils/PathUtils'
 
 export type SignInfo = {
   path: string
@@ -11,8 +12,8 @@ export type SignInfo = {
 
 const logger = getLogger('/api/server/cos')
 
-const getUserSpaceUploadSign = (count: number, type?: string) =>
-  serverNoRepeatAjax<Array<SignInfo>>('/cos/secret/userspace', { count, type })
+const getUserSpaceUploadSign = (count: number, types?: string) =>
+  serverNoRepeatAjax<Array<SignInfo>>('/cos/secret/userspace', { count, types })
 
 /**
  * 获取头像上传签名
@@ -90,20 +91,56 @@ export const uploadAvatar = (
   })
 }
 
+enum ImageType {
+  PNG,
+  JPEG,
+  GIF,
+  WEBP,
+}
+
+const getImageTypeFromContentType = (contentType: string) => {
+  switch (contentType) {
+    case 'image/png':
+      return ImageType.PNG
+    case 'image/jpeg':
+      return ImageType.JPEG
+    case 'image/gif':
+      return ImageType.GIF
+    case 'image/webp':
+      return ImageType.WEBP
+    default:
+      throw new Error(`不支持上传${contentType}类型的图片`)
+  }
+}
+
+const getImageTypeFromUrl = (url: string) => {
+  return 'image/' + getFileExtension(url)
+}
+
+type SignInfoWithType = SignInfo & {
+  contentType: string
+}
+
 /**
  * 申请用户空间上传签名
- * @param count 要上传的文件数量
- * @param contentType 文件类型，如(application/json)
+ * @param contentTypes 文件类型，如(image/png), 长度必须和count相同
  */
-export const requireUserSpaceUploadSecret = (
-  count: number,
-  contentType: string
-) => {
-  const suffix = contentType.substring(contentType.lastIndexOf('/') + 1)
-  if (!suffix) {
-    throw new Error('无效的文件类型: ' + contentType)
-  }
-  return getUserSpaceUploadSign(count, '.' + suffix)
+export const requireUserSpaceUploadSecret = async (
+  contentTypes: string[]
+): Promise<SignInfoWithType[]> => {
+  let types = ''
+  contentTypes.forEach(value => {
+    types += getImageTypeFromContentType(value) + ','
+  })
+  const { data } = await getUserSpaceUploadSign(contentTypes.length, types)
+  const result: Array<SignInfoWithType> = []
+  data.forEach(value => {
+    result.push({
+      ...value,
+      contentType: getImageTypeFromUrl(value.path),
+    })
+  })
+  return result
 }
 
 export const requirePublicSpaceUploadSecret = (contentType: string) => {
