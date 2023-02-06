@@ -100,7 +100,7 @@ const PostArticlePage: React.FC = () => {
 
   return (
     <View style={styles.outerContainer}>
-      <View style={{ flex: 1, borderWidth: 1 }}>
+      <View style={{ flex: 1 }}>
         <NavigationHeader
           showSplitLine
           title="发布帖子"
