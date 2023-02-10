@@ -1,7 +1,7 @@
 export interface SyncRequestMessage {
-  offline: boolean;
-  start: number;
-  end: number;
+  offline?: boolean;
+  start?: number;
+  end?: number;
 }
 
 export function encodeSyncRequestMessage(message: SyncRequestMessage): Uint8Array {

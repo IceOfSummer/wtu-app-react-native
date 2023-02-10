@@ -1,7 +1,6 @@
 import ImTemplate from './ImTemplate'
 import ChatRequestMessage from './message/request/ChatRequestMessage'
 import { getMaxMsgId, MessageType } from '../../sqlite/message'
-import { quickShowErrorTip } from '../../native/modules/NativeDialog'
 import { getLogger } from '../../utils/LoggerUtils'
 import SyncRequestMessage from './message/request/SyncRequestMessage'
 import { MultiChatResponseMessage } from './message/response/MultiChatResponseMessage'
@@ -12,13 +11,13 @@ import {
 import { store } from '../../redux/store'
 import { encodeContent } from '../../views/ChatPage/message/MessageManager'
 import NormalMessage from '../../views/ChatPage/message/chat/NormalMessage'
-import QueryReceiveStatusMessage from './message/request/QueryReceiveStatusMessage'
-import ReceiveStatusMessage from './message/response/ReceiveStatusMessage'
+import { showSingleBtnTip } from '../../native/modules/NativeDialog'
 
 const logger = getLogger('/api/chat/ImService')
 
 /**
- * 聊天服务管理, 用于管理消息的发送以及同步
+ * 聊天服务管理, 用于管理消息的发送以及同步.
+ * <p>
  */
 export class ImService {
   /**
@@ -34,12 +33,6 @@ export class ImService {
   private isInitDone: boolean = false
 
   private constructor() {
-    // 绑定回调
-    this.imTemplate.onReady = () => {
-      if (this.isInitDone) {
-        this.syncOfflineMessage()
-      }
-    }
     // 同步lastMsgId
     getMaxMsgId()
       .then(val => {
@@ -52,7 +45,7 @@ export class ImService {
       })
       .catch(e => {
         logger.error('init max id failed: ' + e.message)
-        quickShowErrorTip(
+        showSingleBtnTip(
           '连接初始化失败',
           '你可以忽略该错误，该错误不会影响正常使用 )'
         )
@@ -88,7 +81,7 @@ export class ImService {
           content: encodedContent,
           createTime: Date.now(),
         },
-        confirm: 1,
+        unread: 1,
       })
     )
   }
@@ -111,28 +104,24 @@ export class ImService {
   /**
    * 同步消息, 消息不一定会拿到
    * @param start 消息的起始id（包括）
-   * @param end 消息的结束id（不包括），同步完毕后，下一次的消息id的期望为<code>end - 1</code>
-   * @param offline 是否为离线同步，若为离线，则一定可以拿到指定的消息，若为在线，则不一定会拿到消息
-   *                在线一般用于用户在聊天的过程中丢失了消息，能够快速进行同步，速度较快，但不一定会全部拿到
-   *                离线代表用户接收离线消息，一定可以拿到范围内的内容
-   *                <p>
-   *                - 当offline为true时，end - start不应该超过200，若超过该值应该分批次获取
-   *                <p>
-   *                - 当offline为false时，end - start不应该超过20, 若超过则应该丢弃较小的消息id
+   * @param end 若提供该值，则进行在线消息同步。<p>
+   *   若为离线同步，则一定可以拿到指定的消息，若为在线，则不一定会拿到消息<p>
+   *   在线一般用于用户在聊天的过程中丢失了消息，能够快速进行同步，速度较快，但不一定会全部拿到<p>
+   *   离线代表用户接收离线消息，一定可以拿到范围内的内容<p>
    * @private
    */
-  private syncMessage(start: number, end: number, offline?: boolean) {
+  private syncMessage(start: number, end?: number) {
+    const offline = end === undefined
     return this.imTemplate
       .sendMessage<MultiChatResponseMessage>(
         new SyncRequestMessage({
-          offline: !!offline,
+          offline,
           start,
           end,
         })
       )
       .then(resp => {
         logger.info('sync message success!')
-        this.lastMsgId = end - 1
         store.dispatch<any>(
           syncMessage({
             confirmed: offline ? 0 : 1,
@@ -146,29 +135,10 @@ export class ImService {
    * 同步离线消息
    */
   public syncOfflineMessage() {
-    if (!this.isInitDone) {
-      logger.info('socket is not ready, can not sync offline message')
-      return
-    }
-    logger.info('started sync offline message')
-    this.imTemplate
-      .sendMessage<ReceiveStatusMessage>(new QueryReceiveStatusMessage())
-      .then(r => {
-        const start = this.lastMsgId + 1
-        const end = r.status.receivedId
-        logger.info('server receivedId: ' + end)
-        if (end === start) {
-          // 没有新消息
-          return
-        }
-        logger.info(`sync message from messageId ${start} to ${end}`)
-        this.syncMessage(start, end, true).catch(e => {
-          logger.error('sync message failed: ' + e.message)
-        })
-      })
-      .catch(e => {
-        logger.error('sync offline message failed: ' + e.message)
-      })
+    logger.info(`sync message from messageId ${this.lastMsgId}`)
+    this.syncMessage(this.lastMsgId + 1).catch(e => {
+      logger.error('sync message failed: ' + e.message)
+    })
   }
 
   static get INSTANCE(): ImService {

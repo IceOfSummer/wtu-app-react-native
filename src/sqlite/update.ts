@@ -11,7 +11,7 @@ const logger = getLogger('/src/sqlite/update')
 /**
  * 当前数据库的最新版本号
  */
-const LATEST_VERSION = 5
+const LATEST_VERSION = 6
 /**
  * 用于保存SQL升级片段.
  * <p>
@@ -179,4 +179,21 @@ drop table last_message;
 alter table last_message_dg_tmp
     rename to last_message;
 UPDATE app_metadata SET value = '5' WHERE name = 'version';
+`
+/**
+ * 从v5升级到v6
+ * <p>
+ * 主要是清除消息数据, 因为数据库结构重构了
+ */
+UPDATE_SQL[5] = `
+DROP TABLE message;
+CREATE TABLE message(
+    uid INTEGER NOT NULL,
+    messageId INTEGER,
+    content CHAR(500) NOT NULL,
+    createTime INT NOT NULL,
+    type INT NOT NULL,
+    PRIMARY KEY(uid, messageId)
+);
+UPDATE app_metadata SET value = '6' WHERE name = 'version';
 `

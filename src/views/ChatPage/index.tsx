@@ -24,7 +24,9 @@ const ChatPage: React.FC = () => {
     nav.setOptions({
       title: user && user.nickname ? user.nickname : '用户' + uid,
     })
-    dispatch(markMessageRead(uid))
+    return () => {
+      dispatch(markMessageRead(uid))
+    }
   }, [])
 
   return (

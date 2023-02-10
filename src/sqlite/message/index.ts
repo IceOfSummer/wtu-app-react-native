@@ -30,7 +30,7 @@ export const queryMessage = (
   size: number = 10
 ): Promise<SqliteMessage[]> =>
   DatabaseManager.executeSql(
-    'SELECT uid, content, createTime, type FROM message WHERE uid = ? AND messageId < ? ORDER BY createTime DESC LIMIT ?, ?',
+    'SELECT uid, content, createTime, type, messageId FROM message WHERE uid = ? AND messageId < ? ORDER BY createTime DESC LIMIT ?, ?',
     uid,
     maxId,
     page * size,

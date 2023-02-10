@@ -81,7 +81,7 @@ export type InsertSingleMessageParam = {
    * 和谁相关的消息
    */
   msg: SqliteMessage
-  confirm: 0 | 1
+  unread: 0 | 1
 }
 
 /**
@@ -92,10 +92,10 @@ export const insertSingleMessage = createAsyncThunk<
   InsertSingleMessageParam
 >(
   'message/insertSingleMessage',
-  async ({ msg, confirm }, { dispatch, getState }) => {
+  async ({ msg, unread }, { dispatch, getState }) => {
     const re = await insertMessage(msg)
     logger.info('insert message to database success: ' + re)
-    await insertLastMessage(msg, confirm)
+    await insertLastMessage(msg, unread)
     logger.info('insert last message success!')
     const state = getState() as ReducerTypes
     if (!state.serverUser.cachedUser[msg.uid]) {
@@ -106,7 +106,7 @@ export const insertSingleMessage = createAsyncThunk<
     dispatch(
       messageSlice.actions.insertSingleMessage({
         ...msg,
-        unreadCount: confirm,
+        unreadCount: unread,
       })
     )
   }
@@ -239,19 +239,17 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       if (Array.isArray(payload)) {
         state.onlineMessages = state.onlineMessages.concat(payload)
         payload.forEach(value => {
-          state.unreadCount++
           state.messageLabels[value.uid] = {
             ...value,
-            unreadCount: 1,
+            unreadCount: 0,
           }
         })
         logger.debug('updating onlineMessages: ')
         logger.debug(state.onlineMessages)
       } else {
-        state.unreadCount++
         state.messageLabels[payload.uid] = {
           ...payload,
-          unreadCount: 1,
+          unreadCount: 0,
         }
         state.onlineMessages.push(payload)
       }
@@ -262,9 +260,10 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
     insertOfflineMessage: (state, { payload }) => {
       payload.forEach(value => {
         state.unreadCount++
+        let base = state.messageLabels[value.uid]?.unreadCount ?? 0
         state.messageLabels[value.uid] = {
           ...value,
-          unreadCount: 0,
+          unreadCount: base + 1,
         }
       })
     },

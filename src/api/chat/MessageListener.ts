@@ -36,7 +36,7 @@ let invoked = false
             createTime: message.createTime * 1000,
             type: MessageType.RECEIVE,
           },
-          confirm: 0,
+          unread: 1,
         })
       )
       ImService.INSTANCE.updateMsgId(message.msgId)
