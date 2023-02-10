@@ -26,19 +26,22 @@ const options: ConnectionOptions & TLSSocketOptions = {
     : require('../../../cert/wtu.cool_bundle.pem'),
 }
 
+export type OnConnected = (socket: TLSSocket) => void
+export type OnConnectionReset = () => void
+
 /**
  * 用于管理socket的连接、重连等
  */
 export default class SocketSessionManager {
   /**
-   * 当连接重置后的回调
+   * 当连接重置后的回调. 在该回调之后，会尝试重新连接，此时会触发{@link SocketSessionManager#onConnected}事件
    */
-  public onConnectionReset?: () => void
+  private readonly onConnectionReset?: OnConnectionReset
 
   /**
-   * 当连接建立后的回调
+   * 当连接建立后的回调. 此时必须进行身份验证.
    */
-  public onConnected?: (socket: TLSSocket) => void
+  private readonly onConnected: OnConnected
 
   private _connection: TLSSocket | null = null
 
@@ -60,7 +63,10 @@ export default class SocketSessionManager {
     store.dispatch(modifyKVData({ isChatServerConnectFailed: flag }))
   }
 
-  constructor() {}
+  constructor(onConnected: OnConnected, onConnectionReset: OnConnectionReset) {
+    this.onConnected = onConnected
+    this.onConnectionReset = onConnectionReset
+  }
 
   /**
    * 绑定重连等事件
@@ -129,7 +135,21 @@ export default class SocketSessionManager {
   }
 
   /**
-   * 重置连接, 当连接断开后进行重置
+   * 关闭tcp连接.
+   */
+  public close() {
+    const conn = this._connection
+    if (!conn) {
+      return
+    }
+    logger.info('closing Tcp connection...')
+    // 避免触发自动断线重连
+    conn.removeAllListeners()
+    conn.destroy()
+  }
+
+  /**
+   * 重置连接, 当连接断开后进行重置.
    */
   public reset() {
     this._connection = null

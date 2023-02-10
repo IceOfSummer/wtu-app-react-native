@@ -12,8 +12,14 @@ import { store } from '../../redux/store'
 import { encodeContent } from '../../views/ChatPage/message/MessageManager'
 import NormalMessage from '../../views/ChatPage/message/chat/NormalMessage'
 import { showSingleBtnTip } from '../../native/modules/NativeDialog'
+import AppEvents from '../../AppEvents'
 
 const logger = getLogger('/api/chat/ImService')
+
+AppEvents.subscribe('onLogout', () => {
+  ImService.INSTANCE.imTemplate.close()
+  ImService.renewInstance()
+})
 
 /**
  * 聊天服务管理, 用于管理消息的发送以及同步.
@@ -26,13 +32,14 @@ export class ImService {
    */
   private static _INSTANCE: ImService
 
-  private readonly imTemplate: ImTemplate = ImTemplate.instance
+  public imTemplate: ImTemplate
 
   private lastMsgId: number = -1
 
   private isInitDone: boolean = false
 
   private constructor() {
+    this.imTemplate = new ImTemplate()
     // 同步lastMsgId
     getMaxMsgId()
       .then(val => {
@@ -52,13 +59,17 @@ export class ImService {
       })
   }
 
+  private isServiceReady() {
+    return this.isInitDone
+  }
+
   /**
    * 发送聊天消息
    * @param to 发给谁
    * @param content 消息内容
    */
   public async sendChatMessage(to: number, content: string): Promise<void> {
-    if (!this.isInitDone) {
+    if (!this.isServiceReady()) {
       throw new Error('正在加载中')
     }
     const encodedContent = encodeContent(NormalMessage.MESSAGE_TYPE, content)
@@ -111,6 +122,9 @@ export class ImService {
    * @private
    */
   private syncMessage(start: number, end?: number) {
+    if (!this.isServiceReady()) {
+      throw new Error('正在连接服务器中')
+    }
     const offline = end === undefined
     return this.imTemplate
       .sendMessage<MultiChatResponseMessage>(
@@ -146,5 +160,9 @@ export class ImService {
       this._INSTANCE = new ImService()
     }
     return this._INSTANCE
+  }
+
+  public static renewInstance() {
+    this._INSTANCE = new ImService()
   }
 }

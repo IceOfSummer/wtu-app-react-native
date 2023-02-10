@@ -13,10 +13,17 @@ import ServerResponseMessage from './message/response/ServerResponseMessage'
 import { store } from '../../redux/store'
 import { ReducerTypes } from '../../redux/counter'
 import IdleRequestMessage from './message/request/IdleRequestMessage'
+import AppEvents from '../../AppEvents'
 
 const logger = getLogger('/api/chat/ImTemplate')
 
 type PromiseCallFunc = (data: any) => void
+
+AppEvents.subscribe('onLogout', () => {
+  ImTemplate.instance.close()
+})
+
+type OnReady = () => void
 
 /**
  * Im模板
@@ -34,7 +41,7 @@ export default class ImTemplate {
    * 当im可用时的回调
    * @private
    */
-  public onReady?: () => void
+  public onReady?: OnReady
 
   static get instance(): ImTemplate {
     if (!this._instance) {
@@ -79,13 +86,15 @@ export default class ImTemplate {
    */
   private messageQueue: OneWayQueue<string>
 
-  private constructor() {
-    this.socketSessionManager = new SocketSessionManager()
+  public constructor(onReady?: OnReady) {
+    this.socketSessionManager = new SocketSessionManager(
+      this.onConnected,
+      this.onConnectionReset
+    )
     this.messageQueue = new LinkedOneWayQueue()
     this.frameDecoder = new FrameDecoder(6)
     this.requestManager = new MessageRequestIdManager()
-    this.socketSessionManager.onConnectionReset = this.onConnectionReset
-    this.socketSessionManager.onConnected = this.onConnected
+    this.onReady = onReady
   }
 
   private onConnected = (socket: TLSSocket) => {
@@ -233,6 +242,10 @@ export default class ImTemplate {
         reject(e)
       }
     })
+  }
+
+  public close() {
+    this.socketSessionManager.close()
   }
 }
 
