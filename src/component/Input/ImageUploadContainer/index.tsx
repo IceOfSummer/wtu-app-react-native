@@ -12,7 +12,7 @@ import {
   ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
-} from 'react-native-image-picker'
+} from '@ice-of-summer/react-native-image-picker'
 import BottomMenu from '../../Drawer/BottomMenu'
 import Drawer from '../../Drawer'
 import NativeDialog, {

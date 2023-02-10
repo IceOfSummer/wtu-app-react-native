@@ -4,7 +4,7 @@ import {
   ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
-} from 'react-native-image-picker'
+} from '@ice-of-summer/react-native-image-picker'
 import Toast from 'react-native-root-toast'
 import Drawer from '../index'
 
