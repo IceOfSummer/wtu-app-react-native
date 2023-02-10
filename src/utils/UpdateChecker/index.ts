@@ -29,10 +29,10 @@ export default class UpdateChecker {
       return
     }
     logger.info('checking update...')
-    CodePush.checkForUpdate(undefined, async r => {
+    CodePush.checkForUpdate(undefined, r => {
       logger.info('new version found: ' + r.appVersion)
       UpdateChecker._newBinaryVersion = r.appVersion
-      await UpdateChecker.downLoadNewVersion(r.appVersion, r.description)
+      UpdateChecker.downLoadNewVersion(r.appVersion, r.description)
     })
       .then(update => {
         if (update) {
@@ -65,10 +65,10 @@ export default class UpdateChecker {
       })
   }
 
-  public static async downLoadNewVersion(version: string, message: string) {
+  public static downLoadNewVersion(version: string, message?: string) {
     NativeDialog.showDialog({
       title: '有新版本了!',
-      message,
+      message: message ?? '当前最新版本: ' + version,
       onConfirm: () => {
         Linking.openURL(`${Environment.cdnUrl}/app/${version}.apk`)
       },

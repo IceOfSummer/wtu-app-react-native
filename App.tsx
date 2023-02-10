@@ -18,7 +18,6 @@ import AppEvents from './src/AppEvents'
 const logger = getLogger('App')
 
 const App = () => {
-  UpdateChecker.checkUpdate()
   const [ready, setReady] = useState(false)
   useEffect(() => {
     logger.info('app launch')
@@ -28,6 +27,7 @@ const App = () => {
     })
     AppEvents.trigger('onAppLaunch')
     AppEvents.subscribeOnce('appDatabaseCheckDone', () => {
+      UpdateChecker.checkUpdate()
       setReady(true)
     })
   }, [])

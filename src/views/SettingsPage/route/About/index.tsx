@@ -26,9 +26,7 @@ const About: React.FC = () => {
       UpdateChecker.downLoadNewVersion(
         UpdateChecker.newBinaryVersion,
         '新版本更新'
-      ).catch(e => {
-        Toast.show('下载新版本失败: ' + e.message)
-      })
+      )
     } else {
       UpdateChecker.checkUpdate(true)
     }

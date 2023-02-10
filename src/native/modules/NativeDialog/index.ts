@@ -6,7 +6,7 @@ interface NativeDialogMethod {
 
 type DialogConfig = {
   title: string
-  message: string
+  message?: string
   confirmBtnText?: string
   cancelBtnText?: string
   hideCancelBtn?: boolean
@@ -70,14 +70,14 @@ const NativeDialog: NativeDialogMethod = (function () {
         if (config.hideCancelBtn) {
           BeautifulAlertDialog.showSingleButtonDialog(
             config.title,
-            config.message.toString(),
+            config.message ?? '',
             config.confirmBtnText ? config.confirmBtnText : '确定',
             () => config.onConfirm?.()
           )
         } else {
           BeautifulAlertDialog.showDialog(
             config.title,
-            config.message.toString(),
+            config.message ?? '',
             config.confirmBtnText ? config.confirmBtnText : '确定',
             config.cancelBtnText ? config.cancelBtnText : '取消',
             isPressClickButton => {
