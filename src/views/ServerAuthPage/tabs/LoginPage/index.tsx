@@ -56,11 +56,12 @@ const LoginPage: React.FC = () => {
       })
       return
     }
+    logger.info('trying to login...')
     logger.debug(`form is valid, username ${username} password: ${password}`)
     Loading.showLoading()
     login(username, password)
       .then(({ data }) => {
-        logger.debug('login to server success, userid: ' + data)
+        logger.info('login to server success, userid: ' + data)
         const userInfo: ServerUserInfo & { token: string } = {
           uid: data.userId,
           nickname: data.nickname,
@@ -85,6 +86,7 @@ const LoginPage: React.FC = () => {
         nav.goBack()
       })
       .catch(e => {
+        logger.error('login failed' + e.message)
         showSingleBtnTip('登录失败', e.message)
       })
       .finally(() => {

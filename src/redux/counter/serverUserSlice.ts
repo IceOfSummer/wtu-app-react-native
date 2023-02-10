@@ -17,6 +17,7 @@ import AppEvents from '../../AppEvents'
 import { persistor, resetReduxAction, store } from '../store'
 import SqliteStorage from '../persist'
 import { SERVER_USER_PERSIST_KEY } from './index'
+import { showSingleBtnTip } from '../../native/modules/NativeDialog'
 
 const logger = getLogger('redux/counter/serverUserSlice')
 
@@ -160,6 +161,10 @@ const serverUserSlice = createSlice<ServerUserState, ServerUserReducers>({
     [loadUserCacheFromServer.rejected.type](state, { error }) {
       logger.error('loadUserCacheFromServer failed: ' + error.message)
     },
+    [markLogin.rejected.type](state, { error }) {
+      logger.error('mark login failed: ' + error.message)
+      showSingleBtnTip('登录失败', error.message)
+    },
   },
 })
 
@@ -175,7 +180,7 @@ AppEvents.subscribe('onLogout', () => {
       .catch(e => {
         logger.error('close database connection failed: ' + e.message)
       })
-  }, 200)
+  }, 500)
 })
 
 export const {
