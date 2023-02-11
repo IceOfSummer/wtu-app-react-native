@@ -58,9 +58,24 @@ const MainTab: React.FC = () => {
   const scroll = useRef<LoadingScrollView>(null)
   const maxId = useRef<number | undefined>(undefined)
   const loadMore = (refresh?: boolean) => {
-    logger.info('loading suggest...')
+    if (loading) {
+      if (refresh) {
+        scroll.current?.endRefresh()
+      } else {
+        scroll.current?.endLoading()
+      }
+      return
+    }
+    let mxId
+    if (refresh) {
+      setCommodityItems([])
+      mxId = undefined
+    } else {
+      mxId = maxId.current
+    }
+    logger.info('loading suggest from id ' + mxId)
     setLoading(true)
-    getSuggestCommodity(SIZE, maxId.current)
+    getSuggestCommodity(SIZE, mxId)
       .then(r => {
         setLoadError(false)
         if (r.data.length < SIZE) {
@@ -71,7 +86,6 @@ const MainTab: React.FC = () => {
           return
         }
         const lastId = r.data[r.data.length - 1].commodityId
-        logger.debug(r.data)
         logger.info('load success, lastId: ' + lastId)
         if (lastId === 1) {
           setEmpty(true)
