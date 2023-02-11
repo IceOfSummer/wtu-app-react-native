@@ -38,17 +38,18 @@ export class ImService {
 
   private isInitDone: boolean = false
 
+  onReady = () => {
+    this.syncOfflineMessage()
+  }
+
   private constructor() {
-    this.imTemplate = new ImTemplate()
+    this.imTemplate = new ImTemplate(this.onReady)
     // 同步lastMsgId
     getMaxMsgId()
       .then(val => {
         logger.info('同步消息id: ' + val)
         this.lastMsgId = val
         this.isInitDone = true
-        if (this.imTemplate.isReady()) {
-          this.syncOfflineMessage()
-        }
       })
       .catch(e => {
         logger.error('init max id failed: ' + e.message)
