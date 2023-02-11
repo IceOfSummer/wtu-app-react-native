@@ -77,6 +77,8 @@ export default class ImTemplate {
     this.frameDecoder = new FrameDecoder(6)
     this.requestManager = new MessageRequestIdManager()
     this.onReady = onReady
+    // 主动连接im服务器
+    this.socketSessionManager.getConnection()
   }
 
   private onConnected = (socket: TLSSocket) => {
