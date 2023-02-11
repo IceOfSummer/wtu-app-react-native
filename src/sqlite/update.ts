@@ -4,7 +4,7 @@
 import SQLite, {
   SQLiteDatabase,
   Transaction,
-} from 'react-native-sqlite-storage'
+} from 'react-native-sqlite-storage-api30'
 import { getLogger } from '../utils/LoggerUtils'
 
 const logger = getLogger('/src/sqlite/update')

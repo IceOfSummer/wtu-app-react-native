@@ -7015,10 +7015,10 @@ react-native-spring-scrollview@^3.0.2:
     lottie-ios "3.1.8"
     lottie-react-native "^4.0.2"
 
-react-native-sqlite-storage@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.npmjs.org/react-native-sqlite-storage/-/react-native-sqlite-storage-6.0.1.tgz#ce6a6b852f07abbea68658d5363818c8bef45dfb"
-  integrity sha512-1tDFjrint6X6qSYKf3gDyz+XB+X79jfiL6xTugKHPRtF0WvqMtVgdLuNqZunIXjNEvNtNVEbXaeZ6MsguFu00A==
+react-native-sqlite-storage-api30@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/react-native-sqlite-storage-api30/-/react-native-sqlite-storage-api30-1.0.1.tgz#7cecca258039b12d9fe2db33fa7336b57dc9bd5f"
+  integrity sha512-MVyr49UUNj7ylVBISl/4Yp5i0H9bFUF9QxQWET4XOcy6tm1DAHFp82AyGw3dn7UTKkqr8FmBQZo08SMuHuhp5A==
 
 react-native-svg@^12.3.0:
   version "12.3.0"

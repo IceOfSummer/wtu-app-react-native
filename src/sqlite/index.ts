@@ -1,4 +1,7 @@
-import SQLite, { ResultSet, SQLiteDatabase } from 'react-native-sqlite-storage'
+import SQLite, {
+  ResultSet,
+  SQLiteDatabase,
+} from 'react-native-sqlite-storage-api30'
 import { getLogger } from '../utils/LoggerUtils'
 import AppEvents from '../AppEvents'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -112,7 +115,6 @@ class DatabaseManager {
   private static openDatabase(name: string) {
     return SQLite.openDatabase({
       name: name,
-      location: 'Shared',
     })
   }
 

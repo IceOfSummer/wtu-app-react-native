@@ -1,7 +1,7 @@
 import { UserInfoQueryType } from '../../api/server/user'
 import AppEvents from '../../AppEvents'
 import { getLogger } from '../../utils/LoggerUtils'
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage'
+import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage-api30'
 import { generateInsertValues } from '../../utils/SqlUtils'
 
 export type ServerUser = UserInfoQueryType

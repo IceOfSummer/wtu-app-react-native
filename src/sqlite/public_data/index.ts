@@ -1,7 +1,7 @@
 /**
  * APP所有用户(包括匿名)共用的数据. 仅保存key-value数据
  */
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage'
+import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage-api30'
 import { getLogger } from '../../utils/LoggerUtils'
 import AppEvents from '../../AppEvents'
 
