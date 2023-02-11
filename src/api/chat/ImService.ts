@@ -18,7 +18,7 @@ const logger = getLogger('/api/chat/ImService')
 
 AppEvents.subscribe('onLogout', () => {
   ImService.INSTANCE.imTemplate.close()
-  ImService.renewInstance()
+  ImService.removeInstance()
 })
 
 /**
@@ -30,7 +30,7 @@ export class ImService {
    * 单例模式
    * @private
    */
-  private static _INSTANCE: ImService
+  private static _INSTANCE?: ImService
 
   public imTemplate: ImTemplate
 
@@ -162,7 +162,7 @@ export class ImService {
     return this._INSTANCE
   }
 
-  public static renewInstance() {
-    this._INSTANCE = new ImService()
+  public static removeInstance() {
+    this._INSTANCE = undefined
   }
 }

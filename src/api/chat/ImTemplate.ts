@@ -13,15 +13,10 @@ import ServerResponseMessage from './message/response/ServerResponseMessage'
 import { store } from '../../redux/store'
 import { ReducerTypes } from '../../redux/counter'
 import IdleRequestMessage from './message/request/IdleRequestMessage'
-import AppEvents from '../../AppEvents'
 
 const logger = getLogger('/api/chat/ImTemplate')
 
 type PromiseCallFunc = (data: any) => void
-
-AppEvents.subscribe('onLogout', () => {
-  ImTemplate.instance.close()
-})
 
 type OnReady = () => void
 
@@ -32,23 +27,10 @@ type OnReady = () => void
  */
 export default class ImTemplate {
   /**
-   * 单例模式
-   * @private
-   */
-  private static _instance: ImTemplate
-
-  /**
    * 当im可用时的回调
    * @private
    */
   public onReady?: OnReady
-
-  static get instance(): ImTemplate {
-    if (!this._instance) {
-      this._instance = new ImTemplate()
-    }
-    return this._instance
-  }
 
   /**
    * 是否已经认证过了

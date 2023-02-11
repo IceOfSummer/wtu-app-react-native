@@ -51,6 +51,8 @@ export default class SocketSessionManager {
    */
   private _isPending: boolean = false
 
+  private closed = false
+
   /**
    * 设置连接表示
    *
@@ -88,6 +90,9 @@ export default class SocketSessionManager {
    * 获取TLS连接，如果正在连接中则会返回null
    */
   public getConnection(): TLSSocket | null {
+    if (this.closed) {
+      return null
+    }
     if (this._connection) {
       return this._connection
     }
@@ -143,9 +148,11 @@ export default class SocketSessionManager {
       return
     }
     logger.info('closing Tcp connection...')
+    this.closed = true
     // 避免触发自动断线重连
     conn.removeAllListeners()
     conn.destroy()
+    logger.info('successfully closed Tcp connection')
   }
 
   /**

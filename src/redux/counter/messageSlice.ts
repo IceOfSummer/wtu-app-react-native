@@ -26,7 +26,6 @@ import { showSingleBtnTip } from '../../native/modules/NativeDialog'
 import { loadMultiUserCache, loadUserCacheFromServer } from './serverUserSlice'
 import { ReducerTypes } from './index'
 import { MultiChatResponseMessage } from '../../api/chat/message/response/MultiChatResponseMessage'
-import ImTemplate from '../../api/chat/ImTemplate'
 import { ImService } from '../../api/chat/ImService'
 import {
   markMessageRead as markSqliteMessageRead,
@@ -39,7 +38,8 @@ const logger = getLogger('/redux/counter/messageSlice')
 
 const REPLACE_TYPE_MARKER = /§\d*§/g
 
-AppEvents.subscribe('onUserChange', () => {
+AppEvents.subscribe('onUserChange', arg => {
+  console.log(arg)
   storeDispatch(initMessage())
 })
 
@@ -55,7 +55,6 @@ export const initMessage = createAsyncThunk<InitMessageResult, undefined>(
   'message/loadMessage',
   async (arg, { dispatch }) => {
     // 加载一下类
-    ImTemplate.instance.isReady()
     ImService.INSTANCE
     // 加载聊天面板上的最后聊天记录
     logger.info('querying last message')
