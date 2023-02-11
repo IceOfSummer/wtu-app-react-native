@@ -14,10 +14,10 @@ import { markLogin } from '../../../../redux/counter/serverUserSlice'
 import { getLogger } from '../../../../utils/LoggerUtils'
 import { showSingleBtnTip } from '../../../../native/modules/NativeDialog'
 import Loading from '../../../../component/Loading'
-import Toast from 'react-native-toast-message'
 import AppEvents from '../../../../AppEvents'
 import { ReducerTypes } from '../../../../redux/counter'
 import { ServerUserInfo } from '../../../../redux/types/serverUserTypes'
+import Toast from 'react-native-root-toast'
 
 const logger = getLogger('views/ServerAuthPage/tabs/LoginPage')
 
@@ -78,11 +78,7 @@ const LoginPage: React.FC = () => {
           currentUserInfo: userInfo,
         })
         dispatch(markLogin(userInfo))
-        Toast.show({
-          text1: '登录成功',
-          text2: '感谢您使用本APP',
-          type: 'success',
-        })
+        Toast.show('登录成功')
         nav.goBack()
       })
       .catch(e => {
