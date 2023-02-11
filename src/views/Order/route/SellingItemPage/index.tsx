@@ -129,7 +129,7 @@ const CommodityItem: React.FC<CommodityItemProps> = props => {
         </View>
         <View style={styles.rightContainer}>
           <View style={styles.detailContainer}>
-            <View>
+            <View style={{ flex: 1 }}>
               <KVTextContainer
                 icon="&#xe786;"
                 name="交易地点"
