@@ -162,6 +162,7 @@ const classScheduleOptions = (nav: any): BottomTabNavigationOptions => ({
 const PERSONAL_CENTER_SCREEN_OPTIONS: BottomTabNavigationOptions = {
   headerShown: false,
   tabBarLabel: '个人中心',
+  lazy: false,
   tabBarBadgeStyle: { backgroundColor: 'red' },
 }
 
