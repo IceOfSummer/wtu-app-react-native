@@ -39,7 +39,7 @@ const SwitchWithLabel: React.FC<SwitchWithLabelProps> = props => {
       <Switch
         value={props.enable}
         onValueChange={props.onChange}
-        trackColor={{ false: '#767577', true: '#81b0ff' }}
+        trackColor={{ true: '#767577', false: '#81b0ff' }}
         thumbColor={props.enable ? global.colors.primaryColor : '#f4f3f4'}
         ios_backgroundColor="#3e3e3e"
       />

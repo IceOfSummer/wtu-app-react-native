@@ -1,9 +1,9 @@
 import { serverNoRepeatAjax } from '../../request'
-import config from '../../../../config.json'
 import fs from 'react-native-fs'
 import ByteBuffer from 'bytebuffer'
 import { getLogger } from '../../../utils/LoggerUtils'
 import { getFileExtension } from '../../../utils/PathUtils'
+import Environment from '../../../utils/Environment'
 
 export type SignInfo = {
   path: string
@@ -26,6 +26,7 @@ export const requireAvatarUploadSign = (type: string) => {
   return serverNoRepeatAjax<SignInfo>('/cos/secret/avatar', { t: type })
 }
 
+type OnProgress = (current: number, total: number) => void
 /**
  * 上传文件到cos桶
  */
@@ -33,39 +34,45 @@ function putObject(
   filePath: string,
   signInfo: SignInfo,
   contentType: string,
-  headers?: Record<string, string>
+  headers?: Record<string, string>,
+  onProgress?: OnProgress
 ) {
   return new Promise<void>(async (resolve, reject) => {
     const byteBuffer = ByteBuffer.fromBase64(
       await fs.readFile(filePath, 'base64')
     )
     logger.debug('start put object')
-    fetch(config.common.cosUrl + signInfo.path, {
-      method: 'PUT',
-      headers: {
-        ...headers,
-        Authorization: signInfo.sign,
-        'Content-Type': contentType,
-      },
-      body: byteBuffer.buffer,
+    const request = new XMLHttpRequest()
+    request.open('PUT', Environment.cos.cosUrl + signInfo.path, true)
+    request.setRequestHeader('Authorization', signInfo.sign)
+    request.setRequestHeader('Content-Type', contentType)
+    if (headers) {
+      Object.keys(headers).forEach(key => {
+        request.setRequestHeader(key, headers[key])
+      })
+    }
+    request.upload.addEventListener('progress', e => {
+      onProgress?.(e.loaded, e.total)
     })
-      .then(resp => {
-        resp.text().then(txt => {
-          logger.debug(txt)
-          if (resp.status === 200) {
-            resolve()
-          } else {
-            logger.error('上传文件失败')
-            reject(new Error(txt))
-          }
-        })
-        if (resp.status === 200) {
+    request.addEventListener('readystatechange', () => {
+      if (request.readyState === XMLHttpRequest.DONE) {
+        if (request.status === 200) {
+          resolve()
         } else {
+          const body = request.responseText
+          logger.error('upload image failed: ' + body)
+          reject(new Error('上传文件失败, 请稍后再试'))
         }
-      })
-      .catch(e => {
-        reject(e)
-      })
+      }
+    })
+    request.timeout = 10000
+    request.addEventListener('error', () => {
+      reject(new Error('上传文件失败, 请稍后再试'))
+    })
+    request.addEventListener('abort', () => {
+      reject(new Error('上传被取消'))
+    })
+    request.send(byteBuffer.buffer)
   })
 }
 
@@ -73,22 +80,36 @@ export const uploadImageToUserspace = (
   uid: number,
   filepath: string,
   signInfo: SignInfo,
-  contentType: string
+  contentType: string,
+  onProgress?: OnProgress
 ) => {
-  return putObject(filepath, signInfo, contentType, {
-    'x-cos-meta-uid': uid.toString(),
-  })
+  return putObject(
+    filepath,
+    signInfo,
+    contentType,
+    {
+      'x-cos-meta-uid': uid.toString(),
+    },
+    onProgress
+  )
 }
 
 export const uploadAvatar = (
   uid: number,
   signInfo: SignInfo,
   contentType: string,
-  filepath: string
+  filepath: string,
+  onProgress?: OnProgress
 ) => {
-  return putObject(filepath, signInfo, contentType, {
-    'x-cos-meta-uid': uid.toString(),
-  })
+  return putObject(
+    filepath,
+    signInfo,
+    contentType,
+    {
+      'x-cos-meta-uid': uid.toString(),
+    },
+    onProgress
+  )
 }
 
 enum ImageType {
@@ -154,9 +175,10 @@ export const requirePublicSpaceUploadSecret = (contentType: string) => {
 export const uploadFileToPublicSpace = (
   signInfo: SignInfo,
   filepath: string,
-  contentType: string
+  contentType: string,
+  onProgress?: OnProgress
 ) => {
-  return putObject(filepath, signInfo, contentType)
+  return putObject(filepath, signInfo, contentType, undefined, onProgress)
 }
 
 /**

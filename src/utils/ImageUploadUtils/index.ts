@@ -10,6 +10,7 @@ import PublicData from '../../sqlite/public_data'
 import LinkedStack from '../Collection/LinkedStack'
 import { getLogger } from '../LoggerUtils'
 import { getFilenameFromUrl } from '../PathUtils'
+import Loading from '../../component/Loading'
 
 const logger = getLogger('/utils/ImageUploadUtils')
 
@@ -39,7 +40,7 @@ export default class ImageUploadUtils {
   private static secretMap = new Map<string, LinkedStack<SignInfo>>()
 
   /**
-   * 立刻上传图片到公共空间
+   * 立刻上传图片到公共空间. 该方法会调用{@link Loading#showLoading}
    * @param filepath 图片路径
    * @param contentType 文件类型
    * @param key 用于辨别文件的标识符
@@ -63,7 +64,7 @@ export default class ImageUploadUtils {
       stack.push(sign)
     }
     logger.info('start upload')
-    await uploadFileToPublicSpace(sign, filepath, contentType)
+    await uploadFileToPublicSpace(sign, filepath, contentType, this.onProgress)
     logger.info('upload success!')
     stack.pop()
     this.setImageCache(key, sign.path)
@@ -126,7 +127,13 @@ export default class ImageUploadUtils {
           logger.warn('the secret is undefined! images: ' + images)
           throw new Error('出现未知错误，请重试')
         }
-        await uploadImageToUserspace(uid, img.filepath, secret, img.contentType)
+        await uploadImageToUserspace(
+          uid,
+          img.filepath,
+          secret,
+          img.contentType,
+          this.onProgress
+        )
         const realPath =
           getUserspaceImagePath(uid, getFilenameFromUrl(secret.path)) + '.webp'
         logger.debug(`realPath = ${realPath}, secret.path = ${secret.path}`)
@@ -152,5 +159,11 @@ export default class ImageUploadUtils {
     PublicData.set(filepath, url).catch(e => {
       logger.error('set publicData failed: ' + e.message)
     })
+  }
+
+  private static onProgress(current: number, total: number) {
+    const currentMb = current / 1024
+    const totalMb = total / 1024
+    Loading.showLoading(`上传图片中: ${currentMb}Kb/${totalMb}Kb`)
   }
 }
