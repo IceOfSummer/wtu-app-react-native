@@ -238,17 +238,19 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       if (Array.isArray(payload)) {
         state.onlineMessages = state.onlineMessages.concat(payload)
         payload.forEach(value => {
+          const previous = state.messageLabels[value.uid]?.unreadCount ?? 0
           state.messageLabels[value.uid] = {
             ...value,
-            unreadCount: 0,
+            unreadCount: previous + 1,
           }
         })
         logger.debug('updating onlineMessages: ')
         logger.debug(state.onlineMessages)
       } else {
+        const previous = state.messageLabels[payload.uid]?.unreadCount ?? 0
         state.messageLabels[payload.uid] = {
           ...payload,
-          unreadCount: 0,
+          unreadCount: previous + 1,
         }
         state.onlineMessages.push(payload)
       }

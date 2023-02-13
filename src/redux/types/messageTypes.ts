@@ -40,7 +40,7 @@ export type MessageLabel = Record<number, LastMessageQueryType | undefined>
 
 export interface MessageReducers extends SliceCaseReducers<MessageState> {
   /**
-   * 插入单条消息
+   * 插入单条消息到<b>消息面板</b>
    */
   insertSingleMessage: CaseReducer<
     MessageState,
@@ -59,7 +59,7 @@ export interface MessageReducers extends SliceCaseReducers<MessageState> {
     PayloadAction<SqliteMessage[] | SqliteMessage>
   >
   /**
-   * 同步离线消息，会自动将confirmed置为0
+   * 插入同步的离线消息
    */
   insertOfflineMessage: CaseReducer<
     MessageState,
