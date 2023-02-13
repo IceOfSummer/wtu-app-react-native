@@ -1,6 +1,11 @@
 import React, { useRef, useState } from 'react'
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
+import {
+  RouteProp,
+  StackActions,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native'
 import SimpleInput from '../../../../component/Input/SimpleInput'
 import ImageUploadContainer from '../../../../component/Input/ImageUploadContainer'
 import { checkNumber, useFormChecker } from '../../../../component/Input'
@@ -16,6 +21,7 @@ import CombinableRichEditor, {
   CombinableRichEditorToolBar,
 } from '../../../../component/Container/CombinableRichEditor'
 import NavigationHeader from '../../../../component/Container/NavigationHeader'
+import SwitchWithLabel from '../../../../component/Input/SwitchWithLabel'
 
 const logger = getLogger('/views/GoodsSubmitPage/route/SubmitPage')
 
@@ -29,7 +35,8 @@ const SubmitPage: React.FC = () => {
   const [commodityName, setCommodityName] = useState('')
   const [commodityPrice, setCommodityPrice] = useState('')
   const [tradeLocation, setTradeLocation] = useState('')
-  const [commodityCount, setCommodityCount] = useState('')
+  const [commodityCount, setCommodityCount] = useState('1')
+  const [autoTakeDown, setAutoTakeDown] = useState(true)
   const [editorToolbarVisible, setEditorToolbarVisible] = useState(false)
   const goodsNameInput = useRef<SimpleInput>(null)
   const countInput = useRef<SimpleInput>(null)
@@ -108,7 +115,7 @@ const SubmitPage: React.FC = () => {
         detailImage
       )
       // 跳转到成功页面
-      nav.navigate(SUCCESS_PAGE, { commodityId })
+      nav.dispatch(StackActions.replace(SUCCESS_PAGE, { commodityId }))
     } catch (e: any) {
       showSingleBtnTip('上传失败', e.message)
       logger.error('upload commodity failed: ' + e.message)
@@ -136,6 +143,7 @@ const SubmitPage: React.FC = () => {
       description: html,
       tradeLocation: tradeLocation,
       count: Number.parseInt(commodityCount, 10),
+      autoTakeDown,
     })
   }
 
@@ -165,7 +173,11 @@ const SubmitPage: React.FC = () => {
         />
         <SimpleInput
           onChangeText={setCommodityCount}
-          textInputProps={{ placeholder: '数量', keyboardType: 'numeric' }}
+          textInputProps={{
+            placeholder: '数量',
+            keyboardType: 'numeric',
+            value: commodityCount,
+          }}
           rowTipText="件"
           rowTipTextStyle={styles.tipText}
           ref={countInput}
@@ -188,6 +200,12 @@ const SubmitPage: React.FC = () => {
             maxLength: 20,
           }}
           ref={tradeLocationInput}
+        />
+        <SwitchWithLabel
+          onChange={setAutoTakeDown}
+          enable={autoTakeDown}
+          label="自动下架"
+          helpText="当商品数量为0时，自动下架该商品。若您的商品可以随时补货，建议关闭该选项."
         />
         <ImageUploadContainer
           uid={uid}

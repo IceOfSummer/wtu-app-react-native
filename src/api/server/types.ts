@@ -29,6 +29,7 @@ export type Commodity = {
   status: CommodityStatus
   tradeLocation: string
   previewImage: string
+  autoTakeDown: boolean
   /**
    * 需要单独使用JSON进行二次解析
    */

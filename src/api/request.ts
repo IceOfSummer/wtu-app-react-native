@@ -30,7 +30,7 @@ const serverResponseInterceptor = (resp: AxiosResponse): any => {
     logger.warn('the response code is undefined! response: ' + resp)
     throw new Error(resp.data)
   }
-  if (resp.data.code !== 0) {
+  if (!(resp.data.code === 0 || resp.data.code === '00000')) {
     logger.error(`request failed: ${resp.request._url}: ${resp.data.message}`)
     throw new Error(resp.data.message)
   }
