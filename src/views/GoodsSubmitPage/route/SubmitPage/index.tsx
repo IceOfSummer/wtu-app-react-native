@@ -139,7 +139,7 @@ const SubmitPage: React.FC = () => {
       name: commodityName,
       previewImage,
       images: JSON.stringify(detailImage),
-      price: Number.parseFloat(commodityPrice),
+      price: Number.parseFloat(Number.parseFloat(commodityPrice).toFixed(2)),
       description: html,
       tradeLocation: tradeLocation,
       count: Number.parseInt(commodityCount, 10),

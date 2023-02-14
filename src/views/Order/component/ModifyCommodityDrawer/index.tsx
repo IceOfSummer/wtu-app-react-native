@@ -88,7 +88,7 @@ const Content: React.FC<
     }
     const requestParam: Partial<Commodity> = {}
     let updateCount = 0
-    const pri = Number.parseInt(price, 10)
+    const pri = Number.parseFloat(Number.parseFloat(price).toFixed(2))
     if (pri !== props.price) {
       updateCount++
       requestParam.price = pri
