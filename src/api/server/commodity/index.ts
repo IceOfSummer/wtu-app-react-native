@@ -95,8 +95,13 @@ export const lockCommodity = (
 export const getSellingCount = () =>
   serverNoRepeatAjax<number>('/commodity/selling_count')
 
-export const getUploadedCommodity = (page: number = 0, size = 5) =>
+export const getUploadedCommodity = (
+  active?: boolean,
+  page: number = 0,
+  size = 5
+) =>
   serverNoRepeatAjax<Commodity[]>('/commodity/uploaded', {
+    a: active ? '1' : '0',
     p: page,
     s: size,
   }).then(r => {

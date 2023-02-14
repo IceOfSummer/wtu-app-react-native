@@ -57,7 +57,8 @@ const Order: React.FC = () => {
         component={SellingItemPage}
         options={headerCommonOptionsWithTitle(
           '我的商品',
-          global.colors.boxBackgroundColor
+          'rgb(33, 150, 243)',
+          '#fff'
         )}
       />
       <Stack.Screen

@@ -19,6 +19,7 @@ interface NavigationHeaderProps {
   navigation: NavigationLike
   showSplitLine?: boolean
   headerLeft?: ComponentType
+  textColor?: string
 }
 
 /**
@@ -41,7 +42,13 @@ const NavigationHeader: React.FC<NavigationHeaderProps> = props => {
         <View style={styles.leftContainer}>
           {LeftComponent ? <LeftComponent /> : <BackButton {...props} />}
         </View>
-        <Text style={styles.title}>{props.title}</Text>
+        <Text
+          style={[
+            styles.title,
+            { color: props.textColor ?? global.colors.textColor },
+          ]}>
+          {props.title}
+        </Text>
         <View style={styles.rightContainer}>{children}</View>
       </View>
     </View>
@@ -54,7 +61,7 @@ const BackButton: React.FC<NavigationHeaderProps> = props => {
     return (
       <Icons
         iconText="&#xe61d;"
-        color={global.colors.textColor}
+        color={props.textColor ?? global.colors.textColor}
         size={34}
         onPress={props.navigation.goBack}
       />
@@ -86,7 +93,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: global.styles.$font_size_lg,
     textAlign: 'center',
-    color: global.colors.textColor,
     flex: 2,
   },
 })

@@ -166,7 +166,8 @@ const hideHeaderOptions: NativeStackNavigationOptions = {
 
 export const headerCommonOptionsWithTitle = (
   title: string,
-  backgroundColor?: string
+  backgroundColor?: string,
+  textColor?: string
 ): NativeStackNavigationOptions => {
   return {
     header: props => (
@@ -174,6 +175,7 @@ export const headerCommonOptionsWithTitle = (
         {...props}
         title={title}
         backgroundColor={backgroundColor}
+        textColor={textColor}
       />
     ),
   }
