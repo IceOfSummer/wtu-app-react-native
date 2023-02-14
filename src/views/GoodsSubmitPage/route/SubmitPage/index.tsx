@@ -139,7 +139,7 @@ const SubmitPage: React.FC = () => {
       name: commodityName,
       previewImage,
       images: JSON.stringify(detailImage),
-      price: Number.parseInt(commodityPrice, 10),
+      price: Number.parseFloat(commodityPrice),
       description: html,
       tradeLocation: tradeLocation,
       count: Number.parseInt(commodityCount, 10),
@@ -185,7 +185,7 @@ const SubmitPage: React.FC = () => {
         <SimpleInput
           onChangeText={setCommodityPrice}
           textInputProps={{
-            placeholder: '价格',
+            placeholder: '单价',
             keyboardType: 'numeric',
             maxLength: 8,
           }}
