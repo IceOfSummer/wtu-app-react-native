@@ -185,9 +185,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
   },
-  swiper: {
-    borderWidth: 1,
-  },
+  swiper: {},
   descriptionContainer: {
     marginHorizontal: 8,
     borderRadius: 10,

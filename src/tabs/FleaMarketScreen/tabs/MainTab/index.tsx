@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ShopItem from '../../components/ShopItem'
-import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import NativeDialog from '../../../../native/modules/NativeDialog'
-import { LoadingScrollView } from '../../../../component/LoadingScrollView'
 import {
   getSuggestCommodity,
   ProcessedCommodity,
 } from '../../../../api/server/commodity'
 import { getLogger } from '../../../../utils/LoggerUtils'
-import CenterBanner from '../../components/CenterBanner'
 import { useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
 import {
@@ -19,7 +17,8 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/src/types'
 import Toast from 'react-native-root-toast'
-import FleaMarketRefreshHeader from '../../components/FleaMarketRefreshHeader'
+import HighPerformanceScrollView from '../../../../component/LoadingScrollView/HighPerformanceScrollView'
+import CenterBanner from '../../components/CenterBanner'
 
 const logger = getLogger('/tabs/FleaMarketScreen/tabs/MainTab')
 
@@ -28,7 +27,6 @@ const SIZE = 8
  * 跳蚤市场
  */
 const MainTab: React.FC = () => {
-  const [itemContainerWidth, setItemContainerWidth] = useState(0)
   const nav = useNavigation<NavigationProp<RouterTypes>>()
   const store = useStore<ReducerTypes>()
 
@@ -46,23 +44,18 @@ const MainTab: React.FC = () => {
       })
     }
   }
-  const onItemContainerLayout = ({ nativeEvent }: LayoutChangeEvent) => {
-    setItemContainerWidth(nativeEvent.layout.width / 2 - 5)
-  }
 
   // 推荐数据
   const [commodityItems, setCommodityItems] = useState<ProcessedCommodity[]>([])
   const [loading, setLoading] = useState(false)
   const [empty, setEmpty] = useState(false)
   const [loadError, setLoadError] = useState(false)
-  const scroll = useRef<LoadingScrollView>(null)
+  const scroll = useRef<HighPerformanceScrollView<ProcessedCommodity>>(null)
   const maxId = useRef<number | undefined>(undefined)
   const loadMore = (refresh?: boolean) => {
     if (loading) {
       if (refresh) {
         scroll.current?.endRefresh()
-      } else {
-        scroll.current?.endLoading()
       }
       return
     }
@@ -107,8 +100,6 @@ const MainTab: React.FC = () => {
         setLoading(false)
         if (refresh) {
           scroll.current?.endRefresh()
-        } else {
-          scroll.current?.endLoading()
         }
       })
   }
@@ -124,34 +115,28 @@ const MainTab: React.FC = () => {
   }, [])
 
   return (
-    <LoadingScrollView
-      refreshHeader={FleaMarketRefreshHeader}
+    <HighPerformanceScrollView
       ref={scroll}
-      dataLength={commodityItems.length}
+      error={loadError}
+      keyExtractor={value => value.commodityId.toString()}
+      renderItem={({ item }) => <ShopItem commodity={item} />}
+      numColumns={2}
+      data={commodityItems}
       loading={loading}
-      onRequireLoad={loadMore}
+      onLoadMore={loadMore}
       onRefresh={onRefresh}
-      empty={empty}
-      error={loadError}>
-      <CenterBanner onGoButtonPress={goSubmitItem} />
-      <View style={global.styles.baseContainer}>
-        <View style={styles.adviceContainer}>
-          <Text style={styles.adviceText}>今日推荐</Text>
+      allLoaded={empty}
+      ListHeaderComponent={() => (
+        <View>
+          <CenterBanner onGoButtonPress={goSubmitItem} />
+          <View style={global.styles.baseContainer}>
+            <View style={styles.adviceContainer}>
+              <Text style={styles.adviceText}>今日推荐</Text>
+            </View>
+          </View>
         </View>
-        <View style={styles.shopItemContainer} onLayout={onItemContainerLayout}>
-          {commodityItems.map(value => (
-            <ShopItem
-              commodity={value}
-              width={itemContainerWidth}
-              key={value.commodityId}
-            />
-          ))}
-        </View>
-      </View>
-      {empty ? (
-        <Text style={global.styles.infoTipText}>我也是有底线的</Text>
-      ) : null}
-    </LoadingScrollView>
+      )}
+    />
   )
 }
 

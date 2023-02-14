@@ -11,7 +11,7 @@ import InitSkeleton from './InitSkeleton'
 import ConditionHideContainer from '../Container/ConditionHideContainer'
 import LottieView from 'lottie-react-native'
 
-interface LoadingScrollViewProps {
+export interface LoadingScrollViewProps {
   /**
    * 当需要加载数据时(上滑时加载)，若返回值为void，需要手动调用{@link LoadingScrollView#endLoading}方法，否则刷新动画不会终止
    * <p>
@@ -61,16 +61,21 @@ export class LoadingScrollView extends React.Component<
     this.scroll.current?.endRefresh()
   }
 
+  flag = false
+
   onScroll = (evt: ScrollEvent) => {
-    if (this.state.loading || this.props.empty) {
+    if (this.state.loading || this.props.empty || this.flag) {
       return
     }
     const scroll = this.scroll.current!
     const toBottomDis =
       scroll._contentHeight - evt.nativeEvent.contentOffset.y - scroll._height
     if (toBottomDis < 50 && !this.props.error && !this.state.loading) {
+      this.flag = true
       // loading
-      this.setState({ loading: true })
+      this.setState({ loading: true }, () => {
+        this.flag = false
+      })
       this.loadMoreData()
     }
   }

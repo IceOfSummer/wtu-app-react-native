@@ -273,6 +273,7 @@ const messageSlice = createSlice<MessageState, MessageReducers>({
       if (target) {
         if (payload.confirmed) {
           // 标记为已读
+          logger.info('modify read status: ' + target)
           state.unreadCount -= target.unreadCount
           target.unreadCount = 0
         } else {

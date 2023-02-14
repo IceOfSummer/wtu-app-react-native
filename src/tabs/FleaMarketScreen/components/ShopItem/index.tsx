@@ -1,38 +1,46 @@
 import React from 'react'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { ProcessedCommodity } from '../../../../api/server/commodity'
 import BetterImage from '../../../../component/Container/BetterImage'
 import useNav from '../../../../hook/useNav'
 import { COMMODITY_PAGE } from '../../../../router'
 
 export interface ShowItemProps {
-  width: number
   commodity: ProcessedCommodity
 }
 
+const PADDING = 4
 /**
  * 商品展示组件
  */
 const ShopItem: React.FC<ShowItemProps> = props => {
   const { commodity } = props
+  const width = useWindowDimensions().width / 2
+  const imageWidth = width - PADDING
   const nav = useNav()
   const goItem = () => {
     nav.push(COMMODITY_PAGE, { id: commodity.commodityId })
   }
   return (
-    <Pressable
-      style={[styles.container, { width: props.width }]}
-      onPress={goItem}>
-      <View style={[styles.image, { width: props.width, height: props.width }]}>
-        <BetterImage uri={commodity.previewImage} />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.nameText} numberOfLines={2} ellipsizeMode="tail">
-          {commodity.name}
-        </Text>
-        <Text style={styles.priceText}>￥{commodity.price}</Text>
-      </View>
-    </Pressable>
+    <View style={{ width, paddingHorizontal: 4 }}>
+      <Pressable style={[styles.container]} onPress={goItem}>
+        <View style={[styles.image, { width: imageWidth, height: imageWidth }]}>
+          <BetterImage uri={commodity.previewImage} />
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.nameText} numberOfLines={2} ellipsizeMode="tail">
+            {commodity.name}
+          </Text>
+          <Text style={styles.priceText}>￥{commodity.price}</Text>
+        </View>
+      </Pressable>
+    </View>
   )
 }
 
