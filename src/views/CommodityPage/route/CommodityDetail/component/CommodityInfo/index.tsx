@@ -88,7 +88,7 @@ const CommodityInfo: React.FC<CommodityInfoProps> = props => {
   }
 
   return (
-    <View style={{ height: '100%', borderWidth: 1 }}>
+    <View style={{ height: '100%' }}>
       <SpringScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}>
