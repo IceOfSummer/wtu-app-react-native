@@ -10,6 +10,7 @@ type LoginResponse = {
   token: string
   roles: number
   academy: string
+  signature?: string
 }
 
 export const login = (username: string, password: string) =>

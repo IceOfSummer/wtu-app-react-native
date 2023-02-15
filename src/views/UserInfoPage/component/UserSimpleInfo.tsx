@@ -3,6 +3,7 @@ import { UserInfoQueryType } from '../../../api/server/user'
 import BaseContainer from '../../../component/Container/BaseContainer'
 import { StyleSheet, Text, View } from 'react-native'
 import Avatar from '../../../component/Container/Avatar'
+import BaseContainer2 from '../../../component/Container/BaseContainer2'
 
 interface UserSimpleInfoProps {
   userInfo: UserInfoQueryType
@@ -20,29 +21,34 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
     }
   }
   return (
-    <BaseContainer>
-      <View style={styles.avatar}>
-        <Avatar uid={props.userInfo.userId} size={64} />
-      </View>
-      <View
-        style={{
-          justifyContent: 'center',
-          alignSelf: 'center',
-          alignItems: 'center',
-        }}>
-        <Text style={styles.name}>{userInfo.nickname}</Text>
-      </View>
-      <View style={styles.infoContainer}>
-        <View style={styles.infoDetailContainer}>
-          <Text style={styles.labelText}>信誉分数: </Text>
-          <Text style={{ color: getCreditColor() }}>{userInfo.credit}</Text>
+    <React.Fragment>
+      <BaseContainer>
+        <View style={styles.avatar}>
+          <Avatar uid={props.userInfo.userId} size={64} />
         </View>
-        <View style={styles.infoDetailContainer}>
-          <Text style={styles.labelText}>班级: </Text>
-          <Text>{userInfo.className}</Text>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignSelf: 'center',
+            alignItems: 'center',
+          }}>
+          <Text style={styles.name}>{userInfo.nickname}</Text>
         </View>
-      </View>
-    </BaseContainer>
+        <View style={styles.infoContainer}>
+          <View style={styles.infoDetailContainer}>
+            <Text style={styles.labelText}>信誉分数: </Text>
+            <Text style={{ color: getCreditColor() }}>{userInfo.credit}</Text>
+          </View>
+          <View style={styles.infoDetailContainer}>
+            <Text style={styles.labelText}>班级: </Text>
+            <Text>{userInfo.className}</Text>
+          </View>
+        </View>
+      </BaseContainer>
+      <BaseContainer2 title="个性签名">
+        <Text>{userInfo.signature}</Text>
+      </BaseContainer2>
+    </React.Fragment>
   )
 }
 const styles = StyleSheet.create({

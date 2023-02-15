@@ -9,6 +9,7 @@ export type UserInfoQueryType = {
    */
   className: string
   academy: string
+  signature?: string
 }
 
 /**
@@ -92,6 +93,7 @@ export const register = (param: RegisterParam) =>
 
 export type UserUpdate = {
   nickname?: string
+  signature?: string
 }
 
 export const updateUserInfo = (user: UserUpdate) =>

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useSelector, useStore } from 'react-redux'
 import { ReducerTypes } from '../../../../redux/counter'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import CardContainer from '../../../../component/Cards/CardContainer'
 import CenterTextCard from '../../../../component/Cards/CenterTextCard'
 import { markLoginInvalid } from '../../../../redux/counter/serverUserSlice'
@@ -23,6 +23,8 @@ import {
 } from '../../../../api/server/cos'
 import Loading from '../../../../component/Loading'
 import Toast from 'react-native-root-toast'
+import BaseContainer2 from '../../../../component/Container/BaseContainer2'
+import SignatureModifyDrawer from './SignatureModifyDrawer'
 
 const logger = getLogger('/views/SettingsPage/route/UserSettingPage')
 
@@ -43,6 +45,7 @@ const UserSettingPage: React.FC = () => {
   const commonUpdateDrawer = useRef<CommonUpdateDrawer>(null)
   const emailUpdateDrawer = useRef<EmailUpdateDrawer>(null)
   const imagePickMenu = useRef<ImagePickMenu>(null)
+  const signatureModifyDrawer = useRef<SignatureModifyDrawer>(null)
 
   const openUpdateDrawer = (op: OP) => {
     setCurrentOp(op)
@@ -85,6 +88,10 @@ const UserSettingPage: React.FC = () => {
     }
   }
 
+  const onModifySignature = () => {
+    signatureModifyDrawer.current?.open()
+  }
+
   if (!info) {
     return null
   }
@@ -112,6 +119,12 @@ const UserSettingPage: React.FC = () => {
         <KVTextCard title="班级" value={info.className} />
         <KVTextCard title="学院" value={info.academy} hideBorder />
       </CardContainer>
+      <BaseContainer2
+        title="个性签名"
+        icon="&#xe610;"
+        onTitlePress={onModifySignature}>
+        <Text>{info.signature}</Text>
+      </BaseContainer2>
       <CardContainer>
         <CenterTextCard
           title="退出登录"
@@ -129,6 +142,10 @@ const UserSettingPage: React.FC = () => {
       />
       <EmailUpdateDrawer ref={emailUpdateDrawer} originValue={info.email} />
       <ImagePickMenu ref={imagePickMenu} onSelect={onAvatarSelect} />
+      <SignatureModifyDrawer
+        defaultValue={info.signature}
+        ref={signatureModifyDrawer}
+      />
     </View>
   )
 }

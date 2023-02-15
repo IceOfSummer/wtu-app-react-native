@@ -1,5 +1,6 @@
 import { Pressable, Text, View, ViewStyle } from 'react-native'
 import React from 'react'
+import Icons from '../../Icons'
 
 export interface BaseContainerProps {
   borderRadius?: number
@@ -9,6 +10,8 @@ export interface BaseContainerProps {
   darkBackground?: boolean
   title?: string
   onPress?: () => void
+  onTitlePress?: () => void
+  icon?: string
 }
 
 /**
@@ -39,12 +42,14 @@ const BaseContainer: React.FC<BaseContainerProps> = props => {
         ]}>
         {props.title ? (
           <Text
+            onPress={props.onTitlePress}
             style={{
               marginLeft: 4,
               color: global.styles.$text_color,
               fontSize: 16,
             }}>
             {props.title}
+            <Icons iconText={props.icon} />
           </Text>
         ) : null}
         {props.children}
