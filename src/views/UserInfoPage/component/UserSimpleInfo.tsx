@@ -46,7 +46,7 @@ const UserSimpleInfo: React.FC<UserSimpleInfoProps> = props => {
         </View>
       </BaseContainer>
       <BaseContainer2 title="个性签名">
-        <Text>{userInfo.signature}</Text>
+        <Text>{userInfo.signature ?? '暂时没有个性签名...'}</Text>
       </BaseContainer2>
     </React.Fragment>
   )

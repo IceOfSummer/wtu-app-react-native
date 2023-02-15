@@ -123,7 +123,7 @@ const UserSettingPage: React.FC = () => {
         title="个性签名"
         icon="&#xe610;"
         onTitlePress={onModifySignature}>
-        <Text>{info.signature}</Text>
+        <Text>{info.signature ?? '暂时没有个性签名...'}</Text>
       </BaseContainer2>
       <CardContainer>
         <CenterTextCard
