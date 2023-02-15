@@ -16,6 +16,10 @@ import { ReducerTypes } from '../../redux/counter'
 
 const curYear = new Date().getFullYear()
 const TERM_STR = [
+  `${curYear - 4}年上学期`,
+  `${curYear - 4}年下学期`,
+  `${curYear - 3}年上学期`,
+  `${curYear - 3}年下学期`,
   `${curYear - 2}年上学期`,
   `${curYear - 2}年下学期`,
   `${curYear - 1}年上学期`,
@@ -24,11 +28,13 @@ const TERM_STR = [
   `${curYear}年下学期`,
   `${curYear + 1}年上学期`,
   `${curYear + 1}年下学期`,
-  `${curYear + 2}年上学期`,
-  `${curYear + 2}年下学期`,
 ]
 
 const TIME_SCHEMA: Array<Time> = [
+  { term: 3, year: curYear - 4 },
+  { term: 12, year: curYear - 4 },
+  { term: 3, year: curYear - 3 },
+  { term: 12, year: curYear - 3 },
   { term: 3, year: curYear - 2 },
   { term: 12, year: curYear - 2 },
   { term: 3, year: curYear - 1 },
@@ -37,8 +43,6 @@ const TIME_SCHEMA: Array<Time> = [
   { term: 12, year: curYear },
   { term: 3, year: curYear + 1 },
   { term: 12, year: curYear + 1 },
-  { term: 3, year: curYear + 2 },
-  { term: 12, year: curYear + 2 },
 ]
 type Time = {
   term: Term

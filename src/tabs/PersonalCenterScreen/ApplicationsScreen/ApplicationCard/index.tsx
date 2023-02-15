@@ -35,10 +35,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = props => {
   const pressEvent = (app: Application) => {
     if (app.needLogin && !store.getState().user.isLoginValid) {
       NativeDialog.showDialog({
-        title: '请先登录',
-        message: '请登录后再操作',
-        hideCancelBtn: true,
-        confirmBtnText: '登录',
+        title: '请登录教务系统后再操作',
+        message: '是否跳转到登录页面',
+        confirmBtnText: '确定',
         onConfirm() {
           nav.navigate(SCHOOL_AUTH)
         },
