@@ -13,12 +13,14 @@ import {
   GOODS_SUBMIT_PAGE,
   RouterTypes,
   SERVER_AUTH_PAGE,
+  SETTINGS_PAGE,
 } from '../../../../router'
 import { useNavigation } from '@react-navigation/native'
 import { NavigationProp } from '@react-navigation/core/src/types'
 import Toast from 'react-native-root-toast'
 import HighPerformanceScrollView from '../../../../component/LoadingScrollView/HighPerformanceScrollView'
 import CenterBanner from '../../components/CenterBanner'
+import { USER_SETTINGS_PAGE } from '../../../../views/SettingsPage'
 
 const logger = getLogger('/tabs/FleaMarketScreen/tabs/MainTab')
 
@@ -31,10 +33,8 @@ const MainTab: React.FC = () => {
   const store = useStore<ReducerTypes>()
 
   const goSubmitItem = () => {
-    const uid = store.getState().serverUser.userInfo?.uid
-    if (uid) {
-      nav.navigate(GOODS_SUBMIT_PAGE, { uid })
-    } else {
+    const userInfo = store.getState().serverUser.userInfo
+    if (!userInfo) {
       NativeDialog.showDialog({
         title: '请先登录',
         message: '是否跳转到登录页面',
@@ -42,6 +42,23 @@ const MainTab: React.FC = () => {
           nav.navigate(SERVER_AUTH_PAGE)
         },
       })
+      return
+    }
+    if (!userInfo.email) {
+      NativeDialog.showDialog({
+        title: '您必须绑定邮箱后才能上传商品',
+        message: '在商品被购买后，我们将通过邮件通知您，所以请务必绑定邮箱！',
+        confirmBtnText: '绑定邮箱',
+        onConfirm() {
+          nav.navigate(SETTINGS_PAGE, { screen: USER_SETTINGS_PAGE })
+        },
+      })
+      return
+    }
+    const uid = userInfo.uid
+    if (uid) {
+      nav.navigate(GOODS_SUBMIT_PAGE, { uid })
+    } else {
     }
   }
 
