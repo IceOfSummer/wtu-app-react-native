@@ -4,7 +4,11 @@ export type UserInfoQueryType = {
   userId: number
   credit: number
   nickname: string
+  /**
+   * @deprecated 该值永远都是{@link UserInfoQueryType#academy}
+   */
   className: string
+  academy: string
 }
 
 /**
@@ -12,7 +16,15 @@ export type UserInfoQueryType = {
  * @param id
  */
 export const getUserInfo = (id: number) =>
-  serverNoRepeatAjax<UserInfoQueryType | undefined>(`/user/info/${id}`)
+  serverNoRepeatAjax<UserInfoQueryType | undefined>(`/user/info/${id}`).then(
+    r => {
+      const data = r.data
+      if (data) {
+        data.className = data.academy
+      }
+      return r
+    }
+  )
 
 /**
  * 查询多个用户的信息

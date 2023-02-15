@@ -63,6 +63,7 @@ export type ServerUserInfo = {
    * 当前权限
    */
   roles: number
+  academy: string
 }
 
 type Reducer<T> = CaseReducer<ServerUserState, PayloadAction<T>>

@@ -109,7 +109,8 @@ const UserSettingPage: React.FC = () => {
       <CardContainer>
         <KVTextCard title="学号" value={info.wtuId} />
         <KVTextCard title="真实姓名" value={info.name} />
-        <KVTextCard title="班级" value={info.className} hideBorder />
+        <KVTextCard title="班级" value={info.className} />
+        <KVTextCard title="学院" value={info.academy} hideBorder />
       </CardContainer>
       <CardContainer>
         <CenterTextCard

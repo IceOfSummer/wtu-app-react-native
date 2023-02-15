@@ -63,15 +63,9 @@ const LoginPage: React.FC = () => {
       .then(({ data }) => {
         logger.info('login to server success, userid: ' + data)
         const userInfo: ServerUserInfo & { token: string } = {
+          ...data,
           uid: data.userId,
-          nickname: data.nickname,
           username: '',
-          name: data.name,
-          className: data.className,
-          email: data.email,
-          wtuId: data.wtuId,
-          token: data.token,
-          roles: data.roles,
         }
         AppEvents.trigger('onLoginDone', {
           previousUserInfo: store.getState().serverUser.userInfo,
