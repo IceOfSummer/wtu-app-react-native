@@ -31,7 +31,20 @@ export type Acquisition = {
 export const queryAcquisitionById = (id: number) =>
   serverNoRepeatAjax<Acquisition | undefined>(`/acquisition/op/${id}`)
 
-export const queryAcquisitionDescription = (acquisitionId: number) =>
-  serverNoRepeatAjax<string | undefined>(
-    `/acquisition/op/${acquisitionId}/description`
+export const queryAcquisitionByActive = (
+  active: boolean,
+  page?: number,
+  size?: number
+) =>
+  serverNoRepeatAjax<Acquisition[]>('/acquisition/uploaded', {
+    a: active ? 1 : 0,
+    p: page,
+    s: size,
+  })
+
+export const takeDownAcquisition = (acquisitionId: number) =>
+  serverNoRepeatAjax(
+    `/acquisition/op/${acquisitionId}/take_down`,
+    undefined,
+    'POST'
   )

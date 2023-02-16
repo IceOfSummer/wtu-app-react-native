@@ -27,7 +27,6 @@ const DetailPage: React.FC = () => {
     queryAcquisitionById(route.params.acquisitionId)
       .then(r => {
         setData(r.data)
-        console.log(r.data)
         setSuccess(true)
       })
       .catch(e => {
@@ -54,7 +53,6 @@ const DetailPage: React.FC = () => {
 }
 
 const Detail: React.FC<Acquisition> = props => {
-  console.log(props.description)
   return (
     <ScrollView style={{ height: '100%' }}>
       <Text style={styles.title}>{props.title}</Text>

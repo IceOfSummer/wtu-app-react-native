@@ -5,6 +5,7 @@ import { getLogger } from '../../../../utils/LoggerUtils'
 import { StackActions, useNavigation } from '@react-navigation/native'
 import { ORDER_PAGE, UseNavigationGeneric } from '../../../../router'
 import {
+  ACQUISITION_MANAGE_PAGE,
   ORDER_PREVIEW_PAGE,
   PENDING_DELIVERY_PAGE,
   PENDING_RECEIVE_PAGE,
@@ -63,6 +64,15 @@ const TradeLabel: React.FC = () => {
         onPress={() =>
           nav.dispatch(
             StackActions.push(ORDER_PAGE, { screen: SELLING_ITEM_PAGE })
+          )
+        }
+      />
+      <EntryBox
+        icon="&#xf004;"
+        title="收购管理"
+        onPress={() =>
+          nav.dispatch(
+            StackActions.push(ORDER_PAGE, { screen: ACQUISITION_MANAGE_PAGE })
           )
         }
       />

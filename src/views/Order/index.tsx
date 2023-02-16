@@ -7,6 +7,7 @@ import { headerCommonOptionsWithTitle } from '../../router'
 import SellingItemPage from './route/SellingItemPage'
 import OrderDetailPage from './route/OrderDetailPage'
 import { ParamListBase } from '@react-navigation/native'
+import AcquisitionManagePage from './route/AcquisitionManagePage'
 
 const Stack = createNativeStackNavigator()
 
@@ -15,6 +16,7 @@ export const PENDING_DELIVERY_PAGE = '/OrderPage/PendingDeliveryPage'
 export const PENDING_RECEIVE_PAGE = '/OrderPage/PendingReceivePage'
 export const SELLING_ITEM_PAGE = '/OrderPage/SellingItemPage'
 export const ORDER_DETAIL_PAGE = '/OrderPage/OrderDetail'
+export const ACQUISITION_MANAGE_PAGE = '/OrderPage/AcquisitionPage'
 
 export interface OrderRouteParam extends ParamListBase {
   [ORDER_DETAIL_PAGE]: {
@@ -67,6 +69,15 @@ const Order: React.FC = () => {
         options={headerCommonOptionsWithTitle(
           '订单详细',
           global.colors.boxBackgroundColor
+        )}
+      />
+      <Stack.Screen
+        name={ACQUISITION_MANAGE_PAGE}
+        component={AcquisitionManagePage}
+        options={headerCommonOptionsWithTitle(
+          '收购管理',
+          'rgb(33, 150, 243)',
+          '#fff'
         )}
       />
     </Stack.Navigator>

@@ -86,6 +86,7 @@ const SearchPage: React.FC = () => {
           onSubmit={onSearch}
         />
       </View>
+      <Text style={global.styles.infoTipText}>搜索收购商品将在本月内上线</Text>
       <View>
         <View style={styles.searchHistoryHeader}>
           <View>
