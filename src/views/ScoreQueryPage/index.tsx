@@ -51,9 +51,9 @@ type Time = {
 
 let defaultSelectIndex: number
 if (getCurTerm() === 3) {
-  defaultSelectIndex = 4
+  defaultSelectIndex = 7
 } else {
-  defaultSelectIndex = 3
+  defaultSelectIndex = 6
 }
 
 type ScoreList = Array<Subjects>

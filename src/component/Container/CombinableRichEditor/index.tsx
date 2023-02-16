@@ -32,9 +32,13 @@ interface CombinableRichEditorProps {
   maxHeight?: number
   onFocus?: () => void
   onBlur?: () => void
+  /**
+   * 如果工具栏错位，可以考虑将此属性设置为false
+   */
   disableKeyboardAvoid?: boolean
   styles?: ViewStyle
   nestedScrollEnabled?: boolean
+  placeholder?: string
 }
 
 interface CombinableRichEditorState {
@@ -168,6 +172,14 @@ export default class CombinableRichEditor extends React.Component<
     this.webView.current?.injectJavaScript(script)
   }
 
+  private onLoad = () => {
+    if (this.props.placeholder) {
+      this.injectScript(
+        `quill.root.setAttribute('data-placeholder', '${this.props.placeholder}')`
+      )
+    }
+  }
+
   render() {
     return (
       <KeyboardAvoidingView
@@ -180,6 +192,7 @@ export default class CombinableRichEditor extends React.Component<
             : 'height'
         }>
         <WebView
+          onLoad={this.onLoad}
           nestedScrollEnabled={this.props.nestedScrollEnabled}
           showsHorizontalScrollIndicator={false}
           ref={this.webView}

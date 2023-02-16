@@ -35,6 +35,7 @@ const KVTextContainer: React.FC<
         {props.delimiter}
       </Text>
       <Text
+        selectable
         onPress={props.onPress}
         style={[
           { color: props.valueColor, fontSize: props.fontSize },

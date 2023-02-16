@@ -42,6 +42,7 @@ import { markCheckLoginDone } from '../redux/counter/temporaryDataSlice'
 import { ReducerTypes } from '../redux/counter'
 import { checkLogin } from '../redux/counter/wtuUserSlice'
 import MessageTipPage from '../views/MessageTipPage'
+import AcquisitionSubmitPage from '../views/AcquisitionPage'
 
 const Stack = createNativeStackNavigator()
 
@@ -75,6 +76,7 @@ export const ORDER_PAGE = 'OrderPage'
 export const POST_ARTICLE_PAGE = 'PostArticlePage'
 export const ARTICLE_DETAIL_PAGE = 'ArticleDetailPage'
 export const MESSAGE_TIP_PAGE = 'MessageTipCheckPage'
+export const ACQUISITION_PAGE = 'AcquisitionSubmitPage'
 
 export interface RouterTypes extends ParamListBase {
   [HOME_TABS]: undefined
@@ -145,6 +147,7 @@ export interface RouterTypes extends ParamListBase {
   [MESSAGE_TIP_PAGE]: {
     screen: string
   }
+  [ACQUISITION_PAGE]?: { screen: string }
 }
 export type UseRouteGeneric<RouterName extends keyof RouterTypes> = RouteProp<
   Pick<RouterTypes, RouterName>
@@ -352,6 +355,11 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={MESSAGE_TIP_PAGE}
           component={MessageTipPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name={ACQUISITION_PAGE}
+          component={AcquisitionSubmitPage}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

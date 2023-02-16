@@ -11,7 +11,7 @@ import InitSkeleton from '../InitSkeleton'
 import LottieView from 'lottie-react-native'
 
 interface HighPerformanceScrollViewProps<D> extends FlatListProps<D> {
-  onRefresh?: () => void
+  onRefresh?: () => void | Promise<unknown>
   onLoadMore?: () => void | Promise<unknown>
   numColumns?: number
   allLoaded?: boolean
@@ -38,6 +38,19 @@ export default class HighPerformanceScrollView<D> extends React.Component<
     this.setState({ refreshing: false })
   }
 
+  private onRefresh = () => {
+    if (!this.props.onRefresh) {
+      return
+    }
+    this.setState({ refreshing: true })
+    const result = this.props.onRefresh()
+    if (typeof result === 'object') {
+      result.finally(() => {
+        this.endRefresh()
+      })
+    }
+  }
+
   flag = false
 
   onEndReached = () => {
@@ -49,7 +62,13 @@ export default class HighPerformanceScrollView<D> extends React.Component<
 
   private loadMoreData = () => {
     // loading
-    this.props.onLoadMore?.()
+    if (!this.props.onLoadMore) {
+      return
+    }
+    const result = this.props.onLoadMore()
+    if (typeof result === 'object') {
+      result.catch()
+    }
   }
 
   constructor(props: HighPerformanceScrollViewProps<D>) {
@@ -69,16 +88,19 @@ export default class HighPerformanceScrollView<D> extends React.Component<
     } else if (this.props.error) {
       EmptyComponent = ErrorComponent
     } else {
-      EmptyComponent = DefaultEmptyComponent
+      EmptyComponent = () => null
     }
     let FooterComponent: React.ComponentType
     if (this.props.allLoaded) {
       FooterComponent = DefaultEmptyComponent
+    } else if (this.props.error || this.props.data?.length === 0) {
+      FooterComponent = () => null
     } else {
       FooterComponent = FooterLoadingComponent
     }
     return (
       <FlatList
+        onEndReachedThreshold={0.3}
         {...this.props}
         style={{ flex: 1 }}
         keyExtractor={this.props.keyExtractor}
@@ -87,14 +109,13 @@ export default class HighPerformanceScrollView<D> extends React.Component<
           <EmptyComponent onRetry={this.loadMoreData} />
         )}
         ListFooterComponent={FooterComponent}
-        onEndReachedThreshold={0.3}
         onEndReached={this.onEndReached}
         refreshing={this.state.refreshing}
         refreshControl={
           <RefreshControl
             colors={[global.colors.primaryColor]}
             refreshing={this.state.refreshing}
-            onRefresh={this.props.onRefresh}
+            onRefresh={this.onRefresh}
           />
         }
       />
