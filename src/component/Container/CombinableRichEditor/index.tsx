@@ -113,10 +113,16 @@ export default class CombinableRichEditor extends React.Component<
   webView = React.createRef<WebView>()
 
   public insertImage(url: string) {
-    logger.info('insert image: ' + url)
-    this.webView.current?.injectJavaScript(
-      `insertImage('${Environment.cdnUrl + url}')`
-    )
+    let _url: string
+    if (url.startsWith('http')) {
+      _url = url
+    } else if (url.charAt(0) === '/') {
+      _url = Environment.cdnUrl + url
+    } else {
+      _url = Environment.cdnUrl + '/' + url
+    }
+    logger.info('insert image: ' + _url)
+    this.webView.current?.injectJavaScript(`insertImage('${_url}')`)
   }
 
   constructor(props: CombinableRichEditorProps) {
