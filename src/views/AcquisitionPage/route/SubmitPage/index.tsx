@@ -88,34 +88,36 @@ const SubmitPage: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <NavigationHeader title="收购" navigation={nav}>
-        <Text style={styles.submitText} onPress={onSubmit}>
-          提交
-        </Text>
-      </NavigationHeader>
-      <SimpleInput
-        ref={titleInputRef}
-        textInputProps={{ placeholder: '要收购的物品名称' }}
-        onChangeText={setTitle}
-      />
-      <SimpleInput
-        ref={contractInputRef}
-        textInputProps={{ placeholder: '联系方式' }}
-        onChangeText={setContract}
-      />
-      <SimpleInput
-        ref={expectPriceInputRef}
-        textInputProps={{ placeholder: '预期价格(不填默认当面议价)' }}
-        onChangeText={setExpectPrice}
-      />
-      <CombinableRichEditor
-        placeholder="填写其它信息"
-        ref={editor}
-        disableKeyboardAvoid
-        onFocus={onRichEditorFocus}
-        onBlur={onRichEditorBlur}
-      />
+    <View style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <NavigationHeader title="收购" navigation={nav}>
+          <Text style={styles.submitText} onPress={onSubmit}>
+            提交
+          </Text>
+        </NavigationHeader>
+        <SimpleInput
+          ref={titleInputRef}
+          textInputProps={{ placeholder: '要收购的物品名称' }}
+          onChangeText={setTitle}
+        />
+        <SimpleInput
+          ref={contractInputRef}
+          textInputProps={{ placeholder: '联系方式' }}
+          onChangeText={setContract}
+        />
+        <SimpleInput
+          ref={expectPriceInputRef}
+          textInputProps={{ placeholder: '预期价格(不填默认当面议价)' }}
+          onChangeText={setExpectPrice}
+        />
+        <CombinableRichEditor
+          placeholder="填写其它信息"
+          ref={editor}
+          disableKeyboardAvoid
+          onFocus={onRichEditorFocus}
+          onBlur={onRichEditorBlur}
+        />
+      </View>
       <CombinableRichEditorToolBar
         richEditorRef={editor}
         visible={toolbarVisible}
