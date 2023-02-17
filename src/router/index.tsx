@@ -360,7 +360,7 @@ const Router: React.FC = () => {
         <Stack.Screen
           name={ACQUISITION_PAGE}
           component={AcquisitionSubmitPage}
-          options={{ headerShown: false }}
+          options={{ headerShown: false, animation: 'slide_from_right' }}
         />
       </Stack.Navigator>
       <DiyToast />

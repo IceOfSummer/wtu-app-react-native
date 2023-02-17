@@ -33,10 +33,13 @@ const AcquisitionSubmitPage: React.FC = () => {
       <Stack.Screen
         name={DETAIL_PAGE}
         component={DetailPage}
-        options={headerCommonOptionsWithTitle(
-          '收购详细',
-          global.colors.boxBackgroundColor
-        )}
+        options={{
+          ...headerCommonOptionsWithTitle(
+            '收购详细',
+            global.colors.boxBackgroundColor
+          ),
+          animation: 'slide_from_right',
+        }}
       />
     </Stack.Navigator>
   )

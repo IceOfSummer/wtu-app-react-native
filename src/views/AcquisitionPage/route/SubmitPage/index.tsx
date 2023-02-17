@@ -29,8 +29,8 @@ const SubmitPage: React.FC = () => {
   const expectPriceInputRef = useRef<SimpleInput>(null)
 
   const formCheck = useFormChecker([
-    { ref: titleInputRef, maxLength: 30, name: '物品名称' },
-    { ref: contractInputRef, maxLength: 60, name: '联系方式' },
+    { ref: titleInputRef, maxLength: 30, name: '物品名称', minLength: 4 },
+    { ref: contractInputRef, maxLength: 60, name: '联系方式', minLength: 4 },
     {
       ref: expectPriceInputRef,
       maxLength: 20,
