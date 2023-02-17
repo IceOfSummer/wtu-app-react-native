@@ -95,14 +95,17 @@ const SubmitPage: React.FC = () => {
         </Text>
       </NavigationHeader>
       <SimpleInput
+        ref={titleInputRef}
         textInputProps={{ placeholder: '要收购的物品名称' }}
         onChangeText={setTitle}
       />
       <SimpleInput
+        ref={contractInputRef}
         textInputProps={{ placeholder: '联系方式' }}
         onChangeText={setContract}
       />
       <SimpleInput
+        ref={expectPriceInputRef}
         textInputProps={{ placeholder: '预期价格(不填默认当面议价)' }}
         onChangeText={setExpectPrice}
       />

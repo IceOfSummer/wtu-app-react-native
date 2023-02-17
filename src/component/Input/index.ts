@@ -1,4 +1,7 @@
 import { RefObject } from 'react'
+import { getLogger } from '../../utils/LoggerUtils'
+
+const logger = getLogger('/component/Input')
 
 export interface InputComponent<
   Value extends (string | undefined) | Array<string>
@@ -20,6 +23,9 @@ export const useFormChecker = <V extends string | string[]>(
       config.forEach(item => {
         const current = item.ref.current
         if (!current) {
+          logger.warn(
+            `'config.ref.current' is undefined, please check your ref has added to the component, config.name = ${item.name}`
+          )
           return
         }
         let err: FormError<InputComponent<V>> | undefined
