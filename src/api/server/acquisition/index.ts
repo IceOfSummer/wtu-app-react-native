@@ -48,3 +48,16 @@ export const takeDownAcquisition = (acquisitionId: number) =>
     undefined,
     'POST'
   )
+
+export type EsAcquisition = AcquisitionQuery
+
+export const searchAcquisitionByTitle = (
+  title: string,
+  page?: number,
+  size?: number
+) =>
+  serverNoRepeatAjax<EsAcquisition[]>('/acquisition/search', {
+    t: title,
+    p: page,
+    s: size,
+  })

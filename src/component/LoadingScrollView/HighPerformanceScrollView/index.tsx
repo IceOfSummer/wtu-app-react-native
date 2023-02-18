@@ -9,6 +9,7 @@ import {
 import RetryView from '../../EnhancedScrollView/RetryView'
 import InitSkeleton from '../InitSkeleton'
 import LottieView from 'lottie-react-native'
+import Toast from 'react-native-root-toast'
 
 interface HighPerformanceScrollViewProps<D> extends FlatListProps<D> {
   onRefresh?: () => void | Promise<unknown>
@@ -67,7 +68,9 @@ export default class HighPerformanceScrollView<D> extends React.Component<
     }
     const result = this.props.onLoadMore()
     if (typeof result === 'object') {
-      result.catch()
+      result.catch(e => {
+        Toast.show('加载失败，' + e.message)
+      })
     }
   }
 

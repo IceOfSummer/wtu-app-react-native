@@ -20,6 +20,8 @@ interface RoundSearchBarProps {
   outerStyle?: ViewStyle
   onFocus?: () => void
   disable?: boolean
+  onChangeText?: (text: string) => void
+  inputRef?: React.RefObject<TextInput>
 }
 
 /**
@@ -38,7 +40,9 @@ const RoundSearchBar: React.FC<RoundSearchBarProps> = props => {
         onPress={props.onContainerPress}>
         <Icons iconText="&#xe632;" size={18} />
         <TextInput
+          ref={props.inputRef}
           {...props.textInputProps}
+          onChangeText={props.onChangeText}
           placeholder={props.placeHolder}
           onFocus={props.onFocus}
           style={styles.textInputStyle}

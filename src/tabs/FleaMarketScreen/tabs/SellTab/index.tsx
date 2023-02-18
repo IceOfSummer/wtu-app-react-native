@@ -45,7 +45,7 @@ interface AcquisitionItemProps {
   item: AcquisitionQuery
 }
 
-const AcquisitionItem: React.FC<AcquisitionItemProps> = ({ item }) => {
+export const AcquisitionItem: React.FC<AcquisitionItemProps> = ({ item }) => {
   const nav = useNavigation()
 
   const onPress = () => {

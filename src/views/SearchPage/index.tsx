@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { StackActions, useNavigation, useRoute } from '@react-navigation/native'
 import {
+  ACQUISITION_PAGE,
   COMMODITY_LIST_PAGE,
   SEARCH_PAGE,
   UseNavigationGeneric,
@@ -19,6 +20,11 @@ import NativeDialog from '../../native/modules/NativeDialog'
 import useForceUpdate from '../../hook/useForceUpdate'
 import Icons from '../../component/Icons'
 import CustomStatusBar from '../../component/Container/CustomStatusBar'
+import ConditionHideContainer, {
+  Else,
+  If,
+} from '../../component/Container/ConditionHideContainer'
+import { SEARCH_LIST_PAGE } from '../AcquisitionPage'
 
 /**
  * 搜索页面
@@ -27,24 +33,39 @@ const SearchPage: React.FC = () => {
   const router = useRoute<UseRouteGeneric<typeof SEARCH_PAGE>>()
   const nav = useNavigation<UseNavigationGeneric>()
   const store = useStore<ReducerTypes>()
+  const [text, setText] = useState('')
   // 手动更新页面，自动更新页面视觉体验上效果较差
   const forceUpdate = useForceUpdate()
   const { searchHistory } = store.getState().commonPersist
-  const onSearch = (text: string) => {
-    let i = 0
-    const len = searchHistory.length
-    for (; i < len; i++) {
-      if (searchHistory[i] === text) {
-        break
+  const onSearch = (
+    content: string,
+    route:
+      | typeof COMMODITY_LIST_PAGE
+      | typeof SEARCH_LIST_PAGE = COMMODITY_LIST_PAGE
+  ) => {
+    if (route === COMMODITY_LIST_PAGE) {
+      let i = 0
+      const len = searchHistory.length
+      for (; i < len; i++) {
+        if (searchHistory[i] === content) {
+          break
+        }
       }
-    }
-    if (i === len) {
-      store.dispatch(addSearchHistory(text))
+      if (i === len) {
+        store.dispatch(addSearchHistory(content))
+      } else {
+        // 已经存在, 调整顺序
+        store.dispatch(swapHistoryToFirst(i))
+      }
+      nav.dispatch(StackActions.replace(route, { search: content }))
     } else {
-      // 已经存在, 调整顺序
-      store.dispatch(swapHistoryToFirst(i))
+      nav.dispatch(
+        StackActions.replace(ACQUISITION_PAGE, {
+          screen: route,
+          params: { title: text },
+        })
+      )
     }
-    nav.dispatch(StackActions.replace(COMMODITY_LIST_PAGE, { search: text }))
   }
   const textInput = useRef<TextInput>(null)
 
@@ -79,41 +100,70 @@ const SearchPage: React.FC = () => {
           <Icons iconText="&#xe61d;" size={28} />
         </Pressable>
         <RoundSearchBar
+          onChangeText={setText}
           outerStyle={{ flex: 1 }}
           placeHolder={router.params.placeholder}
-          // @ts-ignore  ignore ref property
-          textInputProps={{ autoFocus: true, ref: textInput }}
-          onSubmit={onSearch}
+          inputRef={textInput}
+          textInputProps={{ autoFocus: true }}
         />
       </View>
-      <Text style={global.styles.infoTipText}>搜索收购商品将在本月内上线</Text>
-      <View>
-        <View style={styles.searchHistoryHeader}>
-          <View>
-            <Text style={global.styles.blobText}>搜索历史</Text>
-          </View>
-          <Pressable onPress={clearBtnClick}>
-            <Text style={global.styles.errorTipText}>清空</Text>
-          </Pressable>
-        </View>
-        <View style={styles.searchHistoryContainer}>
-          {searchHistory.map((value, index) => (
-            <Pressable
-              key={index}
-              style={styles.searchHistoryItem}
-              onPress={() => onSearch(value)}>
-              <Text>{value}</Text>
+      <ConditionHideContainer>
+        <If visible={text.length === 0}>
+          <View style={styles.searchHistoryHeader}>
+            <View>
+              <Text style={global.styles.blobText}>搜索历史</Text>
+            </View>
+            <Pressable onPress={clearBtnClick}>
+              <Text style={global.styles.errorTipText}>清空</Text>
             </Pressable>
-          ))}
-        </View>
-      </View>
+          </View>
+          <View style={styles.searchHistoryContainer}>
+            {searchHistory.map((value, index) => (
+              <Pressable
+                key={index}
+                style={styles.searchHistoryItem}
+                onPress={() => onSearch(value)}>
+                <Text>{value}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </If>
+        <Else style={styles.menuContainer}>
+          <Pressable
+            onPress={() => onSearch(text)}
+            style={[
+              styles.searchMenu,
+              { borderBottomWidth: StyleSheet.hairlineWidth },
+            ]}>
+            <Icons
+              iconText="&#xe6cd;"
+              size={20}
+              color={global.colors.textColor}
+            />
+            <Text numberOfLines={1} style={styles.tipText}>
+              搜索正在出售的<Text style={styles.searchText}>{text}</Text>
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.searchMenu}
+            onPress={() => onSearch(text, SEARCH_LIST_PAGE)}>
+            <Icons
+              iconText="&#xe6cc;"
+              size={20}
+              color={global.colors.textColor}
+            />
+            <Text numberOfLines={1} style={styles.tipText}>
+              搜索正在收购的<Text style={styles.searchText}>{text}</Text>
+            </Text>
+          </Pressable>
+        </Else>
+      </ConditionHideContainer>
     </View>
   )
 }
 const styles = StyleSheet.create({
   headerContainer: {
     marginVertical: 5,
-    paddingHorizontal: 10,
   },
   searchHistoryHeader: {
     marginVertical: 10,
@@ -133,6 +183,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     textAlign: 'center',
     fontSize: global.styles.$font_size_sm,
+  },
+  searchMenu: {
+    borderColor: global.colors.borderColor,
+    paddingVertical: 12,
+    backgroundColor: global.colors.boxBackgroundColor,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuContainer: {
+    marginTop: 10,
+  },
+  tipText: {
+    color: global.colors.textColor,
+  },
+  searchText: {
+    color: global.colors.primaryColor,
   },
 })
 export default SearchPage
